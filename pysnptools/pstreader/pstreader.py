@@ -222,7 +222,7 @@ class PstReader(object):
             >>> print subset_reader_3.row_count, subset_reader_3.col_count
             300 24
 
-        The first generalization over with ndarray offers is full indexing on both the row dimension and the col dimension, in other words,
+        The first generalization over what ndarray offers is full indexing on both the row dimension and the col dimension, in other words,
         full multidimensional indexing. For example,
 
             >>> on_disk = PstNpz('../../tests/datasets/all_chr.maf0.001.N300.pst.npz') # Specify some data on disk in PstNpz format
@@ -570,7 +570,6 @@ class PstReader(object):
         return True
 
     def _apply_sparray_or_slice_to_val(self, val, row_indexer_or_none, col_indexer_or_none, order, dtype, force_python_only):
-
         if (PstReader._is_all_slice(row_indexer_or_none) and PstReader._is_all_slice(col_indexer_or_none)  and not force_python_only and 
                 (order == 'A' or (order == 'F' and val.flags['F_CONTIGUOUS']) or (order == 'C' and val.flags['C_CONTIGUOUS'])) and
                 (dtype is None or  val.dtype == dtype)):

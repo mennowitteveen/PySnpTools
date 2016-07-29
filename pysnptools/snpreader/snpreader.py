@@ -222,7 +222,7 @@ class SnpReader(PstReader):
             >>> print subset_snpreader_3.iid_count, subset_snpreader_3.sid_count
             300 24
 
-        The first generalization over with ndarray offers is full indexing on both the iid dimension and the sid dimension, in other words,
+        The first generalization over what ndarray offers is full indexing on both the iid dimension and the sid dimension, in other words,
         full multidimensional indexing. For example,
 
             >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format

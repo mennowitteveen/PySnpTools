@@ -9,7 +9,7 @@ class IntRangeSet(object):
     '''
     A class for efficiently manipulating ranges of integers (including negatives and longs) using set operations such as :meth:`union`, :meth:`intersection`, and difference.
 
-    The class differs from the built-in *set* class (and from Boolean numpy arrays) because it does need memory for every element in the set, only for every contiguous range of elements.
+    The class differs from the built-in *set* class (and from Boolean numpy arrays) because it does not need to store every element in the set, only for every contiguous range of elements.
     It differs from other Python interval libraries (that we know of) by being specialized and optimized for integer elements.
 
     :Example:

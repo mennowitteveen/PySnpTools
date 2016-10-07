@@ -22,6 +22,7 @@ class Beta(Standardizer):
     0.68080194805
     '''
     def __init__(self,a,b):
+        super(Beta, self).__init__()
         self.a = a
         self.b = b
 

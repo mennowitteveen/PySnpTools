@@ -63,6 +63,7 @@ class Dense(_OneShot,SnpReader):
         '''
         filename    : string of the name of the Dat file.
         '''
+        super(Dense, self).__init__()
         self.filename = filename
         self.extract_iid_function = extract_iid_function
         self.extract_sid_pos_function = extract_sid_pos_function

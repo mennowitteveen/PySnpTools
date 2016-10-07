@@ -30,13 +30,17 @@ class PstHdf5(PstReader):
 
     **Methods beyond** :class:`.PstReader`
     '''
-    _ran_once = False
-    _h5 = None
 
     def __init__(self, filename):
+        super(PstHdf5, self).__init__() #We know PstReader doesn't want the file name
+
+        self._block_size = 5000
+
+        self._ran_once = False
+        self._h5 = None
+
         self.filename=filename
 
-    _block_size = 5000
 
     def __repr__(self): 
         return "{0}('{1}')".format(self.__class__.__name__,self.filename) #!!LATER print non-default values, too
@@ -208,11 +212,11 @@ class PstHdf5(PstReader):
 
             for start in xrange(0, col_index_count, block_size):
                 #print start
-                end = min(start+block_size,col_index_count)
-                if end-start < block_size:  #On the last loop, the buffer might be too big, so make it smaller
-                    block, block_order = self._create_block(end-start, order, dtype)
-                col_index_list_forblock = col_index_list_sorted[start:end]
-                col_index_index_list_forblock = col_index_index_list[start:end]
+                stop = min(start+block_size,col_index_count)
+                if stop-start < block_size:  #On the last loop, the buffer might be too big, so make it smaller
+                    block, block_order = self._create_block(stop-start, order, dtype)
+                col_index_list_forblock = col_index_list_sorted[start:stop]
+                col_index_index_list_forblock = col_index_index_list[start:stop]
                 self._read_direct(block, block_order, np.s_[:,col_index_list_forblock])
                 val[:,col_index_index_list_forblock] = block[row_index_list,:]
 

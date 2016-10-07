@@ -51,6 +51,8 @@ class Pheno(_OneShot, SnpReader):
         '''
         input    : string of the name of the file or an in-memory dictionary
         '''
+        super(Pheno, self).__init__()
+
         self.filename = input
         self._iid_if_none = iid_if_none
         self.missing = missing

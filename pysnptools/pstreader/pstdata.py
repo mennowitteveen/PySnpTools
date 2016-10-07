@@ -59,6 +59,10 @@ class PstData(PstReader):
 
     '''
     def __init__(self, row, col, val, row_property=None, col_property=None, name=None, parent_string=None, copyinputs_function=None):
+        super(PstData, self).__init__()
+
+        self.val = None
+
         self._row = PstData._fixup_input(row)
         self._col = PstData._fixup_input(col)
         self._row_property = PstData._fixup_input(row_property,count=len(self._row))
@@ -70,7 +74,6 @@ class PstData(PstReader):
             warnings.warn("'parent_string' is deprecated. Use 'name'", DeprecationWarning)
         self._name = name
 
-    val = None
     """The 2D NumPy array of floats that represents the values.
 
     >>> from pysnptools.pstreader import PstNpz

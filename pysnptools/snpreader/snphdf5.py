@@ -26,6 +26,8 @@ class SnpHdf5(PstHdf5,SnpReader):
     **Methods beyond** :class:`.SnpReader`
 
     '''
+    def __init__(self, *args, **kwargs):
+        super(SnpHdf5, self).__init__(*args, **kwargs)
 
     @staticmethod
     def write(filename, snpdata, hdf5_dtype=None, sid_major=True):
@@ -50,7 +52,8 @@ class SnpHdf5(PstHdf5,SnpReader):
 
 class Hdf5(SnpHdf5):
     #!! warnings.warn("class 'Hdf5' is deprecated. Use the standard class 'SnpHdf5' instead", DeprecationWarning)
-    pass
+    def __init__(self, *args, **kwargs):
+        super(Hdf5, self).__init__(*args, **kwargs)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

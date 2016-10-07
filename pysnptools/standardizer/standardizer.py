@@ -48,6 +48,9 @@ class Standardizer(object):
     Details of Methods & Properties:
     '''
 
+    def __init__(self):
+        super(Standardizer, self).__init__()
+
     def standardize(self, snps, block_size=None, return_trained=False, force_python_only=False):
         '''
         Applies standardization, in place, to :class:`.SnpData` (or a NumPy array). For convenience also returns the :class:`.SnpData` (or a NumPy array).
@@ -203,6 +206,7 @@ class Standardizer(object):
 class _CannotBeTrained(Standardizer):
 
     def __init__(self, name):
+        super(_CannotBeTrained, self).__init__()
         self.name=name
 
     def __repr__(self): 

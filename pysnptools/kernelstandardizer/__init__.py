@@ -75,7 +75,7 @@ class Identity(KernelStandardizer):
     '''
 
     def __init__(self):
-        pass
+        super(Identity, self).__init__()
 
     def standardize(self, kerneldata, return_trained=False, force_python_only=False):
         if return_trained:

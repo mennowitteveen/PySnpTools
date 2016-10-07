@@ -273,6 +273,9 @@ class PstReader(object):
     Details of Methods & Properties:
     """
 
+    def __init__(self, *args, **kwargs): #Ignore any inputs because our parent is 'object'
+        super(PstReader, self).__init__()
+
     @property
     def row(self):
         """A ndarray of the row ids. Each id can be anything, for example, a string, an array of two strings, a number, etc.
@@ -338,6 +341,18 @@ class PstReader(object):
 
         """
         return len(self.col)
+
+    #!!!cmk move this documentation into every class that inherits
+    @property
+    def shape(self):
+        """number of rows and number of cols
+
+        :rtype: tuple of two integers
+
+        This property (to the degree practical) reads only row and col data from the disk, not matrix value data. Moreover, the row and col data is read from file only once.
+
+        """
+        return (len(self.row),len(self.col))
 
     @property
     def row_property(self):
@@ -511,9 +526,9 @@ class PstReader(object):
             return tuple(item)
 
     def __getitem__(self, row_indexer_and_col_indexer):
-        from _subset import _Subset
+        from pysnptools.pstreader._subset import _PstSubset
         row_indexer, col_indexer = row_indexer_and_col_indexer
-        return _Subset(self, row_indexer, col_indexer)
+        return _PstSubset(self, row_indexer, col_indexer)
 
 
     def copyinputs(self, copier):

@@ -31,6 +31,7 @@ class BetaTrained(Standardizer):
     """
 
     def __init__(self, a,b,sid,stats):
+        super(BetaTrained, self).__init__()
         self.a=a
         self.b=b
         self.sid=sid

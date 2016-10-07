@@ -43,7 +43,7 @@ class Ped(_OneShot,SnpReader):
             filename    : string of the filename of the ped file
             missing         : string indicating a missing genotype (default '0')
         '''
-
+        super(Ped, self).__init__()
         self.filename = SnpReader._name_of_other_file(filename,remove_suffix="ped", add_suffix="ped")
         self.missing = missing
 

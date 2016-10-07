@@ -27,6 +27,9 @@ class KernelHdf5(PstHdf5,KernelReader):
 
     '''
 
+    def __init__(self,*args, **kwargs):
+        super(KernelHdf5, self).__init__(*args, **kwargs)
+
     @staticmethod
     def write(filename, kerneldata, hdf5_dtype=None, sid_major=True):
         """Writes a :class:`KernelData` to KernelHdf5 format.

@@ -311,6 +311,9 @@ class SnpReader(PstReader):
     Details of Methods & Properties:
     """
 
+    def __init__(self, *args, **kwargs):
+        super(SnpReader, self).__init__(*args, **kwargs)
+
     @property
     def iid(self):
         """A ndarray of the iids. Each iid is a ndarray of two strings (a family ID and a case ID) that identifies an individual.
@@ -493,9 +496,9 @@ class SnpReader(PstReader):
         return self.col_to_index(list)
 
     def __getitem__(self, iid_indexer_and_snp_indexer):
-        from _subset import _Subset
+        from pysnptools.snpreader._subset import _SnpSubset
         iid_indexer, snp_indexer = iid_indexer_and_snp_indexer
-        return _Subset(self, iid_indexer, snp_indexer)
+        return _SnpSubset(self, iid_indexer, snp_indexer)
 
     def read_kernel(self, standardizer=None, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False):
         """Returns a :class:`KernelData` such that the :meth:`KernelData.val` property will be a ndarray of the standardized SNP values multiplied with their transposed selves.

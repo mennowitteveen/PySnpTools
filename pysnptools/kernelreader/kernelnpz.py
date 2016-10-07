@@ -26,6 +26,9 @@ class KernelNpz(KernelReader,PstNpz):
 
     '''
 
+    def __init__(self,*args, **kwargs):
+        super(KernelNpz, self).__init__(*args, **kwargs)
+
     @staticmethod
     def write(filename, kerneldata):
         """Writes a :class:`KernelData` to KernelNpz format.

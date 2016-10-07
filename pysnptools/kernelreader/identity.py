@@ -36,6 +36,7 @@ class Identity(KernelReader):
 
     '''
     def __init__(self, iid, test=None): #!!! add docs and test for test
+        super(Identity, self).__init__()
 
         if test is None:
             test = iid

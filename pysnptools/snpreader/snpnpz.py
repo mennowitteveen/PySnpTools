@@ -27,6 +27,9 @@ class SnpNpz(PstNpz,SnpReader):
 
     '''
 
+    def __init__(self, *args, **kwargs):
+        super(SnpNpz, self).__init__(*args, **kwargs)
+
     @staticmethod
     def write(filename, snpdata):
         """Writes a :class:`SnpData` to SnpNpz format.

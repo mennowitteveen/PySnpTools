@@ -18,7 +18,8 @@ class Unit(Standardizer):
     0.229415733871
     """
     def __init__(self):
-        pass
+        super(Unit, self).__init__()
+
 
     def __repr__(self):
         return "{0}()".format(self.__class__.__name__)

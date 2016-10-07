@@ -55,6 +55,10 @@ class KernelData(KernelReader,PstData):
     **Methods beyond** :class:`.KernelReader`
     """
     def __init__(self, iid=None, iid0=None, iid1=None, val=None, name=None, parent_string=None): #!!!autodoc doesn't generate good doc for this constructor
+        #We don't have a 'super(KernelData, self).__init__()' here because KernelData takes full responsiblity for initializing both its superclasses
+
+        self.val = None
+
         #!!why does SnpData __init__ have a copy_inputs, but KernelData doesn't?
         assert (iid is None) != (iid0 is None and iid1 is None), "Either 'iid' or both 'iid0' 'iid1' must be provided."
         assert name is None or parent_string is None, "Can't set both 'name' and the deprecated 'parent_string'"
@@ -75,7 +79,6 @@ class KernelData(KernelReader,PstData):
         self._name = name or parent_string or ""
         self._std_string_list = []
 
-    val = None
     """The 2D NumPy array of floats that represents the values of the kernel.
 
     >>> from pysnptools.kernelreader import KernelData

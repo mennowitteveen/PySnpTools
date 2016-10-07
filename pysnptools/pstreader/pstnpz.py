@@ -31,12 +31,14 @@ class PstNpz(PstReader):
 
     '''
 
-    _ran_once = False
 
     def __init__(self, filename):
         '''
         filename    : string of the name of the npz file.
         '''
+        super(PstNpz, self).__init__() #We don't send "file name" up because we know about super doesn't want it.
+        self._ran_once = False
+
         self._filename = filename
 
     def __repr__(self): 

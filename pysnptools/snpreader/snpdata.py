@@ -53,6 +53,11 @@ class SnpData(PstData,SnpReader):
     **Methods beyond** :class:`.SnpReader`
     """
     def __init__(self, iid, sid, val, pos=None, name=None, parent_string=None, copyinputs_function=None):
+
+        #We don't have a 'super(SnpData, self).__init__()' here because SnpData takes full responsiblity for initializing both its superclasses
+
+        self.val = None
+
         if parent_string is not None:
             warnings.warn("'parent_string' is deprecated. Use 'name'", DeprecationWarning)
         self._row = PstData._fixup_input(iid,empty_creator=lambda ignore:np.empty([0,2],dtype=str))
@@ -63,8 +68,6 @@ class SnpData(PstData,SnpReader):
         self._assert_iid_sid_pos()
         self._name = name or parent_string or ""
         self._std_string_list = []
-
-    val = None
     """The 2D NumPy array of floats that represents the values of the SNPs.
 
     >>> from pysnptools.snpreader import Bed

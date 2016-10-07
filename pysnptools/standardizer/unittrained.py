@@ -31,6 +31,7 @@ class UnitTrained(Standardizer):
 
     #!!might want to add code so that can check that sids are in the same order for both test and train
     def __init__(self, sid, stats):
+        super(UnitTrained, self).__init__()
         self.sid = sid
         self.stats = stats
         self.sid_to_index = None

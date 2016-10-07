@@ -16,14 +16,14 @@ def region_gen(scale=1,seed=0):
     for range_index in xrange(range_count):
         length = int(np.exp(np.random.random()*np.log(region_max_length)))
         start = randlong(position_count-length) #does randint really go up to 3 billin?
-        end = start+length
-        yield start,end
+        stop = start+length
+        yield start,stop
 
 from pysnptools.util import IntRangeSet
 
 geneset = IntRangeSet()
-for start,end in region_gen(scale=.1):
-    geneset |= (start,end)
+for start,stop in region_gen(scale=.1):
+    geneset |= (start,stop)
 print geneset
 print geneset.ranges_len
 

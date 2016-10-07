@@ -40,6 +40,7 @@ class Dat(_OneShot,SnpReader):
         '''
         filename    : string of the name of the Dat file.
         '''
+        super(Dat, self).__init__()
         self.filename = SnpReader._name_of_other_file(filename,remove_suffix="dat", add_suffix="dat")
 
     def _read_pstdata(self):

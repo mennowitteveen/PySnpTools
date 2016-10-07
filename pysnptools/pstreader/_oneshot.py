@@ -16,7 +16,10 @@ class _OneShot(PstReader):
     def _read_pstdata():
         raise NotImplementedError("{0} needs to define its own _read_pstdata".format(self.__class__.__name__))
 
-    _ran_once = False
+    def __init__(self):
+        super(_OneShot, self).__init__()
+
+        self._ran_once = False
 
     def __repr__(self): 
         if hasattr(self,"filename"):

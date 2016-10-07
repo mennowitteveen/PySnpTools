@@ -140,6 +140,8 @@ class KernelReader(PstReader):
    
     Details of Methods & Properties:
     """
+    def __init__(self, *args, **kwargs):
+        super(KernelReader, self).__init__(*args, **kwargs)
 
     @property
     def iid(self):
@@ -310,14 +312,14 @@ class KernelReader(PstReader):
         return self.col_to_index(list)
 
     def __getitem__(self, iid_indexer_and_snp_indexer):
-        from _subset import _Subset
+        from pysnptools.kernelreader._subset import _KernelSubset
         if isinstance(iid_indexer_and_snp_indexer,tuple):
             iid0_indexer, iid1_indexer = iid_indexer_and_snp_indexer
         else:
             iid0_indexer = iid_indexer_and_snp_indexer
             iid1_indexer = iid0_indexer
 
-        return _Subset(self, iid0_indexer, iid1_indexer)
+        return _KernelSubset(self, iid0_indexer, iid1_indexer)
 
     def _assert_iid0_iid1(self):
         assert np.issubdtype(self._row.dtype, str) and len(self._row.shape)==2 and self._row.shape[1]==2, "iid0 should be dtype str, have two dimensions, and the second dimension should be size 2"

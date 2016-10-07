@@ -30,10 +30,13 @@ class Bed(SnpReader):
 
     **Methods beyond** :class:`.SnpReader`
     '''
-    _ran_once = False
-    _file_pointer = None
 
     def __init__(self, filename, count_A1=None, iid=None, sid=None, pos=None, skip_format_check=False): #!!!document these new optionals. they are here
+        super(Bed, self).__init__()
+
+        self._ran_once = False
+        self._file_pointer = None
+
         self.filename = filename
         if count_A1 is None:
              warnings.warn("'count_A1' was not set. For now it will default to 'False', but in the future it will default to 'True'", FutureWarning)

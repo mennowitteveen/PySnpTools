@@ -39,6 +39,8 @@ class SnpKernel(KernelReader):
         0.992306992842
     '''
     def __init__(self, snpreader, standardizer=None, block_size=None):
+        super(SnpKernel, self).__init__()
+
         assert standardizer is not None, "'standardizer' must be provided"
 
         self.snpreader = snpreader

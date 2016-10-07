@@ -43,6 +43,7 @@ class DiagKtoN(Standardizer):
     '''
     """diag(K)=N standardization of the data"""
     def __init__(self, deprecated_iid_count=None):
+        super(DiagKtoN, self).__init__()
         if deprecated_iid_count is not None:
             warnings.warn("'iid_count' is deprecated (and not needed, since can get iid_count from SNPs val's first dimension", DeprecationWarning)
 
@@ -107,6 +108,7 @@ class DiagKtoNTrained(Standardizer):
 
     """
     def __init__(self,factor):
+        super(DiagKtoNTrained, self).__init__()
         self.factor = factor
 
     def standardize(self, input, block_size=None, return_trained=False, force_python_only=False):

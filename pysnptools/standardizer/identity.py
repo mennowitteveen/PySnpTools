@@ -20,7 +20,7 @@ class Identity(Standardizer):
     '''
 
     def __init__(self):
-        pass
+        super(Identity, self).__init__()
 
     def standardize(self, snps, block_size=None, return_trained=False, force_python_only=False):
         if block_size is not None:

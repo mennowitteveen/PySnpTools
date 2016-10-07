@@ -117,8 +117,8 @@ class TestLoader(unittest.TestCase):
         from pysnptools.standardizer import Unit
         from pysnptools.kernelreader import SnpKernel
         from pysnptools.snpreader import Pheno
-        from pysnptools.kernelreader._subset import _Subset as KernelSubset
-        from pysnptools.snpreader._subset import _Subset as SnpSubset
+        from pysnptools.kernelreader._subset import _KernelSubset
+        from pysnptools.snpreader._subset import _SnpSubset
         from pysnptools.util import intersect_apply
 
         snps_all = Bed(self.currentFolder + "/../examples/toydata",count_A1=False)
@@ -128,7 +128,7 @@ class TestLoader(unittest.TestCase):
         pheno = pheno[1:,:] # To test intersection we remove a iid from pheno
 
         k1,pheno = intersect_apply([k,pheno]) #SnpKernel is special because it standardizes AFTER intersecting.
-        assert isinstance(k1.snpreader,SnpSubset) and not isinstance(k1,KernelSubset)
+        assert isinstance(k1.snpreader,_SnpSubset) and not isinstance(k1,_KernelSubset)
 
         #What happens with fancy selection?
         k2 = k[::2]

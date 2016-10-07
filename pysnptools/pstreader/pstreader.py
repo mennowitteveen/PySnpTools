@@ -342,7 +342,6 @@ class PstReader(object):
         """
         return len(self.col)
 
-    #!!!cmk move this documentation into every class that inherits
     @property
     def shape(self):
         """number of rows and number of cols

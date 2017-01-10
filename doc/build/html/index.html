@@ -75,7 +75,7 @@ union, intersection, and set difference.</li>
 </table>
 <p><em>From PyData Conference, Seattle, 2015</em></p>
 <ul class="simple">
-<li><a class="reference external" href="https://onedrive.live.com/view.aspx?cid=b89ee402873f0f4a&amp;page=view&amp;resid=B89EE402873F0F4A!209845&amp;parId=B89EE402873F0F4A!209839&amp;authkey=!AMAMALlp0TiNuDg&amp;app=PowerPoint&amp;wacqt=undefined">Slides</a></li>
+<li><a class="reference external" href="https://1drv.ms/p/s!AkoPP4cC5J64jOc15JXgDsXmD9EEaw">Slides</a></li>
 <li><a class="reference external" href="https://www.youtube.com/watch?v=KPI6479ctAQ">Video</a></li>
 <li><a class="reference external" href="https://github.com/MicrosoftGenomics/PySnpTools/blob/master/doc/ipynb/tutorial.ipynb">Notebook</a></li>
 <li><a class="reference external" href="http://research.microsoft.com/en-us/um/redmond/projects/MSCompBio/PySnpTools/psttutorial.zip">Data file</a></li>
@@ -1166,7 +1166,7 @@ that if a SnpData is written in Ped format and then read back, then 0&#8217;s ma
 <h3><code class="xref py py-class docutils literal"><span class="pre">snpreader.Dense</span></code><a class="headerlink" href="#snpreader-dense" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="pysnptools.snpreader.Dense">
-<em class="property">class </em><code class="descclassname">pysnptools.snpreader.</code><code class="descname">Dense</code><span class="sig-paren">(</span><em>filename</em>, <em>extract_iid_function=&lt;function zero_family at 0x00000000085A3C88&gt;</em>, <em>extract_sid_pos_function=&lt;function zero_pos at 0x00000000085A7A58&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.Dense" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pysnptools.snpreader.</code><code class="descname">Dense</code><span class="sig-paren">(</span><em>filename</em>, <em>extract_iid_function=&lt;function zero_family at 0x0000000008C62908&gt;</em>, <em>extract_sid_pos_function=&lt;function zero_pos at 0x0000000008C6B6D8&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.Dense" title="Permalink to this definition">¶</a></dt>
 <dd><p>A <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal"><span class="pre">SnpReader</span></code></a> for reading *.dense.txt (0,1,2 text files) from disk.</p>
 <p>See <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal"><span class="pre">SnpReader</span></code></a> for general examples of using SnpReaders.</p>
 <p>This format looks like:</p>
@@ -1208,7 +1208,7 @@ Defaults to setting the <a class="reference internal" href="#pysnptools.snpreade
 <p><strong>Methods beyond</strong> <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal"><span class="pre">SnpReader</span></code></a></p>
 <dl class="staticmethod">
 <dt id="pysnptools.snpreader.Dense.write">
-<em class="property">static </em><code class="descname">write</code><span class="sig-paren">(</span><em>filename</em>, <em>snpdata</em>, <em>join_iid_function=&lt;function just_case at 0x00000000085A7AC8&gt;</em>, <em>join_sid_pos_function=&lt;function just_sid at 0x00000000085A7B38&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.Dense.write" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">write</code><span class="sig-paren">(</span><em>filename</em>, <em>snpdata</em>, <em>join_iid_function=&lt;function just_case at 0x0000000008C6B748&gt;</em>, <em>join_sid_pos_function=&lt;function just_sid at 0x0000000008C6B7B8&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.Dense.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes a <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal"><span class="pre">SnpData</span></code></a> to Dense format. The values must be 0,1,2 (or missing).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />

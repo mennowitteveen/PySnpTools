@@ -58,7 +58,7 @@ class Bed(SnpReader):
         """*same as* :attr:`iid`
         """
         if not hasattr(self,"_row"):
-            self._run_once()
+            self._row = SnpReader._read_fam(self.filename,remove_suffix="bed")
         return self._row
 
     @property
@@ -66,7 +66,7 @@ class Bed(SnpReader):
         """*same as* :attr:`sid`
         """
         if not hasattr(self,"_col"):
-            self._run_once()
+            self._col, self._col_property = SnpReader._read_map_or_bim(self.filename,remove_suffix="bed", add_suffix="bim")
         return self._col
 
     @property
@@ -74,7 +74,7 @@ class Bed(SnpReader):
         """*same as* :attr:`pos`
         """
         if not hasattr(self,"_col_property"):
-            self._run_once()
+            self._col, self._col_property = SnpReader._read_map_or_bim(self.filename,remove_suffix="bed", add_suffix="bim")
         return self._col_property
 
     def _open_bed(self):

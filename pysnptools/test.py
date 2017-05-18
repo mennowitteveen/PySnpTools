@@ -12,11 +12,12 @@ from pysnptools.snpreader import Ped
 from pysnptools.standardizer import Unit
 from pysnptools.standardizer import Beta
 from pysnptools.util import create_directory_if_necessary
-from pysnptools.kernelreader.test import TestLoader as KrTestLoader
+from pysnptools.kernelreader.test import TestKernelReader
 from pysnptools.kernelreader.test import TestDocStrings as KrDocStrings
-from pysnptools.pstreader.test import TestLoader as PstTestLoader
+from pysnptools.pstreader.test import TestPstReader
 from pysnptools.pstreader.test import TestDocStrings as PstDocStrings
 from pysnptools.kernelreader.test import _fortesting_JustCheckExists
+from pysnptools.util.intrangeset import TestIntRangeSet
 
 
 import unittest
@@ -25,7 +26,7 @@ import time
 
 
    
-class TestLoader(unittest.TestCase):     
+class TestPySnpTools(unittest.TestCase):     
 
     def xtest_aaa_hdf5_speed(self): #!!too slow to use all the time
 
@@ -743,14 +744,13 @@ def getTestSuite():
     test_suite = unittest.TestSuite([])
 
     test_suite.addTests(NaNCNCTestCases.factory_iterator())
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(PstTestLoader))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPstReader))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(PstDocStrings))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(KrTestLoader))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestKernelReader))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(KrDocStrings))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDocStrings))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestLoader))
-    from pysnptools.util.intrangeset import TestLoader as IntRangeSetTestLoader
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(IntRangeSetTestLoader))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPySnpTools))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestIntRangeSet))
 
 
 

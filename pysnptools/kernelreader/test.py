@@ -37,7 +37,7 @@ class _fortesting_JustCheckExists(object): #Implements ICopier
 
 
 
-class TestLoader(unittest.TestCase):
+class TestKernelReader(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.currentFolder = os.path.dirname(os.path.realpath(__file__))
@@ -321,7 +321,7 @@ def getTestSuite():
     """
     
     test_suite = unittest.TestSuite([])
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestLoader))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestKernelReader))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDocStrings))
     return test_suite
 

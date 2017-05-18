@@ -1802,7 +1802,7 @@ class IntRangeSet(object):
         assert len(self._start_items) == len(self._start_to_length)
 
 
-class TestLoader(unittest.TestCase):     
+class TestIntRangeSet(unittest.TestCase):     
 
     def test_int_range_set(self):
         IntRangeSet._test()

@@ -9,7 +9,7 @@ from pysnptools.pstreader import PstData, PstNpz, PstHdf5
 from pysnptools.util import create_directory_if_necessary
 from pysnptools.kernelreader.test import _fortesting_JustCheckExists
 
-class TestLoader(unittest.TestCase):     
+class TestPstReader(unittest.TestCase):     
 
     def test_big_npz(self):
         logging.info("in test_big_npz")
@@ -260,7 +260,7 @@ def getTestSuite():
     
     test_suite = unittest.TestSuite([])
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDocStrings))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestLoader))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPstReader))
     return test_suite
 
 if __name__ == '__main__':

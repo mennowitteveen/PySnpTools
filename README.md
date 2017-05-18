@@ -16,7 +16,7 @@ util.IntRangeSet: Efficiently manipulate ranges of integers - for example, genet
 util.pheno: Read the PLINK pheno type file format. 
 
 Find the PySnpTools documentation (including links to tutorial slides, notesbooks, and video):
-http://research.microsoft.com/en-us/um/redmond/projects/MSCompBio/PySnpTools/
+http://microsoftgenomics.github.io/PySnpTools/
 
 
 We originally created it for FaST-LMM, a program for performing genome-wide association studies (GWAS) on large data sets.

@@ -1,9 +1,12 @@
 from pysnptools.util.intrangeset import IntRangeSet
-
 import scipy as sp
 import logging
 import numpy as np
-
+try:
+    from builtins import range
+except:
+    pass
+import sys
 
 
 def _testtest(data, iididx):
@@ -51,14 +54,14 @@ def intersect_apply(data_list, sort_by_dataset=True, intersect_before_standardiz
     >>> #Create five datasets in different formats
     >>> ignore_in = None
     >>> kernel_in = SnpKernel(Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False),Unit()) # Create a kernel from a Bed file
-    >>> pheno_in = Pheno('../../tests/datasets/phenSynthFrom22.23.N300.randcidorder.txt',missing="")
-    >>> cov = Pheno('../../tests/datasets/all_chr.maf0.001.covariates.N300.txt',missing="").read()
+    >>> pheno_in = Pheno('../../tests/datasets/phenSynthFrom22.23.N300.randcidorder.txt',missing=b"")
+    >>> cov = Pheno('../../tests/datasets/all_chr.maf0.001.covariates.N300.txt',missing=b"").read()
     >>> cov_as_tuple_in = (cov.val,cov.iid) #We could do cov directly, but as an example we make it a tuple.
     >>>
     >>> # Create five new datasets with consistent iids
     >>> ignore_out, kernel_out, pheno_out, cov_as_tuple_out = intersect_apply([ignore_in, kernel_in, pheno_in, cov_as_tuple_in])
     >>> # Print the first five iids from each dataset
-    >>> print ignore_out, kernel_out.iid[:5], pheno_out.iid[:5], cov_as_tuple_out[1][:5]
+    >>> print(ignore_out, kernel_out.iid[:5], pheno_out.iid[:5], cov_as_tuple_out[1][:5])
     None [['POP1' '0']
      ['POP1' '12']
      ['POP1' '44']
@@ -137,7 +140,7 @@ def intersect_apply(data_list, sort_by_dataset=True, intersect_before_standardiz
 
         #!!! for the case in which some of the data items don't need to change, can we avoid calling reindex? Alternatively, should the _read code notice that all the iids are the same and in the same order                    
         data_out_list = []
-        for i in xrange(indarr.shape[1]):
+        for i in range(indarr.shape[1]):
             data = data_list[i]
             iididx = indarr[:,i]
             reindex = reindex_list[i]
@@ -175,7 +178,7 @@ def _reindex_identitykernel(identitykernel, iididx, is_test=False):
     return result
 
 def _all_same(iids_list):
-    for i in xrange(len(iids_list)-1):
+    for i in range(len(iids_list)-1):
         iidA = iids_list[i]
         iidB = iids_list[i+1]
         if not np.array_equal(iidA,iidB):
@@ -206,18 +209,18 @@ def intersect_ids(idslist):
             observed[l]=1
             if first:
                 first = False
-                for i in xrange(id_list.shape[0]):
+                for i in range(id_list.shape[0]):
                     id=(id_list[i,0], id_list[i,1])
                     entry=sp.zeros(L)*sp.nan #id_list to contain the index for this id, for all lists provided
                     entry[l]=i                 #index for the first one
                     id2ind[id]=entry
             else:
-                for i in xrange(id_list.shape[0]):
+                for i in range(id_list.shape[0]):
                     id=(id_list[i,0], id_list[i,1])
-                    if id2ind.has_key(id):
+                    if id in id2ind:
                         id2ind[id][l]=i
 
-    indarr=sp.array(id2ind.values(),dtype='float')  #need float because may contain NaNs
+    indarr=sp.array(list(id2ind.values()),dtype='float')  #need float because may contain NaNs
     indarr[:,~observed]=-1                          #replace all Nan's from empty lists to -1
     inan = sp.isnan(indarr).any(1)                  #find any rows that contain at least one Nan
     indarr=indarr[~inan]                            #keep only rows that are not NaN
@@ -250,9 +253,9 @@ def sub_matrix(val, row_index_list, col_index_list, order='A', dtype=sp.float64)
     >>> np.random.seed(0) # set seed so that results are deterministic
     >>> matrix = np.random.rand(12,7) # create a 12 x 7 ndarray
     >>> submatrix = pstutil.sub_matrix(matrix,[0,2,11],[6,5,4,3,2,1,0])
-    >>> print (int(submatrix.shape[0]),int(submatrix.shape[1]))
+    >>> print(int(submatrix.shape[0]),int(submatrix.shape[1]))
     (3, 7)
-    >>> print matrix[2,0] == submatrix[1,6] #The row # 2 is now #1, the column #0 is now #6.
+    >>> print(matrix[2,0] == submatrix[1,6]) #The row # 2 is now #1, the column #0 is now #6.
     True
 
     Note: Behind the scenes, for performance, this function selects and then calls one of 16 C++ helper functions.
@@ -364,7 +367,7 @@ def create_directory_if_necessary(name, isfile=True):
     if directory_name != "":
         try:
             os.makedirs(directory_name)
-        except OSError, e:
+        except OSError as e:
             if not os.path.isdir(directory_name):
                 raise Exception("not valid path: '{0}'. (Working directory is '{1}'".format(directory_name,os.getcwd()))
 
@@ -400,7 +403,7 @@ def weighted_simple_linear_regression(xs, ys, weights):
     >>> ys = np.array([103.664086,89.80645161,83.86888046,90.54141176])
     >>> weights = np.array([2.340862423,4.982888433,0.17522245,0.098562628])
     >>> slope, intercept, xmean, ymean = weighted_simple_linear_regression(xs, ys, weights)
-    >>> print round(slope,5), round(intercept,5), round(xmean,5), round(ymean,5)
+    >>> print(round(slope,5), round(intercept,5), round(xmean,5), round(ymean,5))
     -3.52643 293.05586 56.46133 93.9487
 
     '''
@@ -413,7 +416,20 @@ def weighted_simple_linear_regression(xs, ys, weights):
     intercept = ymean - xmean * slope
     return slope, intercept, xmean, ymean
 
+def print2(arg):
+    '''
+    Make printing under Python3 look the same as under Python2.
+    '''
+    s = str(arg).replace("b'","'")
+    print(s)
 
+def to_ascii(s):
+    '''
+    This is for Python2/3 compatibility
+    '''
+    if s is None or sys.version_info < (3,0,0) or isinstance(s,bytes):
+        return s
+    return s.encode('ascii') 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

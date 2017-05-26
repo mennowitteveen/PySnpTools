@@ -7,6 +7,10 @@ import logging
 import time
 import pysnptools.util as pstutil
 import numbers
+try:
+    from builtins import int
+except:
+    pass
 
 class PstReader(object):
     """A PstReader is one of three things:
@@ -16,8 +20,8 @@ class PstReader(object):
         >>> import numpy as np
         >>> from pysnptools.pstreader import PstData
         >>> data1 = PstData(row=['a','b','c'],col=['y','z'],val=[[1,2],[3,4],[np.nan,6]],row_property=['A','B','C'])
-        >>> type(data1.val) # The val property is an ndarray of values
-        <type 'numpy.ndarray'>
+        >>> type(data1.val).__name__ # The val property is an ndarray of values
+        'ndarray'
         >>> data1.row_count #prints the number of rows in this in-memory data
         3
 
@@ -25,7 +29,7 @@ class PstReader(object):
 
         >>> from pysnptools.pstreader import PstNpz
         >>> on_disk = PstNpz('../../tests/datasets/all_chr.maf0.001.N300.pst.npz')
-        >>> print on_disk # prints specification for reading from file
+        >>> print(on_disk) # prints specification for reading from file
         PstNpz('../../tests/datasets/all_chr.maf0.001.N300.pst.npz')
         >>> on_disk.col_count # prints the number of columns (but doesn't read any matrix values)
         1015
@@ -35,12 +39,12 @@ class PstReader(object):
         >>> from pysnptools.pstreader import PstNpz
         >>> on_disk = PstNpz('../../tests/datasets/all_chr.maf0.001.N300.pst.npz')
         >>> subset_on_disk = on_disk[[3,4],::2] # specification for a subset of the data on disk. No values are read yet.
-        >>> print subset_on_disk.col_count # prints the number of columns in this subset (but still doesn't read any values)
+        >>> print(subset_on_disk.col_count) # prints the number of columns in this subset (but still doesn't read any values)
         508
-        >>> print subset_on_disk #prints a specification of 'subset_on_disk'
+        >>> print(subset_on_disk) #prints a specification of 'subset_on_disk'
         PstNpz('../../tests/datasets/all_chr.maf0.001.N300.pst.npz')[[3,4],::2]
         >>> data_subset = subset_on_disk.read() # efficiently (if practical) reads the specified subset of values from the disk
-        >>> print data_subset # prints the specification of the in-memory information
+        >>> print(data_subset) # prints the specification of the in-memory information
         PstData(PstNpz('../../tests/datasets/all_chr.maf0.001.N300.pst.npz')[[3,4],::2])
         >>> int(data_subset.val.shape[0]),int(data_subset.val.shape[1]) # The dimensions of the ndarray of values
         (2, 508)
@@ -91,14 +95,15 @@ class PstReader(object):
         Example:
 
         >>> from pysnptools.pstreader import PstHdf5
+        >>> from pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3
         >>> on_disk = PstHdf5('../examples/toydata.iidmajor.snp.hdf5') # PstHdf5 can load .pst.hdf5, .snp.hdf5, and kernel.hdf5
-        >>> print on_disk.row[:3] # print the first three rows
+        >>> print2(on_disk.row[:3]) # print the first three rows
         [['per0' 'per0']
          ['per1' 'per1']
          ['per2' 'per2']]
-        >>> print on_disk.col[:8] # print the first eight columns
-        ['null_0' 'null_1' 'null_2' 'null_3' 'null_4' 'null_5' 'null_6' 'null_7']
-        >>> print on_disk.row_to_index([['per2', 'per2'],['per1', 'per1']]) #Find the indexes for two rows.
+        >>> print2(on_disk.col[:7]) # print the first seven columns
+        ['null_0' 'null_1' 'null_2' 'null_3' 'null_4' 'null_5' 'null_6']
+        >>> print(on_disk.row_to_index([[b'per2', b'per2'],[b'per1', b'per1']])) #Find the indexes for two rows.
         [2 1]
         
     When Matrix Data is Read:
@@ -108,26 +113,26 @@ class PstReader(object):
         * Constructing and printing a PstReader causes no file reading. For example, these commands read no data:
 
             >>> on_disk = PstHdf5('../examples/toydata.iidmajor.snp.hdf5') # Construct a PstHdf5 PstReader. No data is read.
-            >>> print on_disk # Print the PstHdf5 PstReader specification. No data is read.
+            >>> print(on_disk) # Print the PstHdf5 PstReader specification. No data is read.
             PstHdf5('../examples/toydata.iidmajor.snp.hdf5')
             >>> subset_on_disk = on_disk[[3,4],::2] # Construct a subsetting PstReader. No data is read.
-            >>> print subset_on_disk # print the subset PstReader. No data is read.
+            >>> print(subset_on_disk) # print the subset PstReader. No data is read.
             PstHdf5('../examples/toydata.iidmajor.snp.hdf5')[[3,4],::2]
 
         * Properties and methods related to the rows and columns (to the degree practical) read only row and col data from the disk,
           not value data. Moreover, the row and col data is read from file only once. Consider these commands:
 
             >>> on_disk = PstHdf5('../examples/toydata.iidmajor.snp.hdf5') # Construct a PstHdf5 PstReader. No data is read.
-            >>> print on_disk.col[:8] # without reading any values data from disk, read the row and col data from disk, cache it, and then print the first eight cols.
-            ['null_0' 'null_1' 'null_2' 'null_3' 'null_4' 'null_5' 'null_6' 'null_7']
-            >>> print on_disk.col_to_index(['null_7','null_2']) #use the cached col information to find the indexes of 'null_7' and 'null_2'. (No data is read from disk.)
+            >>> print2(on_disk.col[:7]) # without reading any values data from disk, read the row and col data from disk, cache it, and then print the first seven cols.
+            ['null_0' 'null_1' 'null_2' 'null_3' 'null_4' 'null_5' 'null_6']
+            >>> print(on_disk.col_to_index([b'null_7',b'null_2'])) #use the cached col information to find the indexes of 'null_7' and 'null_2'. (No data is read from disk.)
             [7 2]
 
         * The only method that reads values from file (to the degree practical) is :meth:`read`. For example:
 
             >>> on_disk = PstHdf5('../examples/toydata.iidmajor.snp.hdf5') # Construct a PstHdf5 PstReader. No data is read.
             >>> data1 = on_disk.read() #read all the values from disk, creating a new PstData instance that keeps these values in memory
-            >>> print data1.val[0,2] # print the value for the row with index 0 and the col with index 2. (No data is read from disk.)
+            >>> print(data1.val[0,2]) # print the value for the row with index 0 and the col with index 2. (No data is read from disk.)
             2.0
 
         * If you request the values for only a subset of the rows or columns, (to the degree practical) only that subset will be read from disk.
@@ -135,7 +140,7 @@ class PstReader(object):
 
             >>> on_disk = PstHdf5('../../tests/datasets/all_chr.maf0.001.N300.snp.hdf5')[[3,4],::2] # Construct a subsetting PstReader. No data is read.
             >>> data_subset = subset_on_disk.read() # from disk, read the values for the rows with index 3 and 4 AND cols with even numbered indexes.
-            >>> print data_subset.val[0,2] # print the value with subset row index 0 and col index 2 (corresponding to row index 3 and col index 4 in the full data). No data is read from disk.
+            >>> print(data_subset.val[0,2]) # print the value with subset row index 0 and col index 2 (corresponding to row index 3 and col index 4 in the full data). No data is read from disk.
             1.0
 
     When Matrix Data is Re-Read and Copied:
@@ -147,9 +152,9 @@ class PstReader(object):
 
             >>> on_disk = PstHdf5('../examples/toydata.iidmajor.snp.hdf5') # Construct a PstHdf5 PstReader. No data is read.
             >>> # Not recommended because it inefficiently reads all the values twice.
-            >>> print on_disk.read().val[0,2] # read all values into a new PstData, print a value
+            >>> print(on_disk.read().val[0,2]) # read all values into a new PstData, print a value
             2.0
-            >>> print on_disk.read().val[0,3] # read all values (again) into a second new PstData, print a value
+            >>> print(on_disk.read().val[0,3]) # read all values (again) into a second new PstData, print a value
             2.0
 
         Here are two efficient alternatives. First, if all values can all fit in memory, read them once into a :class:`PstData` and then
@@ -157,17 +162,17 @@ class PstReader(object):
 
             >>> on_disk = PstHdf5('../examples/toydata.iidmajor.snp.hdf5') # Construct a PstHdf5 PstReader. No data is read.
             >>> data1 = on_disk.read() # read all values into a new PstData
-            >>> print data1.val[0,2] # print a value from data1's in-memory ndarray
+            >>> print(data1.val[0,2]) # print a value from data1's in-memory ndarray
             2.0
-            >>> print data1.val[0,3] # print another value from data1's in-memory ndarray.
+            >>> print(data1.val[0,3]) # print another value from data1's in-memory ndarray.
             2.0
 
         Second, if the value data is too large to fit in memory, use subsetting to read only the values of interest from disk.
        
             >>> on_disk = PstHdf5('../examples/toydata.iidmajor.snp.hdf5') # Construct a PstHdf5 PstReader. No data is read.
-            >>> print on_disk[0,2].read().val[0,0] #Define the subset of data and read only that subset from disk.
+            >>> print(on_disk[0,2].read().val[0,0]) #Define the subset of data and read only that subset from disk.
             2.0
-            >>> print on_disk[0,3].read().val[0,0] #Define a second subset of data and read only that subset from disk.
+            >>> print(on_disk[0,3].read().val[0,0]) #Define a second subset of data and read only that subset from disk.
             2.0
 
         Because the in-memory :class:`.PstData` class is a kind of PstReader, you may read from it, too.
@@ -175,10 +180,10 @@ class PstReader(object):
 
             >>> on_disk = PstHdf5('../examples/toydata.iidmajor.snp.hdf5') # Construct a PstHdf5 PstReader. No data is read.
             >>> data1 = on_disk.read() # read all matrix values from disk into a new PstData
-            >>> print data1.val is data1.val # Do the in-memory SNP values use the same memory as themselves? Yes
+            >>> print(data1.val is data1.val) # Do the in-memory SNP values use the same memory as themselves? Yes
             True
             >>> data2 = data1.read() # copy all the matrix values into a new ndarray in a new PstData
-            >>> print data2.val is data1.val # Do the two ndarrays of in-memory matrix values use the same memory?
+            >>> print(data2.val is data1.val) # Do the two ndarrays of in-memory matrix values use the same memory?
             False
 
 
@@ -196,9 +201,9 @@ class PstReader(object):
             >>> data1 = on_disk.read() # read all data from disk into a PstData with a new ndarray
             >>> column01 = data1[:,0:1].read(view_ok=True,order='A') #create PstData with the data from just the first two columns. Sharing memory is OK. The memory may be laid out in any order (that is col-major and row-major are both OK).
             >>> import numpy as np
-            >>> #print np.may_share_memory(data1.val, column01.val) # Do the two ndarray's share memory? They could (but currently they won't)
+            >>> #print(np.may_share_memory(data1.val, column01.val)) # Do the two ndarray's share memory? They could (but currently they won't)
             >>> column201 = data1[:,[2,0,1]].read(view_ok=True,order='A') #create PstData with the data from three columns, permuted. Sharing memory is OK.
-            >>> print np.may_share_memory(data1.val, column201.val) # Do the two ndarray's share memory? No, ndarray decided that this indexing was too complex for sharing.
+            >>> print(np.may_share_memory(data1.val, column201.val)) # Do the two ndarray's share memory? No, ndarray decided that this indexing was too complex for sharing.
             False
 
     Creating Subsetting PstReaders with Indexing
@@ -211,31 +216,31 @@ class PstReader(object):
 
             >>> on_disk = PstNpz('../../tests/datasets/all_chr.maf0.001.N300.pst.npz') # Specify some data on disk in PstNpz format
             >>> subset_reader_1 = on_disk[[3,4],:] #index with an array of indexes
-            >>> print subset_reader_1.row_count, subset_reader_1.col_count
-            2 1015
+            >>> print((subset_reader_1.row_count, subset_reader_1.col_count))
+            (2, 1015)
             >>> data1 = subset_reader_1.read() # read just the two rows of interest from the disk
             >>> subset_reader_2 = on_disk[:,:0:-2] #index with a slice
-            >>> print subset_reader_2.row_count, subset_reader_2.col_count
-            300 507
-            >>> boolindexes = [s.startswith('23_') for s in on_disk.col] # create a Boolean index of cols that start '23_'
+            >>> print((subset_reader_2.row_count, subset_reader_2.col_count))
+            (300, 507)
+            >>> boolindexes = [s.startswith(b'23_') for s in on_disk.col] # create a Boolean index of cols that start '23_'
             >>> subset_reader_3 = on_disk[:,boolindexes] #index with array of Booleans
-            >>> print subset_reader_3.row_count, subset_reader_3.col_count
-            300 24
+            >>> print((subset_reader_3.row_count, subset_reader_3.col_count))
+            (300, 24)
 
         The first generalization over what ndarray offers is full indexing on both the row dimension and the col dimension, in other words,
         full multidimensional indexing. For example,
 
             >>> on_disk = PstNpz('../../tests/datasets/all_chr.maf0.001.N300.pst.npz') # Specify some data on disk in PstNpz format
             >>> subset_reader_4 = on_disk[[3,4],:0:-2] # index on two dimensions at once
-            >>> print subset_reader_4.row_count, subset_reader_4.col_count
-            2 507
+            >>> print((subset_reader_4.row_count, subset_reader_4.col_count))
+            (2, 507)
 
         The second generalization is indexing on a single integer index.
 
             >>> on_disk = PstNpz('../../tests/datasets/all_chr.maf0.001.N300.pst.npz') # Specify some data on disk in PstNpz format
             >>> subset_reader_5 = on_disk[5,:] #index with single integer
-            >>> print subset_reader_5.row_count, subset_reader_5.col_count
-            1 1015
+            >>> print((subset_reader_5.row_count, subset_reader_5.col_count))
+            (1, 1015)
 
         Indexing is also useful when you have matrix values in memory via a :class:`PstData` index and want to copy a subset of those values.
         While you could instead index directly on the `.PstData.val` ndarray, by indexing on the :class:`PstData` instance you
@@ -243,11 +248,12 @@ class PstReader(object):
 
             >>> on_disk = PstNpz('../../tests/datasets/all_chr.maf0.001.N300.pst.npz') # Specify some data on disk in PstNpz format
             >>> data1 = on_disk.read() # read all matrix values into memory
-            >>> print data1.col[:10] # print the first 10 cols
-            ['1_12' '1_34' '1_10' '1_35' '1_28' '1_25' '1_36' '1_39' '1_4' '1_13']
+            >>> print2(data1.col[:9]) # print the first 9 cols
+            ['1_12' '1_34' '1_10' '1_35' '1_28' '1_25' '1_36' '1_39' '1_4']
+
             >>> data_subset = data1[:,::2].read(view_ok=True,order='A') # create a copy or view with every other col
-            >>> print data_subset.col[:10] # print the first 10 cols in the subset
-            ['1_12' '1_10' '1_28' '1_36' '1_4' '1_11' '1_32' '1_9' '1_17' '1_18']
+            >>> print2(data_subset.col[:9]) # print the first 9 cols in the subset
+            ['1_12' '1_10' '1_28' '1_36' '1_4' '1_11' '1_32' '1_9' '1_17']
 
 
         You can apply indexing on top of indexing to specify subsets of subsets of data to read. In this example, 
@@ -258,11 +264,11 @@ class PstReader(object):
             >>> half_reader = on_disk[:,::2] # a reader for half the cols
             >>> quarter_reader = half_reader[:,::2] # a reader for half of half the cols
             >>> sixteenth_reader = quarter_reader[:,::2][:,::2] # a reader for half of half of half of half the cols
-            >>> print sixteenth_reader #Print the specification of this reader
+            >>> print(sixteenth_reader) #Print the specification of this reader
             PstNpz('../../tests/datasets/all_chr.maf0.001.N300.pst.npz')[:,::2][:,::2][:,::2][:,::2]
             >>> # Now we read from disk. Only values for one col in every 16 will be read.
             >>> data_sixteenth = sixteenth_reader.read()
-            >>> print data_sixteenth.val[0,3]
+            >>> print(data_sixteenth.val[0,3])
             2.0
 
     The :meth:`read` Method
@@ -290,10 +296,10 @@ class PstReader(object):
         >>> import numpy as np
         >>> from pysnptools.pstreader import PstData
         >>> data1 = PstData(row=['a','b','c'],col=['y','z'],val=[[1,2],[3,4],[np.nan,6]],row_property=['A','B','C'])
-        >>> print data1.row[:2] # print the first two row ids
+        >>> print(data1.row[:2]) # print the first two row ids
         ['a' 'b']
         >>> data2 = PstData(row=[[1,0],[2,0],[2,1]],col=['y','z'],val=[[1,2],[3,4],[np.nan,6]],row_property=['A','B','C'])
-        >>> print data2.row[:2] # print the first two row ids
+        >>> print(data2.row[:2]) # print the first two row ids
         [[1 0]
          [2 0]]
         """
@@ -323,10 +329,10 @@ class PstReader(object):
         >>> import numpy as np
         >>> from pysnptools.pstreader import PstData
         >>> data1 = PstData(row=['a','b','c'],col=['y','z'],val=[[1,2],[3,4],[np.nan,6]],row_property=['A','B','C'])
-        >>> print data1.col[-1] # print the last column id.
+        >>> print(data1.col[-1]) # print the last column id.
         z
         >>> data2 = PstData(row=['a','b','c'],col=[[1,0],[2,0]],val=[[1,2],[3,4],[np.nan,6]],row_property=['A','B','C'])
-        >>> print data2.col[-1] # print the last column id.
+        >>> print(data2.col[-1]) # print the last column id.
         [2 0]
         """
         raise NotImplementedError
@@ -366,7 +372,7 @@ class PstReader(object):
         >>> import numpy as np
         >>> from pysnptools.pstreader import PstData
         >>> data1 = PstData(row=['a','b','c'],col=['y','z'],val=[[1,2],[3,4],[np.nan,6]],row_property=['A','B','C'])
-        >>> print data1.row_property[:2] # print the first two row property values
+        >>> print(data1.row_property[:2]) # print the first two row property values
         ['A' 'B']
         """
         raise NotImplementedError
@@ -385,7 +391,7 @@ class PstReader(object):
 
         >>> from pysnptools.pstreader import PstNpz
         >>> on_disk = PstNpz('../../tests/datasets/all_chr.maf0.001.N300.pst.npz')
-        >>> print on_disk.col_property[:3] # print column information for the first three cols:
+        >>> print(on_disk.col_property[:3]) # print column information for the first three cols:
         [[ 1.          0.00800801  0.        ]
          [ 1.          0.023023    1.        ]
          [ 1.          0.0700701   4.        ]]
@@ -437,17 +443,17 @@ class PstReader(object):
         >>> from pysnptools.pstreader import PstHdf5
         >>> on_disk = PstHdf5('../examples/toydata.iidmajor.snp.hdf5') # Specify matrix data on disk
         >>> pstdata1 = on_disk.read() # Read all the matrix data returning a PstData instance
-        >>> print type(pstdata1.val) # The PstData instance contains a ndarray of the data.
-        <type 'numpy.ndarray'>
+        >>> print(type(pstdata1.val).__name__) # The PstData instance contains a ndarray of the data.
+        ndarray
         >>> subset_pstdata = on_disk[:,::2].read() # From the disk, read matrix values for every other sid
-        >>> print subset_pstdata.val[0,0] # Print the first matrix value in the subset
+        >>> print(subset_pstdata.val[0,0]) # Print the first matrix value in the subset
         1.0
         >>> subsub_pstdata = subset_pstdata[:10,:].read(order='A',view_ok=True) # Create an in-memory subset of the subset with matrix values for the first ten iids. Share memory if practical.
         >>> import numpy as np
-        >>> # print np.may_share_memory(subset_snpdata.val, subsub_snpdata.val) # Do the two ndarray's share memory? They could. Currently they won't.       
+        >>> # print(np.may_share_memory(subset_snpdata.val, subsub_snpdata.val)) # Do the two ndarray's share memory? They could. Currently they won't.       
         """
         val = self._read(None, None, order, dtype, force_python_only, view_ok)
-        from pstdata import PstData
+        from pysnptools.pstreader import PstData
         ret = PstData(self.row, self.col, val, row_property=self.row_property, col_property=self.col_property, name=str(self))
         return ret
 
@@ -465,14 +471,14 @@ class PstReader(object):
 
         >>> from pysnptools.pstreader import PstNpz
         >>> on_disk = PstNpz('../../tests/datasets/all_chr.maf0.001.N300.pst.npz') # Specify matrix data on disk
-        >>> print on_disk.row_to_index([['POP1','44'],['POP1','12']]) #Find the indexes for two rows.
+        >>> print(on_disk.row_to_index([[b'POP1',b'44'],[b'POP1',b'12']])) #Find the indexes for two rows.
         [2 1]
         """
         if not hasattr(self, "_row_to_index"):
             self._row_to_index = {}
             for index, item in enumerate(self.row):
                 key = PstReader._makekey(item)
-                if self._row_to_index.has_key(key):
+                if key in self._row_to_index:
                    raise Exception("Expect row to appear in data only once. ({0})".format(key))
                 self._row_to_index[key] = index
         index = np.fromiter((self._row_to_index[PstReader._makekey(item1)] for item1 in list),np.int)
@@ -492,7 +498,7 @@ class PstReader(object):
 
         >>> from pysnptools.pstreader import PstNpz
         >>> on_disk = PstNpz('../../tests/datasets/all_chr.maf0.001.N300.pst.npz') # Specify matrix data on disk
-        >>> print on_disk.col_to_index(['1_10','1_13']) #Find the indexes for two cols.
+        >>> print(on_disk.col_to_index([b'1_10',b'1_13'])) #Find the indexes for two cols.
         [2 9]
         """
         if not hasattr(self, "_col_to_index"):
@@ -516,7 +522,7 @@ class PstReader(object):
 
     @staticmethod
     def _makekey(item):
-        if isinstance(item,(str,int,long,float)): #return quickly from known items
+        if isinstance(item,(str,numbers.Integral,float)): #return quickly from known items
             return item
         try:
             hash(item)
@@ -569,7 +575,7 @@ class PstReader(object):
     @staticmethod
     def _make_sparray_from_sparray_or_slice(count, indexer):
         if isinstance(indexer,slice):
-            return apply(np.arange, indexer.indices(count))
+            return np.arange(*indexer.indices(count))
         return indexer
 
     @staticmethod
@@ -625,4 +631,4 @@ if __name__ == "__main__":
     import doctest
     doctest.testmod()
     # There is also a unit test case in 'pysnptools\test.py' that calls this doc test
-    print "done"
+    print("done")

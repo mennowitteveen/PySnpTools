@@ -24,6 +24,10 @@ import unittest
 import os.path
 import time
 
+try:
+    from builtins import range
+except:
+    pass
 
    
 class TestPySnpTools(unittest.TestCase):     
@@ -67,7 +71,7 @@ class TestPySnpTools(unittest.TestCase):
         tt4 = time.time()
         logging.info("read SnpHdf5 C with reversed indexes bed %.2f seconds" % (tt4 - tt3))
 
-        print "the end"
+        print("the end")
     
 
     @classmethod
@@ -155,7 +159,7 @@ class TestPySnpTools(unittest.TestCase):
 
     @staticmethod
     def assert_match_012_210(snpdata1, snpdata2):
-        for sid_index in xrange(snpdata1.sid_count): #Check that every row matches (except OK if 0,1,2 can be 2,1,0)
+        for sid_index in range(snpdata1.sid_count): #Check that every row matches (except OK if 0,1,2 can be 2,1,0)
             goods1 = (snpdata1.val[:,sid_index] == snpdata1.val[:,sid_index]) # find non-missing
             goods2= (snpdata2.val[:,sid_index] == snpdata2.val[:,sid_index])  # find non-missing
             assert (goods1==goods2).all() #assert that they agree on non-missing
@@ -166,7 +170,7 @@ class TestPySnpTools(unittest.TestCase):
         if False: #Too slow for routine testing
             snpdata1 = Ped(self.currentFolder + "/examples/toydata.ped")[::25,::1000].read()
             self.assertEqual(np.float64, snpdata1.val.dtype)
-            TestLoader.assert_match_012_210(self.snpdata[::25,::1000].read(),snpdata1)
+            TestPySnpTools.assert_match_012_210(self.snpdata[::25,::1000].read(),snpdata1)
         else:
             snpdata1 = self.snpdata[::25,::1000].read()
 
@@ -179,7 +183,7 @@ class TestPySnpTools(unittest.TestCase):
         _fortesting_JustCheckExists().input(snpreader)
         s = str(snpreader)
         snpdata2 = snpreader.read()
-        TestLoader.assert_match_012_210(snpdata1,snpdata2)
+        TestPySnpTools.assert_match_012_210(snpdata1,snpdata2)
 
 
     def test_c_reader_pheno(self):
@@ -199,12 +203,12 @@ class TestPySnpTools(unittest.TestCase):
 
         snpdata1 = Pheno(self.currentFolder + "/examples/toydata.phe").read()
         import pysnptools.util.pheno as pstpheno
-        dict = pstpheno.loadOnePhen(self.currentFolder + "/examples/toydata.phe",missing="")
+        dict = pstpheno.loadOnePhen(self.currentFolder + "/examples/toydata.phe",missing=b"")
         snpdata3 = Pheno(dict).read()
         np.testing.assert_array_almost_equal(snpdata1.val, snpdata3.val, decimal=10)
 
 
-        dict = pstpheno.loadOnePhen(self.currentFolder + "/examples/toydata.phe",missing="",vectorize=True)
+        dict = pstpheno.loadOnePhen(self.currentFolder + "/examples/toydata.phe",missing=b"",vectorize=True)
         assert len(dict['vals'].shape)==1, "test 1-d array of values"
         snpdata3 = Pheno(dict).read()
         np.testing.assert_array_almost_equal(snpdata1.val, snpdata3.val, decimal=10)
@@ -226,7 +230,6 @@ class TestPySnpTools(unittest.TestCase):
         Dense.write(output, snpdata1)
         snpreader = Dense(output)
         _fortesting_JustCheckExists().input(snpreader)
-        s = str(snpreader)
         snpdata2 = snpreader.read()
         np.testing.assert_array_almost_equal(snpdata1.val, snpdata2.val, decimal=10)
 
@@ -346,9 +349,9 @@ class TestPySnpTools(unittest.TestCase):
         iid_count = 100000
         sid_count = 50000
         from pysnptools.snpreader import SnpData
-        iid = np.array([[str(i),str(i)] for i in xrange(iid_count)])
-        sid = np.array(["sid_{0}".format(i) for i in xrange(sid_count)])
-        pos = np.array([[i,i,i] for i in xrange(sid_count)])
+        iid = np.array([[str(i),str(i)] for i in range(iid_count)])
+        sid = np.array(["sid_{0}".format(i) for i in range(sid_count)])
+        pos = np.array([[i,i,i] for i in range(sid_count)])
         np.random.seed(0)
         snpdata = SnpData(iid,sid,np.zeros((iid_count,sid_count)),pos=pos) #random.choice((0.0,1.0,2.0,float("nan")),size=(iid_count,sid_count)))
         output = "tempdir/bedbig.{0}.{1}".format(iid_count,sid_count)
@@ -557,8 +560,8 @@ class NaNCNCTestCases(unittest.TestCase):
 
         snps_to_read_count = min(S_original, 100)
 
-        for iid_index_list in [range(N_original), range(N_original/2), range(N_original - 1,0,-2)]:
-            for snp_index_list in [range(snps_to_read_count), range(snps_to_read_count/2), range(snps_to_read_count - 1,0,-2)]:
+        for iid_index_list in [range(N_original), range(N_original//2), range(N_original - 1,0,-2)]:
+            for snp_index_list in [range(snps_to_read_count), range(snps_to_read_count//2), range(snps_to_read_count - 1,0,-2)]:
                 for standardizer in [Unit(),Beta(1,25)]:
                     reference_snps, reference_dtype = NaNCNCTestCases(iid_index_list, snp_index_list, standardizer, snp_reader_factory_bed(), sp.float64, "C", "False", None, None).read_and_standardize()
                     for snpreader_factory in [snp_reader_factory_bed, 

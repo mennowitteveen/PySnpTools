@@ -5,9 +5,13 @@ except:
 
 import logging
 import scipy as np
-from pstreader import PstReader
-from pstdata import PstData
+from pysnptools.pstreader import PstReader
+from pysnptools.pstreader.pstdata import PstData
 import warnings
+try:
+    from builtins import range
+except:
+    pass
 
 class PstHdf5(PstReader):
     '''
@@ -25,7 +29,7 @@ class PstHdf5(PstReader):
 
         >>> from pysnptools.pstreader import PstHdf5
         >>> on_disk = PstHdf5('../examples/toydata.iidmajor.snp.hdf5') # PstHdf5 can load .pst.hdf5, .snp.hdf5, and kernel.hdf5
-        >>> print on_disk.row_count
+        >>> print(on_disk.row_count)
         500
 
     **Methods beyond** :class:`.PstReader`
@@ -82,14 +86,14 @@ class PstHdf5(PstReader):
             return
         try:
             self._h5 = h5py.File(self.filename, "r")
-        except IOError, e:
+        except IOError as e:
             raise IOError("Missing or unopenable file '{0}' -- Native error message: {1}".format(self.filename,e))
 
         row_key,col_key,val_key,row_property_key,col_property_key = self._find_vocab()
 
         self._row = PstData._fixup_input(self._h5[row_key])
         self._col = PstData._fixup_input(self._h5[col_key])
-        if np.array_equal(self._row,self._col):  #If it's square, mark it so by making the col and row the same object
+        if self._row.dtype == self._col.dtype and np.array_equal(self._row,self._col):  #If it's square, mark it so by making the col and row the same object
             self._row = self._col
         self._row_property = PstData._fixup_input(self._h5[row_property_key] if row_property_key else None,count=len(self._row))  #Extra "if ... else" for backwards compatibility.
         self._col_property = PstData._fixup_input(self._h5[col_property_key],count=len(self._col))
@@ -116,7 +120,7 @@ class PstHdf5(PstReader):
     def _is_sorted_without_repeats(list):
         if len(list) < 2:
             return True
-        for i in xrange(1,len(list)):
+        for i in range(1,len(list)):
             if not list[i-1] < list[i]:
                 return False
         return True
@@ -210,7 +214,7 @@ class PstHdf5(PstReader):
                 col_index_index_list = np.arange(col_index_count)
                 col_index_list_sorted = col_index_list
 
-            for start in xrange(0, col_index_count, block_size):
+            for start in range(0, col_index_count, block_size):
                 #print start
                 stop = min(start+block_size,col_index_count)
                 if stop-start < block_size:  #On the last loop, the buffer might be too big, so make it smaller
@@ -257,11 +261,18 @@ class PstHdf5(PstReader):
 
         val = (pstdata.val.T) if col_major else pstdata.val
 
+        def any_u_to_a(possible_unicode):
+            #If it's any kind of string, encode it as ascii
+            if np.issubdtype(possible_unicode.dtype, str):
+                return np.array(possible_unicode,dtype='S')
+            else: #Otherwise, just leave it.
+                return possible_unicode
+
         with h5py.File(filename, "w") as h5:
-            h5.create_dataset('row', data=pstdata.row)
-            h5.create_dataset('col', data=pstdata.col)
-            h5.create_dataset('row_property', data=pstdata.row_property)
-            h5.create_dataset('col_property', data=pstdata.col_property)
+            h5.create_dataset('row', data=any_u_to_a(pstdata.row))
+            h5.create_dataset('col', data=any_u_to_a(pstdata.col))
+            h5.create_dataset('row_property', data=any_u_to_a(pstdata.row_property))
+            h5.create_dataset('col_property', data=any_u_to_a(pstdata.col_property))
             h5.create_dataset('val', data=val,dtype=hdf5_dtype,shuffle=True)#compression="gzip", doesn't seem to work with Anaconda
             h5['val'].attrs["col-major"] = col_major
 

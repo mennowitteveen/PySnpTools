@@ -5,9 +5,11 @@
 
 import scipy as sp
 import logging
+import sys
+from pysnptools.util import to_ascii
 
 
-def loadOnePhen(filename,  i_pheno = 0, missing ='-9', vectorize = False):
+def loadOnePhen(filename,  i_pheno = 0, missing = b'-9', vectorize = False):
     '''
     .. deprecated::
        Use :class:`.Pheno` instead.    
@@ -31,7 +33,7 @@ def loadOnePhen(filename,  i_pheno = 0, missing ='-9', vectorize = False):
     * 'vals'   : [N*1] array of phenotype-data,
     * 'iid'    : [N*2] array of family IDs and case IDs
     '''
-
+    missing = to_ascii(missing)
     allColumns = loadPhen(filename, missing)
     i_present=allColumns['vals'][:,i_pheno]==allColumns['vals'][:,i_pheno]
     valsvector = allColumns['vals'][i_present,i_pheno]
@@ -53,7 +55,7 @@ def loadOnePhen(filename,  i_pheno = 0, missing ='-9', vectorize = False):
     return ret
 
 
-def loadPhen(filename, missing ='-9',famid='FID', sampid='ID'):
+def loadPhen(filename, missing = b'-9',famid=b'FID', sampid=b'ID'):
     '''
     .. deprecated::
        Use :class:`.Pheno` instead.    
@@ -75,10 +77,13 @@ def loadPhen(filename, missing ='-9',famid='FID', sampid='ID'):
     * 'vals'   : [N*1] array of phenotype-data,
     * 'iid'    : [N*2] array of family IDs and case IDs
     '''
-    if missing == '-9':
-        logging.warning("loadPhen is using default missing value of '-9'.")
+    missing = to_ascii(missing) # This is for Python2/3 compatibility
+    famid = to_ascii(famid)
+    sampid = to_ascii(sampid)
+    if missing == b'-9':
+        logging.warning("loadPhen is using default missing value of b'-9'.")
 
-    data = sp.loadtxt(filename, dtype='str', comments=None)
+    data = sp.loadtxt(filename, dtype='S', comments=None)
     if data[0,0] == sampid: #One column of ids - use the single id as both the family id and the iid
         header = data[0,1::].tolist()
         iid = data[1:,[0,0]]
@@ -94,7 +99,7 @@ def loadPhen(filename, missing ='-9',famid='FID', sampid='ID'):
 
     
     if missing is not None:
-        valsStr[valsStr==missing] = "NaN"
+        valsStr[valsStr==missing] = b"NaN"
     vals = sp.array(valsStr,dtype = 'float')
 
     ret = {

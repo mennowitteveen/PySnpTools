@@ -12,6 +12,10 @@ from pysnptools.util import create_directory_if_necessary
 from pysnptools.pstreader import PstReader
 from pysnptools.snpreader import SnpData
 import pysnptools.standardizer as stdizer
+try:
+    from builtins import range
+except:
+    pass
 
 class _fortesting_JustCheckExists(object): #Implements ICopier
 
@@ -29,7 +33,7 @@ class _fortesting_JustCheckExists(object): #Implements ICopier
         if isinstance(item, str):
             if not os.path.exists(item): raise Exception("Missing output file '{0}'".format(item))
             if self.doPrintOutputNames:
-                print item
+                print(item)
         elif hasattr(item,"copyoutputs"):
             item.copyoutputs(self)
         # else -- do nothing
@@ -47,7 +51,7 @@ class TestKernelReader(unittest.TestCase):
         for std in [stdizer.Beta(2,10),stdizer.Unit()]:
             np.random.seed(0)
             snp_count = 20
-            snpreader = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in xrange(snp_count)],val=np.array(np.random.randint(3,size=[3,snp_count]),dtype=np.float64,order='F'))
+            snpreader = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(snp_count)],val=np.array(np.random.randint(3,size=[3,snp_count]),dtype=np.float64,order='F'))
             kerneldata0,trained0,diag0 = SnpKernel(snpreader,std,block_size=1)._read_with_standardizing(to_kerneldata=True,return_trained=True)
             kerneldata1,trained1,diag1 = SnpKernel(snpreader,std,block_size=None)._read_with_standardizing(to_kerneldata=True,return_trained=True)
             np.testing.assert_array_almost_equal(kerneldata0.val,kerneldata1.val, decimal=10)
@@ -64,8 +68,8 @@ class TestKernelReader(unittest.TestCase):
                 for std in [stdizer.Unit(),stdizer.Beta(2,10)]:
                         np.random.seed(0)
                         snp_count = 20
-                        snpreader0 = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in xrange(snp_count)],val=np.array(np.random.randint(3,size=[3,snp_count]),dtype=dtype,order=order))
-                        snpreader1 = SnpData(iid=[["3","3"],["4","4"]],sid=[str(i) for i in xrange(snp_count)],val=np.array(np.random.randint(3,size=[2,snp_count]),dtype=dtype,order=order))
+                        snpreader0 = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(snp_count)],val=np.array(np.random.randint(3,size=[3,snp_count]),dtype=dtype,order=order))
+                        snpreader1 = SnpData(iid=[["3","3"],["4","4"]],sid=[str(i) for i in range(snp_count)],val=np.array(np.random.randint(3,size=[2,snp_count]),dtype=dtype,order=order))
 
                         #has SNC
                         for has_SNC_in_train in [False, True]:
@@ -113,7 +117,6 @@ class TestKernelReader(unittest.TestCase):
 
     def test_intersection(self):
 
-        from sklearn import cross_validation
         from pysnptools.standardizer import Unit
         from pysnptools.kernelreader import SnpKernel
         from pysnptools.snpreader import Pheno
@@ -146,7 +149,7 @@ class TestKernelReader(unittest.TestCase):
         for dtype_start,decimal_start in [(np.float32,5),(np.float64,10)]:
             for order_start in ['F','C','A']:
                 for snp_count in [20,2]:
-                    snpdataX = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in xrange(snp_count)],val=np.array(np.random.randint(3,size=[3,snp_count]),dtype=dtype_start,order=order_start))
+                    snpdataX = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(snp_count)],val=np.array(np.random.randint(3,size=[3,snp_count]),dtype=dtype_start,order=order_start))
                     for stdx in [stdizer.Beta(1,25),stdizer.Identity(),stdizer.Unit()]:
                         for snpreader0 in [snpdataX,snpdataX[:,1:]]:
                             snpreader1 = snpreader0[1:,:]
@@ -173,8 +176,8 @@ class TestKernelReader(unittest.TestCase):
     def test_kernel2(self):
         logging.info("in kernel2")
         kd = KernelData(iid=[["0","0"],["1","1"],["2","2"]],val=[[1,2,3],[4,5,6],[7,8,9]])
-        assert np.array_equal(kd.iid_to_index([["1","1"],["2","2"]]),np.array([1,2]))
-        assert np.array_equal(kd.iid0_to_index([["1","1"],["2","2"]]),np.array([1,2]))
+        assert np.array_equal(kd.iid_to_index([[b"1",b"1"],[b"2",b"2"]]),np.array([1,2]))
+        assert np.array_equal(kd.iid0_to_index([[b"1",b"1"],[b"2",b"2"]]),np.array([1,2]))
         kd = kd.standardize()
         assert np.abs(np.diag(kd.val).sum()-3)<1e-7
         assert kd.iid1_count == 3

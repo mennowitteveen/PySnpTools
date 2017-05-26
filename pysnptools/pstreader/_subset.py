@@ -3,8 +3,8 @@ import subprocess, sys, os.path
 from itertools import *
 import pandas as pd
 import logging
-from pstreader import PstReader
-from pstdata import PstData
+from pysnptools.pstreader import PstReader
+from pysnptools.pstreader import PstData
 
 #!!Should handle negatives as index and arrays of index, but doesn't
 class _PstSubset(PstReader):
@@ -78,7 +78,7 @@ class _PstSubset(PstReader):
         self._ran_once = True
         self._row = self._internal.row[self._row_indexer]
         self._col = self._internal.col[self._col_indexer]
-        if np.array_equal(self._row,self._col): #When an object is square, keep the row and col the same object.
+        if self._row.dtype == self._col.dtype and np.array_equal(self._row,self._col): #When an object is square, keep the row and col the same object.
             self._col = self._row
         self._row_property = self._internal.row_property[self._row_indexer]
         self._col_property = self._internal.col_property[self._col_indexer]

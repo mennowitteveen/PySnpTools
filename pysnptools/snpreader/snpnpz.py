@@ -20,8 +20,8 @@ class SnpNpz(PstNpz,SnpReader):
 
         >>> from pysnptools.snpreader import SnpNpz
         >>> data_on_disk = SnpNpz('../examples/toydata10.snp.npz')
-        >>> print data_on_disk.iid_count, data_on_disk.sid_count
-        500 10
+        >>> print((data_on_disk.iid_count, data_on_disk.sid_count))
+        (500, 10)
 
     **Methods beyond** :class:`.SnpReader`
 

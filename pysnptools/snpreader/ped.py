@@ -3,11 +3,17 @@ import subprocess, sys, os.path
 from itertools import *
 import pandas as pd
 import logging
-from snpreader import SnpReader
-from snpdata import SnpData
+from pysnptools.snpreader import SnpReader
+from pysnptools.snpreader import SnpData
 import numpy as np
 import warnings
 from pysnptools.pstreader import _OneShot
+try:
+    from builtins import range
+except:
+    pass
+from pysnptools.util import to_ascii
+
 
 class Ped(_OneShot,SnpReader):
     '''
@@ -32,29 +38,29 @@ class Ped(_OneShot,SnpReader):
 
         >>> from pysnptools.snpreader import Ped
         >>> data_on_disk = Ped('../examples/toydata.ped')
-        >>> print data_on_disk.iid_count, data_on_disk.sid_count
-        500 10000
+        >>> print((data_on_disk.iid_count, data_on_disk.sid_count))
+        (500, 10000)
 
     **Methods beyond** :class:`.SnpReader`
     '''
 
-    def __init__(self, filename, missing = '0'):
+    def __init__(self, filename, missing = b'0'):
         '''
             filename    : string of the filename of the ped file
-            missing         : string indicating a missing genotype (default '0')
+            missing         : string indicating a missing genotype (default b'0')
         '''
         super(Ped, self).__init__()
         self.filename = SnpReader._name_of_other_file(filename,remove_suffix="ped", add_suffix="ped")
-        self.missing = missing
+        self.missing = to_ascii(missing) # This is for Python2/3 compatibility
 
     def _read_pstdata(self):
         col, col_property = SnpReader._read_map_or_bim(self.filename,remove_suffix="ped", add_suffix="map")
-        ped = np.loadtxt(self.filename, dtype='str', comments=None)
+        ped = np.loadtxt(self.filename, dtype='S', comments=None)
         row = ped[:,0:2]
         snpsstr = ped[:,6::]
         inan=snpsstr==self.missing
-        snps = np.zeros((snpsstr.shape[0],snpsstr.shape[1]/2))
-        for i in xrange(snpsstr.shape[1]//2):
+        snps = np.zeros((snpsstr.shape[0],snpsstr.shape[1]//2))
+        for i in range(snpsstr.shape[1]//2):
             snps[inan[:,2*i],i]=np.nan
             vals=snpsstr[~inan[:,2*i],2*i:2*(i+1)]
             snps[~inan[:,2*i],i]+=(vals==vals[0,0]).sum(1)
@@ -99,23 +105,23 @@ class Ped(_OneShot,SnpReader):
         # Phenotype
 
         pedfile = SnpReader._name_of_other_file(filename, remove_suffix="ped", add_suffix="ped")
-        with open(pedfile,"w") as ped_filepointer:
+        with open(pedfile,"wb") as ped_filepointer:
             for iid_index, iid_row in enumerate(snpdata.iid):
-                ped_filepointer.write("{0} {1} 0 0 0 0".format(iid_row[0],iid_row[1]))
+                ped_filepointer.write(b"%s %s 0 0 0 0"%(iid_row[0],iid_row[1])) #Must use % formating because Python3 doesn't support .format on bytes
                 row = snpdata.val[iid_index,:]
                 for sid_index, val in enumerate(row):
                     if val == 0:
-                        s = "A A"
+                        s = b"A A"
                     elif val == 1:
-                        s = "A G"
+                        s = b"A G"
                     elif val == 2:
-                        s = "G G"
+                        s = b"G G"
                     elif np.isnan(val):
-                        s = "0 0"
+                        s = b"0 0"
                     else:
                         raise Exception("Expect values for ped file to be 0,1,2, or NAN. Instead, saw '{0}'".format(val))
-                    ped_filepointer.write("\t"+s)
-                ped_filepointer.write("\n")
+                    ped_filepointer.write(b"\t"+s)
+                ped_filepointer.write(b"\n")
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

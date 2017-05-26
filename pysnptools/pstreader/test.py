@@ -8,13 +8,17 @@ import time
 from pysnptools.pstreader import PstData, PstNpz, PstHdf5
 from pysnptools.util import create_directory_if_necessary
 from pysnptools.kernelreader.test import _fortesting_JustCheckExists
+try:
+    from builtins import range
+except:
+    pass
 
 class TestPstReader(unittest.TestCase):     
 
     def test_big_npz(self):
         logging.info("in test_big_npz")
         n = 1000
-        pstdata = PstData(row=xrange(n-1),col=xrange(n+1),val=np.zeros([n-1,n+1]))
+        pstdata = PstData(row=range(n-1),col=range(n+1),val=np.zeros([n-1,n+1]))
         output = "tempdir/pstreader/big.npz"
         create_directory_if_necessary(output)
         PstNpz.write(output,pstdata)
@@ -23,13 +27,13 @@ class TestPstReader(unittest.TestCase):
         pstdata2 = pstnpz.read(order='A')
         assert pstdata2.val.flags['C_CONTIGUOUS']
 
-        pstdata = PstData(row=xrange(n-1),col=xrange(n+1),val=np.zeros([n-1,n+1],order='F'))
+        pstdata = PstData(row=range(n-1),col=range(n+1),val=np.zeros([n-1,n+1],order='F'))
         PstNpz.write(output,pstdata)
         pstnpz = PstNpz(output)
         pstdata2 = pstnpz.read(order='A')
         pstdata2.val.flags['F_CONTIGUOUS']
 
-        print "done"
+        print("done")
 
     def test_writes(self):
         #===================================
@@ -38,15 +42,15 @@ class TestPstReader(unittest.TestCase):
         def _oned_int(c):
             return range(c)
         def _oned_str(c):
-            return [str(i) for i in xrange(c)]
+            return [str(i).encode('ascii') for i in range(c)]
         def _twooned_int(c):
-            return [[i] for i in xrange(c)]
+            return [[i] for i in range(c)]
         def _twooned_str(c):
-            return [[str(i)] for i in xrange(c)]
+            return [[str(i).encode('ascii')] for i in range(c)]
         def _twotwod_int(c):
-            return [[i,i] for i in xrange(c)]
+            return [[i,i] for i in range(c)]
         def _twotwod_str(c):
-            return [[str(i),"hello"] for i in xrange(c)]
+            return [[str(i).encode('ascii'),b"hello"] for i in range(c)]
         def _none(c):
             return None
         def _zero(c):
@@ -83,6 +87,8 @@ class TestPstReader(unittest.TestCase):
                                 assert np.array_equal(readdata.val,expected.val)
                                 assert np.array_equal(readdata.row,expected.row)
                                 assert np.array_equal(readdata.col,expected.col)
+                                if not np.array_equal(readdata.row_property,expected.row_property):
+                                    print("!!!cmk")
                                 assert np.array_equal(readdata.row_property,expected.row_property)
                                 assert np.array_equal(readdata.col_property,expected.col_property)
                             try:
@@ -96,11 +102,11 @@ class TestPstReader(unittest.TestCase):
         row_property=np.array([[1.0,2,2.5],[3,4,4.5],[5,6,6.5]])
         col_property=np.array([[1.0,2,2.5,1],[3,4,4.5,3]])
         pstdata = PstData(row=np.array([[1.0,2],[3,4],[5,6]]),
-                          col=np.array([("A","a"),("B","b")]),
+                          col=np.array([(b"A",b"a"),(b"B",b"b")]),
                           val = np.random.normal(.5,2,size=(3,2)),
                           row_property=row_property,
                           col_property=col_property)
-        assert pstdata.col_to_index([("B","b")])[0] == 1
+        assert pstdata.col_to_index([(b"B",b"b")])[0] == 1
         s = str(pstdata)
 
     def test_read(self):
@@ -108,14 +114,14 @@ class TestPstReader(unittest.TestCase):
         row_property=np.array([[1.0,2,2.5],[3,4,4.5],[5,6,6.5]])
         col_property=np.array([[1.0,2,2.5,1],[3,4,4.5,3]])
         pstdata = PstData(row=np.array([[1.0,2],[3,4],[5,6]]),
-                          col=np.array([["A","a"],["B","b"]]),
+                          col=np.array([[b"A",b"a"],[b"B",b"b"]]),
                           val = np.random.normal(.5,2,size=(3,2)),
                           row_property=row_property,
                           col_property=col_property,
                           name="test_read")
 
         assert pstdata.row_to_index([np.array([3.0,4])])[0] == 1
-        assert pstdata.col_to_index([np.array(["A","a"])])[0] == 0
+        assert pstdata.col_to_index([np.array([b"A",b"a"])])[0] == 0
         assert np.array_equal(pstdata[1:,:2].row_property,row_property[1:])
         assert np.array_equal(pstdata[1:,:2].col_property,col_property[:2])
 
@@ -156,14 +162,14 @@ class TestPstReader(unittest.TestCase):
         row_property=np.array([1.0,2,2.5])
         col_property=np.array([1,2])
         pstdata = PstData(row=np.array([1.0,3,6]),
-                          col=np.array(["Aa","Bb"]),
+                          col=np.array([b"Aa",b"Bb"]),
                           val = np.random.normal(.5,2,size=(3,2)),
                           row_property=row_property,
                           col_property=col_property,
                           name="test_read")
 
         assert pstdata.row_to_index([3])[0] == 1
-        assert pstdata.col_to_index(["Aa"])[0] == 0
+        assert pstdata.col_to_index([b"Aa"])[0] == 0
         assert np.array_equal(pstdata[1:,:2].row_property,row_property[1:])
         assert np.array_equal(pstdata[1:,:2].col_property,col_property[:2])
         logging.info("done with test")
@@ -175,14 +181,14 @@ class TestPstReader(unittest.TestCase):
         row_property=None
         col_property=None
         pstdata = PstData(row=np.array([1.0,3,6]),
-                          col=np.array(["Aa","Bb"]),
+                          col=np.array([b"Aa",b"Bb"]),
                           val = np.random.normal(.5,2,size=(3,2)),
                           row_property=row_property,
                           col_property=col_property,
                           name="test_read")
 
         assert pstdata.row_to_index([3])[0] == 1
-        assert pstdata.col_to_index(["Aa"])[0] == 0
+        assert pstdata.col_to_index([b"Aa"])[0] == 0
         assert np.array_equal(pstdata[1:,:2].row_property,pstdata.row_property[1:])
         assert np.array_equal(pstdata[1:,:2].col_property,pstdata.col_property[:2])
         logging.info("done with test")

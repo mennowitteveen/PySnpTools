@@ -5,14 +5,14 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{60f1cb4a-9da3-47c2-9b89-60ac1ce93347}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>snpreader\snpnpz.py</StartupFile>
+    <StartupFile>snpreader\snpdata.py</StartupFile>
     <SearchPath>..</SearchPath>
     <WorkingDirectory>C:\Source\carlk\pysnptools\pysnptools\examples\</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <InterpreterId />
-    <InterpreterVersion />
+    <InterpreterId>{3480084b-e5d8-4cef-b311-910b8e722440}</InterpreterId>
+    <InterpreterVersion>3.5</InterpreterVersion>
     <PtvsTargetsFile>$(VSToolsPath)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
     <SccProjectName>SAK</SccProjectName>
     <SccProvider>SAK</SccProvider>
@@ -162,6 +162,9 @@
     </Content>
     <Content Include="snpreader\wrap_plink_parser.cpp" />
     <Content Include="snpreader\wrap_plink_parser.pyx" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="{3480084b-e5d8-4cef-b311-910b8e722440}\3.5" />
   </ItemGroup>
   <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="!Exists($(PtvsTargetsFile))" />

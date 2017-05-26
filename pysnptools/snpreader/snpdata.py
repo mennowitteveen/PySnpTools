@@ -3,7 +3,7 @@ import subprocess, sys, os.path
 from itertools import *
 import pandas as pd
 import logging
-from snpreader import SnpReader
+from pysnptools.snpreader import SnpReader
 from pysnptools.standardizer import Unit
 from pysnptools.standardizer import Identity
 from pysnptools.pstreader import PstData
@@ -28,8 +28,8 @@ class SnpData(PstData,SnpReader):
 
         >>> from pysnptools.snpreader import SnpData
         >>> snpdata = SnpData(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'], val=[[0.,2.,0.],[0.,1.,2.]])
-        >>> print snpdata.val[0,1], snpdata.iid_count, snpdata.sid_count
-        2.0 2 3
+        >>> print((snpdata.val[0,1], snpdata.iid_count, snpdata.sid_count))
+        (2.0, 2, 3)
 
     **Equality:**
 
@@ -41,13 +41,13 @@ class SnpData(PstData,SnpReader):
         >>> from pysnptools.snpreader import SnpData
         >>> snpdata1 = SnpData(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'], val=[[0.,2.,0.],[0.,1.,2.]], pos=[[0,0,0],[0,0,0],[0,0,0]])
         >>> snpdata2 = SnpData(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'], val=[[0.,2.,0.],[0.,1.,2.]], pos=[[0,0,0],[0,0,0],[0,0,0]])
-        >>> print snpdata1 == snpdata2 #True, because all the arrays have the same values.
+        >>> print(snpdata1 == snpdata2) #True, because all the arrays have the same values.
         True
-        >>> print snpdata1.val is snpdata2.val #False, because the two arrays have different memory.
+        >>> print(snpdata1.val is snpdata2.val) #False, because the two arrays have different memory.
         False
         >>> snpdata3 = SnpData(iid=[['a','0'],['b','0']], sid=['snp334','snp349','snp921'], val=[[0.,2.,0.],[0.,1.,2.]], pos=[[0,0,0],[0,0,0],[0,0,0]])
         >>> snpdata4 = SnpData(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'], val=[[0.,2.,0.],[0.,1.,2.]], pos=[[0,0,0],[0,0,0],[0,0,0]])
-        >>> print snpdata3 == snpdata4 #False, because the iids are different.
+        >>> print(snpdata3 == snpdata4) #False, because the iids are different.
         False
 
     **Methods beyond** :class:`.SnpReader`
@@ -60,9 +60,9 @@ class SnpData(PstData,SnpReader):
 
         if parent_string is not None:
             warnings.warn("'parent_string' is deprecated. Use 'name'", DeprecationWarning)
-        self._row = PstData._fixup_input(iid,empty_creator=lambda ignore:np.empty([0,2],dtype=str))
-        self._col = PstData._fixup_input(sid,empty_creator=lambda ignore:np.empty([0],dtype=str))
-        self._row_property = PstData._fixup_input(None,count=len(self._row),empty_creator=lambda count:np.empty([count,0],dtype=str))
+        self._row = PstData._fixup_input(iid,empty_creator=lambda ignore:np.empty([0,2],dtype='S'),dtype='S')
+        self._col = PstData._fixup_input(sid,empty_creator=lambda ignore:np.empty([0],dtype='S'),dtype='S')
+        self._row_property = PstData._fixup_input(None,count=len(self._row),empty_creator=lambda count:np.empty([count,0],dtype='S'),dtype='S')
         self._col_property = PstData._fixup_input(pos,count=len(self._col),empty_creator=lambda count:np.array([[np.nan, np.nan, np.nan]]*count))
         self.val = PstData._fixup_input_val(val,row_count=len(self._row),col_count=len(self._col),empty_creator=lambda row_count,col_count:np.empty([row_count,col_count],dtype=np.float64))
         self._assert_iid_sid_pos()
@@ -72,7 +72,7 @@ class SnpData(PstData,SnpReader):
 
     >>> from pysnptools.snpreader import Bed
     >>> snpdata = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)[:5,:].read() #read data for first 5 iids
-    >>> print snpdata.val[4,100] #print one of the SNP values
+    >>> print(snpdata.val[4,100]) #print one of the SNP values
     2.0
     """
 
@@ -114,16 +114,16 @@ class SnpData(PstData,SnpReader):
         >>> from pysnptools.snpreader import Bed
         >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
         >>> snpdata1 = snp_on_disk.read() # read all SNP values into memory
-        >>> print snpdata1 # Prints the specification for this SnpData
+        >>> print(snpdata1) # Prints the specification for this SnpData
         SnpData(Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False))
-        >>> print snpdata1.val[0,0]
+        >>> print(snpdata1.val[0,0])
         2.0
         >>> snpdata1.standardize() # standardize changes the values in snpdata1.val and changes the specification.
         SnpData(Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False),Unit())
-        >>> print snpdata1.val[0,0]
+        >>> print(snpdata1.val[0,0])
         0.229415733871
         >>> snpdata2 = snp_on_disk.read().standardize() # Read and standardize in one expression with only one ndarray allocated.
-        >>> print snpdata2.val[0,0]
+        >>> print(snpdata2.val[0,0])
         0.229415733871
         """
         self._std_string_list.append(str(standardizer))

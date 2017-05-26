@@ -27,7 +27,7 @@ for start,stop in region_gen(scale=.1):
 print geneset
 print geneset.ranges_len
 
-print "done"
+print("done")
 
 
 
@@ -431,4 +431,4 @@ kerneldata = Bed("all.bed").read_kernel(standardizer=Unit(),block_size=500)
 #     Requires a standardizer. Use Identity() for none
 
 
-print "done!"
+print("done!")

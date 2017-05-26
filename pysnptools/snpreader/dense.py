@@ -1,10 +1,14 @@
 import numpy as np
 import logging
-from snpreader import SnpReader
-from snpdata import SnpData
+from pysnptools.snpreader import SnpReader
+from pysnptools.snpreader import SnpData
 import warnings
 from pysnptools.pstreader import PstData
 from pysnptools.pstreader import _OneShot
+try:
+    from builtins import range
+except:
+    pass
 
 def zero_family(s):
     '''Given an input id from the file, returns 0 as the family id and that input id as the case id.
@@ -53,8 +57,8 @@ class Dense(_OneShot,SnpReader):
 
         >>> from pysnptools.snpreader import Dense
         >>> data_on_disk = Dense('../examples/toydata100.dense.txt')
-        >>> print data_on_disk.iid_count, data_on_disk.sid_count
-        500 100
+        >>> print((data_on_disk.iid_count, data_on_disk.sid_count))
+        (500, 100)
 
     **Methods beyond** :class:`.SnpReader`
 
@@ -71,25 +75,27 @@ class Dense(_OneShot,SnpReader):
     def _read_pstdata(self):
         bim_list = []
         val_list_list = []
-        with open(self.filename,"r") as fp:
+        with open(self.filename,"rb") as fp:
             header = fp.readline()
             iid_string_list = header.strip().split()[1:]
-            iid = np.array([self.extract_iid_function(iid_string) for iid_string in iid_string_list],dtype="string")
+            iid = np.array([self.extract_iid_function(iid_string) for iid_string in iid_string_list],dtype="S")
             val_list = []
+            zerofloat = float(b'0'[0]) #We do it this way for Python2/3 compatibility
+            missing_char = b"?"[0] #We do it this way for Python2/3 compatibility
             for line_index,line in enumerate(fp):
                 if line_index % 1000 == 0:
                     logging.info("reading sid and iid info from line {0} of file '{1}'".format(line_index, self.filename))
                 sid_string, rest = line.strip().split()
                 assert len(rest) == len(iid)
                 bim_list.append(self.extract_sid_pos_function(sid_string))
-                val_list = np.array([float(val) if val!="?" else np.NaN for val in rest])
+                val_list = np.array([float(val)-zerofloat if val!=missing_char else np.NaN for val in rest])
                 val_list_list.append(val_list)
 
         col = np.array([bim[1] for bim in bim_list],dtype='str')
         col_property = np.array([[bim[0],bim[2],bim[3]] for bim in bim_list],dtype=np.float64)
 
         val = np.zeros((len(iid),len(col)))
-        for col_index in xrange(len(col)):
+        for col_index in range(len(col)):
             val[:,col_index] = val_list_list[col_index]
 
         return PstData(iid,col,val,col_property=col_property,name=self.filename)
@@ -116,22 +122,22 @@ class Dense(_OneShot,SnpReader):
         >>> Dense.write("tempdir/toydata10.dense.txt",snpdata)        # Write data in Dense format
         """
 
-        if isinstance(filename,SnpData) and isinstance(snpdata,str): #For backwards compatibility, reverse inputs if necessary
+        if isinstance(filename,SnpData) and isinstance(snpdata,'S'): #For backwards compatibility, reverse inputs if necessary
             warnings.warn("write statement should have filename before data to write", DeprecationWarning)
             filename, snpdata = snpdata, filename 
 
         snpsarray = snpdata.val
-        with open(filename,"w") as filepointer:
-            filepointer.write("var"+"\t")
-            filepointer.write("\t".join((join_iid_function(iid_pair) for iid_pair in snpdata.iid)) + "\n")
+        with open(filename,"wb") as filepointer:
+            filepointer.write(b"var\t")
+            filepointer.write(b"\t".join((join_iid_function(iid_pair) for iid_pair in snpdata.iid)) + b"\n")
 
             for sid_index, sid in enumerate(snpdata.sid):
                 pos = snpdata.pos[sid_index]
                 if sid_index % 1000 == 0:
                     logging.info("Writing snp # {0} to file '{1}'".format(sid_index, filename))
-                filepointer.write("{0}\t".format(join_sid_pos_function(sid,pos)))
+                filepointer.write(b"%s\t" % join_sid_pos_function(sid,pos)) #Must use % formating because Python3 doesn't support .format on bytes
                 row = snpsarray[:,sid_index]
-                filepointer.write("".join((str(int(i)) if i==i else "?" for i in row)) + "\n")
+                filepointer.write(b"".join((str(int(i)).encode('ascii') if i==i else b"?" for i in row)) + b"\n")
         logging.info("Done writing " + filename)
 
 if __name__ == "__main__":

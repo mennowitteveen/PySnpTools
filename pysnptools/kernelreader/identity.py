@@ -3,7 +3,7 @@ import subprocess, sys, os.path
 from itertools import *
 import pandas as pd
 import logging
-from kernelreader import KernelReader
+from pysnptools.kernelreader import KernelReader
 from pysnptools.pstreader import PstData
 from pysnptools.pstreader import PstReader
 
@@ -20,16 +20,16 @@ class Identity(KernelReader):
 
         >>> from pysnptools.kernelreader import Identity
         >>> identity = Identity(iid=[['fam0','iid0'],['fam0','iid1']])
-        >>> print identity.iid_count
+        >>> print(identity.iid_count)
         2
-        >>> print identity.read().val
+        >>> print(identity.read().val)
         [[ 1.  0.]
          [ 0.  1.]]
 
         >>> identity = Identity(iid=[['fam0','iid0'],['fam0','iid1'],['fam0','iid2']],test=[['fam0','iid1'],['fam0','iid3']])
-        >>> print identity.iid0_count, identity.iid1_count
-        3 2
-        >>> print identity.read().val
+        >>> print((identity.iid0_count, identity.iid1_count))
+        (3, 2)
+        >>> print(identity.read().val)
         [[ 0.  0.]
          [ 1.  0.]
          [ 0.  0.]]
@@ -51,7 +51,7 @@ class Identity(KernelReader):
         else:
             self._row1 = self._empty
 
-    _empty = np.empty([0,2],dtype=str)
+    _empty = np.empty([0,2],dtype='S')
 
     def __repr__(self): 
         return "{0}({1}x{2})".format(self.__class__.__name__, self.row_count, self.col_count)

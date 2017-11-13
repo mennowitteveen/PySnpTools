@@ -67,7 +67,6 @@ class TestLoader(unittest.TestCase):
         logging.info("read SnpHdf5 C with reversed indexes bed %.2f seconds" % (tt4 - tt3))
 
         print "the end"
-    
 
     @classmethod
     def setUpClass(self):
@@ -77,7 +76,6 @@ class TestLoader(unittest.TestCase):
         self.pheno_fn = self.currentFolder + "/examples/toydata.phe"
         self.snpdata = snpreader.read(order='F',force_python_only=True)
         self.snps = self.snpdata.val
-
 
     def test_diagKtoN(self):
         """
@@ -93,7 +91,6 @@ class TestLoader(unittest.TestCase):
         sum_diag = np.sum(np.diag(K))
         
         np.testing.assert_almost_equal(100, sum_diag)
-        
         
     def test_c_reader_bed(self):
         snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
@@ -150,8 +147,6 @@ class TestLoader(unittest.TestCase):
         snpdata4 = Dat(output).read()
         assert snpdata3 == snpdata4
 
-
-
     @staticmethod
     def assert_match_012_210(snpdata1, snpdata2):
         for sid_index in xrange(snpdata1.sid_count): #Check that every row matches (except OK if 0,1,2 can be 2,1,0)
@@ -179,7 +174,6 @@ class TestLoader(unittest.TestCase):
         s = str(snpreader)
         snpdata2 = snpreader.read()
         TestLoader.assert_match_012_210(snpdata1,snpdata2)
-
 
     def test_c_reader_pheno(self):
         snpdata1 = Pheno(self.currentFolder + "/examples/toydata.phe").read()
@@ -216,7 +210,6 @@ class TestLoader(unittest.TestCase):
         snpdata6 = Pheno(self.currentFolder + "/examples/toydata.fid.phe").read()
         np.testing.assert_array_almost_equal(snpdata1.val, snpdata6.val, decimal=10)
 
-
     def test_c_reader_dense(self):
         snpdata1 = self.snpdata[:,::100].read()
         snpdata1.val[1,2] = np.NaN # Inject a missing value to test writing and reading missing values
@@ -228,8 +221,6 @@ class TestLoader(unittest.TestCase):
         s = str(snpreader)
         snpdata2 = snpreader.read()
         np.testing.assert_array_almost_equal(snpdata1.val, snpdata2.val, decimal=10)
-
-
 
     def test_some_std(self):
         k0 = self.snpdata.read_kernel(standardizer=Unit()).val
@@ -263,8 +254,6 @@ class TestLoader(unittest.TestCase):
                 #np.testing.assert_array_almost_equal(a,b)
         logging.info("done")
 
-
-
     def c_reader(self,snpreader):
         """
         make sure c-reader yields same result
@@ -291,7 +280,6 @@ class TestLoader(unittest.TestCase):
     def test_standardize_ped(self):
         snpreader = Ped(self.currentFolder + "/examples/toydata")
         self.standardize(snpreader)
-
 
     def standardize(self,snpreader):
         """
@@ -424,7 +412,6 @@ class TestLoader(unittest.TestCase):
         snpdata2 = Bed(output,count_A1=False).read()
         np.testing.assert_array_almost_equal(snpdata.val, snpdata2.val, decimal=10)
 
-
     def test_write_x_x_cpp(self):
         for count_A1 in [False, True]:
             snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=count_A1)
@@ -451,15 +438,12 @@ class TestLoader(unittest.TestCase):
         result5 = result4.read(view_ok=True)
         self.assertTrue(sp.may_share_memory(result4.val,result5.val))
 
-
     def test_load_and_standardize_hdf5(self):
         snpreader2 = SnpHdf5(self.currentFolder + "/examples/toydata.snpmajor.snp.hdf5")
         snpreader3 = SnpHdf5(self.currentFolder + "/examples/toydata.iidmajor.snp.hdf5")
         self.load_and_standardize(snpreader2, snpreader3)
         snpreaderref = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
         self.load_and_standardize(snpreader2, snpreaderref)
-
-
 
     def test_load_and_standardize_dat(self):
         snpreader2 = Dat(self.currentFolder + "/examples/toydata.dat")

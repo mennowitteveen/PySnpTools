@@ -243,22 +243,23 @@ class Bed(SnpReader):
             val = np.zeros((iid_count_out, sid_count_out), order=order, dtype=dtype)
             bed_fn = SnpReader._name_of_other_file(self.filename,"bed","bed")
 
-            if dtype == np.float64:
-                if order=="F":
-                    wrap_plink_parser.readPlinkBedFile2doubleFAAA(bed_fn.encode('ascii'), iid_count_in, sid_count_in, self.count_A1, iid_index_out, sid_index_out, val)
-                elif order=="C":
-                    wrap_plink_parser.readPlinkBedFile2doubleCAAA(bed_fn.encode('ascii'), iid_count_in, sid_count_in, self.count_A1, iid_index_out, sid_index_out, val)
+            if iid_count_in > 0 and sid_count_in > 0:
+                if dtype == np.float64:
+                    if order=="F":
+                        wrap_plink_parser.readPlinkBedFile2doubleFAAA(bed_fn.encode('ascii'), iid_count_in, sid_count_in, self.count_A1, iid_index_out, sid_index_out, val)
+                    elif order=="C":
+                        wrap_plink_parser.readPlinkBedFile2doubleCAAA(bed_fn.encode('ascii'), iid_count_in, sid_count_in, self.count_A1, iid_index_out, sid_index_out, val)
+                    else:
+                        raise Exception("order '{0}' not known, only 'F' and 'C'".format(order));
+                elif dtype == np.float32:
+                    if order=="F":
+                        wrap_plink_parser.readPlinkBedFile2floatFAAA(bed_fn.encode('ascii'), iid_count_in, sid_count_in, self.count_A1, iid_index_out, sid_index_out, val)
+                    elif order=="C":
+                        wrap_plink_parser.readPlinkBedFile2floatCAAA(bed_fn.encode('ascii'), iid_count_in, sid_count_in, self.count_A1, iid_index_out, sid_index_out, val)
+                    else:
+                        raise Exception("order '{0}' not known, only 'F' and 'C'".format(order));
                 else:
-                    raise Exception("order '{0}' not known, only 'F' and 'C'".format(order));
-            elif dtype == np.float32:
-                if order=="F":
-                    wrap_plink_parser.readPlinkBedFile2floatFAAA(bed_fn.encode('ascii'), iid_count_in, sid_count_in, self.count_A1, iid_index_out, sid_index_out, val)
-                elif order=="C":
-                    wrap_plink_parser.readPlinkBedFile2floatCAAA(bed_fn.encode('ascii'), iid_count_in, sid_count_in, self.count_A1, iid_index_out, sid_index_out, val)
-                else:
-                    raise Exception("order '{0}' not known, only 'F' and 'C'".format(order));
-            else:
-                raise Exception("dtype '{0}' not known, only float64 and float32".format(dtype))
+                    raise Exception("dtype '{0}' not known, only float64 and float32".format(dtype))
             
         else:
             if not self.count_A1:

@@ -979,8 +979,6 @@ class IntRangeSet(object):
         assert IntRangeSet("1,12:15,55:61,71,102").ranges_index(102) == 4
 
 
-
-
     #s[i] ith item of s, origin 0 (3) 
     #s[i:j] slice of s from i to j (3)(4) 
     #s[i:j:k] slice of s from i to j with step k (3)(5) 

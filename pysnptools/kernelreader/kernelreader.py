@@ -309,6 +309,11 @@ class KernelReader(PstReader):
         """
         return self.row_to_index(list)
 
+    @staticmethod
+    def _makekey(item):
+        return tuple(i.encode('ascii') for i in item)
+
+
     def iid1_to_index(self, list):
         """Takes a list of column iids and returns a list of index numbers. See :attr:`iid_to_index`
         """
@@ -325,8 +330,8 @@ class KernelReader(PstReader):
         return _KernelSubset(self, iid0_indexer, iid1_indexer)
 
     def _assert_iid0_iid1(self):
-        assert np.issubdtype(self._row.dtype, 'S') and len(self._row.shape)==2 and self._row.shape[1]==2, "iid0 should be dtype S, have two dimensions, and the second dimension should be size 2"
-        assert np.issubdtype(self._col.dtype, 'S') and len(self._col.shape)==2 and self._col.shape[1]==2, "iid1 should be dtype S, have two dimensions, and the second dimension should be size 2"
+        assert self._row.dtype.type is np.string_ and len(self._row.shape)==2 and self._row.shape[1]==2, "iid0 should be dtype S, have two dimensions, and the second dimension should be size 2"
+        assert self._col.dtype.type is np.string_ and len(self._col.shape)==2 and self._col.shape[1]==2, "iid1 should be dtype S, have two dimensions, and the second dimension should be size 2"
 
     def _read_with_standardizing(self, to_kerneldata, snp_standardizer=None, kernel_standardizer=DiagKtoN(), return_trained=False):
         assert to_kerneldata, "When working with non-SnpKernels, to_kerneldata must be 'True'"

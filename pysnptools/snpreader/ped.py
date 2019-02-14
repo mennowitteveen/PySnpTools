@@ -44,7 +44,7 @@ class Ped(_OneShot,SnpReader):
     **Methods beyond** :class:`.SnpReader`
     '''
 
-    def __init__(self, filename, missing = b'0'):
+    def __init__(self, filename, missing = '0'):
         '''
             filename    : string of the filename of the ped file
             missing         : string indicating a missing genotype (default b'0')

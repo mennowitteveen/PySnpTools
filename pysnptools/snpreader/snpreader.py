@@ -628,8 +628,8 @@ class SnpReader(PstReader):
         raise NotImplementedError
 
     def _assert_iid_sid_pos(self):
-        assert np.issubdtype(self._row.dtype, 'S') and len(self._row.shape)==2 and self._row.shape[1]==2, "iid should be dtype S, have two dimensions, and the second dimension should be size 2"
-        assert np.issubdtype(self._col.dtype, 'S') and len(self._col.shape)==1, "sid should be of dtype of S and one dimensional"
+        assert self._row.dtype.type is np.string_ and len(self._row.shape)==2 and self._row.shape[1]==2, "iid should be dtype S, have two dimensions, and the second dimension should be size 2"
+        assert self._col.dtype.type is np.string_ and len(self._col.shape)==1, "sid should be of dtype of S and one dimensional"
 
     @staticmethod
     def _name_of_other_file(filename,remove_suffix,add_suffix):
@@ -679,7 +679,7 @@ class SnpReader(PstReader):
         else:
             fields = pd.read_csv(mapfile,delimiter = '\t',usecols = (0,1,2,3),header=None,index_col=False,comment=None)
             sid = np.array(fields[1].tolist(),dtype='S')
-            pos = fields.as_matrix([0,2,3])
+            pos = fields[[0,2,3]].values
             return sid,pos
 
 

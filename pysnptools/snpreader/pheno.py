@@ -99,7 +99,7 @@ class Pheno(_OneShot, SnpReader):
         return snpdata
 
     @staticmethod
-    def write(filename, snpdata, missing=b'NaN', sep=b"\t"):
+    def write(filename, snpdata, missing='NaN', sep='\t'):
         """Writes a :class:`SnpData` to Pheno format.
 
         >>> from pysnptools.snpreader import Pheno, Bed

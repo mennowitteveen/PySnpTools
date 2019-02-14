@@ -477,7 +477,7 @@ class PstReader(object):
         if not hasattr(self, "_row_to_index"):
             self._row_to_index = {}
             for index, item in enumerate(self.row):
-                key = PstReader._makekey(item)
+                key = self._makekey(item)
                 if key in self._row_to_index:
                    raise Exception("Expect row to appear in data only once. ({0})".format(key))
                 self._row_to_index[key] = index

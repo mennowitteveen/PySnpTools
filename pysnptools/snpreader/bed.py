@@ -312,6 +312,12 @@ class Bed(SnpReader):
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
+    from pysnptools.snpreader import Pheno, Bed
+    import pysnptools.util as pstutil
+    snpdata = Pheno('../examples/toydata.phe').read()         # Read data from Pheno format
+    pstutil.create_directory_if_necessary("tempdir/toydata.bed")
+    Bed.write("tempdir/toydata.bed",snpdata,count_A1=False)   # Write data in Bed format
+
     import doctest
     doctest.testmod()
     # There is also a unit test case in 'pysnptools\test.py' that calls this doc test

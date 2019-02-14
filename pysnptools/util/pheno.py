@@ -9,7 +9,7 @@ import sys
 from pysnptools.util import to_ascii
 
 
-def loadOnePhen(filename,  i_pheno = 0, missing = b'-9', vectorize = False):
+def loadOnePhen(filename,  i_pheno = 0, missing = '-9', vectorize = False):
     '''
     .. deprecated::
        Use :class:`.Pheno` instead.    
@@ -55,7 +55,7 @@ def loadOnePhen(filename,  i_pheno = 0, missing = b'-9', vectorize = False):
     return ret
 
 
-def loadPhen(filename, missing = b'-9',famid=b'FID', sampid=b'ID'):
+def loadPhen(filename, missing = '-9',famid='FID', sampid='ID'):
     '''
     .. deprecated::
        Use :class:`.Pheno` instead.    

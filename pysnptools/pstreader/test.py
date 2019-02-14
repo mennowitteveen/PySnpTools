@@ -87,8 +87,6 @@ class TestPstReader(unittest.TestCase):
                                 assert np.array_equal(readdata.val,expected.val)
                                 assert np.array_equal(readdata.row,expected.row)
                                 assert np.array_equal(readdata.col,expected.col)
-                                if not np.array_equal(readdata.row_property,expected.row_property):
-                                    print("!!!cmk")
                                 assert np.array_equal(readdata.row_property,expected.row_property)
                                 assert np.array_equal(readdata.col_property,expected.col_property)
                             try:
@@ -102,11 +100,11 @@ class TestPstReader(unittest.TestCase):
         row_property=np.array([[1.0,2,2.5],[3,4,4.5],[5,6,6.5]])
         col_property=np.array([[1.0,2,2.5,1],[3,4,4.5,3]])
         pstdata = PstData(row=np.array([[1.0,2],[3,4],[5,6]]),
-                          col=np.array([(b"A",b"a"),(b"B",b"b")]),
+                          col=np.array([("A","a"),("B","b")]),
                           val = np.random.normal(.5,2,size=(3,2)),
                           row_property=row_property,
                           col_property=col_property)
-        assert pstdata.col_to_index([(b"B",b"b")])[0] == 1
+        assert pstdata.col_to_index([("B","b")])[0] == 1
         s = str(pstdata)
 
     def test_read(self):
@@ -114,14 +112,14 @@ class TestPstReader(unittest.TestCase):
         row_property=np.array([[1.0,2,2.5],[3,4,4.5],[5,6,6.5]])
         col_property=np.array([[1.0,2,2.5,1],[3,4,4.5,3]])
         pstdata = PstData(row=np.array([[1.0,2],[3,4],[5,6]]),
-                          col=np.array([[b"A",b"a"],[b"B",b"b"]]),
+                          col=np.array([["A","a"],["B","b"]]),
                           val = np.random.normal(.5,2,size=(3,2)),
                           row_property=row_property,
                           col_property=col_property,
                           name="test_read")
 
         assert pstdata.row_to_index([np.array([3.0,4])])[0] == 1
-        assert pstdata.col_to_index([np.array([b"A",b"a"])])[0] == 0
+        assert pstdata.col_to_index([np.array(["A","a"])])[0] == 0
         assert np.array_equal(pstdata[1:,:2].row_property,row_property[1:])
         assert np.array_equal(pstdata[1:,:2].col_property,col_property[:2])
 
@@ -162,14 +160,14 @@ class TestPstReader(unittest.TestCase):
         row_property=np.array([1.0,2,2.5])
         col_property=np.array([1,2])
         pstdata = PstData(row=np.array([1.0,3,6]),
-                          col=np.array([b"Aa",b"Bb"]),
+                          col=np.array(["Aa","Bb"]),
                           val = np.random.normal(.5,2,size=(3,2)),
                           row_property=row_property,
                           col_property=col_property,
                           name="test_read")
 
         assert pstdata.row_to_index([3])[0] == 1
-        assert pstdata.col_to_index([b"Aa"])[0] == 0
+        assert pstdata.col_to_index(["Aa"])[0] == 0
         assert np.array_equal(pstdata[1:,:2].row_property,row_property[1:])
         assert np.array_equal(pstdata[1:,:2].col_property,col_property[:2])
         logging.info("done with test")
@@ -181,14 +179,14 @@ class TestPstReader(unittest.TestCase):
         row_property=None
         col_property=None
         pstdata = PstData(row=np.array([1.0,3,6]),
-                          col=np.array([b"Aa",b"Bb"]),
+                          col=np.array(["Aa","Bb"]),
                           val = np.random.normal(.5,2,size=(3,2)),
                           row_property=row_property,
                           col_property=col_property,
                           name="test_read")
 
         assert pstdata.row_to_index([3])[0] == 1
-        assert pstdata.col_to_index([b"Aa"])[0] == 0
+        assert pstdata.col_to_index(["Aa"])[0] == 0
         assert np.array_equal(pstdata[1:,:2].row_property,pstdata.row_property[1:])
         assert np.array_equal(pstdata[1:,:2].col_property,pstdata.col_property[:2])
         logging.info("done with test")

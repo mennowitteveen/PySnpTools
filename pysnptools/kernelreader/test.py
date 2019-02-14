@@ -176,8 +176,8 @@ class TestKernelReader(unittest.TestCase):
     def test_kernel2(self):
         logging.info("in kernel2")
         kd = KernelData(iid=[["0","0"],["1","1"],["2","2"]],val=[[1,2,3],[4,5,6],[7,8,9]])
-        assert np.array_equal(kd.iid_to_index([[b"1",b"1"],[b"2",b"2"]]),np.array([1,2]))
-        assert np.array_equal(kd.iid0_to_index([[b"1",b"1"],[b"2",b"2"]]),np.array([1,2]))
+        assert np.array_equal(kd.iid_to_index([["1","1"],["2","2"]]),np.array([1,2]))
+        assert np.array_equal(kd.iid0_to_index([["1","1"],["2","2"]]),np.array([1,2]))
         kd = kd.standardize()
         assert np.abs(np.diag(kd.val).sum()-3)<1e-7
         assert kd.iid1_count == 3

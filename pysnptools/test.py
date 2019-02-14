@@ -203,12 +203,12 @@ class TestPySnpTools(unittest.TestCase):
 
         snpdata1 = Pheno(self.currentFolder + "/examples/toydata.phe").read()
         import pysnptools.util.pheno as pstpheno
-        dict = pstpheno.loadOnePhen(self.currentFolder + "/examples/toydata.phe",missing=b"")
+        dict = pstpheno.loadOnePhen(self.currentFolder + "/examples/toydata.phe",missing="")
         snpdata3 = Pheno(dict).read()
         np.testing.assert_array_almost_equal(snpdata1.val, snpdata3.val, decimal=10)
 
 
-        dict = pstpheno.loadOnePhen(self.currentFolder + "/examples/toydata.phe",missing=b"",vectorize=True)
+        dict = pstpheno.loadOnePhen(self.currentFolder + "/examples/toydata.phe",missing="",vectorize=True)
         assert len(dict['vals'].shape)==1, "test 1-d array of values"
         snpdata3 = Pheno(dict).read()
         np.testing.assert_array_almost_equal(snpdata1.val, snpdata3.val, decimal=10)

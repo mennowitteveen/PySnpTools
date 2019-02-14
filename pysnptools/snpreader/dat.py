@@ -54,7 +54,7 @@ class Dat(_OneShot,SnpReader):
         del datfields[1]
         del datfields[2]
         assert len(row) == datfields.shape[1], "Expect # iids in fam file to match dat file"
-        val = datfields.as_matrix().T
+        val = datfields.values.T
         snpdata = SnpData(iid=row,sid=col,pos=col_property,val=val)
         return snpdata
 

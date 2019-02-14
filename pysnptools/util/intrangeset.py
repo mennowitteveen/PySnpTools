@@ -1013,7 +1013,7 @@ class IntRangeSet(object):
         >>> IntRangeSet('100:200,1000')['0:10,20']
         IntRangeSet('100:110,120')
         '''
-        if isinstance(key,numbers.Integral):
+        if isinstance(key, numbers.Integral):
             if key >= 0:
                 for start in self._start_items:
                     length = self._start_to_length[start]
@@ -1144,7 +1144,7 @@ class IntRangeSet(object):
         >>> print(IntRangeSet('100:110,1000').index('109,100:104'))
         IntRangeSet('0:4,9')
         '''
-        if isinstance(other,numbers.Integral):
+        if isinstance(other, numbers.Integral):
             return self._index_element(other)
         else:
             #If start and stop are adjacent, only call _index_element once
@@ -1545,7 +1545,7 @@ class IntRangeSet(object):
         >>> print(a)
         IntRangeSet('100:102,111:200,1000')
         '''
-        if isinstance(key,numbers.Integral):
+        if isinstance(key, numbers.Integral):
             if key >= 0:
                 for start in self._start_items:
                     length = self._start_to_length[start]
@@ -1633,10 +1633,10 @@ class IntRangeSet(object):
     @staticmethod
     def _inner_static_ranges(*iterables):
         for iterable in iterables:
-            if isinstance(iterable,numbers.Integral):
+            if isinstance(iterable, numbers.Integral):
                 yield iterable,iterable+1
             elif isinstance(iterable,tuple):
-                assert len(iterable)==2 and isinstance(iterable[0],numbers.Integral) and isinstance(iterable[1],numbers.Integral), "Tuples must contain exactly two int elements that represent the start (inclusive) and stop (exclusive) elements of a range."
+                assert len(iterable)==2 and isinstance(iterable[0], numbers.Integral) and isinstance(iterable[1],(int,long)), "Tuples must contain exactly two int elements that represent the start (inclusive) and stop (exclusive) elements of a range."
                 yield iterable[0],iterable[1]
             elif isinstance(iterable,slice):
                 start = iterable.start

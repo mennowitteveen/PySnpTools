@@ -205,3 +205,14 @@ ModelManifest.xml
 /del1.txt
 /pysnptools/examples/tempdir
 /pysnptools/standardizer/tempdir
+/doc/ipynb/delme.pst.npz
+/doc/ipynb/delme.pst.hdf5
+/doc/ipynb/deleteme1010.txt
+/doc/ipynb/deleteme1010.snp.npz
+/doc/ipynb/deleteme1010.snp.hdf5
+/doc/ipynb/deleteme1010.fam
+/doc/ipynb/deleteme1010.bim
+/doc/ipynb/deleteme1010.bed
+/doc/ipynb/deleteme1.fam
+/doc/ipynb/deleteme1.bim
+/doc/ipynb/deleteme1.bed

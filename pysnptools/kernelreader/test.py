@@ -296,7 +296,7 @@ class TestDocStrings(unittest.TestCase):
         import pysnptools.kernelreader.identity
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
-        result = doctest.testmod(pysnptools.kernelreader.identity)
+        result = doctest.testmod(pysnptools.kernelreader.identity,optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 

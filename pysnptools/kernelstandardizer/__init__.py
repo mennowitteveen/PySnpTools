@@ -28,13 +28,13 @@ class KernelStandardizer(object):
     >>> kernel_whole = KernelNpz('../examples/toydata.kernel.npz')
     >>> train_idx, test_idx = range(10,kernel_whole.iid_count), range(0,10)  #test on the first 10, train on the rest
     >>> kernel_train, trained_standardizer = DiagKtoN().standardize(kernel_whole[train_idx].read(),return_trained=True)
-    >>> print(np.diag(kernel_train.val).sum())
-    490.0
-    >>> print(trained_standardizer.factor)
-    9.99909752089e-05
+    >>> print('{0:.6f}'.format(np.diag(kernel_train.val).sum()))
+    490.000000
+    >>> print('{0:.6f}'.format(trained_standardizer.factor))
+    0.000100
     >>> kernel_whole_test = kernel_whole[:,test_idx].read().standardize(trained_standardizer)
-    >>> kernel_whole_test.val[0,0]
-    0.99221743920965288
+    >>> print('{0:.6f}'.format(kernel_whole_test.val[0,0]))
+    0.992217
 
 
     Details of Methods & Properties:

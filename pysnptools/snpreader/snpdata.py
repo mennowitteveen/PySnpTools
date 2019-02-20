@@ -120,11 +120,11 @@ class SnpData(PstData,SnpReader):
         2.0
         >>> snpdata1.standardize() # standardize changes the values in snpdata1.val and changes the specification.
         SnpData(Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False),Unit())
-        >>> print(snpdata1.val[0,0])
-        0.229415733871
+        >>> print('{0:.6f}'.format(snpdata1.val[0,0]))
+        0.229416
         >>> snpdata2 = snp_on_disk.read().standardize() # Read and standardize in one expression with only one ndarray allocated.
-        >>> print(snpdata2.val[0,0])
-        0.229415733871
+        >>> print('{0:.6f}'.format(snpdata2.val[0,0]))
+        0.229416
         """
         self._std_string_list.append(str(standardizer))
         _, trained = standardizer.standardize(self, return_trained=True, force_python_only=force_python_only)

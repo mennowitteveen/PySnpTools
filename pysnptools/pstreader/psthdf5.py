@@ -263,7 +263,7 @@ class PstHdf5(PstReader):
 
         def any_u_to_a(possible_unicode):
             #If it's any kind of string, encode it as ascii
-            if np.issubdtype(possible_unicode.dtype, str):
+            if possible_unicode.dtype.char == 'S' or possible_unicode.dtype.char == 'U': #not using np.issubdtype because of future warning
                 return np.array(possible_unicode,dtype='S')
             else: #Otherwise, just leave it.
                 return possible_unicode

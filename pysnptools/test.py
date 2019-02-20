@@ -610,7 +610,7 @@ class TestDocStrings(unittest.TestCase):
         import pysnptools.snpreader.snpreader
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
-        result = doctest.testmod(pysnptools.snpreader.snpreader)
+        result = doctest.testmod(pysnptools.snpreader.snpreader,optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
@@ -708,7 +708,7 @@ class TestDocStrings(unittest.TestCase):
                     pysnptools.standardizer.standardizer,
                     pysnptools.standardizer.unit,
                     pysnptools.standardizer.unittrained]:
-            result = doctest.testmod(mod)
+            result = doctest.testmod(mod,optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)
             assert result.failed == 0, "failed doc test: " + __file__
         os.chdir(old_dir)
 

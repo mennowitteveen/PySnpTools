@@ -289,11 +289,11 @@ class SnpReader(PstReader):
             2.0
             >>> snpdata1.standardize() # standardize changes the values in snpdata1.val and changes the specification.
             SnpData(Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False),Unit())
-            >>> print(snpdata1.val[0,0])
-            0.229415733871
+            >>> print('{0:.6f}'.format(snpdata1.val[0,0]))
+            0.229416
             >>> snpdata2 = snp_on_disk.read().standardize() # Read and standardize in one expression with only one ndarray allocated.
-            >>> print(snpdata2.val[0,0])
-            0.229415733871
+            >>> print('{0:.6f}'.format(snpdata2.val[0,0]))
+            0.229416
    
     The :meth:`read_kernel` Method
 
@@ -305,11 +305,11 @@ class SnpReader(PstReader):
             >>> from pysnptools.standardizer import Unit
             >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
             >>> kerneldata1 = snp_on_disk.read_kernel(Unit()) #Create an in-memory kernel from the snp data on disk.
-            >>> print(kerneldata1.val[0,0])
-            901.421835903
+            >>> print('{0:.6f}'.format(kerneldata1.val[0,0]))
+            901.421836
             >>> kerneldata2 = snp_on_disk.read_kernel(Unit(),block_size=10) #Create an in-memory kernel from the snp data on disk, but only read 10 SNPS at a time from the disk.
-            >>> print(kerneldata2.val[0,0])
-            901.421835903
+            >>> print('{0:.6f}'.format(kerneldata2.val[0,0]))
+            901.421836
 
 
     Details of Methods & Properties:
@@ -392,10 +392,10 @@ class SnpReader(PstReader):
 
         >>> from pysnptools.snpreader import Bed
         >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
-        >>> print(snp_on_disk.pos[:3,]) # print position information for the first three sids:
-        [[ 1.          0.00800801  0.        ]
-         [ 1.          0.023023    1.        ]
-         [ 1.          0.0700701   4.        ]]
+        >>> print(snp_on_disk.pos[:3,]) # print position information for the first three sids: #The '...' is for possible space char
+        [[...1.          0.00800801  0.        ]
+         [...1.          0.023023    1.        ]
+         [...1.          0.0700701   4.        ]]
         """
         return self.col_property
 
@@ -528,8 +528,8 @@ class SnpReader(PstReader):
         >>> from pysnptools.standardizer import Unit
         >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify SNP data on disk
         >>> kerneldata1 = snp_on_disk.read_kernel(Unit())
-        >>> print((int(kerneldata1.iid_count), kerneldata1.val[0,0]))
-        (300, 901.42183590279842)
+        >>> print((int(kerneldata1.iid_count), '{0:.6f}'.format(kerneldata1.val[0,0])))
+        (300, '901.421836')
         """
         assert standardizer is not None, "'standardizer' must be provided"
 
@@ -564,8 +564,8 @@ class SnpReader(PstReader):
         >>> from pysnptools.standardizer import Unit
         >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify SNP data on disk
         >>> kernel = snp_on_disk.kernel(Unit())
-        >>> print(((int(kernel.shape[0]),int(kernel.shape[1])), kernel[0,0]))
-        ((300, 300), 901.42183590279842)
+        >>> print(((int(kernel.shape[0]),int(kernel.shape[1])), '{0:.6f}'.format(kernel[0,0])))
+        ((300, 300), '901.421836')
         """        #print "entering kernel with {0},{1},{2}".format(self, standardizer, blocksize)
         warnings.warn(".kernel(...) is deprecated. Use '.read_kernel(...).val", DeprecationWarning)
         if blocksize is not None:
@@ -687,6 +687,6 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     import doctest
-    doctest.testmod()
+    doctest.testmod(optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)
     # There is also a unit test case in 'pysnptools\test.py' that calls this doc test
     print("done")

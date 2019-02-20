@@ -629,6 +629,6 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     import doctest
-    doctest.testmod(optionflags=doctest.ELLIPSIS)
+    doctest.testmod(optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)
     # There is also a unit test case in 'pysnptools\test.py' that calls this doc test
     print("done")

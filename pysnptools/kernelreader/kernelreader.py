@@ -272,8 +272,8 @@ class KernelReader(PstReader):
         >>> print(type(kerneldata1.val).__name__) # The KernelData instance contains a ndarray of the data.
         ndarray
         >>> subset_kerneldata = kernel_on_disk[::2].read() # From the disk, read kernel values for every other iid
-        >>> print(subset_kerneldata.val[0,0]) # Print the first kernel value in the subset
-        9923.06992842
+        >>> print('{0:.6f}'.format(subset_kerneldata.val[0,0])) # Print the first kernel value in the subset
+        9923.069928
         >>> subsub_kerneldata = subset_kerneldata[:10].read(order='A',view_ok=True) # Create an in-memory subset of the subset with kernel values for the first ten iids. Share memory if practical.
         >>> import numpy as np
         >>> #print(np.may_share_memory(subset_kerneldata.val, subsub_kerneldata.val)) # Do the two ndarray's share memory? They could. Currently they won't.       

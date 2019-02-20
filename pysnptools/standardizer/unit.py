@@ -14,8 +14,8 @@ class Unit(Standardizer):
     >>> from pysnptools.standardizer import Unit
     >>> from pysnptools.snpreader import Bed
     >>> snpdata1 = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False).read().standardize(Unit())
-    >>> print(snpdata1.val[0,0])
-    0.229415733871
+    >>> print('{0:.6f}'.format(snpdata1.val[0,0]))
+    0.229416
     """
     def __init__(self):
         super(Unit, self).__init__()

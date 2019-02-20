@@ -22,17 +22,17 @@ class Identity(KernelReader):
         >>> identity = Identity(iid=[['fam0','iid0'],['fam0','iid1']])
         >>> print(identity.iid_count)
         2
-        >>> print(identity.read().val)
-        [[ 1.  0.]
-         [ 0.  1.]]
+        >>> print(identity.read().val) # '...' is possible space character
+        [[...1.  0.]
+         [...0.  1.]]
 
         >>> identity = Identity(iid=[['fam0','iid0'],['fam0','iid1'],['fam0','iid2']],test=[['fam0','iid1'],['fam0','iid3']])
         >>> print((identity.iid0_count, identity.iid1_count))
         (3, 2)
-        >>> print(identity.read().val)
-        [[ 0.  0.]
-         [ 1.  0.]
-         [ 0.  0.]]
+        >>> print(identity.read().val) # '...' is possible space character
+        [[...0.  0.]
+         [...1.  0.]
+         [...0.  0.]]
 
     '''
     def __init__(self, iid, test=None): #!!! add docs and test for test
@@ -99,4 +99,4 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     import doctest
-    doctest.testmod()
+    doctest.testmod(optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)

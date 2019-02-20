@@ -98,7 +98,7 @@ class PstData(PstReader):
             input = empty_creator(count)
         elif not isinstance(input,np.ndarray):
             input = np.array(input,dtype=dtype)
-        elif np.issubdtype(input.dtype,np.unicode):
+        elif input.dtype.char == 'U': #This avoids a Future warning from using np.issubtype
             input = np.array(input,dtype='S')
 
         assert count is None or len(input) == count, "Expect length of {0} for input {1}".format(count,input)

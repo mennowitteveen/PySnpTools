@@ -391,10 +391,10 @@ class PstReader(object):
 
         >>> from pysnptools.pstreader import PstNpz
         >>> on_disk = PstNpz('../../tests/datasets/all_chr.maf0.001.N300.pst.npz')
-        >>> print(on_disk.col_property[:3]) # print column information for the first three cols:
-        [[ 1.          0.00800801  0.        ]
-         [ 1.          0.023023    1.        ]
-         [ 1.          0.0700701   4.        ]]
+        >>> print(on_disk.col_property[:3]) # print column information for the first three cols: #The '...' is an optional space
+        [[...1.          0.00800801  0.        ]
+         [...1.          0.023023    1.        ]
+         [...1.          0.0700701   4.        ]]
         """
         raise NotImplementedError
 
@@ -629,6 +629,6 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     import doctest
-    doctest.testmod()
+    doctest.testmod(optionflags=doctest.ELLIPSIS)
     # There is also a unit test case in 'pysnptools\test.py' that calls this doc test
     print("done")

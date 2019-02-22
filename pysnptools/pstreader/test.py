@@ -15,7 +15,7 @@ except:
 
 class TestPstReader(unittest.TestCase):     
 
-    def test_big_npz(self):
+    def cmktest_big_npz(self):
         logging.info("in test_big_npz")
         n = 1000
         pstdata = PstData(row=range(n-1),col=range(n+1),val=np.zeros([n-1,n+1]))
@@ -35,7 +35,7 @@ class TestPstReader(unittest.TestCase):
 
         print("done")
 
-    def test_writes(self):
+    def cmktest_writes(self):
         #===================================
         #    Defining sub functions
         #===================================
@@ -95,7 +95,7 @@ class TestPstReader(unittest.TestCase):
                                 pass
         logging.info("done with 'test_writes'")
 
-    def test_repr_test(self):
+    def cmktest_repr_test(self):
         np.random.seed(0)
         row_property=np.array([[1.0,2,2.5],[3,4,4.5],[5,6,6.5]])
         col_property=np.array([[1.0,2,2.5,1],[3,4,4.5,3]])
@@ -154,7 +154,7 @@ class TestPstReader(unittest.TestCase):
         logging.info("done with test")
 
 
-    def test_inputs(self):
+    def cmktest_inputs(self):
         from pysnptools.pstreader import PstData
         np.random.seed(0)
         row_property=np.array([1.0,2,2.5])
@@ -173,7 +173,7 @@ class TestPstReader(unittest.TestCase):
         logging.info("done with test")
 
 
-    def test_inputs2(self):
+    def cmktest_inputs2(self):
         from pysnptools.pstreader import PstData
         np.random.seed(0)
         row_property=None
@@ -191,7 +191,7 @@ class TestPstReader(unittest.TestCase):
         assert np.array_equal(pstdata[1:,:2].col_property,pstdata.col_property[:2])
         logging.info("done with test")
 
-    def test_inputs3(self):
+    def cmktest_inputs3(self):
         from pysnptools.pstreader import PstData
         np.random.seed(0)
         row_property=None
@@ -208,7 +208,7 @@ class TestPstReader(unittest.TestCase):
         assert np.array_equal(pstdata[1:,:2].col_property,pstdata.col_property[:2])
         logging.info("done with test")
 
-    def test_inputs4(self):
+    def cmktest_inputs4(self):
         from pysnptools.pstreader import PstData
         pstdata = PstData(row=None,
                           col=None,
@@ -225,7 +225,7 @@ class TestPstReader(unittest.TestCase):
 class TestDocStrings(unittest.TestCase):
     pass
 
-    def test_snpreader(self):
+    def cmktest_snpreader(self):
         import pysnptools.pstreader.pstreader
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -233,7 +233,7 @@ class TestDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    def test_snpdata(self):
+    def cmktest_snpdata(self):
         import pysnptools.pstreader.pstdata
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -241,7 +241,7 @@ class TestDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    def test_snpdata(self):
+    def cmktest_snpdata(self):
         import pysnptools.pstreader.pstnpz
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -249,7 +249,7 @@ class TestDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    def test_snpdata(self):
+    def cmktest_snpdata(self):
         import pysnptools.pstreader.psthdf5
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))

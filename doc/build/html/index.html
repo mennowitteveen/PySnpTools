@@ -409,11 +409,11 @@ it also returns itself. See <a class="reference internal" href="#pysnptools.snpr
 <span class="go">2.0</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata1</span><span class="o">.</span><span class="n">standardize</span><span class="p">()</span> <span class="c1"># standardize changes the values in snpdata1.val and changes the specification.</span>
 <span class="go">SnpData(Bed(&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;,count_A1=False),Unit())</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snpdata1</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
-<span class="go">0.229415733871</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">snpdata1</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
+<span class="go">0.229416</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata2</span> <span class="o">=</span> <span class="n">snp_on_disk</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">standardize</span><span class="p">()</span> <span class="c1"># Read and standardize in one expression with only one ndarray allocated.</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snpdata2</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
-<span class="go">0.229415733871</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">snpdata2</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
+<span class="go">0.229416</span>
 </pre></div>
 </div>
 </dd>
@@ -426,11 +426,11 @@ the method can save memory by reading (and standardizing) the data in blocks. Se
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">Unit</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snp_on_disk</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1"># Specify some data on disk in Bed format</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata1</span> <span class="o">=</span> <span class="n">snp_on_disk</span><span class="o">.</span><span class="n">read_kernel</span><span class="p">(</span><span class="n">Unit</span><span class="p">())</span> <span class="c1">#Create an in-memory kernel from the snp data on disk.</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">kerneldata1</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
-<span class="go">901.421835903</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kerneldata1</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
+<span class="go">901.421836</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata2</span> <span class="o">=</span> <span class="n">snp_on_disk</span><span class="o">.</span><span class="n">read_kernel</span><span class="p">(</span><span class="n">Unit</span><span class="p">(),</span><span class="n">block_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span> <span class="c1">#Create an in-memory kernel from the snp data on disk, but only read 10 SNPS at a time from the disk.</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">kerneldata2</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
-<span class="go">901.421835903</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kerneldata2</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
+<span class="go">901.421836</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -552,8 +552,8 @@ the method can save memory by reading (and standardizing) the data in blocks. Se
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">Unit</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snp_on_disk</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1"># Specify SNP data on disk</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kernel</span> <span class="o">=</span> <span class="n">snp_on_disk</span><span class="o">.</span><span class="n">kernel</span><span class="p">(</span><span class="n">Unit</span><span class="p">())</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(((</span><span class="nb">int</span><span class="p">(</span><span class="n">kernel</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="nb">int</span><span class="p">(</span><span class="n">kernel</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])),</span> <span class="n">kernel</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
-<span class="go">((300, 300), 901.42183590279842)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(((</span><span class="nb">int</span><span class="p">(</span><span class="n">kernel</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="nb">int</span><span class="p">(</span><span class="n">kernel</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])),</span> <span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kernel</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])))</span>
+<span class="go">((300, 300), &#39;901.421836&#39;)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -581,10 +581,10 @@ the method can save memory by reading (and standardizing) the data in blocks. Se
 </table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snp_on_disk</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snp_on_disk</span><span class="o">.</span><span class="n">pos</span><span class="p">[:</span><span class="mi">3</span><span class="p">,])</span> <span class="c1"># print position information for the first three sids:</span>
-<span class="go">[[ 1.          0.00800801  0.        ]</span>
-<span class="go"> [ 1.          0.023023    1.        ]</span>
-<span class="go"> [ 1.          0.0700701   4.        ]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snp_on_disk</span><span class="o">.</span><span class="n">pos</span><span class="p">[:</span><span class="mi">3</span><span class="p">,])</span> <span class="c1"># print position information for the first three sids: #The &#39;...&#39; is for possible space char</span>
+<span class="go">[[...1.          0.00800801  0.        ]</span>
+<span class="go"> [...1.          0.023023    1.        ]</span>
+<span class="go"> [...1.          0.0700701   4.        ]]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -680,8 +680,8 @@ share memory and so it may ignore your suggestion and allocate a new ndarray any
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">Unit</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snp_on_disk</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1"># Specify SNP data on disk</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata1</span> <span class="o">=</span> <span class="n">snp_on_disk</span><span class="o">.</span><span class="n">read_kernel</span><span class="p">(</span><span class="n">Unit</span><span class="p">())</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">kerneldata1</span><span class="o">.</span><span class="n">iid_count</span><span class="p">),</span> <span class="n">kerneldata1</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
-<span class="go">(300, 901.42183590279842)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">kerneldata1</span><span class="o">.</span><span class="n">iid_count</span><span class="p">),</span> <span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kerneldata1</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])))</span>
+<span class="go">(300, &#39;901.421836&#39;)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -931,11 +931,11 @@ standard deviation 1.0) and <a class="reference internal" href="#pysnptools.stan
 <span class="go">2.0</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata1</span><span class="o">.</span><span class="n">standardize</span><span class="p">()</span> <span class="c1"># standardize changes the values in snpdata1.val and changes the specification.</span>
 <span class="go">SnpData(Bed(&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;,count_A1=False),Unit())</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snpdata1</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
-<span class="go">0.229415733871</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">snpdata1</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
+<span class="go">0.229416</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata2</span> <span class="o">=</span> <span class="n">snp_on_disk</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">standardize</span><span class="p">()</span> <span class="c1"># Read and standardize in one expression with only one ndarray allocated.</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snpdata2</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
-<span class="go">0.229415733871</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">snpdata2</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
+<span class="go">0.229416</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1718,8 +1718,8 @@ share memory and so it may ignore your suggestion and allocate a new ndarray any
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">kerneldata1</span><span class="o">.</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span> <span class="c1"># The KernelData instance contains a ndarray of the data.</span>
 <span class="go">ndarray</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">subset_kerneldata</span> <span class="o">=</span> <span class="n">kernel_on_disk</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="c1"># From the disk, read kernel values for every other iid</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">subset_kerneldata</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> <span class="c1"># Print the first kernel value in the subset</span>
-<span class="go">9923.06992842</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subset_kerneldata</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span> <span class="c1"># Print the first kernel value in the subset</span>
+<span class="go">9923.069928</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">subsub_kerneldata</span> <span class="o">=</span> <span class="n">subset_kerneldata</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="s1">&#39;A&#39;</span><span class="p">,</span><span class="n">view_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># Create an in-memory subset of the subset with kernel values for the first ten iids. Share memory if practical.</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1">#print(np.may_share_memory(subset_kerneldata.val, subsub_kerneldata.val)) # Do the two ndarray&#39;s share memory? They could. Currently they won&#39;t.       </span>
@@ -1987,18 +1987,18 @@ val, iid, sid, and pos information in Hdf5 format.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">identity</span> <span class="o">=</span> <span class="n">Identity</span><span class="p">(</span><span class="n">iid</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">identity</span><span class="o">.</span><span class="n">iid_count</span><span class="p">)</span>
 <span class="go">2</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">identity</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">val</span><span class="p">)</span>
-<span class="go">[[ 1.  0.]</span>
-<span class="go"> [ 0.  1.]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">identity</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">val</span><span class="p">)</span> <span class="c1"># &#39;...&#39; is possible space character</span>
+<span class="go">[[...1.  0.]</span>
+<span class="go"> [...0.  1.]]</span>
 </pre></div>
 </div>
 <div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">identity</span> <span class="o">=</span> <span class="n">Identity</span><span class="p">(</span><span class="n">iid</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid2&#39;</span><span class="p">]],</span><span class="n">test</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid3&#39;</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">((</span><span class="n">identity</span><span class="o">.</span><span class="n">iid0_count</span><span class="p">,</span> <span class="n">identity</span><span class="o">.</span><span class="n">iid1_count</span><span class="p">))</span>
 <span class="go">(3, 2)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">identity</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">val</span><span class="p">)</span>
-<span class="go">[[ 0.  0.]</span>
-<span class="go"> [ 1.  0.]</span>
-<span class="go"> [ 0.  0.]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">identity</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">val</span><span class="p">)</span> <span class="c1"># &#39;...&#39; is possible space character</span>
+<span class="go">[[...0.  0.]</span>
+<span class="go"> [...1.  0.]</span>
+<span class="go"> [...0.  0.]]</span>
 </pre></div>
 </div>
 </dd>
@@ -2048,8 +2048,8 @@ at once.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">kernel_on_disk</span><span class="o">.</span><span class="n">iid_count</span><span class="p">)</span>                                  <span class="c1"># iid information is read from disk, but not SNP data</span>
 <span class="go">500</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata</span> <span class="o">=</span> <span class="n">kernel_on_disk</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">standardize</span><span class="p">()</span>                <span class="c1"># SNPs are read and Unit standardized, 500 at a time, to create a kernel, which is then standardized</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">kerneldata</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
-<span class="go">0.992306992842</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kerneldata</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
+<span class="go">0.992307</span>
 </pre></div>
 </div>
 </dd>
@@ -3850,24 +3850,24 @@ in time linear in the number of ranges, rather than integer elements.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">Unit</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata1</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">Unit</span><span class="p">())</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snpdata1</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
-<span class="go">0.229415733871</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">snpdata1</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
+<span class="go">0.229416</span>
 </pre></div>
 </div>
 <p>Create a kernel from SNP data on disk.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.bed&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">read_kernel</span><span class="p">(</span><span class="n">Unit</span><span class="p">())</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">kerneldata</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
-<span class="go">9923.06992842</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kerneldata</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
+<span class="go">9923.069928</span>
 </pre></div>
 </div>
 <p>Can also return a constant SNP standardizer that can be applied to other <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">snp_whole</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train_idx</span><span class="p">,</span> <span class="n">test_idx</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="n">snp_whole</span><span class="o">.</span><span class="n">iid_count</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span> <span class="c1">#test on the first 10, train on the rest</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snp_train</span><span class="p">,</span> <span class="n">trained_standardizer</span> <span class="o">=</span> <span class="n">Unit</span><span class="p">()</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">snp_whole</span><span class="p">[</span><span class="n">train_idx</span><span class="p">,:]</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span><span class="n">return_trained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snp_train</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
-<span class="go">0.233549683248</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">trained_standardizer</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])</span> <span class="c1">#The mean and stddev of the 1st SNP on the training data</span>
-<span class="go">[ 1.94827586  0.22146953]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">snp_train</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
+<span class="go">0.233550</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">trained_standardizer</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])</span> <span class="c1">#The mean and stddev of the 1st SNP on the training data # &#39;...&#39; for a possible space character</span>
+<span class="go">[...1.94827586  0.22146953]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snp_test</span> <span class="o">=</span> <span class="n">snp_whole</span><span class="p">[</span><span class="n">test_idx</span><span class="p">,:]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">trained_standardizer</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snp_test</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
 <span class="go">0.23354968324845735</span>
@@ -3878,8 +3878,8 @@ in time linear in the number of ranges, rather than integer elements.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
 <span class="go">2.0</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">val</span> <span class="o">=</span> <span class="n">Unit</span><span class="p">()</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
-<span class="go">0.229415733871</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
+<span class="go">0.229416</span>
 </pre></div>
 </div>
 <p>Details of Methods &amp; Properties:</p>
@@ -3936,8 +3936,8 @@ NaN values are then filled with zero, the mean (consequently, if there are NaN v
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">Unit</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata1</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">Unit</span><span class="p">())</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snpdata1</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
-<span class="go">0.229415733871</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">snpdata1</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
+<span class="go">0.229416</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -3969,8 +3969,8 @@ NaN values are then filled with zero, the mean (consequently, if there are NaN v
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">Beta</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata1</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">Beta</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">25</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snpdata1</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
-<span class="go">0.68080194805</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">snpdata1</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
+<span class="go">0.680802</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -4028,8 +4028,8 @@ will have a diagonal that sums to iid_count.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata1</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">Unit</span><span class="p">())</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">DiagKtoN</span><span class="p">())</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kernel1</span> <span class="o">=</span> <span class="n">snpdata1</span><span class="o">.</span><span class="n">read_kernel</span><span class="p">(</span><span class="n">Identity</span><span class="p">())</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">kernel1</span><span class="o">.</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
-<span class="go">300.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">kernel1</span><span class="o">.</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+<span class="go">300.000000</span>
 </pre></div>
 </div>
 <p>Example of DiagKtoN to <a class="reference internal" href="#pysnptools.kernelreader.KernelData" title="pysnptools.kernelreader.KernelData"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code></a>:</p>
@@ -4038,8 +4038,8 @@ will have a diagonal that sums to iid_count.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata1</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">Unit</span><span class="p">())</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kernel1</span> <span class="o">=</span> <span class="n">snpdata1</span><span class="o">.</span><span class="n">read_kernel</span><span class="p">(</span><span class="n">DiagKtoN</span><span class="p">(),</span><span class="n">block_size</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">kernel1</span><span class="o">.</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
-<span class="go">300.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">kernel1</span><span class="o">.</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+<span class="go">300.000000</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -4073,15 +4073,15 @@ NaN values are then filled with zero.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">1</span><span class="p">:,:]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="c1"># read SNP values for all but the first iid</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_</span><span class="p">,</span> <span class="n">unittrained</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">Unit</span><span class="p">(),</span><span class="n">return_trained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1">#Unit standardize and remember the mean and stddev of each sid</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">unittrained</span><span class="o">.</span><span class="n">stats</span><span class="p">[:</span><span class="mi">5</span><span class="p">,:])</span> <span class="c1">#Print the means and stddev of the first five sids</span>
-<span class="go">[[ 1.94983278  0.21828988]</span>
-<span class="go"> [ 1.96989967  0.17086341]</span>
-<span class="go"> [ 1.84280936  0.39057474]</span>
-<span class="go"> [ 1.99665552  0.0577347 ]</span>
-<span class="go"> [ 1.97658863  0.15120608]]</span>
+<span class="go">[[...1.94983278  0.21828988]</span>
+<span class="go"> [...1.96989967  0.17086341]</span>
+<span class="go"> [...1.84280936  0.39057474]</span>
+<span class="go"> [...1.99665552  0.0577347 ]</span>
+<span class="go"> [...1.97658863  0.15120608]]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">test</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="c1"># read SNP values for the first iid</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">test</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">unittrained</span><span class="p">)</span> <span class="c1"># Use the mean and stddev of the train data to unit standardize the test data.</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
-<span class="go">0.229819279888</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
+<span class="go">0.229819</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -4147,13 +4147,13 @@ It always works in-place <em>and</em> returns the <a class="reference internal" 
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">kernel_whole</span> <span class="o">=</span> <span class="n">KernelNpz</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.kernel.npz&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train_idx</span><span class="p">,</span> <span class="n">test_idx</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="n">kernel_whole</span><span class="o">.</span><span class="n">iid_count</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>  <span class="c1">#test on the first 10, train on the rest</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kernel_train</span><span class="p">,</span> <span class="n">trained_standardizer</span> <span class="o">=</span> <span class="n">DiagKtoN</span><span class="p">()</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">kernel_whole</span><span class="p">[</span><span class="n">train_idx</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span><span class="n">return_trained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">kernel_train</span><span class="o">.</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
-<span class="go">490.0</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">trained_standardizer</span><span class="o">.</span><span class="n">factor</span><span class="p">)</span>
-<span class="go">9.99909752089e-05</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">kernel_train</span><span class="o">.</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+<span class="go">490.000000</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">trained_standardizer</span><span class="o">.</span><span class="n">factor</span><span class="p">))</span>
+<span class="go">0.000100</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kernel_whole_test</span> <span class="o">=</span> <span class="n">kernel_whole</span><span class="p">[:,</span><span class="n">test_idx</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">trained_standardizer</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">kernel_whole_test</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
-<span class="go">0.99221743920965288</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kernel_whole_test</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
+<span class="go">0.992217</span>
 </pre></div>
 </div>
 <p>Details of Methods &amp; Properties:</p>
@@ -4215,8 +4215,8 @@ will have a diagonal that sums to iid_count.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata1</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">Unit</span><span class="p">())</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">DiagKtoN</span><span class="p">())</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kernel1</span> <span class="o">=</span> <span class="n">snpdata1</span><span class="o">.</span><span class="n">read_kernel</span><span class="p">(</span><span class="n">Identity</span><span class="p">())</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">kernel1</span><span class="o">.</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
-<span class="go">300.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">kernel1</span><span class="o">.</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+<span class="go">300.000000</span>
 </pre></div>
 </div>
 <p>Example of DiagKtoN to <a class="reference internal" href="#pysnptools.kernelreader.KernelData" title="pysnptools.kernelreader.KernelData"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code></a>:</p>
@@ -4225,8 +4225,8 @@ will have a diagonal that sums to iid_count.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata1</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">Unit</span><span class="p">())</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kernel1</span> <span class="o">=</span> <span class="n">snpdata1</span><span class="o">.</span><span class="n">read_kernel</span><span class="p">(</span><span class="n">DiagKtoN</span><span class="p">(),</span><span class="n">block_size</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">kernel1</span><span class="o">.</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
-<span class="go">300.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">kernel1</span><span class="o">.</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+<span class="go">300.000000</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -4739,10 +4739,10 @@ Moreover, the row and col data is read from file only once.</p>
 </table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.pstreader</span> <span class="k">import</span> <span class="n">PstNpz</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">on_disk</span> <span class="o">=</span> <span class="n">PstNpz</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300.pst.npz&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">on_disk</span><span class="o">.</span><span class="n">col_property</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span> <span class="c1"># print column information for the first three cols:</span>
-<span class="go">[[ 1.          0.00800801  0.        ]</span>
-<span class="go"> [ 1.          0.023023    1.        ]</span>
-<span class="go"> [ 1.          0.0700701   4.        ]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">on_disk</span><span class="o">.</span><span class="n">col_property</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span> <span class="c1"># print column information for the first three cols: #The &#39;...&#39; is an optional space</span>
+<span class="go">[[...1.          0.00800801  0.        ]</span>
+<span class="go"> [...1.          0.023023    1.        ]</span>
+<span class="go"> [...1.          0.0700701   4.        ]]</span>
 </pre></div>
 </div>
 </dd></dl>

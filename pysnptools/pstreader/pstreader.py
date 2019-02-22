@@ -522,13 +522,17 @@ class PstReader(object):
 
     @staticmethod
     def _makekey(item):
-        if isinstance(item,(str,numbers.Integral,float)): #return quickly from known items
+        if isinstance(item,str):
+            return str.encode(item) # return the ascii version
+        if isinstance(item,(numbers.Integral,float)): #return quickly from known items
             return item
         try:
             hash(item)
             return item
         except:
-            return tuple(item)
+            pass
+
+        return tuple((PstReader._makekey(subitem) for subitem in item))
 
     def __getitem__(self, row_indexer_and_col_indexer):
         from pysnptools.pstreader._subset import _PstSubset

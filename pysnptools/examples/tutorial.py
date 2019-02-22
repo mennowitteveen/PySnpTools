@@ -362,7 +362,7 @@ assert np.array_equal(snpreader_i.iid,phenoreader_i.iid)
 snpdata_i = snpreader_i.read()
 phenodata_i = phenoreader_i.read()
 
-bs = np.linalg.lstsq(snpdata_i.val, phenodata_i.val)[0] #usually would add a 1's column
+bs = np.linalg.lstsq(snpdata_i.val, phenodata_i.val,rcond=-1)[0] #usually would add a 1's column
 predicted = snpdata_i.val.dot(bs)
 import matplotlib.pyplot as plt
 plt.plot(phenodata_i.val, predicted, '.', markersize=10)

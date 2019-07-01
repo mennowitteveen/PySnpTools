@@ -25,24 +25,25 @@ class DiagKtoN(Standardizer):
 
     >>> from pysnptools.standardizer import DiagKtoN, Unit, Identity
     >>> from pysnptools.snpreader import Bed
-    >>> snpdata1 = Bed('../../tests/datasets/all_chr.maf0.001.N300').read().standardize(Unit()).standardize(DiagKtoN())
+    >>> snpdata1 = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False).read().standardize(Unit()).standardize(DiagKtoN())
     >>> kernel1 = snpdata1.read_kernel(Identity())
-    >>> print np.diag(kernel1.val).sum()
-    300.0
+    >>> print('{0:.6f}'.format(np.diag(kernel1.val).sum()))
+    300.000000
 
     Example of DiagKtoN to :class:`.KernelData`:
 
     >>> import numpy as np
     >>> from pysnptools.standardizer import DiagKtoN, Unit, Identity
     >>> from pysnptools.snpreader import Bed
-    >>> snpdata1 = Bed('../../tests/datasets/all_chr.maf0.001.N300').read().standardize(Unit())
+    >>> snpdata1 = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False).read().standardize(Unit())
     >>> kernel1 = snpdata1.read_kernel(DiagKtoN(),block_size=None)
-    >>> print np.diag(kernel1.val).sum()
-    300.0
+    >>> print('{0:.6f}'.format(np.diag(kernel1.val).sum()))
+    300.000000
 
     '''
     """diag(K)=N standardization of the data"""
     def __init__(self, deprecated_iid_count=None):
+        super(DiagKtoN, self).__init__()
         if deprecated_iid_count is not None:
             warnings.warn("'iid_count' is deprecated (and not needed, since can get iid_count from SNPs val's first dimension", DeprecationWarning)
 
@@ -107,6 +108,7 @@ class DiagKtoNTrained(Standardizer):
 
     """
     def __init__(self,factor):
+        super(DiagKtoNTrained, self).__init__()
         self.factor = factor
 
     def standardize(self, input, block_size=None, return_trained=False, force_python_only=False):

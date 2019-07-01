@@ -9,6 +9,7 @@ class BySqrtSidCount(Standardizer):
     '''
 
     def __init__(self):
+        super(BySqrtSidCount, self).__init__()
         warnings.warn("BySqrtSidCount no longer supported", DeprecationWarning)
-        pass
+
 

@@ -12,6 +12,10 @@ from pysnptools.util import create_directory_if_necessary
 from pysnptools.pstreader import PstReader
 from pysnptools.snpreader import SnpData
 import pysnptools.standardizer as stdizer
+try:
+    from builtins import range
+except:
+    pass
 
 class _fortesting_JustCheckExists(object): #Implements ICopier
 
@@ -29,7 +33,7 @@ class _fortesting_JustCheckExists(object): #Implements ICopier
         if isinstance(item, str):
             if not os.path.exists(item): raise Exception("Missing output file '{0}'".format(item))
             if self.doPrintOutputNames:
-                print item
+                print(item)
         elif hasattr(item,"copyoutputs"):
             item.copyoutputs(self)
         # else -- do nothing
@@ -37,7 +41,7 @@ class _fortesting_JustCheckExists(object): #Implements ICopier
 
 
 
-class TestLoader(unittest.TestCase):
+class TestKernelReader(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         self.currentFolder = os.path.dirname(os.path.realpath(__file__))
@@ -47,7 +51,7 @@ class TestLoader(unittest.TestCase):
         for std in [stdizer.Beta(2,10),stdizer.Unit()]:
             np.random.seed(0)
             snp_count = 20
-            snpreader = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in xrange(snp_count)],val=np.array(np.random.randint(3,size=[3,snp_count]),dtype=np.float64,order='F'))
+            snpreader = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(snp_count)],val=np.array(np.random.randint(3,size=[3,snp_count]),dtype=np.float64,order='F'))
             kerneldata0,trained0,diag0 = SnpKernel(snpreader,std,block_size=1)._read_with_standardizing(to_kerneldata=True,return_trained=True)
             kerneldata1,trained1,diag1 = SnpKernel(snpreader,std,block_size=None)._read_with_standardizing(to_kerneldata=True,return_trained=True)
             np.testing.assert_array_almost_equal(kerneldata0.val,kerneldata1.val, decimal=10)
@@ -64,8 +68,8 @@ class TestLoader(unittest.TestCase):
                 for std in [stdizer.Unit(),stdizer.Beta(2,10)]:
                         np.random.seed(0)
                         snp_count = 20
-                        snpreader0 = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in xrange(snp_count)],val=np.array(np.random.randint(3,size=[3,snp_count]),dtype=dtype,order=order))
-                        snpreader1 = SnpData(iid=[["3","3"],["4","4"]],sid=[str(i) for i in xrange(snp_count)],val=np.array(np.random.randint(3,size=[2,snp_count]),dtype=dtype,order=order))
+                        snpreader0 = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(snp_count)],val=np.array(np.random.randint(3,size=[3,snp_count]),dtype=dtype,order=order))
+                        snpreader1 = SnpData(iid=[["3","3"],["4","4"]],sid=[str(i) for i in range(snp_count)],val=np.array(np.random.randint(3,size=[2,snp_count]),dtype=dtype,order=order))
 
                         #has SNC
                         for has_SNC_in_train in [False, True]:
@@ -113,22 +117,21 @@ class TestLoader(unittest.TestCase):
 
     def test_intersection(self):
 
-        from sklearn import cross_validation
         from pysnptools.standardizer import Unit
         from pysnptools.kernelreader import SnpKernel
         from pysnptools.snpreader import Pheno
-        from pysnptools.kernelreader._subset import _Subset as KernelSubset
-        from pysnptools.snpreader._subset import _Subset as SnpSubset
+        from pysnptools.kernelreader._subset import _KernelSubset
+        from pysnptools.snpreader._subset import _SnpSubset
         from pysnptools.util import intersect_apply
 
-        snps_all = Bed(self.currentFolder + "/../examples/toydata")
+        snps_all = Bed(self.currentFolder + "/../examples/toydata",count_A1=False)
         k = SnpKernel(snps_all,stdizer.Identity())
 
         pheno = Pheno(self.currentFolder + "/../examples/toydata.phe")
         pheno = pheno[1:,:] # To test intersection we remove a iid from pheno
 
         k1,pheno = intersect_apply([k,pheno]) #SnpKernel is special because it standardizes AFTER intersecting.
-        assert isinstance(k1.snpreader,SnpSubset) and not isinstance(k1,KernelSubset)
+        assert isinstance(k1.snpreader,_SnpSubset) and not isinstance(k1,_KernelSubset)
 
         #What happens with fancy selection?
         k2 = k[::2]
@@ -146,7 +149,7 @@ class TestLoader(unittest.TestCase):
         for dtype_start,decimal_start in [(np.float32,5),(np.float64,10)]:
             for order_start in ['F','C','A']:
                 for snp_count in [20,2]:
-                    snpdataX = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in xrange(snp_count)],val=np.array(np.random.randint(3,size=[3,snp_count]),dtype=dtype_start,order=order_start))
+                    snpdataX = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(snp_count)],val=np.array(np.random.randint(3,size=[3,snp_count]),dtype=dtype_start,order=order_start))
                     for stdx in [stdizer.Beta(1,25),stdizer.Identity(),stdizer.Unit()]:
                         for snpreader0 in [snpdataX,snpdataX[:,1:]]:
                             snpreader1 = snpreader0[1:,:]
@@ -181,14 +184,14 @@ class TestLoader(unittest.TestCase):
 
     def test_snp_kernel2(self):
         logging.info("in test_snp_kernel2")
-        snpreader = Bed(self.currentFolder + "/../examples/toydata")
+        snpreader = Bed(self.currentFolder + "/../examples/toydata",count_A1=False)
         snpkernel = SnpKernel(snpreader,standardizer=stdizer.Beta(1,25))
         s  = str(snpkernel)
         _fortesting_JustCheckExists().input(snpkernel)
         
     def test_npz(self):
         logging.info("in test_npz")
-        snpreader = Bed(self.currentFolder + "/../examples/toydata")
+        snpreader = Bed(self.currentFolder + "/../examples/toydata",count_A1=False)
         kerneldata1 = snpreader.read_kernel(standardizer=stdizer.Unit())
         s = str(kerneldata1)
         output = "tempdir/kernelreader/toydata.kernel.npz"
@@ -201,7 +204,7 @@ class TestLoader(unittest.TestCase):
 
     def test_subset(self):
         logging.info("in test_subset")
-        snpreader = Bed(self.currentFolder + "/../examples/toydata")
+        snpreader = Bed(self.currentFolder + "/../examples/toydata",count_A1=False)
         snpkernel = SnpKernel(snpreader,stdizer.Unit())
         krsub = snpkernel[::2,::2]
         kerneldata1 = krsub.read()
@@ -215,7 +218,7 @@ class TestLoader(unittest.TestCase):
 
     def test_identity(self):
         logging.info("in test_identity")
-        snpreader = Bed(self.currentFolder + "/../examples/toydata")
+        snpreader = Bed(self.currentFolder + "/../examples/toydata",count_A1=False)
         assert snpreader.iid is snpreader.row
         kid = Identity(snpreader.row)
         assert np.array_equal(kid.row,kid.iid) and np.array_equal(kid.iid,kid.iid0) and np.array_equal(kid.iid0,kid.iid1) and np.array_equal(kid.iid1, kid.col)
@@ -231,7 +234,7 @@ class TestLoader(unittest.TestCase):
 
     def test_identity_sub(self):
         logging.info("in test_identity_sub")
-        snpreader = Bed(self.currentFolder + "/../examples/toydata")
+        snpreader = Bed(self.currentFolder + "/../examples/toydata",count_A1=False)
         assert snpreader.iid is snpreader.row
         kid = Identity(snpreader.row)
         sub3 = kid[::2,1:5]
@@ -242,7 +245,7 @@ class TestLoader(unittest.TestCase):
 
     def test_underscore_read1(self):
         logging.info("in test_underscore_read1")
-        snpreader = Bed(self.currentFolder + "/../examples/toydata")
+        snpreader = Bed(self.currentFolder + "/../examples/toydata",count_A1=False)
         assert snpreader.iid is snpreader.row
         kid = Identity(snpreader.row)
         sub3 = kid[::2,::2]
@@ -253,7 +256,7 @@ class TestLoader(unittest.TestCase):
 
     def test_underscore_read2(self):
         logging.info("in test_underscore_read2")
-        snpreader = Bed(self.currentFolder + "/../examples/toydata")
+        snpreader = Bed(self.currentFolder + "/../examples/toydata",count_A1=False)
         assert snpreader.iid is snpreader.row
         kid = Identity(snpreader.row)
         sub3 = kid[::2,::2]
@@ -293,7 +296,7 @@ class TestDocStrings(unittest.TestCase):
         import pysnptools.kernelreader.identity
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
-        result = doctest.testmod(pysnptools.kernelreader.identity)
+        result = doctest.testmod(pysnptools.kernelreader.identity,optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
@@ -321,7 +324,7 @@ def getTestSuite():
     """
     
     test_suite = unittest.TestSuite([])
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestLoader))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestKernelReader))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDocStrings))
     return test_suite
 

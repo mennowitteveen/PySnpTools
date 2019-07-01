@@ -17,11 +17,12 @@ class Beta(Standardizer):
 
     >>> from pysnptools.standardizer import Beta
     >>> from pysnptools.snpreader import Bed
-    >>> snpdata1 = Bed('../../tests/datasets/all_chr.maf0.001.N300').read().standardize(Beta(1,25))
-    >>> print snpdata1.val[0,0]
-    0.68080194805
+    >>> snpdata1 = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False).read().standardize(Beta(1,25))
+    >>> print('{0:.6f}'.format(snpdata1.val[0,0]))
+    0.680802
     '''
     def __init__(self,a,b):
+        super(Beta, self).__init__()
         self.a = a
         self.b = b
 

@@ -7,16 +7,16 @@ from libcpp.vector cimport vector
 from libcpp cimport bool
 
 cdef extern from "./CPlinkBedFile.h":
-	
-	void _readPlinkBedFilefloatFAAA "readPlinkBedFilefloatFAAA"(string bed_fn, int input_num_ind, int input_num_snps, vector[size_t] iid_idx_list, vector[int] sid_idx_list, float* out)
-	void _readPlinkBedFiledoubleFAAA "readPlinkBedFiledoubleFAAA"(string bed_fn, int input_num_ind, int input_num_snps, vector[size_t] iid_idx_list, vector[int] sid_idx_list, double* out)
-	void _readPlinkBedFilefloatCAAA "readPlinkBedFilefloatCAAA"(string bed_fn, int input_num_ind, int input_num_snps, vector[size_t] iid_idx_list, vector[int] sid_idx_list, float* out)
-	void _readPlinkBedFiledoubleCAAA "readPlinkBedFiledoubleCAAA"(string bed_fn, int input_num_ind, int input_num_snps, vector[size_t] iid_idx_list, vector[int] sid_idx_list, double* out)
 
-	void _writePlinkBedFilefloatFAAA "writePlinkBedFilefloatFAAA"(string bed_fn, int input_num_ind, int input_num_snps, float* inx)
-	void _writePlinkBedFiledoubleFAAA "writePlinkBedFiledoubleFAAA"(string bed_fn, int input_num_ind, int input_num_snps, double* inx)
-	void _writePlinkBedFilefloatCAAA "writePlinkBedFilefloatCAAA"(string bed_fn, int input_num_ind, int input_num_snps, float* inx)
-	void _writePlinkBedFiledoubleCAAA "writePlinkBedFiledoubleCAAA"(string bed_fn, int input_num_ind, int input_num_snps, double* inx)
+	void _readPlinkBedFilefloatFAAA "readPlinkBedFilefloatFAAA"(string bed_fn, int input_num_ind, int input_num_snps, bool count_A1, vector[size_t] iid_idx_list, vector[int] sid_idx_list, float* out)
+	void _readPlinkBedFiledoubleFAAA "readPlinkBedFiledoubleFAAA"(string bed_fn, int input_num_ind, int input_num_snps, bool count_A1, vector[size_t] iid_idx_list, vector[int] sid_idx_list, double* out)
+	void _readPlinkBedFilefloatCAAA "readPlinkBedFilefloatCAAA"(string bed_fn, int input_num_ind, int input_num_snps, bool count_A1, vector[size_t] iid_idx_list, vector[int] sid_idx_list, float* out)
+	void _readPlinkBedFiledoubleCAAA "readPlinkBedFiledoubleCAAA"(string bed_fn, int input_num_ind, int input_num_snps, bool count_A1, vector[size_t] iid_idx_list, vector[int] sid_idx_list, double* out)
+
+	void _writePlinkBedFilefloatFAAA "writePlinkBedFilefloatFAAA"(string bed_fn, int input_num_ind, int input_num_snps, bool count_A1, float* inx)
+	void _writePlinkBedFiledoubleFAAA "writePlinkBedFiledoubleFAAA"(string bed_fn, int input_num_ind, int input_num_snps, bool count_A1, double* inx)
+	void _writePlinkBedFilefloatCAAA "writePlinkBedFilefloatCAAA"(string bed_fn, int input_num_ind, int input_num_snps, bool count_A1, float* inx)
+	void _writePlinkBedFiledoubleCAAA "writePlinkBedFiledoubleCAAA"(string bed_fn, int input_num_ind, int input_num_snps, bool count_A1, double* inx)
 
 
 	void _ImputeAndZeroMeanSNPsfloatFAAA "ImputeAndZeroMeanSNPsfloatFAAA"( 
@@ -110,53 +110,108 @@ def standardizedoubleCAAA(np.ndarray[np.float64_t, ndim=2] out, bool betaNotUnit
 
 	return out, stats
 
-
-def readPlinkBedFilefloatFAAA(bed_fn, input_num_ind, input_num_snps, iidIdxList, snpIdxList, np.ndarray[np.float32_t, ndim=2] out):
+#New 
+def readPlinkBedFile2floatFAAA(bed_fn, input_num_ind, input_num_snps, count_A1, iidIdxList, snpIdxList, np.ndarray[np.float32_t, ndim=2] out):
 	
 	cdef vector[size_t] iid_idx_list = iidIdxList
 	cdef vector[int] sid_idx_list = snpIdxList
 	#http://wiki.cython.org/tutorials/NumpyPointerToC
 
-	_readPlinkBedFilefloatFAAA(bed_fn, input_num_ind, input_num_snps, iid_idx_list, sid_idx_list, <float*> out.data)
+	_readPlinkBedFilefloatFAAA(bed_fn, input_num_ind, input_num_snps, count_A1, iid_idx_list, sid_idx_list, <float*> out.data)
+	return out
+
+def readPlinkBedFile2floatCAAA(bed_fn, input_num_ind, input_num_snps, count_A1, iidIdxList, snpIdxList, np.ndarray[np.float32_t, ndim=2] out):
+	
+	cdef vector[size_t] iid_idx_list = iidIdxList
+	cdef vector[int] sid_idx_list = snpIdxList
+	#http://wiki.cython.org/tutorials/NumpyPointerToC
+
+	_readPlinkBedFilefloatCAAA(bed_fn, input_num_ind, input_num_snps, count_A1, iid_idx_list, sid_idx_list, <float*> out.data)
+	return out
+
+
+def readPlinkBedFile2doubleFAAA(bed_fn, input_num_ind, input_num_snps, count_A1, iidIdxList, snpIdxList, np.ndarray[np.float64_t, ndim=2] out):
+	
+	cdef vector[size_t] iid_idx_list = iidIdxList
+	cdef vector[int] sid_idx_list = snpIdxList
+	#http://wiki.cython.org/tutorials/NumpyPointerToC
+
+	_readPlinkBedFiledoubleFAAA(bed_fn, input_num_ind, input_num_snps, count_A1, iid_idx_list, sid_idx_list, <double*> out.data)
+	return out
+
+def readPlinkBedFile2doubleCAAA(bed_fn, input_num_ind, input_num_snps, count_A1, iidIdxList, snpIdxList, np.ndarray[np.float64_t, ndim=2] out):
+	
+	cdef vector[size_t] iid_idx_list = iidIdxList
+	cdef vector[int] sid_idx_list = snpIdxList
+	#http://wiki.cython.org/tutorials/NumpyPointerToC
+
+	_readPlinkBedFiledoubleCAAA(bed_fn, input_num_ind, input_num_snps, count_A1, iid_idx_list, sid_idx_list, <double*> out.data)
+	return out
+
+
+def writePlinkBedFile2floatFAAA(bed_fn, input_num_ind, input_num_snps, count_A1, np.ndarray[np.float32_t, ndim=2] inx):
+	_writePlinkBedFilefloatFAAA(bed_fn, input_num_ind, input_num_snps, count_A1, <float*> inx.data)
+
+def writePlinkBedFile2floatCAAA(bed_fn, input_num_ind, input_num_snps, count_A1, np.ndarray[np.float32_t, ndim=2] inx):
+	_writePlinkBedFilefloatCAAA(bed_fn, input_num_ind, input_num_snps, count_A1, <float*> inx.data)
+
+def writePlinkBedFile2doubleFAAA(bed_fn, input_num_ind, input_num_snps, count_A1, np.ndarray[np.float64_t, ndim=2] inx):
+	_writePlinkBedFiledoubleFAAA(bed_fn, input_num_ind, input_num_snps, count_A1, <double*> inx.data)
+
+def writePlinkBedFile2doubleCAAA(bed_fn, input_num_ind, input_num_snps, count_A1, np.ndarray[np.float64_t, ndim=2] inx):
+	_writePlinkBedFiledoubleCAAA(bed_fn, input_num_ind, input_num_snps, count_A1, <double*> inx.data)
+
+#Old
+def readPlinkBedFilefloatFAAA(bed_fn, input_num_ind, input_num_snps, iidIdxList, snpIdxList, np.ndarray[np.float32_t, ndim=2] out):
+	count_A1 = False
+	cdef vector[size_t] iid_idx_list = iidIdxList
+	cdef vector[int] sid_idx_list = snpIdxList
+	#http://wiki.cython.org/tutorials/NumpyPointerToC
+
+	_readPlinkBedFilefloatFAAA(bed_fn, input_num_ind, input_num_snps, count_A1, iid_idx_list, sid_idx_list, <float*> out.data)
 	return out
 
 def readPlinkBedFilefloatCAAA(bed_fn, input_num_ind, input_num_snps, iidIdxList, snpIdxList, np.ndarray[np.float32_t, ndim=2] out):
-	
+	count_A1 = False
 	cdef vector[size_t] iid_idx_list = iidIdxList
 	cdef vector[int] sid_idx_list = snpIdxList
 	#http://wiki.cython.org/tutorials/NumpyPointerToC
 
-	_readPlinkBedFilefloatCAAA(bed_fn, input_num_ind, input_num_snps, iid_idx_list, sid_idx_list, <float*> out.data)
+	_readPlinkBedFilefloatCAAA(bed_fn, input_num_ind, input_num_snps, count_A1, iid_idx_list, sid_idx_list, <float*> out.data)
 	return out
 
 
 def readPlinkBedFiledoubleFAAA(bed_fn, input_num_ind, input_num_snps, iidIdxList, snpIdxList, np.ndarray[np.float64_t, ndim=2] out):
-	
+	count_A1 = False
 	cdef vector[size_t] iid_idx_list = iidIdxList
 	cdef vector[int] sid_idx_list = snpIdxList
 	#http://wiki.cython.org/tutorials/NumpyPointerToC
 
-	_readPlinkBedFiledoubleFAAA(bed_fn, input_num_ind, input_num_snps, iid_idx_list, sid_idx_list, <double*> out.data)
+	_readPlinkBedFiledoubleFAAA(bed_fn, input_num_ind, input_num_snps, count_A1, iid_idx_list, sid_idx_list, <double*> out.data)
 	return out
 
 def readPlinkBedFiledoubleCAAA(bed_fn, input_num_ind, input_num_snps, iidIdxList, snpIdxList, np.ndarray[np.float64_t, ndim=2] out):
-	
+	count_A1 = False
 	cdef vector[size_t] iid_idx_list = iidIdxList
 	cdef vector[int] sid_idx_list = snpIdxList
 	#http://wiki.cython.org/tutorials/NumpyPointerToC
 
-	_readPlinkBedFiledoubleCAAA(bed_fn, input_num_ind, input_num_snps, iid_idx_list, sid_idx_list, <double*> out.data)
+	_readPlinkBedFiledoubleCAAA(bed_fn, input_num_ind, input_num_snps, count_A1, iid_idx_list, sid_idx_list, <double*> out.data)
 	return out
 
 
 def writePlinkBedFilefloatFAAA(bed_fn, input_num_ind, input_num_snps, np.ndarray[np.float32_t, ndim=2] inx):
-	_writePlinkBedFilefloatFAAA(bed_fn, input_num_ind, input_num_snps, <float*> inx.data)
+	count_A1 = False
+	_writePlinkBedFilefloatFAAA(bed_fn, input_num_ind, input_num_snps, count_A1, <float*> inx.data)
 
 def writePlinkBedFilefloatCAAA(bed_fn, input_num_ind, input_num_snps, np.ndarray[np.float32_t, ndim=2] inx):
-	_writePlinkBedFilefloatCAAA(bed_fn, input_num_ind, input_num_snps, <float*> inx.data)
+	count_A1 = False
+	_writePlinkBedFilefloatCAAA(bed_fn, input_num_ind, input_num_snps, count_A1, <float*> inx.data)
 
 def writePlinkBedFiledoubleFAAA(bed_fn, input_num_ind, input_num_snps, np.ndarray[np.float64_t, ndim=2] inx):
-	_writePlinkBedFiledoubleFAAA(bed_fn, input_num_ind, input_num_snps, <double*> inx.data)
+	count_A1 = False
+	_writePlinkBedFiledoubleFAAA(bed_fn, input_num_ind, input_num_snps, count_A1, <double*> inx.data)
 
 def writePlinkBedFiledoubleCAAA(bed_fn, input_num_ind, input_num_snps, np.ndarray[np.float64_t, ndim=2] inx):
-	_writePlinkBedFiledoubleCAAA(bed_fn, input_num_ind, input_num_snps, <double*> inx.data)
+	count_A1 = False
+	_writePlinkBedFiledoubleCAAA(bed_fn, input_num_ind, input_num_snps, count_A1, <double*> inx.data)

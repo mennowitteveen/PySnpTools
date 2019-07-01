@@ -1,6 +1,6 @@
 import logging
 import scipy as sp
-from kernelreader import KernelReader
+from pysnptools.kernelreader import KernelReader
 from pysnptools.pstreader import PstHdf5
 import warnings
 
@@ -20,12 +20,15 @@ class KernelHdf5(PstHdf5,KernelReader):
 
         >>> from pysnptools.kernelreader import KernelHdf5
         >>> data_on_disk = KernelHdf5('../examples/toydata.kernel.hdf5')
-        >>> print data_on_disk.iid_count
+        >>> print(data_on_disk.iid_count)
         500
 
     **Methods beyond** :class:`.KernelReader`
 
     '''
+
+    def __init__(self,*args, **kwargs):
+        super(KernelHdf5, self).__init__(*args, **kwargs)
 
     @staticmethod
     def write(filename, kerneldata, hdf5_dtype=None, sid_major=True):
@@ -43,7 +46,7 @@ class KernelHdf5(PstHdf5,KernelReader):
         >>> from pysnptools.snpreader import Bed
         >>> from pysnptools.standardizer import Unit
         >>> import pysnptools.util as pstutil
-        >>> kerneldata = Bed('../examples/toydata.bed').read_kernel(Unit())     # Create a kernel from the data in the Bed file
+        >>> kerneldata = Bed('../examples/toydata.bed',count_A1=False).read_kernel(Unit())     # Create a kernel from the data in the Bed file
         >>> pstutil.create_directory_if_necessary("tempdir/toydata.kernel.hdf5")
         >>> KernelHdf5.write("tempdir/toydata.kernel.hdf5",kerneldata)          # Write data in KernelHdf5 format
         """

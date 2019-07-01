@@ -46,17 +46,23 @@
 #endif
 
 
-// 0 and 2 are flipped (wrt C++ fastlmm) in order to agree to python code
 REAL SUFFIX(unknownOrMissing) = std::numeric_limits<REAL>::quiet_NaN();  // now used by SnpInfo
-REAL SUFFIX(homozygousPrimaryAllele) = 2;                // Major Allele
+REAL SUFFIX(homozygousPrimaryAllele) = 0;                // Major Allele
 REAL SUFFIX(heterozygousAllele) = 1;                     
-REAL SUFFIX(homozygousSecondaryAllele) = 0;              // Minor Allele ()
+REAL SUFFIX(homozygousSecondaryAllele) = 2;              // Minor Allele ()
 
-REAL SUFFIX(mapBedGenotypeToRealAllele)[4] = { 
+REAL SUFFIX(mapBedGenotypeToRealAlleleCountA1)[4] = { 
 	SUFFIX(homozygousSecondaryAllele),       // look-up 0
 	SUFFIX(unknownOrMissing),                // look-up 1
 	SUFFIX(heterozygousAllele),              // look-up 2
 	SUFFIX(homozygousPrimaryAllele),         // look-up 3
+};
+
+REAL SUFFIX(mapBedGenotypeToRealAlleleNoCountA1)[4] = {
+	SUFFIX(homozygousPrimaryAllele),         // look-up 0
+	SUFFIX(unknownOrMissing),                // look-up 1
+	SUFFIX(heterozygousAllele),              // look-up 2
+	SUFFIX(homozygousSecondaryAllele),       // look-up 3
 };
 
 SUFFIX(CBedFile)::SUFFIX(CBedFile)()
@@ -192,7 +198,7 @@ size_t SUFFIX(CBedFile)::ReadLine(BYTE *pb, size_t idx)
 * Read the genotype for all the individuals in iidList at the SNP specified by iSNP
 *   and store the results in pvOut
 */
-void SUFFIX(CBedFile)::ReadGenotypes( size_t iSnp, const vector< size_t >& idxIndividualList, REAL* pvOut, uint64_t_ startpos, uint64_t_  outputNumSNPs)
+void SUFFIX(CBedFile)::ReadGenotypes(size_t iSnp, bool count_A1, const vector< size_t >& idxIndividualList, REAL* pvOut, uint64_t_ startpos, uint64_t_  outputNumSNPs)
 {
 	//fprintf(stdout,"reading iSnp=%d w/ cIndividuals=%d and startpos=%d\n",iSnp,cIndividuals,startpos);
 	ReadLine( &rgBytes[0], iSnp );
@@ -217,7 +223,14 @@ void SUFFIX(CBedFile)::ReadGenotypes( size_t iSnp, const vector< size_t >& idxIn
 #else
 		uint64_t_ out_idx = startpos + i * outputNumSNPs;
 #endif
-		pvOut[ out_idx ] = SUFFIX(mapBedGenotypeToRealAllele)[ rgBedGenotypes[ idx ] ];
+		if (count_A1)
+		{
+			pvOut[out_idx] = SUFFIX(mapBedGenotypeToRealAlleleCountA1)[rgBedGenotypes[idx]];
+		}
+		else {
+			pvOut[out_idx] = SUFFIX(mapBedGenotypeToRealAlleleNoCountA1)[rgBedGenotypes[idx]];
+		}
+
 	}
 }
 
@@ -558,7 +571,7 @@ void SUFFIX(ImputeAndZeroMeanSNPs)(
 }
 
 // wrapper to be used from cython
-void SUFFIX(readPlinkBedFile)(std::string bed_fn, int inputNumIndividuals, int inputNumSNPs, std::vector<size_t> individuals_idx, std::vector<int> snpIdxList, REAL* out)
+void SUFFIX(readPlinkBedFile)(std::string bed_fn, int inputNumIndividuals, int inputNumSNPs, bool count_A1, std::vector<size_t> individuals_idx, std::vector<int> snpIdxList, REAL* out)
 {
 	uint64_t_ N = inputNumIndividuals;
 	uint64_t_ outputNumSNPs = snpIdxList.size();
@@ -574,13 +587,13 @@ void SUFFIX(readPlinkBedFile)(std::string bed_fn, int inputNumIndividuals, int i
 #else
 		uint64_t_ startpos = ((uint64_t_)i);
 #endif
-		bedFile.ReadGenotypes(idx, individuals_idx, out, startpos, outputNumSNPs);
+		bedFile.ReadGenotypes(idx, count_A1, individuals_idx, out, startpos, outputNumSNPs);
 	}
 }
 
 
 // wrapper to be used from cython
-void SUFFIX(writePlinkBedFile)(std::string bed_fn, int iid_count, int sid_count, REAL* in)
+void SUFFIX(writePlinkBedFile)(std::string bed_fn, int iid_count, int sid_count, bool count_A1, REAL* in)
 {
 	FILE* bed_filepointer = fopen(bed_fn.c_str(), "wb");
 	if (!bed_filepointer)
@@ -588,6 +601,10 @@ void SUFFIX(writePlinkBedFile)(std::string bed_fn, int iid_count, int sid_count,
 		printf("Cannot open input file [%s].\n", bed_fn.c_str()); //TODO: removed errorNO
 		return;
 	}
+
+	unsigned char zeroCode = (count_A1 ? 3 : 0);
+	unsigned char twoCode  = (count_A1 ? 0 : 3);
+
 	putc(bedFileMagic1, bed_filepointer);
 	putc(bedFileMagic2, bed_filepointer);
 	putc(1, bed_filepointer);
@@ -627,11 +644,11 @@ void SUFFIX(writePlinkBedFile)(std::string bed_fn, int iid_count, int sid_count,
 				REAL val = in[startpos];
 				unsigned char code;
 				if (val == 0)
-					code = 0;
+					code = zeroCode;
 				else if (val == 1)
 					code = 2; //0b10 backwards on purpose
 				else if (val == 2)
-					code = 3;
+					code = twoCode;
 				else if (val != val) //So NaN
 					code = 1; //0b01 #backwards on purpose
 				else

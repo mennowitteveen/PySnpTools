@@ -77,7 +77,8 @@ extern REAL SUFFIX(unknownOrMissing);  // now used by SnpInfo
 extern REAL SUFFIX(homozygousPrimaryAllele);
 extern REAL SUFFIX(heterozygousAllele);
 extern REAL SUFFIX(homozygousSecondaryAllele);
-extern REAL SUFFIX(mapBedGenotypeToRealAllele)[4];
+extern REAL SUFFIX(mapBedGenotypeToRealAlleleCountA1)[4];
+extern REAL SUFFIX(mapBedGenotypeToRealAlleleNoCountA1)[4];
 
 class SUFFIX(CBedFile)
    {
@@ -102,7 +103,7 @@ public:
    size_t   ReadLine( BYTE *pb, size_t idxSnp );
 
    // read the genotype for all the individuals in 'list' at the SNP specified by iSNP
-   void     ReadGenotypes( size_t iSnp, const vector< size_t >& iIndividualList, REAL* pvOutSNP, uint64_t_ startpos, uint64_t_  outputNumSNPs);
+   void     ReadGenotypes(size_t iSnp, bool count_A1, const vector< size_t >& iIndividualList, REAL* pvOutSNP, uint64_t_ startpos, uint64_t_  outputNumSNPs);
 
 private:
    int      NextChar();
@@ -136,8 +137,8 @@ void SUFFIX(ImputeAndZeroMeanSNPs)(
    );
 
 // to be used by cython wrapper
-void SUFFIX(readPlinkBedFile)(std::string bed_fn, int inputNumIndividuals, int inputNumSNPs, std::vector<size_t> individuals_idx, std::vector<int> snpIdxList, REAL* out);
-void SUFFIX(writePlinkBedFile)(std::string bed_fn, int iid_count, int sid_count, REAL* in);
+void SUFFIX(readPlinkBedFile)(std::string bed_fn, int inputNumIndividuals, int inputNumSNPs, bool count_A1, std::vector<size_t> individuals_idx, std::vector<int> snpIdxList, REAL* out);
+void SUFFIX(writePlinkBedFile)(std::string bed_fn, int iid_count, int sid_count, bool count_A1, REAL* in);
 
 /*#endif      // CPlinkBedFile_h
 */

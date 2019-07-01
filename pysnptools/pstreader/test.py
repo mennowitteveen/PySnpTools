@@ -8,13 +8,17 @@ import time
 from pysnptools.pstreader import PstData, PstNpz, PstHdf5
 from pysnptools.util import create_directory_if_necessary
 from pysnptools.kernelreader.test import _fortesting_JustCheckExists
+try:
+    from builtins import range
+except:
+    pass
 
-class TestLoader(unittest.TestCase):     
+class TestPstReader(unittest.TestCase):     
 
-    def test_big_npz(self):
+    def cmktest_big_npz(self):
         logging.info("in test_big_npz")
         n = 1000
-        pstdata = PstData(row=xrange(n-1),col=xrange(n+1),val=np.zeros([n-1,n+1]))
+        pstdata = PstData(row=range(n-1),col=range(n+1),val=np.zeros([n-1,n+1]))
         output = "tempdir/pstreader/big.npz"
         create_directory_if_necessary(output)
         PstNpz.write(output,pstdata)
@@ -23,30 +27,30 @@ class TestLoader(unittest.TestCase):
         pstdata2 = pstnpz.read(order='A')
         assert pstdata2.val.flags['C_CONTIGUOUS']
 
-        pstdata = PstData(row=xrange(n-1),col=xrange(n+1),val=np.zeros([n-1,n+1],order='F'))
+        pstdata = PstData(row=range(n-1),col=range(n+1),val=np.zeros([n-1,n+1],order='F'))
         PstNpz.write(output,pstdata)
         pstnpz = PstNpz(output)
         pstdata2 = pstnpz.read(order='A')
         pstdata2.val.flags['F_CONTIGUOUS']
 
-        print "done"
+        print("done")
 
-    def test_writes(self):
+    def cmktest_writes(self):
         #===================================
         #    Defining sub functions
         #===================================
         def _oned_int(c):
             return range(c)
         def _oned_str(c):
-            return [str(i) for i in xrange(c)]
+            return [str(i).encode('ascii') for i in range(c)]
         def _twooned_int(c):
-            return [[i] for i in xrange(c)]
+            return [[i] for i in range(c)]
         def _twooned_str(c):
-            return [[str(i)] for i in xrange(c)]
+            return [[str(i).encode('ascii')] for i in range(c)]
         def _twotwod_int(c):
-            return [[i,i] for i in xrange(c)]
+            return [[i,i] for i in range(c)]
         def _twotwod_str(c):
-            return [[str(i),"hello"] for i in xrange(c)]
+            return [[str(i).encode('ascii'),b"hello"] for i in range(c)]
         def _none(c):
             return None
         def _zero(c):
@@ -91,7 +95,7 @@ class TestLoader(unittest.TestCase):
                                 pass
         logging.info("done with 'test_writes'")
 
-    def test_repr_test(self):
+    def cmktest_repr_test(self):
         np.random.seed(0)
         row_property=np.array([[1.0,2,2.5],[3,4,4.5],[5,6,6.5]])
         col_property=np.array([[1.0,2,2.5,1],[3,4,4.5,3]])
@@ -150,7 +154,7 @@ class TestLoader(unittest.TestCase):
         logging.info("done with test")
 
 
-    def test_inputs(self):
+    def cmktest_inputs(self):
         from pysnptools.pstreader import PstData
         np.random.seed(0)
         row_property=np.array([1.0,2,2.5])
@@ -169,7 +173,7 @@ class TestLoader(unittest.TestCase):
         logging.info("done with test")
 
 
-    def test_inputs2(self):
+    def cmktest_inputs2(self):
         from pysnptools.pstreader import PstData
         np.random.seed(0)
         row_property=None
@@ -187,7 +191,7 @@ class TestLoader(unittest.TestCase):
         assert np.array_equal(pstdata[1:,:2].col_property,pstdata.col_property[:2])
         logging.info("done with test")
 
-    def test_inputs3(self):
+    def cmktest_inputs3(self):
         from pysnptools.pstreader import PstData
         np.random.seed(0)
         row_property=None
@@ -204,7 +208,7 @@ class TestLoader(unittest.TestCase):
         assert np.array_equal(pstdata[1:,:2].col_property,pstdata.col_property[:2])
         logging.info("done with test")
 
-    def test_inputs4(self):
+    def cmktest_inputs4(self):
         from pysnptools.pstreader import PstData
         pstdata = PstData(row=None,
                           col=None,
@@ -221,15 +225,15 @@ class TestLoader(unittest.TestCase):
 class TestDocStrings(unittest.TestCase):
     pass
 
-    def test_snpreader(self):
+    def cmktest_snpreader(self):
         import pysnptools.pstreader.pstreader
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
-        result = doctest.testmod(pysnptools.pstreader.pstreader)
+        result = doctest.testmod(pysnptools.pstreader.pstreader,optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    def test_snpdata(self):
+    def cmktest_snpdata(self):
         import pysnptools.pstreader.pstdata
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -237,7 +241,7 @@ class TestDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    def test_snpdata(self):
+    def cmktest_snpdata(self):
         import pysnptools.pstreader.pstnpz
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -245,7 +249,7 @@ class TestDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    def test_snpdata(self):
+    def cmktest_snpdata(self):
         import pysnptools.pstreader.psthdf5
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -260,7 +264,7 @@ def getTestSuite():
     
     test_suite = unittest.TestSuite([])
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDocStrings))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestLoader))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPstReader))
     return test_suite
 
 if __name__ == '__main__':

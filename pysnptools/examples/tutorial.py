@@ -16,18 +16,18 @@ def region_gen(scale=1,seed=0):
     for range_index in xrange(range_count):
         length = int(np.exp(np.random.random()*np.log(region_max_length)))
         start = randlong(position_count-length) #does randint really go up to 3 billin?
-        end = start+length
-        yield start,end
+        stop = start+length
+        yield start,stop
 
 from pysnptools.util import IntRangeSet
 
 geneset = IntRangeSet()
-for start,end in region_gen(scale=.1):
-    geneset |= (start,end)
+for start,stop in region_gen(scale=.1):
+    geneset |= (start,stop)
 print geneset
 print geneset.ranges_len
 
-print "done"
+print("done")
 
 
 
@@ -362,7 +362,7 @@ assert np.array_equal(snpreader_i.iid,phenoreader_i.iid)
 snpdata_i = snpreader_i.read()
 phenodata_i = phenoreader_i.read()
 
-bs = np.linalg.lstsq(snpdata_i.val, phenodata_i.val)[0] #usually would add a 1's column
+bs = np.linalg.lstsq(snpdata_i.val, phenodata_i.val,rcond=-1)[0] #usually would add a 1's column
 predicted = snpdata_i.val.dot(bs)
 import matplotlib.pyplot as plt
 plt.plot(phenodata_i.val, predicted, '.', markersize=10)
@@ -431,4 +431,4 @@ kerneldata = Bed("all.bed").read_kernel(standardizer=Unit(),block_size=500)
 #     Requires a standardizer. Use Identity() for none
 
 
-print "done!"
+print("done!")

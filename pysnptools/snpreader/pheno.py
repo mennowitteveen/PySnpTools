@@ -8,6 +8,11 @@ from pysnptools.snpreader import SnpData
 import pysnptools.util.pheno as pstpheno
 import pysnptools.util as pstutil
 from pysnptools.pstreader import _OneShot
+try:
+    from builtins import range
+except:
+    pass
+from pysnptools.util import to_ascii
 
 class Pheno(_OneShot, SnpReader):
     '''
@@ -40,8 +45,8 @@ class Pheno(_OneShot, SnpReader):
 
         >>> from pysnptools.snpreader import Pheno, Bed
         >>> data_on_disk = Pheno('../examples/toydata.phe')
-        >>> print data_on_disk.iid_count, data_on_disk.sid_count
-        500 1
+        >>> print((data_on_disk.iid_count, data_on_disk.sid_count))
+        (500, 1)
 
     **Methods beyond** :class:`.SnpReader`
 
@@ -51,9 +56,11 @@ class Pheno(_OneShot, SnpReader):
         '''
         input    : string of the name of the file or an in-memory dictionary
         '''
+        super(Pheno, self).__init__()
+
         self.filename = input
         self._iid_if_none = iid_if_none
-        self.missing = missing
+        self.missing = to_ascii(missing) # This is for Python2/3 compatibility
 
     def _read_pstdata(self):
         #LATER switch it, so the main code is here rather than in loadPhen
@@ -78,9 +85,9 @@ class Pheno(_OneShot, SnpReader):
             }
 
         if len(pheno_input['header']) > 0 and pheno_input['header'][0] is None:
-            pheno_input['header'] = ["pheno{0}".format(i) for i in xrange(len(pheno_input['header']))] #LATER move to reader?
+            pheno_input['header'] = ["pheno{0}".format(i) for i in range(len(pheno_input['header']))] #LATER move to reader?
         elif len(pheno_input['header']) == 0:
-            pheno_input['header'] = ["pheno{0}".format(i) for i in xrange(pheno_input['vals'].shape[1])]
+            pheno_input['header'] = ["pheno{0}".format(i) for i in range(pheno_input['vals'].shape[1])]
 
         row = pheno_input['iid']
         col = np.array(pheno_input['header'],dtype='str')
@@ -92,26 +99,28 @@ class Pheno(_OneShot, SnpReader):
         return snpdata
 
     @staticmethod
-    def write(filename, snpdata, missing='NaN', sep="\t"):
+    def write(filename, snpdata, missing='NaN', sep='\t'):
         """Writes a :class:`SnpData` to Pheno format.
 
         >>> from pysnptools.snpreader import Pheno, Bed
         >>> import pysnptools.util as pstutil
-        >>> snpdata = Bed('../examples/toydata.bed')[:,:10].read()  # Read first 10 snps from Bed format
+        >>> snpdata = Bed('../examples/toydata.bed',count_A1=False)[:,:10].read()  # Read first 10 snps from Bed format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata10.phe")
         >>> Pheno.write("tempdir/toydata10.txt",snpdata)       # Write data in Pheno format
         """
-        with open(filename, 'w') as f:
-            for i in xrange(snpdata.iid_count):
+        missing = to_ascii(missing) # This is for Python2/3 compatibility
+        sep = to_ascii(sep)
+        with open(filename, 'wb') as f:
+            for i in range(snpdata.iid_count):
                 tmpstr = snpdata.iid[i,0] + sep + snpdata.iid[i,1]
-                for m in xrange(snpdata.sid_count):
+                for m in range(snpdata.sid_count):
                     v = snpdata.val[i,m]
                     if np.isnan(v):
                         vs = missing
                     else:
-                        vs = str(v)
+                        vs = str(v).encode('ascii')
                     tmpstr += sep + vs
-                tmpstr += "\n"
+                tmpstr += b"\n"
                 f.write(tmpstr)
 
 if __name__ == "__main__":

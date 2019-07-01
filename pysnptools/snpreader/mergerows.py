@@ -57,7 +57,7 @@
 #    def col(self):
 #        if not hasattr(self,"_col"):
 #            self._col = self.readerlist[0].col
-#            for i in xrange(1,len(self.readerlist)):
+#            for i in range(1,len(self.readerlist)):
 #                assert np.array_equal(self._col,self.readerlist[i].col), "all col's must be the same"
 #        return self._col
 

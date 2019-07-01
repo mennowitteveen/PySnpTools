@@ -3,11 +3,11 @@ import subprocess, sys, os.path
 from itertools import *
 import pandas as pd
 import logging
-from pstreader import PstReader
-from pstdata import PstData
+from pysnptools.pstreader import PstReader
+from pysnptools.pstreader import PstData
 
 #!!Should handle negatives as index and arrays of index, but doesn't
-class _Subset(PstReader):
+class _PstSubset(PstReader):
 
     def __init__(self, internal, row_indexer, col_indexer):
         '''
@@ -17,15 +17,16 @@ class _Subset(PstReader):
              a list of integers
              a list of booleans
         '''
+        super(_PstSubset, self).__init__()
+        self._ran_once = False
+
         self._internal = internal
         self._row_indexer = PstReader._make_sparray_or_slice(row_indexer)
         self._col_indexer = PstReader._make_sparray_or_slice(col_indexer)
 
-    _ran_once = False
-
 
     def __repr__(self):
-        s = "{0}[{1},{2}]".format(self._internal,_Subset.static_nice_string(self,self._row_indexer),_Subset.static_nice_string(self,self._col_indexer))
+        s = "{0}[{1},{2}]".format(self._internal,_PstSubset.static_nice_string(self,self._row_indexer),_PstSubset.static_nice_string(self,self._col_indexer))
         return s
 
     def copyinputs(self, copier):
@@ -58,15 +59,15 @@ class _Subset(PstReader):
 
         if hasattr(self._internal,'_read_accepts_slices'):
             assert self._internal._read_accepts_slices, "If an object has the _read_accepts_slices attribute, it must have value 'True'"
-            composed_row_index_or_none = _Subset.compose_indexer_with_indexer(self._internal.row_count, self._row_indexer, self.row_count, row_indexer)
-            composed_col_index_or_none = _Subset.compose_indexer_with_indexer(self._internal.col_count, self._col_indexer, self.col_count, col_indexer)
+            composed_row_index_or_none = _PstSubset.compose_indexer_with_indexer(self._internal.row_count, self._row_indexer, self.row_count, row_indexer)
+            composed_col_index_or_none = _PstSubset.compose_indexer_with_indexer(self._internal.col_count, self._col_indexer, self.col_count, col_indexer)
             val = self._internal._read(composed_row_index_or_none, composed_col_index_or_none, order, dtype, force_python_only, view_ok)
             return val
         else:
             row_index_or_none = PstReader._make_sparray_from_sparray_or_slice(self.row_count, row_indexer)
-            composed_row_index_or_none = _Subset.compose_indexer_with_index_or_none(self._internal.row_count, self._row_indexer, self.row_count, row_index_or_none)
+            composed_row_index_or_none = _PstSubset.compose_indexer_with_index_or_none(self._internal.row_count, self._row_indexer, self.row_count, row_index_or_none)
             col_index_or_none = PstReader._make_sparray_from_sparray_or_slice(self.col_count, col_indexer)
-            composed_col_index_or_none = _Subset.compose_indexer_with_index_or_none(self._internal.col_count, self._col_indexer, self.col_count, col_index_or_none)
+            composed_col_index_or_none = _PstSubset.compose_indexer_with_index_or_none(self._internal.col_count, self._col_indexer, self.col_count, col_index_or_none)
             val = self._internal._read(composed_row_index_or_none, composed_col_index_or_none, order, dtype, force_python_only, view_ok)
             return val
 
@@ -77,7 +78,7 @@ class _Subset(PstReader):
         self._ran_once = True
         self._row = self._internal.row[self._row_indexer]
         self._col = self._internal.col[self._col_indexer]
-        if np.array_equal(self._row,self._col): #When an object is square, keep the row and col the same object.
+        if self._row.dtype == self._col.dtype and np.array_equal(self._row,self._col): #When an object is square, keep the row and col the same object.
             self._col = self._row
         self._row_property = self._internal.row_property[self._row_indexer]
         self._col_property = self._internal.col_property[self._col_indexer]
@@ -94,7 +95,7 @@ class _Subset(PstReader):
     @staticmethod
     def static_nice_string(self, some_slice):
         if isinstance(some_slice,slice):
-            return _Subset._slice_format[(some_slice.start is not None, some_slice.stop is not None, some_slice.step is not None)].format(some_slice.start, some_slice.stop, some_slice.step)
+            return _PstSubset._slice_format[(some_slice.start is not None, some_slice.stop is not None, some_slice.step is not None)].format(some_slice.start, some_slice.stop, some_slice.step)
         elif len(some_slice) == 1:
             return str(some_slice[0])
         elif len(some_slice) < 10:
@@ -106,7 +107,7 @@ class _Subset(PstReader):
     #!!commented out because doesn't guarantee that the shortcut will return with the dtype and order requested.
     #                  Also, didn't handle stacked do-nothing subsets
     #def read(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False):
-    #    if view_ok and hasattr(self._internal,"val") and _Subset._is_all_slice(self._row_indexer) and _Subset._is_all_slice(self._col_indexer):
+    #    if view_ok and hasattr(self._internal,"val") and _PstSubset._is_all_slice(self._row_indexer) and _PstSubset._is_all_slice(self._col_indexer):
     #        return self._internal
     #    else:
     #        return PstReader.read(self, order, dtype, force_python_only, view_ok)
@@ -114,12 +115,12 @@ class _Subset(PstReader):
 
     @staticmethod
     def compose_indexer_with_index_or_none(countA, indexerA, countB, index_or_noneB):
-        if _Subset._is_all_slice(indexerA):
+        if _PstSubset._is_all_slice(indexerA):
             return index_or_noneB
 
         indexA = PstReader._make_sparray_from_sparray_or_slice(countA, indexerA)
 
-        if _Subset._is_all_slice(index_or_noneB):
+        if _PstSubset._is_all_slice(index_or_noneB):
             return indexA
 
         indexAB = indexA[index_or_noneB]
@@ -129,10 +130,10 @@ class _Subset(PstReader):
 
     @staticmethod
     def compose_indexer_with_indexer(countA, indexerA, countB, indexerB):
-        if _Subset._is_all_slice(indexerA):
+        if _PstSubset._is_all_slice(indexerA):
             return indexerB
 
-        if _Subset._is_all_slice(indexerB):
+        if _PstSubset._is_all_slice(indexerB):
             return indexerA
 
         indexA = PstReader._make_sparray_from_sparray_or_slice(countA, indexerA)

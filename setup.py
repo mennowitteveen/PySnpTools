@@ -7,7 +7,7 @@ from distutils.command.clean import clean as Clean
 import numpy
 
 # Version number
-version = '0.3.7'
+version = '0.3.14'
 
 def readme():
     with open('README.md') as f:
@@ -38,7 +38,7 @@ class CleanCommand(Clean):
                     or filename.endswith('.pyc')
                                 ):
                     tmp_fn = os.path.join(dirpath, filename)
-                    print "removing", tmp_fn
+                    print("removing", tmp_fn)
                     os.unlink(tmp_fn)
 
 # set up macro
@@ -94,7 +94,7 @@ class CleanCommand(Clean):
                     or filename.endswith('.pyc')
                                 ):
                     tmp_fn = os.path.join(dirpath, filename)
-                    print "removing", tmp_fn
+                    print("removing", tmp_fn)
                     os.unlink(tmp_fn)
 
 #python setup.py sdist bdist_wininst upload
@@ -113,6 +113,7 @@ setup(
         "pysnptools/kernelreader",
         "pysnptools/pstreader",
         "pysnptools/standardizer",
+        "pysnptools/kernelstandardizer",
         "pysnptools/util",
         "pysnptools"
     ],
@@ -124,7 +125,7 @@ setup(
         "tests/datasets/all_chr.maf0.001.covariates.N300.txt"
         ]
                  },
-    install_requires = ['scipy>=0.15.1', 'numpy>=1.9.2', 'pandas>=0.16.2'],
+    install_requires = ['scipy>=1.1.0', 'numpy>=1.11.3', 'pandas>=0.19.0'],
 
     # extensions
     cmdclass = cmdclass,

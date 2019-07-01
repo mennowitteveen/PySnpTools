@@ -12,20 +12,25 @@ from pysnptools.snpreader import Ped
 from pysnptools.standardizer import Unit
 from pysnptools.standardizer import Beta
 from pysnptools.util import create_directory_if_necessary
-from pysnptools.kernelreader.test import TestLoader as KrTestLoader
+from pysnptools.kernelreader.test import TestKernelReader
 from pysnptools.kernelreader.test import TestDocStrings as KrDocStrings
-from pysnptools.pstreader.test import TestLoader as PstTestLoader
+from pysnptools.pstreader.test import TestPstReader
 from pysnptools.pstreader.test import TestDocStrings as PstDocStrings
 from pysnptools.kernelreader.test import _fortesting_JustCheckExists
+from pysnptools.util.intrangeset import TestIntRangeSet
 
 
 import unittest
 import os.path
 import time
 
+try:
+    from builtins import range
+except:
+    pass
 
    
-class TestLoader(unittest.TestCase):     
+class TestPySnpTools(unittest.TestCase):     
 
     def xtest_aaa_hdf5_speed(self): #!!too slow to use all the time
 
@@ -34,7 +39,7 @@ class TestLoader(unittest.TestCase):
         bedFileName = r"c:\Source\carlk\fastlmm\tests\datasets\all_chr.maf0.001.N300" #!! local paths
         hdf5Pattern = r"c:\Source\carlk\fastlmm\tests\datasets\del.{0}.hdf5"#!!
         tt0 = time.time()
-        snpreader_bed = Bed(bedFileName)
+        snpreader_bed = Bed(bedFileName,count_A1=False)
 
         S0 = snpreader_bed.sid_count
         snp_index_list0 = range(min(S0,15000)) 
@@ -66,18 +71,16 @@ class TestLoader(unittest.TestCase):
         tt4 = time.time()
         logging.info("read SnpHdf5 C with reversed indexes bed %.2f seconds" % (tt4 - tt3))
 
-        print "the end"
-    
+        print("the end")
 
     @classmethod
     def setUpClass(self):
         self.currentFolder = os.path.dirname(os.path.realpath(__file__))
         #TODO: get data set with NANs!
-        snpreader = Bed(self.currentFolder + "/examples/toydata")
+        snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
         self.pheno_fn = self.currentFolder + "/examples/toydata.phe"
         self.snpdata = snpreader.read(order='F',force_python_only=True)
         self.snps = self.snpdata.val
-
 
     def test_diagKtoN(self):
         """
@@ -94,13 +97,28 @@ class TestLoader(unittest.TestCase):
         
         np.testing.assert_almost_equal(100, sum_diag)
         
-        
     def test_c_reader_bed(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata")
+        snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
         self.c_reader(snpreader)
 
+    def test_c_reader_bed_count_A1(self):
+        snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=True)
+        snpdata = snpreader.read()
+        snpdata.val = 2 - snpdata.val
+        self.c_reader(snpdata)
+
+    def test_p_reader_bed(self):
+        snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=False).read(force_python_only=True)
+        self.c_reader(snpreader)
+
+    def test_p_reader_bed_count_A1(self):
+        snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=True)
+        snpdata = snpreader.read(force_python_only=True)
+        snpdata.val = 2 - snpdata.val
+        self.c_reader(snpdata)
+
     def test_scalar_index(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata")
+        snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
         arr=np.int64(1)
         snpreader[arr,arr]
 
@@ -110,7 +128,7 @@ class TestLoader(unittest.TestCase):
 
     def test_hdf5_case3(self):
         snpreader1 = SnpHdf5(self.currentFolder + "/examples/toydata.snpmajor.snp.hdf5")[::2,:]
-        snpreader2 = Bed(self.currentFolder + "/examples/toydata")[::2,:]
+        snpreader2 = Bed(self.currentFolder + "/examples/toydata",count_A1=False)[::2,:]
         self.assertTrue(np.allclose(snpreader1.read().val, snpreader2.read().val, rtol=1e-05, atol=1e-05))
 
     def test_c_reader_dat(self):
@@ -134,11 +152,9 @@ class TestLoader(unittest.TestCase):
         snpdata4 = Dat(output).read()
         assert snpdata3 == snpdata4
 
-
-
     @staticmethod
     def assert_match_012_210(snpdata1, snpdata2):
-        for sid_index in xrange(snpdata1.sid_count): #Check that every row matches (except OK if 0,1,2 can be 2,1,0)
+        for sid_index in range(snpdata1.sid_count): #Check that every row matches (except OK if 0,1,2 can be 2,1,0)
             goods1 = (snpdata1.val[:,sid_index] == snpdata1.val[:,sid_index]) # find non-missing
             goods2= (snpdata2.val[:,sid_index] == snpdata2.val[:,sid_index])  # find non-missing
             assert (goods1==goods2).all() #assert that they agree on non-missing
@@ -149,7 +165,7 @@ class TestLoader(unittest.TestCase):
         if False: #Too slow for routine testing
             snpdata1 = Ped(self.currentFolder + "/examples/toydata.ped")[::25,::1000].read()
             self.assertEqual(np.float64, snpdata1.val.dtype)
-            TestLoader.assert_match_012_210(self.snpdata[::25,::1000].read(),snpdata1)
+            TestPySnpTools.assert_match_012_210(self.snpdata[::25,::1000].read(),snpdata1)
         else:
             snpdata1 = self.snpdata[::25,::1000].read()
 
@@ -162,8 +178,7 @@ class TestLoader(unittest.TestCase):
         _fortesting_JustCheckExists().input(snpreader)
         s = str(snpreader)
         snpdata2 = snpreader.read()
-        TestLoader.assert_match_012_210(snpdata1,snpdata2)
-
+        TestPySnpTools.assert_match_012_210(snpdata1,snpdata2)
 
     def test_c_reader_pheno(self):
         snpdata1 = Pheno(self.currentFolder + "/examples/toydata.phe").read()
@@ -200,7 +215,6 @@ class TestLoader(unittest.TestCase):
         snpdata6 = Pheno(self.currentFolder + "/examples/toydata.fid.phe").read()
         np.testing.assert_array_almost_equal(snpdata1.val, snpdata6.val, decimal=10)
 
-
     def test_c_reader_dense(self):
         snpdata1 = self.snpdata[:,::100].read()
         snpdata1.val[1,2] = np.NaN # Inject a missing value to test writing and reading missing values
@@ -209,11 +223,8 @@ class TestLoader(unittest.TestCase):
         Dense.write(output, snpdata1)
         snpreader = Dense(output)
         _fortesting_JustCheckExists().input(snpreader)
-        s = str(snpreader)
         snpdata2 = snpreader.read()
         np.testing.assert_array_almost_equal(snpdata1.val, snpdata2.val, decimal=10)
-
-
 
     def test_some_std(self):
         k0 = self.snpdata.read_kernel(standardizer=Unit()).val
@@ -227,7 +238,7 @@ class TestLoader(unittest.TestCase):
         snpdata2.standardize()
         s = str(snpdata2)
 
-        snpreader = Bed(self.currentFolder + "/examples/toydata")
+        snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
         k2 = snpreader.read_kernel(standardizer=Unit(),block_size=500).val
         np.testing.assert_array_almost_equal(k0, k2, decimal=10)
 
@@ -247,8 +258,6 @@ class TestLoader(unittest.TestCase):
                 #np.testing.assert_array_almost_equal(a,b)
         logging.info("done")
 
-
-
     def c_reader(self,snpreader):
         """
         make sure c-reader yields same result
@@ -261,7 +270,7 @@ class TestLoader(unittest.TestCase):
         return snpdata
 
     def test_standardize_bed(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata")
+        snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
         self.standardize(snpreader)
 
     def test_standardize_hdf5(self):
@@ -275,7 +284,6 @@ class TestLoader(unittest.TestCase):
     def test_standardize_ped(self):
         snpreader = Ped(self.currentFolder + "/examples/toydata")
         self.standardize(snpreader)
-
 
     def standardize(self,snpreader):
         """
@@ -322,26 +330,26 @@ class TestLoader(unittest.TestCase):
             self.assertTrue(np.allclose(snp_beta1, snp_beta3, rtol=1e-05, atol=1e-05))
 
     def test_load_and_standardize_bed(self):
-        snpreader2 = Bed(self.currentFolder + "/examples/toydata")
+        snpreader2 = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
         self.load_and_standardize(snpreader2, snpreader2)
 
     def too_slow_test_write_bedbig(self):
         iid_count = 100000
         sid_count = 50000
         from pysnptools.snpreader import SnpData
-        iid = np.array([[str(i),str(i)] for i in xrange(iid_count)])
-        sid = np.array(["sid_{0}".format(i) for i in xrange(sid_count)])
-        pos = np.array([[i,i,i] for i in xrange(sid_count)])
+        iid = np.array([[str(i),str(i)] for i in range(iid_count)])
+        sid = np.array(["sid_{0}".format(i) for i in range(sid_count)])
+        pos = np.array([[i,i,i] for i in range(sid_count)])
         np.random.seed(0)
         snpdata = SnpData(iid,sid,np.zeros((iid_count,sid_count)),pos=pos) #random.choice((0.0,1.0,2.0,float("nan")),size=(iid_count,sid_count)))
         output = "tempdir/bedbig.{0}.{1}".format(iid_count,sid_count)
         create_directory_if_necessary(output)
-        Bed.write(output, snpdata)
-        snpdata2 = Bed(output).read()
+        Bed.write(output, snpdata, count_A1=False)
+        snpdata2 = Bed(output,count_A1=False).read()
         np.testing.assert_array_almost_equal(snpdata.val, snpdata2.val, decimal=10)
 
     def test_write_bed_f64cpp_0(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata")
+        snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
         iid_index = 0
         logging.info("iid={0}".format(iid_index))
         #if snpreader.iid_count % 4 == 0: # divisible by 4 isn't a good test
@@ -352,12 +360,12 @@ class TestLoader(unittest.TestCase):
             snpdata.val[-1,0] = float("NAN")
         output = "tempdir/toydata.F64cpp.{0}".format(iid_index)
         create_directory_if_necessary(output)
-        Bed.write(output, snpdata)
-        snpdata2 = Bed(output).read()
+        Bed.write(output, snpdata ,count_A1=False)
+        snpdata2 = Bed(output,count_A1=False).read()
         np.testing.assert_array_almost_equal(snpdata.val, snpdata2.val, decimal=10)
 
     def test_write_bed_f64cpp_1(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata")
+        snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
         iid_index = 1
         logging.info("iid={0}".format(iid_index))
         #if snpreader.iid_count % 4 == 0: # divisible by 4 isn't a good test
@@ -368,12 +376,12 @@ class TestLoader(unittest.TestCase):
             snpdata.val[-1,0] = float("NAN")
         output = "tempdir/toydata.F64cpp.{0}".format(iid_index)
         create_directory_if_necessary(output)
-        Bed.write(output, snpdata)
-        snpdata2 = Bed(output).read()
+        Bed.write(output, snpdata ,count_A1=False)
+        snpdata2 = Bed(output,count_A1=False).read()
         np.testing.assert_array_almost_equal(snpdata.val, snpdata2.val, decimal=10)
 
     def test_write_bed_f64cpp_5(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata")
+        snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
 
         from pysnptools.kernelreader.test import _fortesting_JustCheckExists
         _fortesting_JustCheckExists().input(snpreader)
@@ -388,12 +396,12 @@ class TestLoader(unittest.TestCase):
             snpdata.val[-1,0] = float("NAN")
         output = "tempdir/toydata.F64cpp.{0}".format(iid_index)
         create_directory_if_necessary(output)
-        Bed.write(output, snpdata) #,force_python_only=True)
-        snpdata2 = Bed(output).read()
+        Bed.write(output, snpdata ,count_A1=False) #,force_python_only=True)
+        snpdata2 = Bed(output,count_A1=False).read()
         np.testing.assert_array_almost_equal(snpdata.val, snpdata2.val, decimal=10)
 
     def test_write_bed_f64cpp_5_python(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata")
+        snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
         iid_index = 5
         logging.info("iid={0}".format(iid_index))
         #if snpreader.iid_count % 4 == 0: # divisible by 4 isn't a good test
@@ -405,24 +413,24 @@ class TestLoader(unittest.TestCase):
         output = "tempdir/toydata.F64python.{0}".format(iid_index)
         create_directory_if_necessary(output)
         Bed.write(output,snpdata, force_python_only=True)
-        snpdata2 = Bed(output).read()
+        snpdata2 = Bed(output,count_A1=False).read()
         np.testing.assert_array_almost_equal(snpdata.val, snpdata2.val, decimal=10)
 
-
     def test_write_x_x_cpp(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata")
-        for order in ['C','F']:
-            for dtype in [np.float32,np.float64]:
-                snpdata = snpreader.read(order=order,dtype=dtype)
-                snpdata.val[-1,0] = float("NAN")
-                output = "tempdir/toydata.{0}{1}.cpp".format(order,"32" if dtype==np.float32 else "64")
-                create_directory_if_necessary(output)
-                Bed.write(output, snpdata)
-                snpdata2 = Bed(output).read()
-                np.testing.assert_array_almost_equal(snpdata.val, snpdata2.val, decimal=10)
+        for count_A1 in [False, True]:
+            snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=count_A1)
+            for order in ['C','F']:
+                for dtype in [np.float32,np.float64]:
+                    snpdata = snpreader.read(order=order,dtype=dtype)
+                    snpdata.val[-1,0] = float("NAN")
+                    output = "tempdir/toydata.{0}{1}.cpp".format(order,"32" if dtype==np.float32 else "64")
+                    create_directory_if_necessary(output)
+                    Bed.write(output, snpdata, count_A1=count_A1)
+                    snpdata2 = Bed(output,count_A1=count_A1).read()
+                    np.testing.assert_array_almost_equal(snpdata.val, snpdata2.val, decimal=10)
 
     def test_subset_view(self):
-        snpreader2 = Bed(self.currentFolder + "/examples/toydata")[:,:]
+        snpreader2 = Bed(self.currentFolder + "/examples/toydata",count_A1=False)[:,:]
         result = snpreader2.read(view_ok=True)
         self.assertFalse(snpreader2 is result)
         result2 = result[:,:].read()
@@ -434,20 +442,17 @@ class TestLoader(unittest.TestCase):
         result5 = result4.read(view_ok=True)
         self.assertTrue(sp.may_share_memory(result4.val,result5.val))
 
-
     def test_load_and_standardize_hdf5(self):
         snpreader2 = SnpHdf5(self.currentFolder + "/examples/toydata.snpmajor.snp.hdf5")
         snpreader3 = SnpHdf5(self.currentFolder + "/examples/toydata.iidmajor.snp.hdf5")
         self.load_and_standardize(snpreader2, snpreader3)
-        snpreaderref = Bed(self.currentFolder + "/examples/toydata")
+        snpreaderref = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
         self.load_and_standardize(snpreader2, snpreaderref)
-
-
 
     def test_load_and_standardize_dat(self):
         snpreader2 = Dat(self.currentFolder + "/examples/toydata.dat")
         self.load_and_standardize(snpreader2, snpreader2)
-        #snpreaderref = Bed(self.currentFolder + "/examples/toydata")
+        #snpreaderref = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
         #self.load_and_standardize(snpreader2, snpreaderref)
 
     def test_load_and_standardize_ped(self):
@@ -455,7 +460,7 @@ class TestLoader(unittest.TestCase):
         #!!Ped columns can be ambiguous
         ###Creating Ped data ...
         #currentFolder = os.path.dirname(os.path.realpath(__file__))
-        #snpData = Bed(currentFolder + "/examples/toydata").read()
+        #snpData = Bed(currentFolder + "/examples/toydata",count_A1=False).read()
         ##Ped.write(snpData, currentFolder + "/examples/toydata.ped")
         #fromPed = Ped(currentFolder + "/examples/toydata").read()
         #self.assertTrue(np.allclose(snpData.val, fromPed.val, rtol=1e-05, atol=1e-05))
@@ -463,7 +468,7 @@ class TestLoader(unittest.TestCase):
 
         snpreader2 = Ped(self.currentFolder + "/examples/toydata")
         self.load_and_standardize(snpreader2, snpreader2)
-        #snpreaderref = Bed(self.currentFolder + "/examples/toydata")
+        #snpreaderref = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
         #self.load_and_standardize(snpreader2, snpreaderref)
 
     def load_and_standardize(self, snpreader2, snpreader3):
@@ -525,7 +530,7 @@ class NaNCNCTestCases(unittest.TestCase):
     @staticmethod
     def factory_iterator():
 
-        snp_reader_factory_bed = lambda : Bed("examples/toydata")
+        snp_reader_factory_bed = lambda : Bed("examples/toydata",count_A1=False)
         snp_reader_factory_snpmajor_hdf5 = lambda : SnpHdf5("examples/toydata.snpmajor.snp.hdf5")
         snp_reader_factory_iidmajor_hdf5 = lambda : SnpHdf5("examples/toydata.iidmajor.snp.hdf5")
         snp_reader_factory_dat = lambda : Dat("examples/toydata.dat")
@@ -539,8 +544,8 @@ class NaNCNCTestCases(unittest.TestCase):
 
         snps_to_read_count = min(S_original, 100)
 
-        for iid_index_list in [range(N_original), range(N_original/2), range(N_original - 1,0,-2)]:
-            for snp_index_list in [range(snps_to_read_count), range(snps_to_read_count/2), range(snps_to_read_count - 1,0,-2)]:
+        for iid_index_list in [range(N_original), range(N_original//2), range(N_original - 1,0,-2)]:
+            for snp_index_list in [range(snps_to_read_count), range(snps_to_read_count//2), range(snps_to_read_count - 1,0,-2)]:
                 for standardizer in [Unit(),Beta(1,25)]:
                     reference_snps, reference_dtype = NaNCNCTestCases(iid_index_list, snp_index_list, standardizer, snp_reader_factory_bed(), sp.float64, "C", "False", None, None).read_and_standardize()
                     for snpreader_factory in [snp_reader_factory_bed, 
@@ -605,7 +610,7 @@ class TestDocStrings(unittest.TestCase):
         import pysnptools.snpreader.snpreader
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
-        result = doctest.testmod(pysnptools.snpreader.snpreader)
+        result = doctest.testmod(pysnptools.snpreader.snpreader,optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
@@ -703,7 +708,7 @@ class TestDocStrings(unittest.TestCase):
                     pysnptools.standardizer.standardizer,
                     pysnptools.standardizer.unit,
                     pysnptools.standardizer.unittrained]:
-            result = doctest.testmod(mod)
+            result = doctest.testmod(mod,optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)
             assert result.failed == 0, "failed doc test: " + __file__
         os.chdir(old_dir)
 
@@ -726,14 +731,13 @@ def getTestSuite():
     test_suite = unittest.TestSuite([])
 
     test_suite.addTests(NaNCNCTestCases.factory_iterator())
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(PstTestLoader))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPstReader))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(PstDocStrings))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(KrTestLoader))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestKernelReader))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(KrDocStrings))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDocStrings))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestLoader))
-    from pysnptools.util.intrangeset import TestLoader as IntRangeSetTestLoader
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(IntRangeSetTestLoader))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPySnpTools))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestIntRangeSet))
 
 
 

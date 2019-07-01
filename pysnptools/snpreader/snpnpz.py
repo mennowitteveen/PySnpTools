@@ -20,12 +20,15 @@ class SnpNpz(PstNpz,SnpReader):
 
         >>> from pysnptools.snpreader import SnpNpz
         >>> data_on_disk = SnpNpz('../examples/toydata10.snp.npz')
-        >>> print data_on_disk.iid_count, data_on_disk.sid_count
-        500 10
+        >>> print((data_on_disk.iid_count, data_on_disk.sid_count))
+        (500, 10)
 
     **Methods beyond** :class:`.SnpReader`
 
     '''
+
+    def __init__(self, *args, **kwargs):
+        super(SnpNpz, self).__init__(*args, **kwargs)
 
     @staticmethod
     def write(filename, snpdata):
@@ -38,7 +41,7 @@ class SnpNpz(PstNpz,SnpReader):
 
         >>> from pysnptools.snpreader import SnpNpz, Bed
         >>> import pysnptools.util as pstutil
-        >>> snpdata = Bed('../examples/toydata.bed')[:,:10].read()     # Read first 10 snps from Bed format
+        >>> snpdata = Bed('../examples/toydata.bed',count_A1=False)[:,:10].read()     # Read first 10 snps from Bed format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata10.snp.npz")
         >>> SnpNpz.write("tempdir/toydata10.snp.npz",snpdata)          # Write data in SnpNpz format
         """

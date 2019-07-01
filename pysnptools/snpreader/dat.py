@@ -3,8 +3,8 @@ import subprocess, sys, os.path
 from itertools import *
 import pandas as pd
 import logging
-from snpreader import SnpReader
-from snpdata import SnpData
+from pysnptools.snpreader import SnpReader
+from pysnptools.snpreader import SnpData
 import warnings
 from pysnptools.pstreader import _OneShot
 
@@ -30,8 +30,8 @@ class Dat(_OneShot,SnpReader):
 
         >>> from pysnptools.snpreader import Dat
         >>> data_on_disk = Dat('../examples/toydata.dat')
-        >>> print data_on_disk.iid_count, data_on_disk.sid_count
-        500 10000
+        >>> print((data_on_disk.iid_count, data_on_disk.sid_count))
+        (500, 10000)
 
     **Methods beyond** :class:`.SnpReader`
     '''
@@ -40,6 +40,7 @@ class Dat(_OneShot,SnpReader):
         '''
         filename    : string of the name of the Dat file.
         '''
+        super(Dat, self).__init__()
         self.filename = SnpReader._name_of_other_file(filename,remove_suffix="dat", add_suffix="dat")
 
     def _read_pstdata(self):
@@ -48,12 +49,12 @@ class Dat(_OneShot,SnpReader):
         if len(row)==0 or len(col)==0:
             return SnpData(iid=row,sid=col,pos=col_property,val=np.empty([len(row),len(col)]))
         datfields = pd.read_csv(self.filename,delimiter = '\t',header=None,index_col=False)
-        if not np.array_equal(np.array(datfields[0],dtype="string"), col) : raise Exception("Expect snp list in map file to exactly match snp list in dat file")
+        if not np.array_equal(np.array([x.encode('ascii') for x in datfields[0]]), col) : raise Exception("Expect snp list in map file to exactly match snp list in dat file")
         del datfields[0]
         del datfields[1]
         del datfields[2]
         assert len(row) == datfields.shape[1], "Expect # iids in fam file to match dat file"
-        val = datfields.as_matrix().T
+        val = datfields.values.T
         snpdata = SnpData(iid=row,sid=col,pos=col_property,val=val)
         return snpdata
 
@@ -74,7 +75,7 @@ class Dat(_OneShot,SnpReader):
 
         >>> from pysnptools.snpreader import Dat, Bed
         >>> import pysnptools.util as pstutil
-        >>> snpdata = Bed('../examples/toydata.bed')[:,:10].read()  # Read first 10 snps from Bed format
+        >>> snpdata = Bed('../examples/toydata.bed',count_A1=False)[:,:10].read()  # Read first 10 snps from Bed format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata10.dat")
         >>> Dat.write("tempdir/toydata10.dat",snpdata)              # Write data in dat/fam/map format
         """
@@ -88,13 +89,13 @@ class Dat(_OneShot,SnpReader):
         filename = SnpReader._name_of_other_file(filename,remove_suffix="dat", add_suffix="dat")
 
         snpsarray = snpdata.val
-        with open(filename,"w") as dat_filepointer:
+        with open(filename,"wb") as dat_filepointer:
             for sid_index, sid in enumerate(snpdata.sid):
                 if sid_index % 1000 == 0:
                     logging.info("Writing snp # {0} to file '{1}'".format(sid_index, filename))
-                dat_filepointer.write("{0}\tj\tn\t".format(sid)) #use "j" and "n" as the major and minor allele
+                dat_filepointer.write(b"%s\tj\tn\t"%sid) #use "j" and "n" as the major and minor allele
                 row = snpsarray[:,sid_index]
-                dat_filepointer.write("\t".join((str(i) for i in row)) + "\n")
+                dat_filepointer.write(b"\t".join((str(i).encode('ascii') for i in row)) + b"\n")
         logging.info("Done writing " + filename)
 
 if __name__ == "__main__":

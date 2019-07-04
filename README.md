@@ -112,19 +112,7 @@ one can use:
 Note for Windows: You must have Visual Studio installed. If you have VisualStudio2008 installed 
 (which was used to build python2.7) you need to nothing more. Otherwise, follow these instructions:
 
-If you have Visual Studio 2010 installed, execute:
-
-    SET VS90COMNTOOLS=%VS100COMNTOOLS%
-
-or with Visual Studio 2012 installed:
-
-    SET VS90COMNTOOLS=%VS110COMNTOOLS%
-
-or with Visual Studio 2013 installed:
-
-    SET VS90COMNTOOLS=%VS120COMNTOOLS%
-
-or with Visual Studio 2015 installed:
+If you have Visual Studio 2015 installed:
 
     SET VS90COMNTOOLS=%VS130COMNTOOLS%
 
@@ -132,6 +120,9 @@ or with Visual Studio 2017 installed:
 
     SET VS90COMNTOOLS=%VS140COMNTOOLS%
 
+or with Visual Studio 2019 installed:
+
+    SET VS90COMNTOOLS=%VS150COMNTOOLS%
 
 Running regression tests
 -----------------------------

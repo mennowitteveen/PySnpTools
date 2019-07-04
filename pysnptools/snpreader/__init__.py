@@ -11,5 +11,5 @@ from pysnptools.snpreader.snphdf5 import Hdf5
 from pysnptools.snpreader.snpnpz import SnpNpz
 from pysnptools.snpreader.dense import Dense
 from pysnptools.snpreader.pheno import Pheno
-
+from pysnptools.snpreader.pairs import Pairs
 

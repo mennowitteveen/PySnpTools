@@ -76,7 +76,7 @@ class _PstSubset(PstReader):
             return
 
         self._ran_once = True
-        self._row = self._internal.row[self._row_indexer]
+        self._row = self._internal.row[self._row_indexer] #!!! would be nice if these four calls were replaced by calls to, e.g. "def _col_index(self,col_indexer)", etc that could be overridden (by for example Pairs)
         self._col = self._internal.col[self._col_indexer]
         if self._row.dtype == self._col.dtype and np.array_equal(self._row,self._col): #When an object is square, keep the row and col the same object.
             self._col = self._row

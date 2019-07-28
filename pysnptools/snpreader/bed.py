@@ -160,7 +160,7 @@ class Bed(SnpReader):
             elif snpdata.val.flags["F_CONTIGUOUS"]:
                 order = "F"
             else:
-                raise Exception("order '{0}' not known, only 'F' and 'C'".format(order))
+                raise Exception("order not known (not 'F' or 'C')")
 
             if snpdata.val.dtype == np.float64:
                 if order=="F":

@@ -502,6 +502,7 @@ class SnpReader(PstReader):
         return self.col_to_index(list)
 
     def __getitem__(self, iid_indexer_and_snp_indexer):
+        import os
         from pysnptools.snpreader._subset import _SnpSubset
         iid_indexer, snp_indexer = iid_indexer_and_snp_indexer
         return _SnpSubset(self, iid_indexer, snp_indexer)
@@ -653,7 +654,7 @@ class SnpReader(PstReader):
         with open(mapfile,"wb") as map_filepointer:
             for sid_index, sid in enumerate(snpdata.sid):
                 posrow = snpdata.pos[sid_index]
-                map_filepointer.write(b"{%r\t%s\t%r\t%r}\tA\tC\n" % (posrow[0], sid, posrow[1], posrow[2])) #Must use % formating because Python3 doesn't support .format on bytes
+                map_filepointer.write(b"%r\t%s\t%r\t%r\tA\tC\n" % (posrow[0], sid, posrow[1], posrow[2])) #Must use % formating because Python3 doesn't support .format on bytes
 
 
     @staticmethod

@@ -5,16 +5,20 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{60f1cb4a-9da3-47c2-9b89-60ac1ce93347}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>snpreader\pairs.py</StartupFile>
-    <SearchPath>..\</SearchPath>
+    <StartupFile>snpreader\deleteme2.py</StartupFile>
+    <SearchPath>..\;..\..\PySnpTools</SearchPath>
     <WorkingDirectory>d:\OneDrive\programs\pysnptools\</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <SccProjectName>SAK</SccProjectName>
-    <SccProvider>SAK</SccProvider>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccLocalPath>SAK</SccLocalPath>
+    <SccProjectName>
+    </SccProjectName>
+    <SccProvider>
+    </SccProvider>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccLocalPath>
+    </SccLocalPath>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <IsWindowsApplication>False</IsWindowsApplication>
     <CommandLineArguments>sdist bdist_wininst upload</CommandLineArguments>
@@ -58,6 +62,13 @@
     <Compile Include="pstreader\_subset.py" />
     <Compile Include="pstreader\__init__.py" />
     <Compile Include="snpreader\bed.py" />
+    <Compile Include="snpreader\deleteme.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="..\..\epiCornell\epireml.py">
+      <SubType>Code</SubType>
+      <Link>snpreader\epireml.py</Link>
+    </Compile>
     <Compile Include="snpreader\mergerows.py">
       <SubType>Code</SubType>
     </Compile>

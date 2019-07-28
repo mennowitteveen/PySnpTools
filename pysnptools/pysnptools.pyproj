@@ -49,6 +49,9 @@
     <Compile Include="kernelreader\_subset.py" />
     <Compile Include="kernelreader\__init__.py" />
     <Compile Include="kernelstandardizer\__init__.py" />
+    <Compile Include="pstreader\_mergecols.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="pstreader\_oneshot.py">
       <SubType>Code</SubType>
     </Compile>
@@ -62,17 +65,21 @@
     <Compile Include="pstreader\_subset.py" />
     <Compile Include="pstreader\__init__.py" />
     <Compile Include="snpreader\bed.py" />
-    <Compile Include="snpreader\deleteme.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="..\..\epiCornell\epireml.py">
       <SubType>Code</SubType>
       <Link>snpreader\epireml.py</Link>
     </Compile>
-    <Compile Include="snpreader\mergerows.py">
+    <Compile Include="pstreader\_mergerows.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="snpreader\distributed_bed.py" />
     <Compile Include="snpreader\pairs.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="pstreader\pstmemmap.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="snpreader\snpmemmap.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="snpreader\snpnpz.py" />
@@ -83,6 +90,12 @@
     <Compile Include="snpreader\ped.py" />
     <Compile Include="snpreader\snpdata.py" />
     <Compile Include="snpreader\snpreader.py" />
+    <Compile Include="snpreader\_mergeiids.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="snpreader\_mergesids.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="snpreader\_subset.py" />
     <Compile Include="snpreader\__init__.py" />
     <Compile Include="standardizer\beta.py" />

@@ -12,4 +12,7 @@ from pysnptools.snpreader.snpnpz import SnpNpz
 from pysnptools.snpreader.dense import Dense
 from pysnptools.snpreader.pheno import Pheno
 from pysnptools.snpreader.pairs import Pairs
-
+from pysnptools.snpreader.snpmemmap import SnpMemMap
+from pysnptools.snpreader._mergesids import _MergeSIDs
+from pysnptools.snpreader._mergeiids import _MergeIIDs
+from pysnptools.snpreader.distributed_bed import DistributedBed #Must be after _MergeSIDs and _MergeIIDs

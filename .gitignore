@@ -225,3 +225,4 @@ ModelManifest.xml
 /pysnptools/snpreader/deleteme2.py
 /runs
 /pysnptools/.vs/pysnptools/v16
+/pysnptools/util/tempdir

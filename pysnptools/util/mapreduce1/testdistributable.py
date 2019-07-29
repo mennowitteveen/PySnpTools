@@ -139,7 +139,7 @@ class TestDistributable(unittest.TestCase):
         runner1 = LocalReducer(4,None,1,instream=instream1)
         assert "A" == runner1.run(dist)
 
-
+    
 def getTestSuite():
     suite1 = unittest.TestLoader().loadTestsFromTestCase(TestDistributable)
     suite2 = unittest.TestLoader().loadTestsFromTestCase(TestDistributedMap)

@@ -1,3 +1,6 @@
+import logging
+import os
+import numpy as np
 from pysnptools.pstreader import PstReader
 
 class _MergeRows(PstReader): #!!!why does this start with _

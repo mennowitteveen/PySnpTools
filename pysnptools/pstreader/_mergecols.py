@@ -1,4 +1,8 @@
+import logging
+import os
+import numpy as np
 from pysnptools.pstreader import PstReader
+
 
 #!!! would be be better to make a Transpose class that could term _mergerows into mergecols? Be sure special Bed code is still there.
 class _MergeCols(PstReader): #!!! move to PySnptools
@@ -30,6 +34,7 @@ class _MergeCols(PstReader): #!!! move to PySnptools
     def _run_once(self):
         if hasattr(self,'_has_run_once'):
             return
+        from pysnptools.snpreader import Bed
         self._has_run_once = True
         #Check that all iids are distinct and that all sids and pos are the same and in the same order
 

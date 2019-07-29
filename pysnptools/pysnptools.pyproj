@@ -115,12 +115,39 @@
     <Compile Include="standardizer\unit.py" />
     <Compile Include="standardizer\__init__.py" />
     <Compile Include="test.py" />
+    <Compile Include="util\gen\generate.py" />
+    <Compile Include="util\gen\snpgen.py" />
+    <Compile Include="util\gen\__init__.py" />
     <Compile Include="util\intrangeset.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="util\mapreduce1\distributable.py" />
+    <Compile Include="util\mapreduce1\distributabletest.py" />
+    <Compile Include="util\mapreduce1\distributed_map.py" />
+    <Compile Include="util\mapreduce1\indirectdistributable.py" />
+    <Compile Include="util\mapreduce1\mapreduce.py" />
+    <Compile Include="util\mapreduce1\mapreducex.py" />
+    <Compile Include="util\mapreduce1\metadistributable.py" />
+    <Compile Include="util\mapreduce1\samplepi.py" />
+    <Compile Include="util\mapreduce1\testdistributable.py" />
+    <Compile Include="util\mapreduce1\__init__.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="util\pheno.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="util\mapreduce1\runner\examples.py" />
+    <Compile Include="util\mapreduce1\runner\hadoop.py" />
+    <Compile Include="util\mapreduce1\runner\hadoop2.py" />
+    <Compile Include="util\mapreduce1\runner\hpc.py" />
+    <Compile Include="util\mapreduce1\runner\local.py" />
+    <Compile Include="util\mapreduce1\runner\localfromranges.py" />
+    <Compile Include="util\mapreduce1\runner\localinparts.py" />
+    <Compile Include="util\mapreduce1\runner\localmapper.py" />
+    <Compile Include="util\mapreduce1\runner\localmultiproc.py" />
+    <Compile Include="util\mapreduce1\runner\localmultithread.py" />
+    <Compile Include="util\mapreduce1\runner\localreducer.py" />
+    <Compile Include="util\mapreduce1\runner\__init__.py" />
     <Compile Include="util\__init__.py" />
     <Compile Include="__init__.py">
       <SubType>Code</SubType>
@@ -136,6 +163,9 @@
     <Folder Include="util\" />
     <Folder Include="snpreader" />
     <Folder Include="standardizer\" />
+    <Folder Include="util\gen\" />
+    <Folder Include="util\mapreduce1\" />
+    <Folder Include="util\mapreduce1\runner\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\AUTHORS.txt">

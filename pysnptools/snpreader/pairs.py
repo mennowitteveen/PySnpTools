@@ -225,8 +225,8 @@ if __name__ == "__main__":
     import datetime
     from pysnptools.kernelreader import SnpKernel
     from pysnptools.standardizer import Unit
-    from fastlmm.util.runner import LocalMultiProc
-    from fastlmm.util.mapreduce import map_reduce
+    from pysnptools.util.mapreduce1.runner import LocalMultiProc
+    from pysnptools.util.mapreduce1.mapreduce import map_reduce
     #runner=None
     runner = LocalMultiProc(1,just_one_process=False)
 

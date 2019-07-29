@@ -1,14 +1,14 @@
 from pysnptools.snpreader import _MergeSIDs
 from pysnptools.snpreader import SnpReader, Bed
 from pysnptools.pstreader import PstReader
-from fastlmm.util.file_cache import multiopen
+from pysnptools.util import multiopen
 from fastlmm.inference.fastlmm_predictor import _snps_fixup
 import os
 import numpy as np
-from fastlmm.util.file_cache import log_in_place
+from pysnptools.util import log_in_place
 import logging
-from fastlmm.util.mapreduce import map_reduce
-#!!!cmk remove? from fastlmm.util.runner import Local, Hadoop, Hadoop2, HPC, LocalMultiProc, LocalInParts
+from pysnptools.util.mapreduce1.mapreduce import map_reduce
+#!!!cmk remove? from pysnptools.util.mapreduce1.runner import Local, Hadoop, Hadoop2, HPC, LocalMultiProc, LocalInParts
 #!!!cmk should this file name have a _ in it? what about other new ones?
 class DistributedBed(SnpReader):
     '''
@@ -113,7 +113,7 @@ class DistributedBed(SnpReader):
         :rtype: DistributedBed
 
         '''
-        from fastlmm.ludicrous.file_cache import progress_reporter
+        from pysnptools.util import progress_reporter
 
         count_A1 = True #Make all these's the same for reading and writing so that nothing will change.
         snpreader = _snps_fixup(snpreader, count_A1=count_A1)

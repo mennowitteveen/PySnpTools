@@ -18,7 +18,8 @@ from pysnptools.pstreader.test import TestPstReader
 from pysnptools.pstreader.test import TestDocStrings as PstDocStrings
 from pysnptools.kernelreader.test import _fortesting_JustCheckExists
 from pysnptools.util.intrangeset import TestIntRangeSet
-
+import pysnptools.util.mapreduce1.testdistributable
+    
 
 import unittest
 import os.path
@@ -727,9 +728,9 @@ def getTestSuite():
     """
     set up composite test suite
     """
-    
-    test_suite = unittest.TestSuite([])
 
+    test_suite = unittest.TestSuite([])
+    test_suite.addTests(pysnptools.util.mapreduce1.testdistributable.getTestSuite()),
     test_suite.addTests(NaNCNCTestCases.factory_iterator())
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPstReader))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(PstDocStrings))

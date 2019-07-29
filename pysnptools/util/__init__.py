@@ -1,4 +1,5 @@
 from pysnptools.util.intrangeset import IntRangeSet
+import os
 import scipy as sp
 import logging
 import numpy as np
@@ -7,6 +8,9 @@ try:
 except:
     pass
 import sys
+from contextlib import contextmanager
+import time
+import datetime
 
 
 def _testtest(data, iididx):
@@ -349,7 +353,8 @@ def sub_matrix(val, row_index_list, col_index_list, order='A', dtype=sp.float64)
     logging.debug("Back from cython matrixSubset")
     return sub_val
 
-def create_directory_if_necessary(name, isfile=True):
+
+def create_directory_if_necessary(name, isfile=True, robust=False): #!!!cmk update
     '''
     Create a directory for a file if the directory doesn't already exist.
 
@@ -357,19 +362,39 @@ def create_directory_if_necessary(name, isfile=True):
     :type name: string
     :param isfile: If True (default), the name is a file, otherwise it is a directory.
     :type isfile: bool
-    '''
     import os
+    '''
     if isfile:
         directory_name = os.path.dirname(name)
     else:
         directory_name = name
 
     if directory_name != "":
-        try:
-            os.makedirs(directory_name)
-        except OSError as e:
-            if not os.path.isdir(directory_name):
+        if not robust:
+            try:
+                os.makedirs(directory_name)
+            except OSError, e:
+                if not os.path.isdir(directory_name):
+                    raise Exception("not valid path: '{0}'. (Working directory is '{1}'".format(directory_name,os.getcwd()))
+        else:
+            is_ok = False
+            time_to_sleep = 10.0
+            for i in xrange(25):
+                try:
+                    os.makedirs(directory_name)
+                    is_ok = True
+                    break
+                except OSError, e:
+                    if not os.path.isdir(directory_name):
+                        time_to_sleep *= 1.1
+                        warnings.warn("creating directory robust=True, try#{0},time={3} error: not valid path: '{1}'. (Working directory is '{2}'".format(i, directory_name,os.getcwd(),int(time_to_sleep)))
+                        time.sleep(int(time_to_sleep)) ; #make random?
+                    else:
+                        is_ok = True
+                        break
+            if not is_ok:
                 raise Exception("not valid path: '{0}'. (Working directory is '{1}'".format(directory_name,os.getcwd()))
+
 
 def weighted_mean(ys, weights):
     '''
@@ -430,6 +455,99 @@ def to_ascii(s):
     if s is None or sys.version_info < (3,0,0) or isinstance(s,bytes):
         return s
     return s.encode('ascii') 
+
+def _format_delta(delta):
+    return datetime.timedelta(seconds=delta)
+
+def Mbps(size, delta):
+    return size * 8 / delta / 1e6
+
+def MbpsStr(t0, size, total=0):
+    delta = time.time()-t0
+    Mbps0 = Mbps(size, delta) if delta > 0 else 0
+    percent = float(size)/total if total > 0 else 1
+    left = delta/percent*(1-percent) if total > 0 else 0
+    return "{0:0.2f}, {1:0.1f}%, left={2}".format(Mbps0,percent*100,_format_delta(left))
+
+
+@contextmanager
+def log_in_place(name, level, time_lambda=time.time, show_log_diffs=False):
+    '''
+        Create an one-argument lambda to write messages to. They will appear on the same line.
+
+        Example::
+
+            with log_in_place("creating job_id_etc", logging.INFO) as log_writer:            
+                job_id_etc_list = []
+                for index,(distributable,pool_id,name_in) in enumerate(izip(distributable_list,self.pool_id_list,name_list)):
+                   log_writer(name_in)
+                   job_id_etc = self._setup_job([distributable],pool_id,name_in)[0]
+                   job_id_etc_list.append(job_id_etc)
+
+    '''
+    #!!! what if logging messages aren't suppose to go to stdout?
+    t_wait = time_lambda()
+    last_len = [0] #We have to make this an array so that the value is by reference.
+    last_message_hash = [None]
+    line_end = '\r'
+
+    def writer(message):
+        if logging.getLogger().level > level:
+            return
+        time_str = str(datetime.timedelta(seconds=time_lambda()-t_wait))
+        if '.' in time_str:
+            time_str = time_str[:time_str.index('.')+3] #Time to the 1/100th of a sec
+        s = "{0} -- time={1}, {2}".format(name,time_str,message)
+        if show_log_diffs:
+            message_hash = hash(message)
+            if message_hash !=  last_message_hash[0] and last_message_hash[0] is not None:
+                sys.stdout.write('\n')
+            last_message_hash[0] = message_hash
+        sys.stdout.write("{0}{1}\r".format(s," "*max(0,last_len[0]-len(s)))) #Pad with spaces to cover up previous message
+        last_len[0] = len(s)
+        
+
+    yield writer
+
+    if logging.getLogger().level > level:
+        return
+    sys.stdout.write("\n")                
+
+@contextmanager
+def progress_reporter(name,size=None,updater=None):
+    '''
+    If an update is given, we use that. Otherwise, we create our own.
+    '''
+    if updater is None:
+        bytes_so_far = [0] #We have to make this an array so that the value is by reference.
+        t0 = time.time()
+
+        with log_in_place(name, logging.INFO) as writer:
+            def updater2(byte_size):
+                bytes_so_far[0] += byte_size
+                writer("Mbps={0}".format(MbpsStr(t0,bytes_so_far[0],size)))
+            yield updater2
+    else:
+        yield updater
+
+
+@contextmanager
+def multiopen(open_lambda, input_list):
+    handle_list = [open_lambda(input) for input in input_list]        # Open the related inputs
+    list_to_yield = [handle.__enter__() for handle in handle_list]    # Get the list to yield
+    yield list_to_yield                                               # yield it
+    for handle in handle_list:                                        # Close them
+        handle.__exit__(None,None,None)
+
+def datestamp(appendrandom=False):
+    import datetime
+    now = datetime.datetime.now()
+    s = str(now)[:19].replace(" ","_").replace(":","_")
+    if appendrandom:
+        import random
+        s += "_" + str(random.random())[2:]
+    return s
+
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

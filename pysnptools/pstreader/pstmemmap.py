@@ -3,6 +3,7 @@ import numpy as np
 from pysnptools.pstreader import PstReader
 
 
+
 #!!!cmk update documentation
 class PstMemMap(PstReader):
 
@@ -83,7 +84,7 @@ class PstMemMap(PstReader):
 
     @staticmethod
     def write(filename, pstdata):
-        from pysnptools.snpreader import SnpMemMap
+        from pysnptools.snpreader import SnpMemMap, SnpReader
 
         npzfile = SnpReader._name_of_other_file(filename,"dat","npz")
         if pstdata.val.flags['F_CONTIGUOUS']:

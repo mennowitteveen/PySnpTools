@@ -11,7 +11,7 @@ Here are examples of each IRunner running a SamplePi job (which is defined below
 
 Run local in a single process
 
-    >>> from fastlmm.util.SamplePi import *
+    >>> from pysnptools.util.mapreduce1.samplepi import *
     >>> round(Local().run(SamplePi(dartboard_count=100,dart_count=100)),2)
     pi ~ 3.162
     3.16
@@ -19,7 +19,7 @@ Run local in a single process
 
 Run local on 12 processors (also, increase the # of dartboards and darts)
 
-    >>> from fastlmm.util.SamplePi import *          #LocalMultiProc and HPC won't work without this 'from'
+    >>> from pysnptools.util.mapreduce1.samplepi import *          #LocalMultiProc and HPC won't work without this 'from'
     >>> runner = LocalMultiProc(12,mkl_num_threads=1)
     >>> distributable = SamplePi(dartboard_count=1000,dart_count=1000,tempdirectory='pi_work')
     >>> round(runner.run(distributable),2)
@@ -29,7 +29,7 @@ Run local on 12 processors (also, increase the # of dartboards and darts)
 
 Behind the scenes LocalMultiProc and HPC call LocalInParts, but it can be called directly, too.
 
->>> from fastlmm.util.SamplePi import *
+>>> from pysnptools.util.mapreduce1.samplepi import *
 >>> distributable = SamplePi(dartboard_count=100,dart_count=100,tempdirectory='pi_work')
 >>> LocalInParts(taskindex=0, taskcount=2, mkl_num_threads=4).run(distributable)               # do first half of work
 >>> LocalInParts(taskindex=1, taskcount=2, mkl_num_threads=4).run(distributable)               # do second half of work
@@ -40,7 +40,7 @@ pi ~ 3.162
 
 Here is an example of a cluster run.
 
-#>>> from fastlmm.util.SamplePi import *
+#>>> from pysnptools.util.mapreduce1.samplepi import *
 #>>> runner = HPC(10,'RR1-N13-16-H44',r'\\msr-arrays\scratch\msr-pool\eScience3')
 #>>> distributable = SamplePi(dartboard_count=1000,dart_count=1000,tempdirectory='pi_work')
 #>>> runner.run(distributable)

@@ -10,7 +10,7 @@ import os
 import cPickle as pickle
 import subprocess, sys, os.path
 import multiprocessing
-import pysnptools.util as util
+import pysnptools.util as pstutil
 import pdb
 from collections import defaultdict
 import tarfile as tarfileLibrary
@@ -96,7 +96,7 @@ class Hadoop: # implements IRunner
         filesString = ",".join(batfilename_rel_list+fileInWorkingDirectoryList)
 
         taskIndexDir = run_dir_rel + os.path.sep + "input"
-        util.create_directory_if_necessary(taskIndexDir,isfile=False)
+        pstutil.create_directory_if_necessary(taskIndexDir,isfile=False)
 
         #zgoal = int(SP.ceil(SP.log(self.taskcount)/SP.log(10)))
         with open(taskIndexDir +  os.path.sep + "taskIndexList.txt","w") as taskIndexListFile:
@@ -182,7 +182,7 @@ class Hadoop: # implements IRunner
     def FindOrCreatePythonSettings(self, remotewd):
         localpythonpathsetting = r"\\msr-arrays\scratch\msr-pool\eScience3\.continuum" # os.path.join(os.environ.get("userprofile"),".continuum")
         lastFolderName = os.path.split(os.path.normpath(localpythonpathsetting))[1]
-        #util.create_directory_if_necessary(localpythonpathsetting,isfile=False)
+        #pstutil.create_directory_if_necessary(localpythonpathsetting,isfile=False)
 
         #Must set assume_changed=True for otherwise hidden .continuum file to be used.
         tgzName = HadoopCopier.CheckUpdateTgz(localpythonpathsetting, subsubItemList1=None, skipcheck=False, filter_hidden=False)
@@ -194,7 +194,7 @@ class Hadoop: # implements IRunner
         logging.info('Hadoop runner is pickling distributable')
         distributablep_filename_rel = os.path.join(run_dir_rel, "distributable.p")
         #distributablep_filename_abs = os.path.join(run_dir_abs, "distributable.p")
-        util.create_directory_if_necessary(distributablep_filename_rel)
+        pstutil.create_directory_if_necessary(distributablep_filename_rel)
         with open(distributablep_filename_rel, mode='wb') as f:
             pickle.dump(distributable, f, pickle.HIGHEST_PROTOCOL)
         logging.info('Done: Hadoop runner is pickling distributable')
@@ -222,7 +222,7 @@ class Hadoop: # implements IRunner
             batfilename_rel = os.path.join(run_dir_rel,"dist{0}.bat".format(part))
             batfilename_abs = "hdfs:" + os.path.join(run_dir_abs,"dist{0}.bat".format(part)).replace("\\","/")
             batfilename_abs_list.append(batfilename_abs)
-            util.create_directory_if_necessary(batfilename_rel, isfile=True)
+            pstutil.create_directory_if_necessary(batfilename_rel, isfile=True)
             with open(batfilename_rel, "w") as batfile:
                 batfile.write("@set path={0};{0}\Scripts;%path%\n".format(r"c:\GCD\esciencepy"))
                 batfile.write("@set PYTHONPATH={0}\n".format(remotepythonpath))
@@ -291,8 +291,8 @@ class Hadoop: # implements IRunner
         remotewd = remotewd.replace("\\","/")
         if remotewd.endswith("/"): # remove trailing /
             remotewd = remotewd[:-1]
-        run_dir_rel = os.path.join("runs",util.datestamp(appendrandom=True))
-        util.create_directory_if_necessary("runs",isfile=False)
+        run_dir_rel = os.path.join("runs",pstutil.datestamp(appendrandom=True))
+        pstutil.create_directory_if_necessary("runs",isfile=False)
         if not os.path.isfile(".ignoreTgzChange"):
             with open("runs" +  os.path.sep + ".ignoreTgzChange","w") as ignoreFile:
                 ignoreFile.write("\n")

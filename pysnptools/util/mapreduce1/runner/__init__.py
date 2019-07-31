@@ -13,7 +13,7 @@ interface IRunner
 '''
 import os
 import dill
-import pysnptools.util as util
+import pysnptools.util as pstutil
 from itertools import *
 
 def work_sequence_to_result_sequence(work_sequence):
@@ -75,7 +75,7 @@ def run_one_task(original_distributable, taskindex, taskcount, workdirectory):
 
     if shaped_distributable.work_count != taskcount : raise Exception("Assert: expect workcount == taskcount")
 
-    util.create_directory_if_necessary(workdirectory, isfile=False, robust=True)
+    pstutil.create_directory_if_necessary(workdirectory, isfile=False, robust=True)
 
     if (taskindex < taskcount):
         doMainWorkForOneIndex(shaped_distributable, taskcount, taskindex, workdirectory)

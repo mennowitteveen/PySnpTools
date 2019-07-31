@@ -6,7 +6,7 @@ See SamplePi.py for examples.
 from pysnptools.util.mapreduce1.runner import *
 import os, sys
 import logging
-import pysnptools.util as util
+import pysnptools.util as pstutil
 try:
     import dill as pickle
 except:
@@ -46,7 +46,7 @@ class LocalInParts: # implements IRunner
         else:
             result = run_one_task(distributable, self.taskindex, self.taskcount, tempdir)
             if self.result_file is not None:
-                util.create_directory_if_necessary(self.result_file)
+                pstutil.create_directory_if_necessary(self.result_file)
                 with open(self.result_file, mode='wb') as f:
                     pickle.dump(result, f, pickle.HIGHEST_PROTOCOL)
 

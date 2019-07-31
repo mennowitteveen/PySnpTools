@@ -2,7 +2,7 @@ import os, sys
 from pysnptools.util.mapreduce1.runner import *
 import base64
 import logging
-import pysnptools.util as util
+import pysnptools.util as pstutil
 import cPickle as pickle
 
 class LocalReducer: # implements IRunner
@@ -59,7 +59,7 @@ class LocalReducer: # implements IRunner
         #Pickle the result to a file
         #logging.info("AAA\n\n\n\nABCwd='{0}'\n\nfile='{1}'DEF\n\n\nZZZ".format(os.getcwd(),self.output_file))
         if self.result_file is not None:
-            util.create_directory_if_necessary(self.result_file)
+            pstutil.create_directory_if_necessary(self.result_file)
             with open(self.result_file, mode='wb') as f:
                 pickle.dump(result, f, pickle.HIGHEST_PROTOCOL)
         return result

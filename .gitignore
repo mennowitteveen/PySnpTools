@@ -226,3 +226,10 @@ ModelManifest.xml
 /runs
 /pysnptools/.vs/pysnptools/v16
 /pysnptools/util/tempdir
+/.work_directory.None
+/pysnptools/util/mapreduce1/.work_directory.None
+/pysnptools/util/mapreduce1/pi_work
+/pysnptools/util/mapreduce1/runs
+/pysnptools/util/mapreduce1/tempdir
+/tests/.work_directory.None
+/tests/runs

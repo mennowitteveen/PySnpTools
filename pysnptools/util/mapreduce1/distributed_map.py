@@ -119,7 +119,7 @@ def d_map(f, args, runner, input_files=None, output_files=None,name=None):
 
 
 # example function to be "mapped"
-def dummy(input_tuple):
+def placeholder(input_tuple):
     a, fn = input_tuple
     lines = ""
     for line in open(fn):

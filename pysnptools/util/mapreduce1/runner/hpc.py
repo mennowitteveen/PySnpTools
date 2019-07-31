@@ -8,7 +8,7 @@ from pysnptools.util.mapreduce1.runner import *
 import os
 import subprocess, sys, os.path
 import multiprocessing
-import pysnptools.util as util
+import pysnptools.util as pstutil
 import pdb
 import logging
 try:
@@ -59,7 +59,7 @@ class HPC: # implements IRunner
         remotepythoninstall = self.check_remote_pythoninstall()
 
         remotewd, run_dir_abs, run_dir_rel, nodelocalwd = self.create_run_dir()
-        util.create_directory_if_necessary(os.path.join(remotewd, distributable.tempdirectory), isfile=False) #create temp directory now so that cluster tasks won't try to create it many times at once
+        pstutil.create_directory_if_necessary(os.path.join(remotewd, distributable.tempdirectory), isfile=False) #create temp directory now so that cluster tasks won't try to create it many times at once
         result_remote = os.path.join(run_dir_abs,"result.p")
 
         self.copy_python_settings(run_dir_abs)
@@ -111,7 +111,7 @@ class HPC: # implements IRunner
         if self.remote_python_parent is None:
             remotepythonpath = self.CopySource(localpythonpath, run_dir_abs)
         else:
-            util.create_directory_if_necessary(self.remote_python_parent,isfile=False)
+            pstutil.create_directory_if_necessary(self.remote_python_parent,isfile=False)
             list = []
             for rel in os.listdir(self.remote_python_parent):
                 list.append(os.path.join(self.remote_python_parent,rel))
@@ -133,10 +133,10 @@ class HPC: # implements IRunner
     def submit_to_cluster(self, batfilename_rel, distributable, remotewd, run_dir_abs, run_dir_rel, nodelocalwd):
         stdout_dir_rel = os.path.join(run_dir_rel,"stdout")
         stdout_dir_abs = os.path.join(run_dir_abs,"stdout")
-        util.create_directory_if_necessary(stdout_dir_abs, isfile=False)
+        pstutil.create_directory_if_necessary(stdout_dir_abs, isfile=False)
         stderr_dir_rel = os.path.join(run_dir_rel,"stderr")
         stderr_dir_abs = os.path.join(run_dir_abs,"stderr")
-        util.create_directory_if_necessary(stderr_dir_abs, isfile=False)
+        pstutil.create_directory_if_necessary(stderr_dir_abs, isfile=False)
         
         if len(self.excluded_nodes) > 0:
             excluded_nodes = "Set-HpcJob -Id $r.Id -addExcludedNodes {0}".format(", ".join(self.excluded_nodes))
@@ -147,7 +147,7 @@ class HPC: # implements IRunner
         #create the Powershell file
         psfilename_rel = os.path.join(run_dir_rel,"dist.ps1")
         psfilename_abs = os.path.join(run_dir_abs,"dist.ps1")
-        util.create_directory_if_necessary(psfilename_abs, isfile=True)
+        pstutil.create_directory_if_necessary(psfilename_abs, isfile=True)
         with open(psfilename_abs, "w") as psfile:
             psfile.write(r"""Add-PsSnapin Microsoft.HPC
         Set-Content Env:CCP_SCHEDULER {0}
@@ -257,7 +257,7 @@ class HPC: # implements IRunner
             remote_python_parent = self.remote_python_parent
         else:
             remote_python_parent = run_dir_abs + os.path.sep + "pythonpath"
-        util.create_directory_if_necessary(remote_python_parent, isfile=False)
+        pstutil.create_directory_if_necessary(remote_python_parent, isfile=False)
         remotepythonpath_list = []
         for i, localpythonpathdir in enumerate(localpythonpath.split(';')):
             remotepythonpathdir = os.path.join(remote_python_parent, str(i))
@@ -302,14 +302,14 @@ class HPC: # implements IRunner
             run_dir_abs.encode("string-escape"))
         batfilename_rel = os.path.join(run_dir_rel,"dist.bat")
         batfilename_abs = os.path.join(run_dir_abs,"dist.bat")
-        util.create_directory_if_necessary(batfilename_abs, isfile=True)
+        pstutil.create_directory_if_necessary(batfilename_abs, isfile=True)
         matplotlibfilename_rel = os.path.join(run_dir_rel,".matplotlib")
         matplotlibfilename_abs = os.path.join(run_dir_abs,".matplotlib")
-        util.create_directory_if_necessary(matplotlibfilename_abs, isfile=False)
-        util.create_directory_if_necessary(matplotlibfilename_abs + "/tex.cache", isfile=False)
+        pstutil.create_directory_if_necessary(matplotlibfilename_abs, isfile=False)
+        pstutil.create_directory_if_necessary(matplotlibfilename_abs + "/tex.cache", isfile=False)
         ipythondir_rel = os.path.join(run_dir_rel,".ipython")
         ipythondir_abs = os.path.join(run_dir_abs,".ipython")
-        util.create_directory_if_necessary(ipythondir_abs, isfile=False)
+        pstutil.create_directory_if_necessary(ipythondir_abs, isfile=False)
         with open(batfilename_abs, "w") as batfile:
             batfile.write("set path={0};%path%\n".format(remotepath))
             batfile.write("set PYTHONPATH={0}\n".format(remotepythonpath))
@@ -353,9 +353,9 @@ class HPC: # implements IRunner
             nodelocalwd = "d:\scratch\escience" + os.path.sep + username + os.path.splitdrive(localwd)[1]  #!!! const
         import datetime
         now = datetime.datetime.now()
-        run_dir_rel = os.path.join("runs",util.datestamp(appendrandom=True))
+        run_dir_rel = os.path.join("runs",pstutil.datestamp(appendrandom=True))
         run_dir_abs = os.path.join(remotewd,run_dir_rel)
-        util.create_directory_if_necessary(run_dir_abs,isfile=False)
+        pstutil.create_directory_if_necessary(run_dir_abs,isfile=False)
 
 
         return remotewd, run_dir_abs, run_dir_rel, nodelocalwd
@@ -374,7 +374,7 @@ class HPCCopier(object): #Implements ICopier
             itemnorm = os.path.normpath(item)
             remote_file_name = os.path.join(self.remotewd,itemnorm)
             remote_dir_name,ignore = os.path.split(remote_file_name)
-            util.create_directory_if_necessary(remote_file_name)
+            pstutil.create_directory_if_necessary(remote_file_name)
             xcopycommand = "xcopy /d /e /s /c /h /y {0} {1}".format(itemnorm, remote_dir_name)
             logging.info(xcopycommand)
             rc = os.system(xcopycommand)
@@ -387,7 +387,7 @@ class HPCCopier(object): #Implements ICopier
     def output(self,item):
         if isinstance(item, str):
             itemnorm = os.path.normpath(item)
-            util.create_directory_if_necessary(itemnorm)
+            pstutil.create_directory_if_necessary(itemnorm)
             remote_file_name = os.path.join(self.remotewd,itemnorm)
             local_dir_name,ignore = os.path.split(itemnorm)
             assert os.path.exists(remote_file_name), "Don't see expected file '{0}'. Did the HPC job fail?".format(remote_file_name)

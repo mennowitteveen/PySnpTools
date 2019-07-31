@@ -12,14 +12,14 @@ from pysnptools.util.mapreduce1.distributabletest import DistributableTest
 
 
 from pysnptools.util.mapreduce1.distributed_map import d_map
-from pysnptools.util.mapreduce1.distributed_map import dummy
+from pysnptools.util.mapreduce1.distributed_map import placeholder
 
 
 class TestDistributedMap(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         currentFolder = os.path.dirname(os.path.realpath(__file__))
-        self.fn = currentFolder + "/../../tests/datasets/dummy.txt"
+        self.fn = currentFolder + "/../../../tests/datasets/placeholder.txt"
         self.args = [(a,self.fn) for a in range(10)]
 
     def test_local_single(self):
@@ -29,7 +29,7 @@ class TestDistributedMap(unittest.TestCase):
 
         # run on 4 core locally
         runner = Local(4)
-        result = d_map(dummy, self.args, runner, input_files=[self.fn])
+        result = d_map(placeholder, self.args, runner, input_files=[self.fn])
         expect = ['', 'A', 'AA', 'AAA', 'AAAB', 'AAABB', 'AAABBB', 'AAABBBC', 'AAABBBCC', 'AAABBBCCC']
 
         assert expect == result
@@ -41,7 +41,7 @@ class TestDistributedMap(unittest.TestCase):
 
         # run on 4 core locally
         runner = LocalMultiProc(4)
-        result = d_map(dummy, self.args, runner, input_files=[self.fn])
+        result = d_map(placeholder, self.args, runner, input_files=[self.fn])
         expect = ['', 'A', 'AA', 'AAA', 'AAAB', 'AAABB', 'AAABBB', 'AAABBBC', 'AAABBBCC', 'AAABBBCCC']
 
         assert expect == result
@@ -139,6 +139,16 @@ class TestDistributable(unittest.TestCase):
         runner1 = LocalReducer(4,None,1,instream=instream1)
         assert "A" == runner1.run(dist)
 
+    def test_sample_pi(self):
+        import pysnptools.util.mapreduce1.samplepi
+        old_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+        result = doctest.testmod(pysnptools.util.mapreduce1.samplepi)
+        os.chdir(old_dir)
+        assert result.failed == 0, "failed doc test: " + __file__
+
+
+
     
 def getTestSuite():
     suite1 = unittest.TestLoader().loadTestsFromTestCase(TestDistributable)
@@ -151,11 +161,11 @@ if __name__ == '__main__':
     import pysnptools.util.mapreduce1.testdistributable
 
     suites = unittest.TestSuite([
-                                    fastlmm.util.testdistributable.getTestSuite(),
+                                    pysnptools.util.mapreduce1.testdistributable.getTestSuite(),
                                     ])
     suites.debug
 
-    if False: #Standard test run
+    if True: #Standard test run
         r = unittest.TextTestRunner(failfast=False)
         r.run(suites)
     else: #Cluster test run

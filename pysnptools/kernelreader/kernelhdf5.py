@@ -50,7 +50,7 @@ class KernelHdf5(PstHdf5,KernelReader):
         >>> pstutil.create_directory_if_necessary("tempdir/toydata.kernel.hdf5")
         >>> KernelHdf5.write("tempdir/toydata.kernel.hdf5",kerneldata)          # Write data in KernelHdf5 format
         """
-        PstHdf5.write(filename,kerneldata,hdf5_dtype=hdf5_dtype,col_major=sid_major)
+        PstHdf5.write(filename,kerneldata,hdf5_dtype=hdf5_dtype,col_major=sid_major)#!!!cmk shouldn't all writers return their reader
 
 
 if __name__ == "__main__":

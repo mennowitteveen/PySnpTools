@@ -148,7 +148,8 @@ class TestDistributable(unittest.TestCase):
         assert result.failed == 0, "failed doc test: " + __file__
 
 
-
+#!!!cmk be sure these tests get run
+##!!cmk be sure all mapreduce1 doctests get run    
     
 def getTestSuite():
     suite1 = unittest.TestLoader().loadTestsFromTestCase(TestDistributable)

@@ -9,6 +9,8 @@ from pysnptools.snpreader import Bed, SnpData
 import numpy as np
 import pysnptools.util as pstutil
 
+#!!!cmk document and doctest
+
 def get_val(x_sample,dist,iid_count,sid_start,sid_stop,seed):
     missing_rate = .218
     sid_batch_size_a = sid_stop-sid_start

@@ -48,7 +48,7 @@ class SnpHdf5(PstHdf5,SnpReader):
         >>> pstutil.create_directory_if_necessary("tempdir/toydata10.snp.hdf5")
         >>> SnpHdf5.write("tempdir/toydata10.snp.hdf5",snpdata)        # Write data in SnpHdf5 format
         """
-        PstHdf5.write(filename,snpdata,hdf5_dtype=hdf5_dtype,col_major=sid_major)
+        PstHdf5.write(filename,snpdata,hdf5_dtype=hdf5_dtype,col_major=sid_major)#!!!cmk shouldn't all writers return their reader
 
 class Hdf5(SnpHdf5):
     #!! warnings.warn("class 'Hdf5' is deprecated. Use the standard class 'SnpHdf5' instead", DeprecationWarning)

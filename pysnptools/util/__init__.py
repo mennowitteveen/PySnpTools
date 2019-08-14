@@ -459,10 +459,10 @@ def to_ascii(s):
 def _format_delta(delta):
     return datetime.timedelta(seconds=delta)
 
-def Mbps(size, delta):
+def Mbps(size, delta):#!!!cmk document or hide
     return size * 8 / delta / 1e6
 
-def MbpsStr(t0, size, total=0):
+def MbpsStr(t0, size, total=0):#!!!cmk document or hide
     delta = time.time()-t0
     Mbps0 = Mbps(size, delta) if delta > 0 else 0
     percent = float(size)/total if total > 0 else 1
@@ -471,7 +471,7 @@ def MbpsStr(t0, size, total=0):
 
 
 @contextmanager
-def log_in_place(name, level, time_lambda=time.time, show_log_diffs=False):
+def log_in_place(name, level, time_lambda=time.time, show_log_diffs=False):#!!!cmk document or hide
     '''
         Create an one-argument lambda to write messages to. They will appear on the same line.
 
@@ -516,7 +516,7 @@ def log_in_place(name, level, time_lambda=time.time, show_log_diffs=False):
 @contextmanager
 def progress_reporter(name,size=None,updater=None):
     '''
-    If an update is given, we use that. Otherwise, we create our own.
+    If an update is given, we use that. Otherwise, we create our own.#!!!cmk document or hide
     '''
     if updater is None:
         bytes_so_far = [0] #We have to make this an array so that the value is by reference.
@@ -532,14 +532,14 @@ def progress_reporter(name,size=None,updater=None):
 
 
 @contextmanager
-def multiopen(open_lambda, input_list):
+def multiopen(open_lambda, input_list):#!!!cmk document or hide
     handle_list = [open_lambda(input) for input in input_list]        # Open the related inputs
     list_to_yield = [handle.__enter__() for handle in handle_list]    # Get the list to yield
     yield list_to_yield                                               # yield it
     for handle in handle_list:                                        # Close them
         handle.__exit__(None,None,None)
 
-def datestamp(appendrandom=False):
+def datestamp(appendrandom=False):#!!!cmk document or hide
     import datetime
     now = datetime.datetime.now()
     s = str(now)[:19].replace(" ","_").replace(":","_")

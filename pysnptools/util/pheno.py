@@ -113,4 +113,4 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     import doctest
-    doctest.testmod()
+    doctest.testmod() #!!!cmk besure this doctest gets run

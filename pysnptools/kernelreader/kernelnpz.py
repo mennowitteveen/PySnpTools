@@ -45,7 +45,7 @@ class KernelNpz(KernelReader,PstNpz):
         >>> pstutil.create_directory_if_necessary("tempdir/toydata.kernel.npz")
         >>> KernelNpz.write("tempdir/toydata.kernel.npz",kerneldata)      # Write data in KernelNpz format
         """
-        PstNpz.write(filename,kerneldata)
+        PstNpz.write(filename,kerneldata)#!!!cmk shouldn't all writers return their reader
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

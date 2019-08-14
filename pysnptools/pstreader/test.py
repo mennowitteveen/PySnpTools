@@ -222,18 +222,10 @@ class TestPstReader(unittest.TestCase):
 
 # We do it this way instead of using doctest.DocTestSuite because doctest.DocTestSuite requires modules to be pickled, which python doesn't allow.
 # We need tests to be pickleable so that they can be run on a cluster.
-class TestDocStrings(unittest.TestCase):
+class TestDocStrings(unittest.TestCase): #!!!cmk confirm that these are ca
     pass
 
-    def test_snpreader(self):
-        import pysnptools.pstreader.pstreader
-        old_dir = os.getcwd()
-        os.chdir(os.path.dirname(os.path.realpath(__file__)))
-        result = doctest.testmod(pysnptools.pstreader.pstreader,optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)
-        os.chdir(old_dir)
-        assert result.failed == 0, "failed doc test: " + __file__
-
-    def test_snpdata(self):
+    def test_pstdata(self):
         import pysnptools.pstreader.pstdata
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -241,7 +233,23 @@ class TestDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    def test_snpdata(self):
+    def test_psthdf5(self):
+        import pysnptools.pstreader.psthdf5
+        old_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+        result = doctest.testmod(pysnptools.pstreader.psthdf5)
+        os.chdir(old_dir)
+        assert result.failed == 0, "failed doc test: " + __file__
+
+    def test_pstmemmap(self):
+        import pysnptools.pstreader.pstmemmap
+        old_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+        result = doctest.testmod(pysnptools.pstreader.pstmemmap)
+        os.chdir(old_dir)
+        assert result.failed == 0, "failed doc test: " + __file__
+
+    def test_pstnpz(self):
         import pysnptools.pstreader.pstnpz
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -249,11 +257,11 @@ class TestDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    def test_snpdata(self):
-        import pysnptools.pstreader.psthdf5
+    def test_pstreader(self):
+        import pysnptools.pstreader.pstreader
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
-        result = doctest.testmod(pysnptools.pstreader.psthdf5)
+        result = doctest.testmod(pysnptools.pstreader.pstreader,optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 

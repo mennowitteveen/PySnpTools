@@ -121,7 +121,7 @@ class Pheno(_OneShot, SnpReader):
                         vs = str(v).encode('ascii')
                     tmpstr += sep + vs
                 tmpstr += b"\n"
-                f.write(tmpstr)
+                f.write(tmpstr)#!!!cmk shouldn't all writers return their reader
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

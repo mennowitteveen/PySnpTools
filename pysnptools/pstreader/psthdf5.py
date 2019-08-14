@@ -274,7 +274,7 @@ class PstHdf5(PstReader):
             h5.create_dataset('row_property', data=any_u_to_a(pstdata.row_property))
             h5.create_dataset('col_property', data=any_u_to_a(pstdata.col_property))
             h5.create_dataset('val', data=val,dtype=hdf5_dtype,shuffle=True)#compression="gzip", doesn't seem to work with Anaconda
-            h5['val'].attrs["col-major"] = col_major
+            h5['val'].attrs["col-major"] = col_major#!!!cmk shouldn't all writers return their reader
 
 
 if __name__ == "__main__":

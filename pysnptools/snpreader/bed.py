@@ -211,7 +211,7 @@ class Bed(SnpReader):
                                 raise Exception("Can't convert value '{0}' to BED format (only 0,1,2,NAN allowed)".format(val))
                             byte |= (code << (val_index*2))
                         bed_filepointer.write(bytes(bytearray([byte])))
-        logging.info("Done writing " + filename)
+        logging.info("Done writing " + filename)#!!!cmk shouldn't all writers return their reader
 
     def _read(self, iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok):
         self._run_once()
@@ -315,6 +315,8 @@ if __name__ == "__main__":
 
     from pysnptools.snpreader import Pheno, Bed
     import pysnptools.util as pstutil
+    import os
+    print os.getcwd()
     snpdata = Pheno('../examples/toydata.phe').read()         # Read data from Pheno format
     pstutil.create_directory_if_necessary("tempdir/toydata.bed")
     Bed.write("tempdir/toydata.bed",snpdata,count_A1=False)   # Write data in Bed format

@@ -233,3 +233,4 @@ ModelManifest.xml
 /pysnptools/util/mapreduce1/tempdir
 /tests/.work_directory.None
 /tests/runs
+/tempdir

@@ -54,7 +54,7 @@ class SnpReader(PstReader):
         (2, 508)
 
 
-    The SnpReaders Classes
+    The SnpReaders Classes #!!!cmk update these
 
         ========================= =================== ====================== ================== ======================
         *Class*                   *Format*            *Random Access*        *Suffixes*         *Write* method?

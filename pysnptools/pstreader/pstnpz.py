@@ -8,7 +8,7 @@ from pysnptools.pstreader.pstdata import PstData
 import pysnptools.util as pstutil
 import warnings
 
-class PstNpz(PstReader):
+class PstNpz(PstReader): #!!!cmk confirm that this doceval gets evaled in testing
     '''
     A :class:`.PstReader` for reading \*.pst.npz files from disk.
 
@@ -23,9 +23,9 @@ class PstNpz(PstReader):
         :Example:
 
         >>> from pysnptools.pstreader import PstNpz
-        >>> data_on_disk = PstNpz('../examples/little.pst.npz')
-        >>> print(data_on_disk.iid_count)
-        500
+        >>> data_on_disk = PstNpz('../../tests/datasets/little.pst.npz')
+        >>> print(data_on_disk.row_count)
+        300
 
     **Methods beyond** :class:`.NpzReader`
 
@@ -108,7 +108,7 @@ class PstNpz(PstReader):
         return val
 
     @staticmethod
-    def write(filename, pstdata):
+    def write(filename, pstdata): #!!!cmk fix so returns the PstNpz. Update docs
         """Writes a :class:`PstData` to PstNpz format.
 
         :param filename: the name of the file to create
@@ -127,52 +127,56 @@ class PstNpz(PstReader):
             filename, pstdata = pstdata, filename 
 
         np.savez(filename, row=pstdata.row, col=pstdata.col, row_property=pstdata.row_property, col_property=pstdata.col_property,val=pstdata.val)
-        logging.debug("Done writing " + filename)
+        logging.debug("Done writing " + filename)#!!!cmk shouldn't all writers return their reader
 
 
 if __name__ == "__main__":
+    import doctest
     logging.basicConfig(level=logging.INFO)
+    
+    doctest.testmod() #!!!cmk besure this doctest gets run
 
-    snpreader = Dat(r'../tests/datasets/all_chr.maf0.001.N300.dat')
-    snp_matrix = snpreader.read()
-    print(len(snp_matrix['sid']))
-    snp_matrix = snpreader[:,:].read()
-    print(len(snp_matrix['sid']))
-    sid_index_list = snpreader.sid_to_index(['23_9','23_2'])
-    snp_matrix = snpreader[:,sid_index_list].read()
-    print(",".join(snp_matrix['sid']))
-    snp_matrix = snpreader[:,0:10].read()
-    print(",".join(snp_matrix['sid']))
+    #from pysnptools.snpreader.dat import Dat
+    #snpreader = Dat(r'../tests/datasets/all_chr.maf0.001.N300.dat')
+    #snp_matrix = snpreader.read()
+    #print(len(snp_matrix['sid']))
+    #snp_matrix = snpreader[:,:].read()
+    #print(len(snp_matrix['sid']))
+    #sid_index_list = snpreader.sid_to_index(['23_9','23_2'])
+    #snp_matrix = snpreader[:,sid_index_list].read()
+    #print(",".join(snp_matrix['sid']))
+    #snp_matrix = snpreader[:,0:10].read()
+    #print(",".join(snp_matrix['sid']))
 
-    print(snpreader.iid_count)
-    print(snpreader.sid_count)
-    print(len(snpreader.pos))
+    #print(snpreader.iid_count)
+    #print(snpreader.sid_count)
+    #print(len(snpreader.pos))
 
-    snpreader2 = snpreader[::-1,4]
-    print(snpreader.iid_count)
-    print(snpreader2.sid_count)
-    print(len(snpreader2.pos))
+    #snpreader2 = snpreader[::-1,4]
+    #print(snpreader.iid_count)
+    #print(snpreader2.sid_count)
+    #print(len(snpreader2.pos))
 
-    snp_matrix = snpreader2.read()
-    print(len(snp_matrix['iid']))
-    print(len(snp_matrix['sid']))
+    #snp_matrix = snpreader2.read()
+    #print(len(snp_matrix['iid']))
+    #print(len(snp_matrix['sid']))
 
-    snp_matrix = snpreader2[5,:].read()
-    print(len(snp_matrix['iid']))
-    print(len(snp_matrix['sid']))
+    #snp_matrix = snpreader2[5,:].read()
+    #print(len(snp_matrix['iid']))
+    #print(len(snp_matrix['sid']))
 
-    iid_index_list = snpreader2.iid_to_index(snpreader2.iid[::2])
-    snp_matrix = snpreader2[iid_index_list,::3].read()
-    print(len(snp_matrix['iid']))
-    print(len(snp_matrix['sid']))
+    #iid_index_list = snpreader2.iid_to_index(snpreader2.iid[::2])
+    #snp_matrix = snpreader2[iid_index_list,::3].read()
+    #print(len(snp_matrix['iid']))
+    #print(len(snp_matrix['sid']))
 
-    snp_matrix = snpreader[[4,5],:].read()
-    print(len(snp_matrix['iid']))
-    print(len(snp_matrix['sid']))
+    #snp_matrix = snpreader[[4,5],:].read()
+    #print(len(snp_matrix['iid']))
+    #print(len(snp_matrix['sid']))
 
-    print(snpreader2)
-    print(snpreader[::-1,4])
-    print(snpreader2[iid_index_list,::3])
-    print(snpreader[:,sid_index_list])
-    print(snpreader2[5,:])
-    print(snpreader[[4,5],:])
+    #print(snpreader2)
+    #print(snpreader[::-1,4])
+    #print(snpreader2[iid_index_list,::3])
+    #print(snpreader[:,sid_index_list])
+    #print(snpreader2[5,:])
+    #print(snpreader[[4,5],:])

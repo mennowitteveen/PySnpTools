@@ -2,15 +2,15 @@ from pysnptools.snpreader import _MergeSIDs
 from pysnptools.snpreader import SnpReader, Bed
 from pysnptools.pstreader import PstReader
 from pysnptools.util import multiopen
-from fastlmm.inference.fastlmm_predictor import _snps_fixup
+from pysnptools.snpreader import _snps_fixup
 import os
 import numpy as np
 from pysnptools.util import log_in_place
 import logging
 from pysnptools.util.mapreduce1.mapreduce import map_reduce
-#!!!cmk remove? from pysnptools.util.mapreduce1.runner import Local, Hadoop, Hadoop2, HPC, LocalMultiProc, LocalInParts
-#!!!cmk should this file name have a _ in it? what about other new ones?
-class DistributedBed(SnpReader):
+class DistributedBed(SnpReader): #!!!cmk is this tested anywhere
+    #!!!cmk update
+    #!!!cmk document *FileCache* too
     '''
     A class that implements the :class:`SnpReader` interface. It stores BED-like data in pieces on storage. When requested, it retrieves requested parts of the data. 
 
@@ -240,6 +240,6 @@ class _Distributed1Bed(SnpReader):
         with multiopen(lambda file_name:storage.open_write(file_name,updater=updater),file_list) as local_file_name_list:
             Bed.write(local_file_name_list[-1],snpdata,count_A1=count_A1)
 
-        return _Distributed1Bed(path,storage)
+        return _Distributed1Bed(path,storage)#!!!cmk shouldn't all writers return their reader
 
 

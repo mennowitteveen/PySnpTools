@@ -121,7 +121,7 @@ class Ped(_OneShot,SnpReader):
                     else:
                         raise Exception("Expect values for ped file to be 0,1,2, or NAN. Instead, saw '{0}'".format(val))
                     ped_filepointer.write(b"\t"+s)
-                ped_filepointer.write(b"\n")
+                ped_filepointer.write(b"\n")#!!!cmk shouldn't all writers return their reader
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

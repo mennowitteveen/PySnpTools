@@ -607,43 +607,12 @@ class NaNCNCTestCases(unittest.TestCase):
 # We do it this way instead of using doctest.DocTestSuite because doctest.DocTestSuite requires modules to be pickled, which python doesn't allow.
 # We need tests to be pickleable so that they can be run on a cluster.
 class TestDocStrings(unittest.TestCase):
-    def test_snpreader(self):
-        import pysnptools.snpreader.snpreader
-        old_dir = os.getcwd()
-        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
-        result = doctest.testmod(pysnptools.snpreader.snpreader,optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)
-        os.chdir(old_dir)
-        assert result.failed == 0, "failed doc test: " + __file__
 
     def test_bed(self):
         import pysnptools.snpreader.bed
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
         result = doctest.testmod(pysnptools.snpreader.bed)
-        os.chdir(old_dir)
-        assert result.failed == 0, "failed doc test: " + __file__
-
-    def test_snpdata(self):
-        import pysnptools.snpreader.snpdata
-        old_dir = os.getcwd()
-        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
-        result = doctest.testmod(pysnptools.snpreader.snpdata)
-        os.chdir(old_dir)
-        assert result.failed == 0, "failed doc test: " + __file__
-
-    def test_pheno(self):
-        import pysnptools.snpreader.snpdata
-        old_dir = os.getcwd()
-        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
-        result = doctest.testmod(pysnptools.snpreader.pheno)
-        os.chdir(old_dir)
-        assert result.failed == 0, "failed doc test: " + __file__
-
-    def test_ped(self):
-        import pysnptools.snpreader.snpdata
-        old_dir = os.getcwd()
-        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
-        result = doctest.testmod(pysnptools.snpreader.ped)
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
@@ -663,11 +632,59 @@ class TestDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
+    def test_distributed_bed(self):
+        import pysnptools.snpreader.snpdata
+        old_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
+        result = doctest.testmod(pysnptools.snpreader.distributed_bed)
+        os.chdir(old_dir)
+        assert result.failed == 0, "failed doc test: " + __file__
+
+    def test_distributed_pairs(self):
+        import pysnptools.snpreader.snpdata
+        old_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
+        result = doctest.testmod(pysnptools.snpreader.pairs)
+        os.chdir(old_dir)
+        assert result.failed == 0, "failed doc test: " + __file__
+
+    def test_ped(self):
+        import pysnptools.snpreader.snpdata
+        old_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
+        result = doctest.testmod(pysnptools.snpreader.ped)
+        os.chdir(old_dir)
+        assert result.failed == 0, "failed doc test: " + __file__
+
+    def test_pheno(self):
+        import pysnptools.snpreader.snpdata
+        old_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
+        result = doctest.testmod(pysnptools.snpreader.pheno)
+        os.chdir(old_dir)
+        assert result.failed == 0, "failed doc test: " + __file__
+
+    def test_snpdata(self):
+        import pysnptools.snpreader.snpdata
+        old_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
+        result = doctest.testmod(pysnptools.snpreader.snpdata)
+        os.chdir(old_dir)
+        assert result.failed == 0, "failed doc test: " + __file__
+
     def test_snphdf5(self):
         import pysnptools.snpreader.snpdata
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
         result = doctest.testmod(pysnptools.snpreader.snphdf5)
+        os.chdir(old_dir)
+        assert result.failed == 0, "failed doc test: " + __file__
+
+    def test_snpmemmap(self):
+        import pysnptools.snpreader.snpdata
+        old_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
+        result = doctest.testmod(pysnptools.snpreader.snpmemmap)
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
@@ -679,6 +696,14 @@ class TestDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
+    def test_snpreader(self):
+        import pysnptools.snpreader.snpreader
+        old_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
+        result = doctest.testmod(pysnptools.snpreader.snpreader,optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)
+        os.chdir(old_dir)
+        assert result.failed == 0, "failed doc test: " + __file__
+
     def test_util(self):
         import pysnptools.util
         old_dir = os.getcwd()
@@ -687,7 +712,7 @@ class TestDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    def test_util(self):
+    def test_util_pheno(self):
         import pysnptools.util.pheno
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__))+"/util")

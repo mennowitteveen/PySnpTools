@@ -5,9 +5,9 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{60f1cb4a-9da3-47c2-9b89-60ac1ce93347}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>util\mapreduce1\testdistributable.py</StartupFile>
+    <StartupFile>pstreader\pstmemmap.py</StartupFile>
     <SearchPath>..\;..\..\PySnpTools</SearchPath>
-    <WorkingDirectory>d:\OneDrive\programs\pysnptools\</WorkingDirectory>
+    <WorkingDirectory>D:\OneDrive\programs\PySnpTools\pysnptools\snpreader</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
@@ -65,10 +65,6 @@
     <Compile Include="pstreader\_subset.py" />
     <Compile Include="pstreader\__init__.py" />
     <Compile Include="snpreader\bed.py" />
-    <Compile Include="..\..\epiCornell\epireml.py">
-      <SubType>Code</SubType>
-      <Link>snpreader\epireml.py</Link>
-    </Compile>
     <Compile Include="pstreader\_mergerows.py">
       <SubType>Code</SubType>
     </Compile>

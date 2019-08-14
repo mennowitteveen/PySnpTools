@@ -6,7 +6,7 @@ import logging
 import os
 from pysnptools.pstreader import PstData
 
-class SnpGen(SnpReader):
+class SnpGen(SnpReader): #!!!cmk document and doctest
 
     def __init__(self, seed, iid_count, sid_count, chrom_count=22, sid_batch_size=1000, cache_file=None):
         self._ran_once = False
@@ -76,7 +76,7 @@ class SnpGen(SnpReader):
         val = np.empty((row_index_count,len(col_index))) #allocate memory for result
         list_batch_index = list(set(batch_index))
         for i in list_batch_index:  #for each distinct batch index, generate snps
-            logging.info("working on snpgen batch {0} of {1}".format(i,len(list_batch_index)))
+            logging.info("working on snpgen batch {0} of {1}".format(i,len(list_batch_index))) #!!!why does this produce messages like 'working on snpgen batch 8 of 2'?
             start = i*self.sid_batch_size  #e.g. 0 (then 2000)
             stop = start + self.sid_batch_size #e.g. 1000, then 3000
             batch_val = get_val2(self.seed,self._iid_count,start,stop) # generate whole batch

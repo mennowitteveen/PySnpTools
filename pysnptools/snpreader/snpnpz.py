@@ -45,7 +45,7 @@ class SnpNpz(PstNpz,SnpReader):
         >>> pstutil.create_directory_if_necessary("tempdir/toydata10.snp.npz")
         >>> SnpNpz.write("tempdir/toydata10.snp.npz",snpdata)          # Write data in SnpNpz format
         """
-        PstNpz.write(filename,snpdata)
+        PstNpz.write(filename,snpdata)#!!!cmk shouldn't all writers return their reader
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

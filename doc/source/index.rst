@@ -10,16 +10,21 @@ PySnpTools: A library for reading and manipulating genetic data.
 
 * :mod:`.kernelreader`: Efficiently create, read, and manipulate kernel data.
 
+* :mod:`.standardizer`: Specify standardizers for :mod:`.snpreader`.
+
+* :mod:`.kernelstandardizer`: Specify standardizers for :mod:`.kernelreader`. !!!cmk show come this mod isn't a link?
+
+* :mod:`.pstreader`: Generalizes :mod:`.snpreader` and :mod:`.kernelreader` (provides the efficiency of numpy arrays with some of the flexibility of pandas)
+
 * :mod:`.util`: In one line, intersect and re-order IIDs from :mod:`.snpreader`, :mod:`.kernelreader` and other sources. Also, efficiently extract a submatrix from an ndarray.
 
 * :class:`.util.IntRangeSet`: Efficiently manipulate ranges of integers -- for example, genetic position -- with set operators including
   union, intersection, and set difference. 
 
-* :mod:`.pstreader`: Generalizes :mod:`.snpreader` and :mod:`.kernelreader` (provides the efficiency of numpy arrays with some of the flexibility of pandas)
+* :mod:`.util.gen`: !!!cmk
 
-* :mod:`.standardizer`: Specify standardizers for :mod:`.snpreader`.
+* :mod:`.util.mapreduce1`: !!!cmk
 
-* :mod:`.kernelstandardizer`: Specify standardizers for :mod:`.kernelreader`.
 
 :Tutorial:
 
@@ -129,6 +134,26 @@ PySnpTools: A library for reading and manipulating genetic data.
 	:special-members:
     :exclude-members: copyinputs, col, col_property, row, row_property
 
+
+:class:`snpreader.DistributedBed`
+++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.snpreader.DistributedBed
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: copyinputs, col, col_property, row, row_property
+
+:class:`snpreader.SnpMemMap`
+++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.snpreader.SnpMemMap
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: copyinputs, col, col_property, row, row_property
+
+
 ****************************
 :mod:`kernelreader` Module
 ****************************
@@ -197,33 +222,7 @@ PySnpTools: A library for reading and manipulating genetic data.
     :exclude-members: copyinputs, col, col_property, row, row_property
 
 
-***********************
-:mod:`util` Module
-***********************
 
-:mod:`util`
-++++++++++++++++++++++++++
-.. automodule:: pysnptools.util
-    :members:
-    :undoc-members:
-	:show-inheritance:
-
-:class:`util.IntRangeSet`
-++++++++++++++++++++++++++
-.. autoclass:: pysnptools.util.IntRangeSet
-  :members:
-  :undoc-members:
-  :show-inheritance:
-  :special-members:
-  :exclude-members: __and__, __weakref__,__module__,__dict__, __add__
-
-:mod:`util.pheno`
-++++++++++++++++++++++++++
-.. automodule:: pysnptools.util.pheno
-    :members:
-    :undoc-members:
-	:show-inheritance:
-	:special-members:
 
 ***************************
 :mod:`standardizer` Module
@@ -391,6 +390,59 @@ PySnpTools: A library for reading and manipulating genetic data.
 	:special-members:
     :exclude-members: copyinputs, col, col_property, row, row_property
 
+:class:`pstreader.PstMemMap`
++++++++++++++++++++++++++
+.. autoclass:: pysnptools.pstreader.PstMemMap
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: copyinputs, col, col_property, row, row_property
+
+
+***********************
+:mod:`util` Module
+***********************
+
+:mod:`util`
+++++++++++++++++++++++++++
+.. automodule:: pysnptools.util
+    :members:
+    :undoc-members:
+	:show-inheritance:
+
+:class:`util.IntRangeSet`
+++++++++++++++++++++++++++
+.. autoclass:: pysnptools.util.IntRangeSet
+  :members:
+  :undoc-members:
+  :show-inheritance:
+  :special-members:
+  :exclude-members: __and__, __weakref__,__module__,__dict__, __add__
+
+:mod:`util.pheno`
+++++++++++++++++++++++++++
+.. automodule:: pysnptools.util.pheno
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+
+:mod:`util.gen`
+++++++++++++++++++++++++++
+.. automodule:: pysnptools.util.gen
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+
+:mod:`util.mapreduce1`
+++++++++++++++++++++++++++
+.. automodule:: pysnptools.util.mapreduce1
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
 
 .. only:: html 
 

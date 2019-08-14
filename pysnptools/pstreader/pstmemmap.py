@@ -35,7 +35,6 @@ class PstMemMap(PstReader): #!!!cmk confirm that this doctest gets evaled in tes
         filename    : string of the name of the memory mapped file.
         (There is also an additional \*.pst.memmap.npz file with column and row data.)
         '''
-        #!!!Could (should) there be just one file using memmaps offset feature?
         super(PstMemMap, self).__init__()
         self._ran_once = False
         self._filename = filename
@@ -64,18 +63,32 @@ class PstMemMap(PstReader): #!!!cmk confirm that this doctest gets evaled in tes
         return self._col_property
 
     @property #!!!cmk document
+    def offset(self):
+        self.run_once()
+        return self._offset
+
+    @property #!!!cmk document
     def pst_data(self):
         self.run_once()
         return self._pst_data
 
+    @property #!!!cmk document
+    def filename(self):
+        #Don't need 'run_once'
+        return self._filename
 
     #!!!cmk document
 
     @staticmethod
     def empty(row, col, filename, row_property=None, col_property=None,order="F",dtype=np.float64):
         self = PstMemMap(filename)
-        self._ran_once = True
+        val = self._empty_inner(row, col, filename, row_property, col_property,order,dtype)
+        self._pst_data = PstData(row=self._row,col=self._col,val=val,row_property=self._row_property,col_property=self._col_property,name="np.memmap('{0}')".format(self._filename))
+        return self
 
+
+    def _empty_inner(self, row, col, filename, row_property, col_property,order,dtype):
+        self._ran_once = True
         self._row = PstData._fixup_input(row)
         self._col = PstData._fixup_input(col)
         self._row_property = PstData._fixup_input(row_property,count=len(self._row))
@@ -86,22 +99,18 @@ class PstMemMap(PstReader): #!!!cmk confirm that this doctest gets evaled in tes
         self._order = order
 
         with open(filename,'wb') as fp:
-            #np.save(fp, offset=[-1L])
             np.save(fp, self._row)
             np.save(fp, self._col)
             np.save(fp, self._row_property)
             np.save(fp, self._col_property)
             np.save(fp, np.array([self._dtype]))
             np.save(fp, np.array([self._order]))
-            offset = fp.tell()
-            #fp.seek(0)
-            #np.save(fp, offset=[offset])
+            self._offset = fp.tell()
 
         logging.info("About to start allocating memmap '{0}'".format(filename))
-        val = np.memmap(filename, offset=offset, dtype=dtype, mode="r+", order=order, shape=self.shape)
+        val = np.memmap(filename, offset=self._offset, dtype=dtype, mode="r+", order=order, shape=self.shape)
         logging.info("Finished allocating memmap '{0}'. Size is {1}".format(filename,os.path.getsize(filename)))
-        self._pst_data = PstData(row=self._row,col=self._col,val=val,row_property=self._row_property,col_property=self._col_property,name="np.memmap('{0}')".format(self._filename))
-        return self
+        return val
 
     def run_once(self):
         if (self._ran_once):
@@ -114,18 +123,17 @@ class PstMemMap(PstReader): #!!!cmk confirm that this doctest gets evaled in tes
 
         logging.debug("np.load('{0}')".format(self._filename))
         with open(self._filename,'rb') as fp:
-            #np.save(fp, offset=[-1L])
             self._row = np.load(fp)
             self._col = np.load(fp)
             self._row_property = np.load(fp)
             self._col_property = np.load(fp)
             self._dtype = np.load(fp)[0]
             self._order = np.load(fp)[0]
-            offset = fp.tell()
+            self._offset = fp.tell()
         if np.array_equal(self._row, self._col): #If it's square, mark it so by making the col and row the same object
             self._col = self._row
 
-        val = np.memmap(self._filename, offset=offset, dtype=self._dtype, mode='r', order=self._order, shape=(len(self._row),len(self._col)))
+        val = np.memmap(self._filename, offset=self._offset, dtype=self._dtype, mode='r', order=self._order, shape=(len(self._row),len(self._col)))
         return val
 
         
@@ -153,7 +161,7 @@ class PstMemMap(PstReader): #!!!cmk confirm that this doctest gets evaled in tes
 
 
 
-    def close(self):#!!!cmk go back to flush
+    def flush(self):#!!!cmk go back to flush
         if self._ran_once:
             self._pst_data.val.flush()
             del self._pst_data.val
@@ -180,7 +188,7 @@ class PstMemMap(PstReader): #!!!cmk confirm that this doctest gets evaled in tes
 
         self = PstMemMap.empty(pstdata.row, pstdata.col, filename, row_property=pstdata.row_property, col_property=pstdata.col_property,order=PstMemMap._order(pstdata),dtype=pstdata.val.dtype)
         self._pst_data.val[:,:] = pstdata.val
-        self.close()
+        self.flush()
         logging.debug("Done writing " + filename)
 
         return self
@@ -197,10 +205,10 @@ class TestPstMemMap(unittest.TestCase):
         assert isinstance(pstreader2.pst_data.val,np.memmap)
         pstreader2.pst_data.val[:,:] = [[1,2],[3,4],[np.nan,6]]
         assert np.array_equal(pstreader2[[0],[0]].read(view_ok=True).val,np.array([[1.]]))
-        pstreader2.close()
+        pstreader2.flush()
         assert isinstance(pstreader2.pst_data.val,np.memmap)
         assert np.array_equal(pstreader2[[0],[0]].read(view_ok=True).val,np.array([[1.]]))
-        pstreader2.close()
+        pstreader2.flush()
 
         pstreader3 = PstMemMap(filename2)
         assert np.array_equal(pstreader3[[0],[0]].read(view_ok=True).val,np.array([[1.]]))
@@ -233,26 +241,6 @@ if __name__ == "__main__":
     suites = getTestSuite()
     r = unittest.TextTestRunner(failfast=True) #!!!cmk
     r.run(suites)
-
-
-    if False:
-        from pysnptools.pstreader import PstNpz
-        data_on_disk = PstNpz('../../tests/datasets/little.pst.npz')
-        from pysnptools.pstreader import PstMemMap
-        PstMemMap.write("../examples/little.pst.memmap",data_on_disk.read())          # Write data in PstMemMap format
-
-        from pysnptools.pstreader import PstMemMap
-        data_on_disk = PstMemMap('../examples/little.pst.memmap')
-        np_memmap = data_on_disk.read(view_ok=True).val
-        print(type(np_memmap)) # To see how to work with numpy's memmap, see https://docs.scipy.org/doc/numpy/reference/generated/numpy.memmap.html
-        #<class 'numpy.memmap'>
-
-        from pysnptools.pstreader import PstData, PstMemMap
-        import pysnptools.util as pstutil
-        data1 = PstData(row=['a','b','c'],col=['y','z'],val=[[1,2],[3,4],[np.nan,6]],row_property=['A','B','C'])
-        pstutil.create_directory_if_necessary("tempdir/tiny.pst.memmap")
-        x = PstMemMap.write("tempdir/tiny.pst.memmap",data1)          # Write data in PstMemMap format
-        print(x)
 
 
 

@@ -9,7 +9,7 @@ from pysnptools.snpreader import SnpReader, SnpData
 
 
 #!!!cmk update documentation
-class SnpMemMap(PstMemMap,SnpReader):
+class SnpMemMap(PstMemMap,SnpData):
     '''
     A :class:`.SnpReader` for reading \*.snp.memmap memory-mapped files on disk.
 
@@ -54,25 +54,20 @@ class SnpMemMap(PstMemMap,SnpReader):
         PstMemMap.write(filename,snpdata)#!!!cmk shouldn't all writers return their reader
         return SnpMemMap(filename)
 
-    #!!!cmk document
-    @property
-    def snp_data(self):
-        return self.pst_data
-
-    def run_once(self):
-        if (self._ran_once):
-            return
-        val = self._run_once_inner()
-        self._pst_data = SnpData(iid=self._row,sid=self._col,val=val,pos=self._col_property,name="np.memmap('{0}')".format(self._filename))
 
     #!!!cmk document
 
     @staticmethod
     def empty(iid, sid, filename, pos=None,order="F",dtype=np.float64):
         self = SnpMemMap(filename)
-        val = self._empty_inner(row=iid, col=sid, filename=filename, row_property=None, col_property=pos,order=order,dtype=dtype)
-        self._pst_data = SnpData(iid=iid,sid=sid,val=val,pos=pos,name="np.memmap('{0}')".format(filename))
+        self._empty_inner(row=iid, col=sid, filename=filename, row_property=None, col_property=pos,order=order,dtype=dtype)
         return self
+
+    def run_once(self):
+            if (self._ran_once):
+                return
+            row,col,val,row_property,col_property = self._run_once_inner()
+            SnpData.__init__(self,iid=row,sid=col,val=val,pos=col_property,name="np.memmap('{0}')".format(self._filename))
 
 class TestSnpMemMap(unittest.TestCase):     
 
@@ -81,23 +76,23 @@ class TestSnpMemMap(unittest.TestCase):
         filename2 = "tempdir/tiny.snp.memmap"
         pstutil.create_directory_if_necessary(filename2)
         snpreader2 = SnpMemMap.empty(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'],filename=filename2,order="F",dtype=np.float64)
-        assert isinstance(snpreader2.snp_data.val,np.memmap)
-        snpreader2.snp_data.val[:,:] = [[0.,2.,0.],[0.,1.,2.]]
+        assert isinstance(snpreader2.val,np.memmap)
+        snpreader2.val[:,:] = [[0.,2.,0.],[0.,1.,2.]]
         assert np.array_equal(snpreader2[[1],[1]].read(view_ok=True).val,np.array([[1.]]))
         snpreader2.flush()
-        assert isinstance(snpreader2.snp_data.val,np.memmap)
+        assert isinstance(snpreader2.val,np.memmap)
         assert np.array_equal(snpreader2[[1],[1]].read(view_ok=True).val,np.array([[1.]]))
         snpreader2.flush()
 
         snpreader3 = SnpMemMap(filename2)
         assert np.array_equal(snpreader3[[1],[1]].read(view_ok=True).val,np.array([[1.]]))
-        assert isinstance(snpreader3.snp_data.val,np.memmap)
+        assert isinstance(snpreader3.val,np.memmap)
 
         logging.info("in TestSnpMemMap test1")
         snpreader = SnpMemMap('../examples/tiny.snp.memmap')
         assert snpreader.iid_count == 2
         assert snpreader.sid_count == 3
-        assert isinstance(snpreader.snp_data.val,np.memmap)
+        assert isinstance(snpreader.val,np.memmap)
 
         snpdata = snpreader.read(view_ok=True)
         assert isinstance(snpdata.val,np.memmap)

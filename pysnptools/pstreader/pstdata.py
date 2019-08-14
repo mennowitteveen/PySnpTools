@@ -61,13 +61,18 @@ class PstData(PstReader):
     def __init__(self, row, col, val, row_property=None, col_property=None, name=None, parent_string=None, copyinputs_function=None):
         super(PstData, self).__init__()
 
-        self.val = None
+        self._val = None
 
         self._row = PstData._fixup_input(row)
         self._col = PstData._fixup_input(col)
         self._row_property = PstData._fixup_input(row_property,count=len(self._row))
         self._col_property = PstData._fixup_input(col_property,count=len(self._col))
-        self.val = PstData._fixup_input_val(val,row_count=len(self._row),col_count=len(self._col))
+        #!!!cmk need this?
+        #if np.array_equal(self._row, self._col): #If it's square, mark it so by making the col and row the same object
+        #    self._col = self._row
+
+
+        self._val = PstData._fixup_input_val(val,row_count=len(self._row),col_count=len(self._col))
 
         name = name or parent_string or ""
         if parent_string is not None:
@@ -76,7 +81,7 @@ class PstData(PstReader):
 
     """The 2D NumPy array of floats that represents the values.
 
-    >>> from pysnptools.pstreader import PstNpz
+    >>> from pysnptools.pstreader import PstNpz #!!!cmk this example doesn't make sense here.
     >>> pstdata = PstNpz('../examples/toydata.pst.npz')[:5,:].read() #read data for first 5 rows
     >>> print(pstdata.val[4,100]) #print one of the values
     2.0
@@ -145,6 +150,14 @@ class PstData(PstReader):
     @property
     def col_property(self):
         return self._col_property
+
+    def _get_val(self):
+        return self._val
+
+    def _set_val(self, new_value):
+        self._val = new_value
+
+    val = property(_get_val,_set_val)
 
     # Most _read's support only indexlists or None, but this one supports Slices, too.
     _read_accepts_slices = True

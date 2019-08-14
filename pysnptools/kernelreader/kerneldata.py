@@ -57,7 +57,7 @@ class KernelData(KernelReader,PstData):
     def __init__(self, iid=None, iid0=None, iid1=None, val=None, name=None, parent_string=None): #!!!autodoc doesn't generate good doc for this constructor
         #We don't have a 'super(KernelData, self).__init__()' here because KernelData takes full responsiblity for initializing both its superclasses
 
-        self.val = None
+        self._val = None
 
         #!!why does SnpData __init__ have a copy_inputs, but KernelData doesn't?
         assert (iid is None) != (iid0 is None and iid1 is None), "Either 'iid' or both 'iid0' 'iid1' must be provided."
@@ -73,7 +73,7 @@ class KernelData(KernelReader,PstData):
             self._col = PstData._fixup_input(iid1,empty_creator=lambda ignore:np.empty([0,2],dtype='S'),dtype='S')
         self._row_property = PstData._fixup_input(None,count=len(self._row),empty_creator=lambda count:np.empty([count,0],dtype='S'),dtype='S')
         self._col_property = PstData._fixup_input(None,count=len(self._col),empty_creator=lambda count:np.empty([count,0],dtype='S'),dtype='S')
-        self.val = PstData._fixup_input_val(val,row_count=len(self._row),col_count=len(self._col),empty_creator=lambda row_count,col_count:np.empty([row_count,col_count],dtype=np.float64))
+        self._val = PstData._fixup_input_val(val,row_count=len(self._row),col_count=len(self._col),empty_creator=lambda row_count,col_count:np.empty([row_count,col_count],dtype=np.float64))
 
         self._assert_iid0_iid1() 
         self._name = name or parent_string or ""

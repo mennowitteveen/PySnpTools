@@ -85,19 +85,23 @@ class PstMemMap(PstReader): #!!!cmk confirm that this doctest gets evaled in tes
         self._dtype = dtype
         self._order = order
 
-        self._pst_data = PstData(row=row,col=col,val=val,row_property=row_property,col_property=col_property,name="np.memmap('{0}')".format(filename))
-        PstMemMap._write_npz(self._filename, self._pst_data)
+        with open(filename,'wb') as fp:
+            #np.save(fp, offset=[-1L])
+            np.save(fp, self._row)
+            np.save(fp, self._col)
+            np.save(fp, self._row_property)
+            np.save(fp, self._col_property)
+            np.save(fp, np.array([self._dtype]))
+            np.save(fp, np.array([self._order]))
+            offset = fp.tell()
+            #fp.seek(0)
+            #np.save(fp, offset=[offset])
 
-
-        shape = (len(row),len(col))
         logging.info("About to start allocating memmap '{0}'".format(filename))
-        val = np.memmap(filename, dtype=dtype, mode="w+", order=order, shape=shape)
+        val = np.memmap(filename, offset=offset, dtype=dtype, mode="r+", order=order, shape=self.shape)
         logging.info("Finished allocating memmap '{0}'. Size is {1}".format(filename,os.path.getsize(filename)))
-
-
-
+        self._pst_data = PstData(row=self._row,col=self._col,val=val,row_property=self._row_property,col_property=self._col_property,name="np.memmap('{0}')".format(self._filename))
         return self
-
 
     def run_once(self):
         if (self._ran_once):
@@ -108,20 +112,20 @@ class PstMemMap(PstReader): #!!!cmk confirm that this doctest gets evaled in tes
     def _run_once_inner(self):
         self._ran_once = True
 
-        npzfile =self._filename+".npz"
-        logging.debug("np.load('{0}')".format(npzfile))
-        with np.load(npzfile) as data: #!! similar code in epistasis
-            self._row = data['row']
-            self._col = data['col']
-            if np.array_equal(self._row, self._col): #If it's square, mark it so by making the col and row the same object
-                self._col = self._row
-            self._row_property = data['row_property']
-            self._col_property = data['col_property']
-            self._dtype = data['dtype'][0]
-            self._order = data['order'][0]
+        logging.debug("np.load('{0}')".format(self._filename))
+        with open(self._filename,'rb') as fp:
+            #np.save(fp, offset=[-1L])
+            self._row = np.load(fp)
+            self._col = np.load(fp)
+            self._row_property = np.load(fp)
+            self._col_property = np.load(fp)
+            self._dtype = np.load(fp)[0]
+            self._order = np.load(fp)[0]
+            offset = fp.tell()
+        if np.array_equal(self._row, self._col): #If it's square, mark it so by making the col and row the same object
+            self._col = self._row
 
-        mode = "r"#!!!cmk understand these modes
-        val = np.memmap(self._filename, dtype=self._dtype, mode=mode, order=self._order, shape=(self.row_count,self.col_count))
+        val = np.memmap(self._filename, offset=offset, dtype=self._dtype, mode='r', order=self._order, shape=(len(self._row),len(self._col)))
         return val
 
         
@@ -129,8 +133,6 @@ class PstMemMap(PstReader): #!!!cmk confirm that this doctest gets evaled in tes
     def copyinputs(self, copier):
         # doesn't need to self.run_once()
         copier.input(self._filename)
-        npzfile = self._filename+'.npz'
-        copier.input(npzfile)
 
     # Most _read's support only indexlists or None, but this one supports Slices, too.
     _read_accepts_slices = True
@@ -150,12 +152,8 @@ class PstMemMap(PstReader): #!!!cmk confirm that this doctest gets evaled in tes
         raise Exception("Don't know order of PstData's value")
 
 
-    @staticmethod
-    def _write_npz(filename, pstdata):
-        order = PstMemMap._order(pstdata)
-        np.savez(filename, row=pstdata.row, col=pstdata.col, row_property=pstdata.row_property, col_property=pstdata.col_property,dtype=np.array([pstdata.val.dtype]),order=np.array([order]))
 
-    def close(self):
+    def close(self):#!!!cmk go back to flush
         if self._ran_once:
             self._pst_data.val.flush()
             del self._pst_data.val
@@ -192,13 +190,6 @@ class TestPstMemMap(unittest.TestCase):
 
     def test1(self):
         logging.info("in TestPstMemMap test1")
-        pstreader = PstMemMap('../examples/little.pst.memmap')
-        assert pstreader.row_count == 300
-        assert pstreader.col_count == 1015
-        assert isinstance(pstreader.pst_data.val,np.memmap)
-
-        pstdata = pstreader.read(view_ok=True)
-        assert isinstance(pstdata.val,np.memmap)
 
         filename2 = "tempdir/tiny.pst.memmap"
         pstutil.create_directory_if_necessary(filename2)
@@ -214,6 +205,14 @@ class TestPstMemMap(unittest.TestCase):
         pstreader3 = PstMemMap(filename2)
         assert np.array_equal(pstreader3[[0],[0]].read(view_ok=True).val,np.array([[1.]]))
         assert isinstance(pstreader3.pst_data.val,np.memmap)
+
+        pstreader = PstMemMap('../examples/tiny.pst.memmap')
+        assert pstreader.row_count == 3
+        assert pstreader.col_count == 2
+        assert isinstance(pstreader.pst_data.val,np.memmap)
+
+        pstdata = pstreader.read(view_ok=True)
+        assert isinstance(pstdata.val,np.memmap)
 
         #!!!cmk make sure this test gets run
 
@@ -258,4 +257,4 @@ if __name__ == "__main__":
 
 
     import doctest
-    doctest.testmod()
+    #!!!cmk put back: doctest.testmod()

@@ -1419,8 +1419,8 @@ If not given, the function is run locally.</li>
 <dl class="class">
 <dt id="pysnptools.snpreader.SnpMemMap">
 <em class="property">class </em><code class="descclassname">pysnptools.snpreader.</code><code class="descname">SnpMemMap</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpMemMap" title="Permalink to this definition">¶</a></dt>
-<dd><p>A <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> for reading *.snp.memmap memory-mapped files on disk.</p>
-<p>See <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> for general examples of using SnpReaders.</p>
+<dd><p>A <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> that keeps its data in a memory-mapped file.</p>
+<p>See <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> for general examples of using SnpData.</p>
 <dl class="docutils">
 <dt><strong>Constructor:</strong></dt>
 <dd><table class="first docutils field-list" frame="void" rules="none">
@@ -1428,13 +1428,13 @@ If not given, the function is run locally.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>filename</strong> (<em>string</em>) – The *.snp.memmap file to read.</li>
+<li><strong>filename</strong> (<em>string</em>) – The <em>*.snp.memmap</em> file to read.</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
-<p>(There is also an additional *snp.memmap.npz file with column and row data.)</p>
+<p>Also see <a class="reference internal" href="#pysnptools.snpreader.SnpMemMap.empty" title="pysnptools.snpreader.SnpMemMap.empty"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SnpMemMap.empty()</span></code></a> and <a class="reference internal" href="#pysnptools.snpreader.SnpMemMap.write" title="pysnptools.snpreader.SnpMemMap.write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SnpMemMap.write()</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1444,46 +1444,111 @@ If not given, the function is run locally.</li>
 </tbody>
 </table>
 <div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">SnpMemMap</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data_on_disk</span> <span class="o">=</span> <span class="n">SnpMemMap</span><span class="p">(</span><span class="s1">&#39;../examples/little.snp.memmap&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np_memmap</span> <span class="o">=</span> <span class="n">data_on_disk</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">view_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">val</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">np_memmap</span><span class="p">))</span> <span class="c1"># To see how to work with numpy&#39;s memmap, see https://docs.scipy.org/doc/numpy/reference/generated/numpy.memmap.html</span>
-<span class="go">&lt;class &#39;numpy.memmap&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snp_mem_map</span> <span class="o">=</span> <span class="n">SnpMemMap</span><span class="p">(</span><span class="s1">&#39;../examples/tiny.snp.memmap&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">snp_mem_map</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">snp_mem_map</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span> <span class="n">snp_mem_map</span><span class="o">.</span><span class="n">sid_count</span>
+<span class="go">2.0 2 3</span>
 </pre></div>
 </div>
 </dd>
 </dl>
-<p><strong>Methods beyond</strong> <a class="reference internal" href="#pysnptools.snpreader.SnpMemMap" title="pysnptools.snpreader.SnpMemMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpMemMap</span></code></a> #!!!cmk check all these <strong>Methods beyond</strong>’s</p>
+<p><strong>Methods beyond</strong> <a class="reference internal" href="#pysnptools.pstreader.PstReader" title="pysnptools.pstreader.PstReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstReader</span></code></a></p>
 <dl class="staticmethod">
 <dt id="pysnptools.snpreader.SnpMemMap.empty">
 <em class="property">static </em><code class="descname">empty</code><span class="sig-paren">(</span><em>iid</em>, <em>sid</em>, <em>filename</em>, <em>pos=None</em>, <em>order='F'</em>, <em>dtype=&lt;type 'numpy.float64'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpMemMap.empty" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="pysnptools.snpreader.SnpMemMap.run_once">
-<code class="descname">run_once</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpMemMap.run_once" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="staticmethod">
-<dt id="pysnptools.snpreader.SnpMemMap.write">
-<em class="property">static </em><code class="descname">write</code><span class="sig-paren">(</span><em>filename</em>, <em>snpdata</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpMemMap.write" title="Permalink to this definition">¶</a></dt>
-<dd><p>Writes a <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> to SnpMemMap format.</p>
+<dd><p>Create an empty <a class="reference internal" href="#pysnptools.snpreader.SnpMemMap" title="pysnptools.snpreader.SnpMemMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpMemMap</span></code></a> on disk.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>filename</strong> (<em>string</em>) – the name of the file to create</li>
-<li><strong>pstdata</strong> – The in-memory data that should be written to disk.</li>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>iid</strong> (<em>an array of string pairs</em>) – The <a class="reference internal" href="#pysnptools.snpreader.SnpReader.iid" title="pysnptools.snpreader.SnpReader.iid"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpReader.iid</span></code></a> information</li>
+<li><strong>sid</strong> (<em>an array of strings</em>) – The <a class="reference internal" href="#pysnptools.snpreader.SnpReader.sid" title="pysnptools.snpreader.SnpReader.sid"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpReader.sid</span></code></a> information</li>
+<li><strong>filename</strong> (<em>string</em>) – name of memory-mapped file to create</li>
+<li><strong>pos</strong> (<em>an array of numeric triples</em>) – optional – The additional <a class="reference internal" href="#pysnptools.snpreader.SnpReader.pos" title="pysnptools.snpreader.SnpReader.pos"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpReader.pos</span></code></a> information associated with each sid. Default: None</li>
+<li><strong>order</strong> (<em>string</em><em> or </em><em>None</em>) – {‘F’ (default), ‘C’}, optional – Specify the order of the ndarray.</li>
+<li><strong>dtype</strong> (<em>data-type</em>) – {scipy.float64 (default), scipy.float32}, optional – The data-type for the <a class="reference internal" href="#pysnptools.snpreader.SnpMemMap.val" title="pysnptools.snpreader.SnpMemMap.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpMemMap.val</span></code></a> ndarray.</li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pysnptools.snpreader.SnpMemMap" title="pysnptools.snpreader.SnpMemMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpMemMap</span></code></a></p>
 </td>
 </tr>
 </tbody>
 </table>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">SnpData</span><span class="p">,</span> <span class="n">SnpMemMap</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pysnptools.util</span> <span class="k">as</span> <span class="nn">pstutil</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="n">SnpData</span><span class="p">(</span><span class="n">iid</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">sid</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;snp334&#39;</span><span class="p">,</span><span class="s1">&#39;snp349&#39;</span><span class="p">,</span><span class="s1">&#39;snp921&#39;</span><span class="p">],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">]],</span> <span class="n">pos</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pstutil</span><span class="o">.</span><span class="n">create_directory_if_necessary</span><span class="p">(</span><span class="s2">&quot;tempdir/tiny.snp.memmap&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">SnpMemMap</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;tempdir/tiny.snp.memmap&quot;</span><span class="p">,</span><span class="n">data1</span><span class="p">)</span>      <span class="c1"># Write data in PstMemMap format</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pysnptools.util</span> <span class="k">as</span> <span class="nn">pstutil</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">SnpMemMap</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;tempdir/tiny.snp.memmap&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pstutil</span><span class="o">.</span><span class="n">create_directory_if_necessary</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snp_mem_map</span> <span class="o">=</span> <span class="n">SnpMemMap</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">iid</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">sid</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;snp334&#39;</span><span class="p">,</span><span class="s1">&#39;snp349&#39;</span><span class="p">,</span><span class="s1">&#39;snp921&#39;</span><span class="p">],</span><span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snp_mem_map</span><span class="o">.</span><span class="n">val</span><span class="p">[:,:]</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snp_mem_map</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pysnptools.snpreader.SnpMemMap.filename">
+<code class="descname">filename</code><a class="headerlink" href="#pysnptools.snpreader.SnpMemMap.filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the memory-mapped file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pysnptools.snpreader.SnpMemMap.flush">
+<code class="descname">flush</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpMemMap.flush" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flush <a class="reference internal" href="#pysnptools.snpreader.SnpMemMap.val" title="pysnptools.snpreader.SnpMemMap.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpMemMap.val</span></code></a> to disk and close the file. (If values or properties are accessed again, the file will be reopened.)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pysnptools.util</span> <span class="k">as</span> <span class="nn">pstutil</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">SnpMemMap</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;tempdir/tiny.snp.memmap&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pstutil</span><span class="o">.</span><span class="n">create_directory_if_necessary</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snp_mem_map</span> <span class="o">=</span> <span class="n">SnpMemMap</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">iid</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">sid</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;snp334&#39;</span><span class="p">,</span><span class="s1">&#39;snp349&#39;</span><span class="p">,</span><span class="s1">&#39;snp921&#39;</span><span class="p">],</span><span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snp_mem_map</span><span class="o">.</span><span class="n">val</span><span class="p">[:,:]</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snp_mem_map</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pysnptools.snpreader.SnpMemMap.offset">
+<code class="descname">offset</code><a class="headerlink" href="#pysnptools.snpreader.SnpMemMap.offset" title="Permalink to this definition">¶</a></dt>
+<dd><p>The byte position in the file where the memory-mapped values start.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pysnptools.snpreader.SnpMemMap.val">
+<code class="descname">val</code><a class="headerlink" href="#pysnptools.snpreader.SnpMemMap.val" title="Permalink to this definition">¶</a></dt>
+<dd><p>The 2D NumPy memmap array of floats that represents the values.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">SnpMemMap</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snp_mem_map</span> <span class="o">=</span> <span class="n">SnpMemMap</span><span class="p">(</span><span class="s1">&#39;../examples/tiny.snp.memmap&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snp_mem_map</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+<span class="go">2.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="pysnptools.snpreader.SnpMemMap.write">
+<em class="property">static </em><code class="descname">write</code><span class="sig-paren">(</span><em>filename</em>, <em>snpdata</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpMemMap.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> to <a class="reference internal" href="#pysnptools.snpreader.SnpMemMap" title="pysnptools.snpreader.SnpMemMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpMemMap</span></code></a> format.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filename</strong> (<em>string</em>) – the name of the file to create</li>
+<li><strong>snpdata</strong> (<a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a>) – The in-memory data that should be written to disk.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pysnptools.snpreader.SnpMemMap" title="pysnptools.snpreader.SnpMemMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpMemMap</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pysnptools.util</span> <span class="k">as</span> <span class="nn">pstutil</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">SnpData</span><span class="p">,</span> <span class="n">SnpMemMap</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="n">SnpData</span><span class="p">(</span><span class="n">iid</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">sid</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;snp334&#39;</span><span class="p">,</span><span class="s1">&#39;snp349&#39;</span><span class="p">,</span><span class="s1">&#39;snp921&#39;</span><span class="p">],</span><span class="n">val</span><span class="o">=</span> <span class="p">[[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pstutil</span><span class="o">.</span><span class="n">create_directory_if_necessary</span><span class="p">(</span><span class="s2">&quot;tempdir/tiny.pst.memmap&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">SnpMemMap</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;tempdir/tiny.snp.memmap&quot;</span><span class="p">,</span><span class="n">data1</span><span class="p">)</span>      <span class="c1"># Write data1 in SnpMemMap format</span>
 <span class="go">SnpMemMap(&#39;tempdir/tiny.snp.memmap&#39;)</span>
 </pre></div>
 </div>
@@ -3551,11 +3616,6 @@ val, row, col, row_property, and col_property information in NPZ format.</p>
 </dd>
 </dl>
 <p><strong>Methods beyond</strong> <code class="xref py py-class docutils literal notranslate"><span class="pre">NpzReader</span></code></p>
-<dl class="method">
-<dt id="pysnptools.pstreader.PstNpz.run_once">
-<code class="descname">run_once</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.pstreader.PstNpz.run_once" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="staticmethod">
 <dt id="pysnptools.pstreader.PstNpz.write">
 <em class="property">static </em><code class="descname">write</code><span class="sig-paren">(</span><em>filename</em>, <em>pstdata</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.pstreader.PstNpz.write" title="Permalink to this definition">¶</a></dt>

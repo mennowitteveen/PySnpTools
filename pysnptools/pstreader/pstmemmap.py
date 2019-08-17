@@ -189,9 +189,11 @@ class PstMemMap(PstData):
     # Most _read's support only indexlists or None, but this one supports Slices, too.
     _read_accepts_slices = True
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
-        assert view_ok, "Expect view_ok to be True" #!!!cmk good assert?
-        self._run_once()
-        val, _ = self._apply_sparray_or_slice_to_val(self.val, row_index_or_none, col_index_or_none, self._order, self._dtype, force_python_only) #!!!cmk must confirm that this doesn't copy of view_ok
+        val, shares_memory = self._apply_sparray_or_slice_to_val(self.val, row_index_or_none, col_index_or_none, order, dtype, force_python_only)
+        if not shares_memory and view_ok:
+            logging.warn("Read from {0} required copy".format(self)) #!!!cmk keep this warning?
+        if shares_memory and not view_ok:
+            val = val.copy(order='K')
         return val
 
     @staticmethod
@@ -286,7 +288,12 @@ class TestPstMemMap(unittest.TestCase):
         pointer2, read_only_flag = a.val.__array_interface__['data']
         assert pointer1==pointer2
 
+    def test3(self):
+        filename = "tempdir/x.pst.memmap"
+        pstutil.create_directory_if_necessary(filename)
 
+        a = PstMemMap.empty(row=['a','b','c'],col=['y','z'],filename=filename,row_property=['A','B','C'],order="F",dtype=np.float64)
+        pstdata = a.read(order='C',view_ok=True)
 
 
 def getTestSuite():
@@ -312,7 +319,7 @@ if __name__ == "__main__":
         print(pst_mem_map.val[0,1])
 
 
-    if False: #!!!cmk make some of this a test
+    if False:
         a=np.ndarray([2,3])
         pointer, read_only_flag = a.__array_interface__['data']
         print pointer
@@ -330,7 +337,7 @@ if __name__ == "__main__":
 
 
     suites = getTestSuite()
-    r = unittest.TextTestRunner(failfast=True) #!!!cmk
+    r = unittest.TextTestRunner(failfast=True)
     r.run(suites)
 
 

@@ -8,60 +8,131 @@ from pysnptools.pstreader import PstMemMap
 from pysnptools.snpreader import SnpReader, SnpData
 
 
-#!!!cmk update documentation
 class SnpMemMap(PstMemMap,SnpData):
     '''
-    A :class:`.SnpReader` for reading \*.snp.memmap memory-mapped files on disk.
+    A :class:`.SnpData` that keeps its data in a memory-mapped file.
 
-    See :class:`.SnpReader` for general examples of using SnpReaders.
+    See :class:`.SnpData` for general examples of using SnpData.
 
     **Constructor:**
-        :Parameters: * **filename** (*string*) -- The \*.snp.memmap file to read.
-        (There is also an additional \*snp.memmap.npz file with column and row data.)
+        :Parameters: * **filename** (*string*) -- The *\*.snp.memmap* file to read.
+        
+        Also see :meth:`.SnpMemMap.empty` and :meth:`.SnpMemMap.write`.
 
         :Example:
 
         >>> from pysnptools.snpreader import SnpMemMap
-        >>> data_on_disk = SnpMemMap('../examples/little.snp.memmap')
-        >>> np_memmap = data_on_disk.read(view_ok=True).val
-        >>> print(type(np_memmap)) # To see how to work with numpy's memmap, see https://docs.scipy.org/doc/numpy/reference/generated/numpy.memmap.html
-        <class 'numpy.memmap'>
+        >>> snp_mem_map = SnpMemMap('../examples/tiny.snp.memmap')
+        >>> print snp_mem_map.val[0,1], snp_mem_map.iid_count, snp_mem_map.sid_count
+        2.0 2 3
 
-    **Methods beyond** :class:`SnpMemMap` #!!!cmk check all these **Methods beyond**'s
+    **Methods beyond** :class:`.PstReader`
 
     '''
-    #!!!cmk need doc for .val?????
-    #!!!cmk document
+
     def __init__(self, *args, **kwargs):
         super(SnpMemMap, self).__init__(*args, **kwargs)
 
-    @staticmethod
-    def write(filename, snpdata):
-        """Writes a :class:`SnpData` to SnpMemMap format.
+    val = property(PstMemMap._get_val,PstMemMap._set_val)
+    """The 2D NumPy memmap array of floats that represents the values.
 
-        :param filename: the name of the file to create
-        :type filename: string
-        :param pstdata: The in-memory data that should be written to disk.
-        :type snpdata: :class:`SnpData`
+    >>> from pysnptools.snpreader import SnpMemMap
+    >>> snp_mem_map = SnpMemMap('../examples/tiny.snp.memmap')
+    >>> print(snp_mem_map.val[0,1])
+    2.0
+    """
 
-        >>> from pysnptools.snpreader import SnpData, SnpMemMap
-        >>> import pysnptools.util as pstutil
-        >>> data1 = SnpData(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'], val=[[0.,2.,0.],[0.,1.,2.]], pos=[[0,0,0],[0,0,0],[0,0,0]])
-        >>> pstutil.create_directory_if_necessary("tempdir/tiny.snp.memmap")
-        >>> SnpMemMap.write("tempdir/tiny.snp.memmap",data1)      # Write data in PstMemMap format
-        SnpMemMap('tempdir/tiny.snp.memmap')
-        """
-        PstMemMap.write(filename,snpdata)#!!!cmk shouldn't all writers return their reader
-        return SnpMemMap(filename)
+    @property
+    def offset(self):
+        '''The byte position in the file where the memory-mapped values start.
+        '''
+        self._run_once()
+        return self._offset
 
-
-    #!!!cmk document
+    @property
+    def filename(self):
+        '''The name of the memory-mapped file
+        '''
+        #Don't need '_run_once'
+        return self._filename
 
     @staticmethod
     def empty(iid, sid, filename, pos=None,order="F",dtype=np.float64):
+        '''Create an empty :class:`.SnpMemMap` on disk.
+
+        :param iid: The :attr:`.SnpReader.iid` information
+        :type iid: an array of string pairs
+
+        :param sid: The :attr:`.SnpReader.sid` information
+        :type sid: an array of strings
+
+        :param filename: name of memory-mapped file to create
+        :type filename: string
+
+        :param pos: optional -- The additional :attr:`.SnpReader.pos` information associated with each sid. Default: None
+        :type pos: an array of numeric triples
+
+        :param order: {'F' (default), 'C'}, optional -- Specify the order of the ndarray.
+        :type order: string or None
+
+        :param dtype: {scipy.float64 (default), scipy.float32}, optional -- The data-type for the :attr:`.SnpMemMap.val` ndarray.
+        :type dtype: data-type
+
+        :rtype: :class:`.SnpMemMap`
+
+        >>> import pysnptools.util as pstutil
+        >>> from pysnptools.snpreader import SnpMemMap
+        >>> filename = "tempdir/tiny.snp.memmap"
+        >>> pstutil.create_directory_if_necessary(filename)
+        >>> snp_mem_map = SnpMemMap.empty(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'],filename=filename,order="F",dtype=np.float64)
+        >>> snp_mem_map.val[:,:] = [[0.,2.,0.],[0.,1.,2.]]
+        >>> snp_mem_map.flush()
+
+        '''
+
         self = SnpMemMap(filename)
         self._empty_inner(row=iid, col=sid, filename=filename, row_property=None, col_property=pos,order=order,dtype=dtype)
         return self
+
+    def flush(self):
+        '''Flush :attr:`.SnpMemMap.val` to disk and close the file. (If values or properties are accessed again, the file will be reopened.)
+
+        >>> import pysnptools.util as pstutil
+        >>> from pysnptools.snpreader import SnpMemMap
+        >>> filename = "tempdir/tiny.snp.memmap"
+        >>> pstutil.create_directory_if_necessary(filename)
+        >>> snp_mem_map = SnpMemMap.empty(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'],filename=filename,order="F",dtype=np.float64)
+        >>> snp_mem_map.val[:,:] = [[0.,2.,0.],[0.,1.,2.]]
+        >>> snp_mem_map.flush()
+
+        '''
+        if self._ran_once:
+            self.val.flush()
+            del self._val
+            self._ran_once = False
+
+
+    @staticmethod
+    def write(filename, snpdata):
+        """Writes a :class:`SnpData` to :class:`SnpMemMap` format.
+
+        :param filename: the name of the file to create
+        :type filename: string
+        :param snpdata: The in-memory data that should be written to disk.
+        :type snpdata: :class:`SnpData`
+        :rtype: :class:`.SnpMemMap`
+
+        >>> import pysnptools.util as pstutil
+        >>> from pysnptools.snpreader import SnpData, SnpMemMap
+        >>> data1 = SnpData(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'],val= [[0.,2.,0.],[0.,1.,2.]])
+        >>> pstutil.create_directory_if_necessary("tempdir/tiny.pst.memmap")
+        >>> SnpMemMap.write("tempdir/tiny.snp.memmap",data1)      # Write data1 in SnpMemMap format
+        SnpMemMap('tempdir/tiny.snp.memmap')
+        """
+        PstMemMap.write(filename,snpdata)
+        return SnpMemMap(filename)
+
+
 
     def _run_once(self):
             if (self._ran_once):
@@ -96,7 +167,6 @@ class TestSnpMemMap(unittest.TestCase):
 
         snpdata = snpreader.read(view_ok=True)
         assert isinstance(snpdata.val,np.memmap)
-        #!!!cmk make sure this test gets run
 
 def getTestSuite():
     """
@@ -112,9 +182,9 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     suites = getTestSuite()
-    r = unittest.TextTestRunner(failfast=True) #!!!cmk
+    r = unittest.TextTestRunner(failfast=True)
     r.run(suites)
 
 
     import doctest
-    #!!!cmk put this back doctest.testmod()
+    doctest.testmod()

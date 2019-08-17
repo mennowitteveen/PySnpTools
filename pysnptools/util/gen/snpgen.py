@@ -22,7 +22,7 @@ class SnpGen(SnpReader): #!!!cmk document and doctest
         if cache_file is not None:
             if not os.path.exists(cache_file):
                 pstutil.create_directory_if_necessary(cache_file)
-                self.run_once()
+                self._run_once()
                 np.savez(cache_file, _row=self._row, _col=self._col, _col_property=self._col_property)
             else:
                 with np.load(cache_file) as data:
@@ -40,20 +40,20 @@ class SnpGen(SnpReader): #!!!cmk document and doctest
 
     @property
     def row(self):
-        self.run_once()
+        self._run_once()
         return self._row
 
     @property
     def col(self):
-        self.run_once()
+        self._run_once()
         return self._col
 
     @property
     def col_property(self):
-        self.run_once()
+        self._run_once()
         return self._col_property
 
-    def run_once(self):
+    def _run_once(self):
         if (self._ran_once):
             return
         self._ran_once = True
@@ -62,12 +62,12 @@ class SnpGen(SnpReader): #!!!cmk document and doctest
         self._col_property = get_pos(0,self._sid_count,self._sid_count,chrom_count=self.chrom_count)
 
     def copyinputs(self, copier):
-        self.run_once()
+        self._run_once()
         copier.input(self.cache_file)
 
     # Most _read's support only indexlists or None, but this one supports Slices, too.
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
-        self.run_once()
+        self._run_once()
 
 
         row_index_count = len(row_index_or_none) if row_index_or_none is not None else self._iid_count # turn to a count of the index positions e.g. all of them

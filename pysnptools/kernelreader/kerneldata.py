@@ -34,7 +34,7 @@ class KernelData(KernelReader,PstData):
 
     **Equality:**
 
-        Two KernelData objects are equal if their three arrays (:attr:`.iid0`, :attr:`.iid1`, and :attr:`.val`) are 'array_equal'.
+        Two KernelData objects are equal if their three arrays (:attr:`.iid0`, :attr:`.iid1`, and :attr:`.PstData.val`) are 'array_equal'.
         (Their 'string' does not need to be the same).
 
         :Example:
@@ -54,6 +54,8 @@ class KernelData(KernelReader,PstData):
 
     **Methods beyond** :class:`.KernelReader`
     """
+
+    #!!!cmk need doc for .val?????
     def __init__(self, iid=None, iid0=None, iid1=None, val=None, name=None, parent_string=None): #!!!autodoc doesn't generate good doc for this constructor
         #We don't have a 'super(KernelData, self).__init__()' here because KernelData takes full responsiblity for initializing both its superclasses
 
@@ -79,6 +81,8 @@ class KernelData(KernelReader,PstData):
         self._name = name or parent_string or ""
         self._std_string_list = []
 
+
+    #!!!cmk does this make it to docs?
     """The 2D NumPy array of floats that represents the values of the kernel.
 
     >>> from pysnptools.kernelreader import KernelData

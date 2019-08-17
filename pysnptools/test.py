@@ -16,6 +16,8 @@ from pysnptools.kernelreader.test import TestKernelReader
 from pysnptools.kernelreader.test import TestDocStrings as KrDocStrings
 from pysnptools.pstreader.test import TestPstReader
 from pysnptools.pstreader.test import TestDocStrings as PstDocStrings
+from pysnptools.pstreader.pstmemmap import TestDocStrings as TestPstMemMap
+from pysnptools.snpreader.smpmemmap import TestDocStrings as TestSnpMemMap
 from pysnptools.kernelreader.test import _fortesting_JustCheckExists
 from pysnptools.util.intrangeset import TestIntRangeSet
 import pysnptools.util.mapreduce1.testdistributable
@@ -755,6 +757,8 @@ def getTestSuite():
     """
 
     test_suite = unittest.TestSuite([])
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPstMemMap))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestSnpMemMap)
     test_suite.addTests(pysnptools.util.mapreduce1.testdistributable.getTestSuite()),
     test_suite.addTests(NaNCNCTestCases.factory_iterator())
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPstReader))
@@ -764,7 +768,6 @@ def getTestSuite():
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDocStrings))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPySnpTools))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestIntRangeSet))
-
 
 
     return test_suite

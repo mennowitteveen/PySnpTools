@@ -30,7 +30,7 @@ class SnpMemMap(PstMemMap,SnpData):
     **Methods beyond** :class:`SnpMemMap` #!!!cmk check all these **Methods beyond**'s
 
     '''
-
+    #!!!cmk need doc for .val?????
     #!!!cmk document
     def __init__(self, *args, **kwargs):
         super(SnpMemMap, self).__init__(*args, **kwargs)
@@ -63,7 +63,7 @@ class SnpMemMap(PstMemMap,SnpData):
         self._empty_inner(row=iid, col=sid, filename=filename, row_property=None, col_property=pos,order=order,dtype=dtype)
         return self
 
-    def run_once(self):
+    def _run_once(self):
             if (self._ran_once):
                 return
             row,col,val,row_property,col_property = self._run_once_inner()

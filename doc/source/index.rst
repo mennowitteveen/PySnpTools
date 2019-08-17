@@ -391,7 +391,7 @@ PySnpTools: A library for reading and manipulating genetic data.
     :exclude-members: copyinputs, col, col_property, row, row_property
 
 :class:`pstreader.PstMemMap`
-+++++++++++++++++++++++++
+++++++++++++++++++++++++++++++
 .. autoclass:: pysnptools.pstreader.PstMemMap
     :members:
     :undoc-members:

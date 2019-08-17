@@ -110,12 +110,12 @@ class Pairs(SnpReader):
         return self._col_property
 
     def copyinputs(self, copier):
-        # doesn't need to self.run_once() because only uses original inputs !!!is this true?
+        # doesn't need to self._run_once() because only uses original inputs !!!is this true?
         self.snpreader0.copyinputs(copier)
         if self.snpreader1 is not None:
             self.snpreader1.copyinputs(copier)
 
-    def run_once(self):
+    def _run_once(self):
         if self._ran_once:
             return
 
@@ -123,7 +123,7 @@ class Pairs(SnpReader):
         self.col
 
     def _read(self, iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok):
-        self.run_once()
+        self._run_once()
 
         iid_count_in = self.iid_count
         sid_count_in = self.sid_count

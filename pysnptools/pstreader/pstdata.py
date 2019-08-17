@@ -23,7 +23,7 @@ class PstData(PstReader):
                      * **col** (an array of anything) -- The :attr:`.col` information
                      * **val** (a 2-D array of floats) -- The values
                      * **row_property** (optional, an array of anything) -- Additional information associated with each row.
-                     * **col_property** (optional, an array of strings) -- Additional information associated with each col.
+                     * **col_property** (optional, an array of anything) -- Additional information associated with each col.
                      * **name** (optional, string) -- Information to be display about the origin of this data
                      * **copyinputs_function** (optional, function) -- *Used internally by optional clustering code*
 
@@ -79,6 +79,7 @@ class PstData(PstReader):
             warnings.warn("'parent_string' is deprecated. Use 'name'", DeprecationWarning)
         self._name = name
 
+    #!!!cmk does this make it to docs?
     """The 2D NumPy array of floats that represents the values.
 
     >>> from pysnptools.pstreader import PstNpz #!!!cmk this example doesn't make sense here.
@@ -158,6 +159,9 @@ class PstData(PstReader):
         self._val = new_value
 
     val = property(_get_val,_set_val)
+    '''
+    !!!cmk put documenation back
+    '''
 
     # Most _read's support only indexlists or None, but this one supports Slices, too.
     _read_accepts_slices = True

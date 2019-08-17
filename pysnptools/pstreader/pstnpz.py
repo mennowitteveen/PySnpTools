@@ -46,26 +46,26 @@ class PstNpz(PstReader): #!!!cmk confirm that this doceval gets evaled in testin
 
     @property
     def row(self):
-        self.run_once()
+        self._run_once()
         return self._row
 
 
     @property
     def col(self):
-        self.run_once()
+        self._run_once()
         return self._col
 
     @property
     def row_property(self):
-        self.run_once()
+        self._run_once()
         return self._row_property
 
     @property
     def col_property(self):
-        self.run_once()
+        self._run_once()
         return self._col_property
 
-    def run_once(self):
+    def _run_once(self):
         if (self._ran_once):
             return
         self._ran_once = True
@@ -87,7 +87,7 @@ class PstNpz(PstReader): #!!!cmk confirm that this doceval gets evaled in testin
         return self
 
     def copyinputs(self, copier):
-        # doesn't need to self.run_once()
+        # doesn't need to self._run_once()
         copier.input(self._filename)
 
     # Most _read's support only indexlists or None, but this one supports Slices, too.
@@ -95,7 +95,7 @@ class PstNpz(PstReader): #!!!cmk confirm that this doceval gets evaled in testin
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
         # 'view_ok' doesn't mean anything here because we are always ready fresh from disk.
         #!! could use mmap so only rows of interest are loaded.
-        self.run_once()
+        self._run_once()
 
         #np.load does the right thing and doesn't load 'val' into memory until accessed here.
         with np.load(self._filename) as data: #!! similar code in epistasis

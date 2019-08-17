@@ -34,28 +34,28 @@ class _PstSubset(PstReader):
 
     @property
     def row(self):
-        self.run_once()
+        self._run_once()
         return self._row
 
     @property
     def col(self):
-        self.run_once()
+        self._run_once()
         return self._col
 
     @property
     def row_property(self):
-        self.run_once()
+        self._run_once()
         return self._row_property
 
     @property
     def col_property(self):
-        self.run_once()
+        self._run_once()
         return self._col_property
 
     # Most _read's support only indexlists or None, but this one supports Slices, too.
     _read_accepts_slices = True
     def _read(self, row_indexer, col_indexer, order, dtype, force_python_only, view_ok):
-        self.run_once()
+        self._run_once()
 
         if hasattr(self._internal,'_read_accepts_slices'):
             assert self._internal._read_accepts_slices, "If an object has the _read_accepts_slices attribute, it must have value 'True'"
@@ -71,7 +71,7 @@ class _PstSubset(PstReader):
             val = self._internal._read(composed_row_index_or_none, composed_col_index_or_none, order, dtype, force_python_only, view_ok)
             return val
 
-    def run_once(self):
+    def _run_once(self):
         if self._ran_once:
             return
 

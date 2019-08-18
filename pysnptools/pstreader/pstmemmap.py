@@ -20,9 +20,9 @@ class PstMemMap(PstData):
         :Example:
 
         >>> from pysnptools.pstreader import PstMemMap
-        >>> pst_mem_map = PstMemMap('../examples/`tiny.pst.memmap')
-        >>> print(pst_mem_map.val[0,1], pst_mem_map.row_count, pst_mem_map.col_count)
-        2.0 2 3
+        >>> pst_mem_map = PstMemMap('../examples/tiny.pst.memmap')
+        >>> print pst_mem_map.val[0,1], pst_mem_map.row_count, pst_mem_map.col_count
+        2.0 3 2
 
     **Methods beyond** :class:`PstReader`
 
@@ -252,6 +252,8 @@ class TestPstMemMap(unittest.TestCase):
 
     def test1(self):
         logging.info("in TestPstMemMap test1")
+        old_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
         filename2 = "tempdir/tiny.pst.memmap"
         pstutil.create_directory_if_necessary(filename2)
@@ -275,8 +277,12 @@ class TestPstMemMap(unittest.TestCase):
 
         pstdata = pstreader.read(view_ok=True)
         assert isinstance(pstdata.val,np.memmap)
+        os.chdir(old_dir)
 
     def test2(self):
+        old_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
         filename = "tempdir/x.pst.memmap"
         pstutil.create_directory_if_necessary(filename)
 
@@ -287,13 +293,20 @@ class TestPstMemMap(unittest.TestCase):
         a.val+=b.val
         pointer2, read_only_flag = a.val.__array_interface__['data']
         assert pointer1==pointer2
+        os.chdir(old_dir)
 
     def test3(self):
+        old_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
         filename = "tempdir/x.pst.memmap"
         pstutil.create_directory_if_necessary(filename)
 
         a = PstMemMap.empty(row=['a','b','c'],col=['y','z'],filename=filename,row_property=['A','B','C'],order="F",dtype=np.float64)
         pstdata = a.read(order='C',view_ok=True)
+        os.chdir(old_dir)
+
+
+
 
 
 def getTestSuite():
@@ -340,7 +353,5 @@ if __name__ == "__main__":
     r = unittest.TextTestRunner(failfast=True)
     r.run(suites)
 
-
-
-    import doctest
-    doctest.testmod()
+    result = doctest.testmod()
+    assert result.failed == 0, "failed doc test: " + __file__

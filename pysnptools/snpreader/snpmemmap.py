@@ -2,6 +2,7 @@ import logging
 import os
 import numpy as np
 import unittest
+import doctest
 import pysnptools.util as pstutil
 from pysnptools.pstreader import PstData
 from pysnptools.pstreader import PstMemMap
@@ -143,6 +144,8 @@ class SnpMemMap(PstMemMap,SnpData):
 class TestSnpMemMap(unittest.TestCase):     
 
     def test1(self):
+        old_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
         filename2 = "tempdir/tiny.snp.memmap"
         pstutil.create_directory_if_necessary(filename2)
@@ -167,6 +170,8 @@ class TestSnpMemMap(unittest.TestCase):
 
         snpdata = snpreader.read(view_ok=True)
         assert isinstance(snpdata.val,np.memmap)
+        os.chdir(old_dir)
+
 
 def getTestSuite():
     """
@@ -185,6 +190,5 @@ if __name__ == "__main__":
     r = unittest.TextTestRunner(failfast=True)
     r.run(suites)
 
-
-    import doctest
-    doctest.testmod()
+    result = doctest.testmod()
+    assert result.failed == 0, "failed doc test: " + __file__

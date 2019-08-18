@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{60f1cb4a-9da3-47c2-9b89-60ac1ce93347}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>snpreader\snpmemmap.py</StartupFile>
+    <StartupFile>pstreader\test.py</StartupFile>
     <SearchPath>..\;..\..\PySnpTools</SearchPath>
     <WorkingDirectory>D:\OneDrive\programs\PySnpTools\pysnptools\snpreader</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -68,7 +68,6 @@
     <Compile Include="pstreader\_mergerows.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="snpreader\distributed_bed.py" />
     <Compile Include="snpreader\pairs.py">
       <SubType>Code</SubType>
     </Compile>

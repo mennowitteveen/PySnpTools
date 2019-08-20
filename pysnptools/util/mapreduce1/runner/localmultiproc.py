@@ -41,7 +41,7 @@ class LocalMultiProc: # implements IRunner
 
         import datetime
         now = datetime.datetime.now()
-        run_dir_rel = os.path.join("runs",pstutil.datestamp(appendrandom=True))
+        run_dir_rel = os.path.join("runs",pstutil._datestamp(appendrandom=True))
         run_dir_abs = os.path.join(localwd,run_dir_rel)
         pstutil.create_directory_if_necessary(run_dir_rel, isfile=False)
 

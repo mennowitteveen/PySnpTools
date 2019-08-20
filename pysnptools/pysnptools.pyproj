@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{60f1cb4a-9da3-47c2-9b89-60ac1ce93347}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>pstreader\test.py</StartupFile>
+    <StartupFile>util\snpgen.py</StartupFile>
     <SearchPath>..\;..\..\PySnpTools</SearchPath>
     <WorkingDirectory>D:\OneDrive\programs\PySnpTools\pysnptools\snpreader</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -110,9 +110,7 @@
     <Compile Include="standardizer\unit.py" />
     <Compile Include="standardizer\__init__.py" />
     <Compile Include="test.py" />
-    <Compile Include="util\gen\generate.py" />
-    <Compile Include="util\gen\snpgen.py" />
-    <Compile Include="util\gen\__init__.py" />
+    <Compile Include="util\snpgen.py" />
     <Compile Include="util\intrangeset.py">
       <SubType>Code</SubType>
     </Compile>
@@ -158,7 +156,6 @@
     <Folder Include="util\" />
     <Folder Include="snpreader" />
     <Folder Include="standardizer\" />
-    <Folder Include="util\gen\" />
     <Folder Include="util\mapreduce1\" />
     <Folder Include="util\mapreduce1\runner\" />
   </ItemGroup>

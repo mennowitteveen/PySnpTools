@@ -456,18 +456,21 @@ def to_ascii(s):
         return s
     return s.encode('ascii') 
 
-def _format_delta(delta):
+def format_delta(delta):
+    '''
+    Format a time delta nicely.
+    '''
     return datetime.timedelta(seconds=delta)
 
-def Mbps(size, delta):#!!!cmk document or hide
+def _mbps(size, delta):#!!!cmk document or hide
     return size * 8 / delta / 1e6
 
-def MbpsStr(t0, size, total=0):#!!!cmk document or hide
+def _mbps_str(t0, size, total=0):#!!!cmk document or hide
     delta = time.time()-t0
-    Mbps0 = Mbps(size, delta) if delta > 0 else 0
+    mbps0 = _mbps(size, delta) if delta > 0 else 0
     percent = float(size)/total if total > 0 else 1
     left = delta/percent*(1-percent) if total > 0 else 0
-    return "{0:0.2f}, {1:0.1f}%, left={2}".format(Mbps0,percent*100,_format_delta(left))
+    return "{0:0.2f}, {1:0.1f}%, left={2}".format(mbps0,percent*100,format_delta(left))
 
 
 @contextmanager
@@ -514,7 +517,7 @@ def log_in_place(name, level, time_lambda=time.time, show_log_diffs=False):#!!!c
     sys.stdout.write("\n")                
 
 @contextmanager
-def progress_reporter(name,size=None,updater=None):
+def _progress_reporter(name,size=None,updater=None):
     '''
     If an update is given, we use that. Otherwise, we create our own.#!!!cmk document or hide
     '''
@@ -525,21 +528,21 @@ def progress_reporter(name,size=None,updater=None):
         with log_in_place(name, logging.INFO) as writer:
             def updater2(byte_size):
                 bytes_so_far[0] += byte_size
-                writer("Mbps={0}".format(MbpsStr(t0,bytes_so_far[0],size)))
+                writer("Mbps={0}".format(_mbps_str(t0,bytes_so_far[0],size)))
             yield updater2
     else:
         yield updater
 
 
 @contextmanager
-def multiopen(open_lambda, input_list):#!!!cmk document or hide
+def _multiopen(open_lambda, input_list):#!!!cmk document or hide
     handle_list = [open_lambda(input) for input in input_list]        # Open the related inputs
     list_to_yield = [handle.__enter__() for handle in handle_list]    # Get the list to yield
     yield list_to_yield                                               # yield it
     for handle in handle_list:                                        # Close them
         handle.__exit__(None,None,None)
 
-def datestamp(appendrandom=False):#!!!cmk document or hide
+def _datestamp(appendrandom=False):
     import datetime
     now = datetime.datetime.now()
     s = str(now)[:19].replace(" ","_").replace(":","_")

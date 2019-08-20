@@ -1,10 +1,10 @@
 import logging
 import numpy as np
-from pysnptools.pstreader import PstReader, PstData
 import unittest
-import pysnptools.util as pstutil
 import os
-
+import doctest
+import pysnptools.util as pstutil
+from pysnptools.pstreader import PstReader, PstData
 
 class PstMemMap(PstData):
     '''

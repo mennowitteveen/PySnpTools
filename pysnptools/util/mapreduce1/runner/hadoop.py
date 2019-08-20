@@ -291,7 +291,7 @@ class Hadoop: # implements IRunner
         remotewd = remotewd.replace("\\","/")
         if remotewd.endswith("/"): # remove trailing /
             remotewd = remotewd[:-1]
-        run_dir_rel = os.path.join("runs",pstutil.datestamp(appendrandom=True))
+        run_dir_rel = os.path.join("runs",pstutil._datestamp(appendrandom=True))
         pstutil.create_directory_if_necessary("runs",isfile=False)
         if not os.path.isfile(".ignoreTgzChange"):
             with open("runs" +  os.path.sep + ".ignoreTgzChange","w") as ignoreFile:

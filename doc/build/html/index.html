@@ -1362,57 +1362,6 @@ val, iid, sid, and pos information in NPZ format.</p>
 </div>
 <div class="section" id="snpreader-distributedbed">
 <h3><code class="xref py py-class docutils literal notranslate"><span class="pre">snpreader.DistributedBed</span></code><a class="headerlink" href="#snpreader-distributedbed" title="Permalink to this headline">¶</a></h3>
-<dl class="class">
-<dt id="pysnptools.snpreader.DistributedBed">
-<em class="property">class </em><code class="descclassname">pysnptools.snpreader.</code><code class="descname">DistributedBed</code><span class="sig-paren">(</span><em>storage</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.DistributedBed" title="Permalink to this definition">¶</a></dt>
-<dd><p>A class that implements the <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> interface. It stores BED-like data in pieces on storage. When requested, it retrieves requested parts of the data.</p>
-<dl class="docutils">
-<dt><strong>Constructor:</strong></dt>
-<dd><table class="first last docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>storage</strong> (<em>FileCache</em>) – The <code class="xref py py-class docutils literal notranslate"><span class="pre">LocalCache</span></code> or other <code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code> where the data should or is stored.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd>
-</dl>
-<dl class="staticmethod">
-<dt id="pysnptools.snpreader.DistributedBed.write">
-<em class="property">static </em><code class="descname">write</code><span class="sig-paren">(</span><em>storage</em>, <em>snpreader</em>, <em>piece_per_chrom_count</em>, <em>updater=None</em>, <em>runner=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.DistributedBed.write" title="Permalink to this definition">¶</a></dt>
-<dd><p>Uploads from any BED-like data to cluster storage for efficient retrieval later.
-If some of the content already exists in storage, it skips uploading that part of the content. (To avoid this behavior,
-clear the storage.)</p>
-<p>Additional data formats can be supported by creating new readers that follow that <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> interface.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>storage</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code>) – A <code class="xref py py-class docutils literal notranslate"><span class="pre">LocalCache</span></code> or other <code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code> to upload to.</li>
-<li><strong>snpreader</strong> (<a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a>) – A <a class="reference internal" href="#pysnptools.snpreader.Bed" title="pysnptools.snpreader.Bed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bed</span></code></a> or other <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> that with values of 0,1,2, or missing.</li>
-<li><strong>piece_per_chrom_count</strong> (<em>A number</em>) – The number of pieces in which to store the data from each chromosome. Data is split across
-SNPs. If set to 100 and 22 chromosomes are uploaded, then data will be stored in 2200 pieces. Later, when data is requested
-only the pieces necessary for the request will be downloaded.</li>
-<li><strong>updater</strong> (A lambda such as created by <code class="xref py py-func docutils literal notranslate"><span class="pre">log_in_place()</span></code>) – A single argument function to write logging message to.</li>
-<li><strong>runner</strong> (<em>a runner.</em>) – a runner, optional: Tells how to run locally or multi-processor are good options.
-If not given, the function is run locally.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pysnptools.snpreader.DistributedBed" title="pysnptools.snpreader.DistributedBed">DistributedBed</a></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
 </div>
 <div class="section" id="snpreader-snpmemmap">
 <h3><code class="xref py py-class docutils literal notranslate"><span class="pre">snpreader.SnpMemMap</span></code><a class="headerlink" href="#snpreader-snpmemmap" title="Permalink to this headline">¶</a></h3>
@@ -3477,7 +3426,7 @@ It is usually created by calling the <a class="reference internal" href="#pysnpt
 </table>
 <div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.pstreader</span> <span class="k">import</span> <span class="n">PstData</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pstdata</span> <span class="o">=</span> <span class="n">PstData</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">col</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;snp334&#39;</span><span class="p">,</span><span class="s1">&#39;snp349&#39;</span><span class="p">,</span><span class="s1">&#39;snp921&#39;</span><span class="p">],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pstdata</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">pstdata</span><span class="o">.</span><span class="n">row_count</span><span class="p">,</span> <span class="n">pstdata</span><span class="o">.</span><span class="n">col_count</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">pstdata</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">pstdata</span><span class="o">.</span><span class="n">row_count</span><span class="p">,</span> <span class="n">pstdata</span><span class="o">.</span><span class="n">col_count</span>
 <span class="go">2.0 2 3</span>
 </pre></div>
 </div>
@@ -3674,9 +3623,9 @@ val, row, col, row_property, and col_property information in NPZ format.</p>
 </tbody>
 </table>
 <div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.pstreader</span> <span class="k">import</span> <span class="n">PstMemMap</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pst_mem_map</span> <span class="o">=</span> <span class="n">PstMemMap</span><span class="p">(</span><span class="s1">&#39;../examples/`tiny.pst.memmap&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pst_mem_map</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">pst_mem_map</span><span class="o">.</span><span class="n">row_count</span><span class="p">,</span> <span class="n">pst_mem_map</span><span class="o">.</span><span class="n">col_count</span><span class="p">)</span>
-<span class="go">2.0 2 3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pst_mem_map</span> <span class="o">=</span> <span class="n">PstMemMap</span><span class="p">(</span><span class="s1">&#39;../examples/tiny.pst.memmap&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">pst_mem_map</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">pst_mem_map</span><span class="o">.</span><span class="n">row_count</span><span class="p">,</span> <span class="n">pst_mem_map</span><span class="o">.</span><span class="n">col_count</span>
+<span class="go">2.0 3 2</span>
 </pre></div>
 </div>
 </dd>
@@ -3794,16 +3743,6 @@ val, row, col, row_property, and col_property information in NPZ format.</p>
 <div class="section" id="module-pysnptools.util">
 <span id="util"></span><h3><code class="xref py py-mod docutils literal notranslate"><span class="pre">util</span></code><a class="headerlink" href="#module-pysnptools.util" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
-<dt id="pysnptools.util.Mbps">
-<code class="descclassname">pysnptools.util.</code><code class="descname">Mbps</code><span class="sig-paren">(</span><em>size</em>, <em>delta</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.Mbps" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="pysnptools.util.MbpsStr">
-<code class="descclassname">pysnptools.util.</code><code class="descname">MbpsStr</code><span class="sig-paren">(</span><em>t0</em>, <em>size</em>, <em>total=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.MbpsStr" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
 <dt id="pysnptools.util.create_directory_if_necessary">
 <code class="descclassname">pysnptools.util.</code><code class="descname">create_directory_if_necessary</code><span class="sig-paren">(</span><em>name</em>, <em>isfile=True</em>, <em>robust=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.create_directory_if_necessary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a directory for a file if the directory doesn’t already exist.</p>
@@ -3823,9 +3762,10 @@ val, row, col, row_property, and col_property information in NPZ format.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="pysnptools.util.datestamp">
-<code class="descclassname">pysnptools.util.</code><code class="descname">datestamp</code><span class="sig-paren">(</span><em>appendrandom=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.datestamp" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="pysnptools.util.format_delta">
+<code class="descclassname">pysnptools.util.</code><code class="descname">format_delta</code><span class="sig-paren">(</span><em>delta</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.format_delta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format a time delta nicely.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="pysnptools.util.intersect_apply">
@@ -3904,7 +3844,7 @@ are already ok). Inputting a tuple returns a new tuple (unless its iids are alre
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create five new datasets with consistent iids</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ignore_out</span><span class="p">,</span> <span class="n">kernel_out</span><span class="p">,</span> <span class="n">pheno_out</span><span class="p">,</span> <span class="n">cov_as_tuple_out</span> <span class="o">=</span> <span class="n">intersect_apply</span><span class="p">([</span><span class="n">ignore_in</span><span class="p">,</span> <span class="n">kernel_in</span><span class="p">,</span> <span class="n">pheno_in</span><span class="p">,</span> <span class="n">cov_as_tuple_in</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Print the first five iids from each dataset</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ignore_out</span><span class="p">,</span> <span class="n">kernel_out</span><span class="o">.</span><span class="n">iid</span><span class="p">[:</span><span class="mi">5</span><span class="p">],</span> <span class="n">pheno_out</span><span class="o">.</span><span class="n">iid</span><span class="p">[:</span><span class="mi">5</span><span class="p">],</span> <span class="n">cov_as_tuple_out</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">ignore_out</span><span class="p">,</span> <span class="n">kernel_out</span><span class="o">.</span><span class="n">iid</span><span class="p">[:</span><span class="mi">5</span><span class="p">],</span> <span class="n">pheno_out</span><span class="o">.</span><span class="n">iid</span><span class="p">[:</span><span class="mi">5</span><span class="p">],</span> <span class="n">cov_as_tuple_out</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">5</span><span class="p">]</span>
 <span class="go">None [[&#39;POP1&#39; &#39;0&#39;]</span>
 <span class="go"> [&#39;POP1&#39; &#39;12&#39;]</span>
 <span class="go"> [&#39;POP1&#39; &#39;44&#39;]</span>
@@ -3960,20 +3900,9 @@ across all data sets.</td>
 </dd></dl>
 
 <dl class="function">
-<dt id="pysnptools.util.multiopen">
-<code class="descclassname">pysnptools.util.</code><code class="descname">multiopen</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.multiopen" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
 <dt id="pysnptools.util.print2">
 <code class="descclassname">pysnptools.util.</code><code class="descname">print2</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.print2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make printing under Python3 look the same as under Python2.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="pysnptools.util.progress_reporter">
-<code class="descclassname">pysnptools.util.</code><code class="descname">progress_reporter</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.progress_reporter" title="Permalink to this definition">¶</a></dt>
-<dd><p>If an update is given, we use that. Otherwise, we create our own.#!!!cmk document or hide</p>
 </dd></dl>
 
 <dl class="function">
@@ -4070,7 +3999,7 @@ If order is ‘A’, then sub-matrix may be in any order F or C.</li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">103.664086</span><span class="p">,</span><span class="mf">89.80645161</span><span class="p">,</span><span class="mf">83.86888046</span><span class="p">,</span><span class="mf">90.54141176</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">2.340862423</span><span class="p">,</span><span class="mf">4.982888433</span><span class="p">,</span><span class="mf">0.17522245</span><span class="p">,</span><span class="mf">0.098562628</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span><span class="p">,</span> <span class="n">xmean</span><span class="p">,</span> <span class="n">ymean</span> <span class="o">=</span> <span class="n">weighted_simple_linear_regression</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">slope</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">intercept</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">xmean</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">ymean</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="nb">round</span><span class="p">(</span><span class="n">slope</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">intercept</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">xmean</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">ymean</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
 <span class="go">-3.52643 293.05586 56.46133 93.9487</span>
 </pre></div>
 </div>

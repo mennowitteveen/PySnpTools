@@ -89,14 +89,21 @@ class PstData(PstReader):
     """
 
     def __eq__(a,b):
+        return allclose(a,b,equal_nan=False)
+
+    def allclose(a,b,equal_nan=True):
+        '''
+        !!!cmk document
+        '''
         try:
             return (np.array_equal(a.row,b.row) and
                     np.array_equal(a.col,b.col) and
                     np.array_equal(a.row_property,b.row_property) and
                     np.array_equal(a.col_property,b.col_property) and
-                    np.array_equal(a.val,b.val))
+                    np.allclose(a.val,b.val,equal_nan=equal_nan))
         except:
             return False
+
 
     @staticmethod
     def _fixup_input(input,count=None, empty_creator=_default_empty_creator,dtype=None):

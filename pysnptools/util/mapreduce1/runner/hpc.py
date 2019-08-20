@@ -353,7 +353,7 @@ class HPC: # implements IRunner
             nodelocalwd = "d:\scratch\escience" + os.path.sep + username + os.path.splitdrive(localwd)[1]  #!!! const
         import datetime
         now = datetime.datetime.now()
-        run_dir_rel = os.path.join("runs",pstutil.datestamp(appendrandom=True))
+        run_dir_rel = os.path.join("runs",pstutil._datestamp(appendrandom=True))
         run_dir_abs = os.path.join(remotewd,run_dir_rel)
         pstutil.create_directory_if_necessary(run_dir_abs,isfile=False)
 

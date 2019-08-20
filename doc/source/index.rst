@@ -21,7 +21,7 @@ PySnpTools: A library for reading and manipulating genetic data.
 * :class:`.util.IntRangeSet`: Efficiently manipulate ranges of integers -- for example, genetic position -- with set operators including
   union, intersection, and set difference. 
 
-* :mod:`.util.gen`: !!!cmk
+* :mod:`.util.snpgen`: Generate synthetic SNP data on the fly 
 
 * :mod:`.util.mapreduce1`: !!!cmk
 
@@ -420,17 +420,9 @@ PySnpTools: A library for reading and manipulating genetic data.
   :special-members:
   :exclude-members: __and__, __weakref__,__module__,__dict__, __add__
 
-:mod:`util.pheno`
+:mod:`util.snpgen`
 ++++++++++++++++++++++++++
-.. automodule:: pysnptools.util.pheno
-    :members:
-    :undoc-members:
-	:show-inheritance:
-	:special-members:
-
-:mod:`util.gen`
-++++++++++++++++++++++++++
-.. automodule:: pysnptools.util.gen
+.. automodule:: pysnptools.util.snpgen
     :members:
     :undoc-members:
 	:show-inheritance:
@@ -443,6 +435,15 @@ PySnpTools: A library for reading and manipulating genetic data.
     :undoc-members:
 	:show-inheritance:
 	:special-members:
+
+:mod:`util.pheno`
+++++++++++++++++++++++++++
+.. automodule:: pysnptools.util.pheno
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+
 
 .. only:: html 
 

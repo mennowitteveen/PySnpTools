@@ -96,10 +96,10 @@ class PstMemMap(PstData):
     def empty(row, col, filename, row_property=None, col_property=None,order="F",dtype=np.float64):
         '''Create an empty :class:`.PstMemMap` on disk.
 
-        :param row: The :attr:`.row` information
+        :param row: The :attr:`.PstReader.row` information
         :type row: an array of anything
 
-        :param col: The :attr:`.col` information
+        :param col: The :attr:`.PstReader.col` information
         :type col: an array of anything
 
         :param filename: name of memory-mapped file to create

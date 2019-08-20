@@ -135,15 +135,6 @@ PySnpTools: A library for reading and manipulating genetic data.
     :exclude-members: copyinputs, col, col_property, row, row_property
 
 
-:class:`snpreader.DistributedBed`
-++++++++++++++++++++++++++++++++++
-.. autoclass:: pysnptools.snpreader.DistributedBed
-    :members:
-    :undoc-members:
-	:show-inheritance:
-	:special-members:
-    :exclude-members: copyinputs, col, col_property, row, row_property
-
 :class:`snpreader.SnpMemMap`
 ++++++++++++++++++++++++++++++++++
 .. autoclass:: pysnptools.snpreader.SnpMemMap
@@ -420,13 +411,14 @@ PySnpTools: A library for reading and manipulating genetic data.
   :special-members:
   :exclude-members: __and__, __weakref__,__module__,__dict__, __add__
 
-:mod:`util.snpgen`
+:mod:`util.snpgen.SnpGen`
 ++++++++++++++++++++++++++
-.. automodule:: pysnptools.util.snpgen
+.. automodule:: pysnptools.util.snpgen.SnpGen
     :members:
     :undoc-members:
 	:show-inheritance:
 	:special-members:
+    :exclude-members: copyinputs, col, col_property, row, row_property, col_count, iid, iid_count, pos, row_count, shape, sid,sid_count
 
 :mod:`util.mapreduce1`
 ++++++++++++++++++++++++++

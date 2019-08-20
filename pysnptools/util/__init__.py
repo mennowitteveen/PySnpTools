@@ -1,4 +1,3 @@
-from pysnptools.util.intrangeset import IntRangeSet
 import os
 import scipy as sp
 import logging
@@ -11,6 +10,7 @@ import sys
 from contextlib import contextmanager
 import time
 import datetime
+from pysnptools.util.intrangeset import IntRangeSet
 
 
 def _testtest(data, iididx):
@@ -362,7 +362,7 @@ def create_directory_if_necessary(name, isfile=True, robust=False): #!!!cmk upda
     :type name: string
     :param isfile: If True (default), the name is a file, otherwise it is a directory.
     :type isfile: bool
-    import os
+
     '''
     if isfile:
         directory_name = os.path.dirname(name)
@@ -476,7 +476,7 @@ def _mbps_str(t0, size, total=0):#!!!cmk document or hide
 @contextmanager
 def log_in_place(name, level, time_lambda=time.time, show_log_diffs=False):#!!!cmk document or hide
     '''
-        Create an one-argument lambda to write messages to. They will appear on the same line.
+        Create an one-argument lambda to write messages to. Messages will appear on the same line.
 
         Example::
 

@@ -1,34 +1,32 @@
 import numpy as np
-import pysnptools.util as pstutil
 import logging
 import os
 import unittest
 import doctest
 from pysnptools.snpreader import SnpReader
-from pysnptools.pstreader import PstData
 
-class SnpGen(SnpReader): #!!!cmk document and doctest
+class SnpGen(SnpReader):
     '''
     A :class:`.SnpReader` that generates deterministic SNP data on the fly.
 
     See :class:`.SnpReader` for general examples of using SnpReader.
 
     **Constructor:**
-        :Parameters: * **seed** (*number*) -- The random seed that (along with *sid_batch_size*) determines the SNPs.
+        :Parameters: * **seed** (*number*) -- The random seed that (along with *sid_batch_size*) determines the SNP values.
         :Parameters: * **iid_count** (*number*) --  the number of iids (number of individuals)
         :Parameters: * **sid_count** (*number*) --  the number of sids (number of SNPs)
         :Parameters: * **chrom_count** (*number*) --  the number of chromosomes to generate (must be 22 or less)
-        :Parameters: * **cache_file** (*string*) -- (default None) If provided, tells where to cache the common iid, sid, and pos information. This can save time.
+        :Parameters: * **cache_file** (*string*) -- (default None) If provided, tells where to cache the common iid, sid, and pos information. Using it can save time.
         :Parameters: * **sid_batch_size** (*number*) -- (default 1000) Tells how many SNP at once. The default value is usually good.
         
-        :Example: #!!!cmk be sure this is tested
+        :Example:
 
-        >>> seed = 332
-        >>> #Be ready to generate data for 1000 individuals and 1,000,000 SNPs
-        >>> snp_gen = SnpGen(seed=seed,iid_count=1000,sid_count=1000*1000)
+        >>> from pysnptools.util.snpgen import SnpGen
+        >>> #Prepare to generate data for 1000 individuals and 1,000,000 SNPs
+        >>> snp_gen = SnpGen(seed=332,iid_count=1000,sid_count=1000*1000)
         >>> print snp_gen.iid_count,snp_gen.sid_count
         1000 1000000
-        >>> snp_data = snp_gen[:,200*1000:201*1000].read() #Generate from all users and SNPs 200K to 201K
+        >>> snp_data = snp_gen[:,200*1000:201*1000].read() #Generate for all users and for SNPs 200K to 201K
         >>> print snp_data.val[1,1], snp_data.iid_count, snp_data.sid_count
         0.0 1000 1000
 
@@ -47,6 +45,7 @@ class SnpGen(SnpReader): #!!!cmk document and doctest
 
         if cache_file is not None:
             if not os.path.exists(cache_file):
+                import pysnptools.util as pstutil
                 pstutil.create_directory_if_necessary(cache_file)
                 self._run_once()
                 np.savez(cache_file, _row=self._row, _col=self._col, _col_property=self._col_property)
@@ -109,7 +108,7 @@ class SnpGen(SnpReader): #!!!cmk document and doctest
     # Most _read's support only indexlists or None, but this one supports Slices, too.
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
         self._run_once()
-
+        import pysnptools.util as pstutil
 
         row_index_count = len(row_index_or_none) if row_index_or_none is not None else self._iid_count # turn to a count of the index positions e.g. all of them
         col_index = col_index_or_none if col_index_or_none is not None else np.arange(self._sid_count) # turn to an array of index positions, e.g. 0,1,200,2200,10

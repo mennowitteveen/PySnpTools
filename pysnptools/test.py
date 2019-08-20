@@ -18,6 +18,7 @@ from pysnptools.pstreader.test import TestPstReader
 from pysnptools.pstreader.test import TestDocStrings as PstDocStrings
 from pysnptools.pstreader.pstmemmap import TestPstMemMap
 from pysnptools.snpreader.snpmemmap import TestSnpMemMap
+from pysnptools.util.snpgen import TestSnpGen
 from pysnptools.kernelreader.test import _fortesting_JustCheckExists
 from pysnptools.util.intrangeset import TestIntRangeSet
 import pysnptools.util.mapreduce1.testdistributable
@@ -685,6 +686,13 @@ class TestDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
+    def test_snpgen(self):
+        old_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/util")
+        result = doctest.testmod(pysnptools.util.snpgen)
+        os.chdir(old_dir)
+        assert result.failed == 0, "failed doc test: " + __file__
+
     def test_snpnpz(self):
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
@@ -750,6 +758,7 @@ def getTestSuite():
     """
 
     test_suite = unittest.TestSuite([])
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestSnpGen))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPstMemMap))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestSnpMemMap))
     test_suite.addTests(pysnptools.util.mapreduce1.testdistributable.getTestSuite())

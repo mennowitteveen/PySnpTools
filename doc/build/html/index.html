@@ -57,7 +57,7 @@
 <li><a class="reference internal" href="#module-pysnptools.util" title="pysnptools.util"><code class="xref py py-mod docutils literal notranslate"><span class="pre">util</span></code></a>: In one line, intersect and re-order IIDs from <a class="reference internal" href="#module-pysnptools.snpreader" title="pysnptools.snpreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">snpreader</span></code></a>, <a class="reference internal" href="#module-pysnptools.kernelreader" title="pysnptools.kernelreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">kernelreader</span></code></a> and other sources. Also, efficiently extract a submatrix from an ndarray.</li>
 <li><a class="reference internal" href="#pysnptools.util.IntRangeSet" title="pysnptools.util.IntRangeSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">util.IntRangeSet</span></code></a>: Efficiently manipulate ranges of integers – for example, genetic position – with set operators including
 union, intersection, and set difference.</li>
-<li><a class="reference internal" href="#module-pysnptools.util.gen" title="pysnptools.util.gen"><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.gen</span></code></a>: !!!cmk</li>
+<li><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.snpgen</span></code>: Generate synthetic SNP data on the fly</li>
 <li><a class="reference internal" href="#module-pysnptools.util.mapreduce1" title="pysnptools.util.mapreduce1"><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.mapreduce1</span></code></a>: !!!cmk</li>
 </ul>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1359,9 +1359,6 @@ val, iid, sid, and pos information in NPZ format.</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="snpreader-distributedbed">
-<h3><code class="xref py py-class docutils literal notranslate"><span class="pre">snpreader.DistributedBed</span></code><a class="headerlink" href="#snpreader-distributedbed" title="Permalink to this headline">¶</a></h3>
 </div>
 <div class="section" id="snpreader-snpmemmap">
 <h3><code class="xref py py-class docutils literal notranslate"><span class="pre">snpreader.SnpMemMap</span></code><a class="headerlink" href="#snpreader-snpmemmap" title="Permalink to this headline">¶</a></h3>
@@ -3410,8 +3407,8 @@ It is usually created by calling the <a class="reference internal" href="#pysnpt
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>row</strong> (an array of anything) – The <a class="reference internal" href="#pysnptools.pstreader.PstReader.row" title="pysnptools.pstreader.PstReader.row"><code class="xref py py-attr docutils literal notranslate"><span class="pre">row</span></code></a> information</li>
-<li><strong>col</strong> (an array of anything) – The <a class="reference internal" href="#pysnptools.pstreader.PstReader.col" title="pysnptools.pstreader.PstReader.col"><code class="xref py py-attr docutils literal notranslate"><span class="pre">col</span></code></a> information</li>
+<li><strong>row</strong> (an array of anything) – The <a class="reference internal" href="#pysnptools.pstreader.PstReader.row" title="pysnptools.pstreader.PstReader.row"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.row</span></code></a> information</li>
+<li><strong>col</strong> (an array of anything) – The <a class="reference internal" href="#pysnptools.pstreader.PstReader.col" title="pysnptools.pstreader.PstReader.col"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.col</span></code></a> information</li>
 <li><strong>val</strong> (a 2-D array of floats) – The values</li>
 <li><strong>row_property</strong> (optional, an array of anything) – Additional information associated with each row.</li>
 <li><strong>col_property</strong> (optional, an array of anything) – Additional information associated with each col.</li>
@@ -3434,7 +3431,7 @@ It is usually created by calling the <a class="reference internal" href="#pysnpt
 </dl>
 <p><strong>Equality:</strong></p>
 <blockquote>
-<div><p>Two PstData objects are equal if their five arrays (<a class="reference internal" href="#pysnptools.pstreader.PstReader.row" title="pysnptools.pstreader.PstReader.row"><code class="xref py py-attr docutils literal notranslate"><span class="pre">row</span></code></a>, <a class="reference internal" href="#pysnptools.pstreader.PstReader.col" title="pysnptools.pstreader.PstReader.col"><code class="xref py py-attr docutils literal notranslate"><span class="pre">col</span></code></a>, <a class="reference internal" href="#pysnptools.pstreader.PstData.val" title="pysnptools.pstreader.PstData.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">val</span></code></a>, <a class="reference internal" href="#pysnptools.pstreader.PstReader.row_property" title="pysnptools.pstreader.PstReader.row_property"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.row_property</span></code></a>, and <a class="reference internal" href="#pysnptools.pstreader.PstReader.col_property" title="pysnptools.pstreader.PstReader.col_property"><code class="xref py py-attr docutils literal notranslate"><span class="pre">col_property</span></code></a>) are ‘array_equal’.
+<div><p>Two PstData objects are equal if their five arrays (<a class="reference internal" href="#pysnptools.pstreader.PstReader.row" title="pysnptools.pstreader.PstReader.row"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.row</span></code></a>, <a class="reference internal" href="#pysnptools.pstreader.PstReader.col" title="pysnptools.pstreader.PstReader.col"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.col</span></code></a>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.val</span></code>, <a class="reference internal" href="#pysnptools.pstreader.PstReader.row_property" title="pysnptools.pstreader.PstReader.row_property"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.row_property</span></code></a>, and <a class="reference internal" href="#pysnptools.pstreader.PstReader.col_property" title="pysnptools.pstreader.PstReader.col_property"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.col_property</span></code></a>) are ‘array_equal’.
 (Their ‘name’ does not need to be the same).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -3459,6 +3456,12 @@ It is usually created by calling the <a class="reference internal" href="#pysnpt
 </div>
 </div></blockquote>
 <p><strong>Methods beyond</strong> <a class="reference internal" href="#pysnptools.pstreader.PstReader" title="pysnptools.pstreader.PstReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstReader</span></code></a></p>
+<dl class="method">
+<dt id="pysnptools.pstreader.PstData.allclose">
+<code class="descname">allclose</code><span class="sig-paren">(</span><em>b</em>, <em>equal_nan=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.pstreader.PstData.allclose" title="Permalink to this definition">¶</a></dt>
+<dd><p>!!!cmk document</p>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="pysnptools.pstreader.PstData.val">
 <code class="descname">val</code><a class="headerlink" href="#pysnptools.pstreader.PstData.val" title="Permalink to this definition">¶</a></dt>
@@ -3640,8 +3643,8 @@ val, row, col, row_property, and col_property information in NPZ format.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>row</strong> (<em>an array of anything</em>) – The <a class="reference internal" href="#pysnptools.pstreader.PstReader.row" title="pysnptools.pstreader.PstReader.row"><code class="xref py py-attr docutils literal notranslate"><span class="pre">row</span></code></a> information</li>
-<li><strong>col</strong> (<em>an array of anything</em>) – The <a class="reference internal" href="#pysnptools.pstreader.PstReader.col" title="pysnptools.pstreader.PstReader.col"><code class="xref py py-attr docutils literal notranslate"><span class="pre">col</span></code></a> information</li>
+<li><strong>row</strong> (<em>an array of anything</em>) – The <a class="reference internal" href="#pysnptools.pstreader.PstReader.row" title="pysnptools.pstreader.PstReader.row"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.row</span></code></a> information</li>
+<li><strong>col</strong> (<em>an array of anything</em>) – The <a class="reference internal" href="#pysnptools.pstreader.PstReader.col" title="pysnptools.pstreader.PstReader.col"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.col</span></code></a> information</li>
 <li><strong>filename</strong> (<em>string</em>) – name of memory-mapped file to create</li>
 <li><strong>row_property</strong> (<em>an array of anything</em>) – optional – The additional <a class="reference internal" href="#pysnptools.pstreader.PstReader.row_property" title="pysnptools.pstreader.PstReader.row_property"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.row_property</span></code></a> information associated with each row. Default: None</li>
 <li><strong>col_property</strong> (<em>an array of anything</em>) – optional – The additional <a class="reference internal" href="#pysnptools.pstreader.PstReader.col_property" title="pysnptools.pstreader.PstReader.col_property"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.col_property</span></code></a> information associated with each col. Default: None</li>
@@ -3758,7 +3761,6 @@ val, row, col, row_property, and col_property information in NPZ format.</p>
 </tr>
 </tbody>
 </table>
-<p>import os</p>
 </dd></dl>
 
 <dl class="function">
@@ -3887,7 +3889,7 @@ across all data sets.</td>
 <dl class="function">
 <dt id="pysnptools.util.log_in_place">
 <code class="descclassname">pysnptools.util.</code><code class="descname">log_in_place</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.log_in_place" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create an one-argument lambda to write messages to. They will appear on the same line.</p>
+<dd><p>Create an one-argument lambda to write messages to. Messages will appear on the same line.</p>
 <p>Example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">log_in_place</span><span class="p">(</span><span class="s2">&quot;creating job_id_etc&quot;</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span> <span class="k">as</span> <span class="n">log_writer</span><span class="p">:</span>            
     <span class="n">job_id_etc_list</span> <span class="o">=</span> <span class="p">[]</span>
@@ -5410,6 +5412,66 @@ in time linear in the number of ranges, rather than integer elements.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-pysnptools.util.snpgen.SnpGen">
+<span id="util-snpgen-snpgen"></span><h3><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.snpgen.SnpGen</span></code><a class="headerlink" href="#module-pysnptools.util.snpgen.SnpGen" title="Permalink to this headline">¶</a></h3>
+<p>A <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> that generates deterministic SNP data on the fly.</p>
+<p>See <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> for general examples of using SnpReader.</p>
+<dl class="docutils">
+<dt><strong>Constructor:</strong></dt>
+<dd><table class="first docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>seed</strong> (<em>number</em>) – The random seed that (along with <em>sid_batch_size</em>) determines the SNP values.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>iid_count</strong> (<em>number</em>) –  the number of iids (number of individuals)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sid_count</strong> (<em>number</em>) –  the number of sids (number of SNPs)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>chrom_count</strong> (<em>number</em>) –  the number of chromosomes to generate (must be 22 or less)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cache_file</strong> (<em>string</em>) – (default None) If provided, tells where to cache the common iid, sid, and pos information. Using it can save time.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sid_batch_size</strong> (<em>number</em>) – (default 1000) Tells how many SNP at once. The default value is usually good.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.snpgen</span> <span class="k">import</span> <span class="n">SnpGen</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#Prepare to generate data for 1000 individuals and 1,000,000 SNPs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snp_gen</span> <span class="o">=</span> <span class="n">SnpGen</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">332</span><span class="p">,</span><span class="n">iid_count</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">sid_count</span><span class="o">=</span><span class="mi">1000</span><span class="o">*</span><span class="mi">1000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">snp_gen</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span><span class="n">snp_gen</span><span class="o">.</span><span class="n">sid_count</span>
+<span class="go">1000 1000000</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snp_data</span> <span class="o">=</span> <span class="n">snp_gen</span><span class="p">[:,</span><span class="mi">200</span><span class="o">*</span><span class="mi">1000</span><span class="p">:</span><span class="mi">201</span><span class="o">*</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="c1">#Generate for all users and for SNPs 200K to 201K</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">snp_data</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">snp_data</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span> <span class="n">snp_data</span><span class="o">.</span><span class="n">sid_count</span>
+<span class="go">0.0 1000 1000</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
+<div class="section" id="module-pysnptools.util.mapreduce1">
+<span id="util-mapreduce1"></span><h3><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.mapreduce1</span></code><a class="headerlink" href="#module-pysnptools.util.mapreduce1" title="Permalink to this headline">¶</a></h3>
+</div>
 <div class="section" id="module-pysnptools.util.pheno">
 <span id="util-pheno"></span><h3><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.pheno</span></code><a class="headerlink" href="#module-pysnptools.util.pheno" title="Permalink to this headline">¶</a></h3>
 <div class="deprecated">
@@ -5479,12 +5541,6 @@ in time linear in the number of ranges, rather than integer elements.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-pysnptools.util.gen">
-<span id="util-gen"></span><h3><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.gen</span></code><a class="headerlink" href="#module-pysnptools.util.gen" title="Permalink to this headline">¶</a></h3>
-</div>
-<div class="section" id="module-pysnptools.util.mapreduce1">
-<span id="util-mapreduce1"></span><h3><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.mapreduce1</span></code><a class="headerlink" href="#module-pysnptools.util.mapreduce1" title="Permalink to this headline">¶</a></h3>
-</div>
 </div>
 <div class="section" id="indices-and-tables">
 <h2>Indices and Tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
@@ -5517,7 +5573,6 @@ in time linear in the number of ranges, rather than integer elements.</p>
 <li><a class="reference internal" href="#snpreader-dense"><code class="docutils literal notranslate"><span class="pre">snpreader.Dense</span></code></a></li>
 <li><a class="reference internal" href="#snpreader-snphdf5"><code class="docutils literal notranslate"><span class="pre">snpreader.SnpHdf5</span></code></a></li>
 <li><a class="reference internal" href="#snpreader-snpnpz"><code class="docutils literal notranslate"><span class="pre">snpreader.SnpNpz</span></code></a></li>
-<li><a class="reference internal" href="#snpreader-distributedbed"><code class="docutils literal notranslate"><span class="pre">snpreader.DistributedBed</span></code></a></li>
 <li><a class="reference internal" href="#snpreader-snpmemmap"><code class="docutils literal notranslate"><span class="pre">snpreader.SnpMemMap</span></code></a></li>
 </ul>
 </li>
@@ -5558,9 +5613,9 @@ in time linear in the number of ranges, rather than integer elements.</p>
 <li><a class="reference internal" href="#util-module"><code class="docutils literal notranslate"><span class="pre">util</span></code> Module</a><ul>
 <li><a class="reference internal" href="#module-pysnptools.util"><code class="docutils literal notranslate"><span class="pre">util</span></code></a></li>
 <li><a class="reference internal" href="#util-intrangeset"><code class="docutils literal notranslate"><span class="pre">util.IntRangeSet</span></code></a></li>
-<li><a class="reference internal" href="#module-pysnptools.util.pheno"><code class="docutils literal notranslate"><span class="pre">util.pheno</span></code></a></li>
-<li><a class="reference internal" href="#module-pysnptools.util.gen"><code class="docutils literal notranslate"><span class="pre">util.gen</span></code></a></li>
+<li><a class="reference internal" href="#module-pysnptools.util.snpgen.SnpGen"><code class="docutils literal notranslate"><span class="pre">util.snpgen.SnpGen</span></code></a></li>
 <li><a class="reference internal" href="#module-pysnptools.util.mapreduce1"><code class="docutils literal notranslate"><span class="pre">util.mapreduce1</span></code></a></li>
+<li><a class="reference internal" href="#module-pysnptools.util.pheno"><code class="docutils literal notranslate"><span class="pre">util.pheno</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and Tables</a></li>

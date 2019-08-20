@@ -19,8 +19,8 @@ class PstData(PstReader):
     See :class:`.PstReader` for details and examples.
 
     **Constructor:**
-        :Parameters: * **row** (an array of anything) -- The :attr:`.row` information
-                     * **col** (an array of anything) -- The :attr:`.col` information
+        :Parameters: * **row** (an array of anything) -- The :attr:`.PstReader.row` information
+                     * **col** (an array of anything) -- The :attr:`.PstReader.col` information
                      * **val** (a 2-D array of floats) -- The values
                      * **row_property** (optional, an array of anything) -- Additional information associated with each row.
                      * **col_property** (optional, an array of anything) -- Additional information associated with each col.
@@ -36,7 +36,7 @@ class PstData(PstReader):
 
     **Equality:**
 
-        Two PstData objects are equal if their five arrays (:attr:`.row`, :attr:`.col`, :attr:`.val`, :attr:`PstReader.row_property`, and :attr:`.col_property`) are 'array_equal'.
+        Two PstData objects are equal if their five arrays (:attr:`.PstReader.row`, :attr:`.PstReader.col`, :attr:`.PstReader.val`, :attr:`.PstReader.row_property`, and :attr:`.PstReader.col_property`) are 'array_equal'.
         (Their 'name' does not need to be the same).
 
         :Example:
@@ -89,7 +89,7 @@ class PstData(PstReader):
     """
 
     def __eq__(a,b):
-        return allclose(a,b,equal_nan=False)
+        return a.allclose(b,equal_nan=False)
 
     def allclose(a,b,equal_nan=True):
         '''

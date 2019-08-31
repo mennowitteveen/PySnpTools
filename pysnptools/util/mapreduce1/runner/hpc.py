@@ -17,7 +17,7 @@ except:
     logging.warning("Can't import dill, so won't be able to clusterize lambda expressions. If you try, you'll get this error 'Can't pickle <type 'function'>: attribute lookup __builtin__.function failed'")
     import cPickle as pickle
 
-class HPC: # implements IRunner
+class HPC(Runner):
     #!!LATER make it (and Hadoop) work from root directories -- or give a clear error message
     def __init__(self, taskcount, clustername, fileshare, priority="Normal", unit="core", mkl_num_threads=None, runtime="infinite", remote_python_parent=None,
                 update_remote_python_parent=False, min=None, max=None, excluded_nodes=[], template=None, nodegroups=None, skipinputcopy=False, node_local=True,clean_up=True,preemptable=True,FailOnTaskFailure=False,logging_handler=logging.StreamHandler(sys.stdout)):

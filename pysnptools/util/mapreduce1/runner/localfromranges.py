@@ -3,14 +3,14 @@ Runs one part of a distributable job locally. The last part will return the jobs
 
 See SamplePi.py for examples.
 '''
-from pysnptools.util.mapreduce1.runner import *
+from pysnptools.util.mapreduce1.runner import Runner,_JustCheckExists
 import os, sys
 import logging
 import pysnptools.util as util
 import cPickle as pickle
 import itertools
 
-class LocalFromRanges: # implements IRunner
+class LocalFromRanges(Runner):
     '''
     Created mostly for testing. This runner divides the work_sequence into a series of ranges.
     '''
@@ -37,7 +37,7 @@ class LocalFromRanges: # implements IRunner
             start = stop
 
     def run(self, distributable):
-        JustCheckExists().input(distributable)
+        _JustCheckExists().input(distributable)
 
         if callable(distributable):
             result = distributable()
@@ -48,6 +48,6 @@ class LocalFromRanges: # implements IRunner
             result_sequence = self.distributable_to_result_sequence_via_range(shaped_distributable)
             result = shaped_distributable.reduce(result_sequence)
 
-        JustCheckExists().output(distributable)
+        _JustCheckExists().output(distributable)
         return result
 

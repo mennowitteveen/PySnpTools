@@ -1,5 +1,5 @@
 import math
-from pysnptools.util.mapreduce import map_reduce
+from pysnptools.util.mapreduce1 import map_reduce
 from pysnptools.util.mapreduce1.runner import Local, LocalMultiProc, HPC, LocalMultiThread
 import os
 
@@ -68,4 +68,10 @@ if __name__ == '__main__':
     #runner = Local()
     runner = LocalMultiThread(2,just_one_process=False)
     print prime_search1(2,10,runner=runner) #=> [2, 3, 5, 7]
+
+    range1=xrange(100)
+    #runner=None
+    runner=LocalMultiProc(2,just_one_process=False)
+    result = map_reduce(range1,mapper=lambda item:item*item,reducer=sum,runner=runner)
+    result
     print "done"

@@ -170,12 +170,12 @@ class PstMemMap(PstData):
 
         logging.debug("np.load('{0}')".format(self._filename))
         with open(self._filename,'rb') as fp:
-            row = np.load(fp)
-            col = np.load(fp)
-            row_property = np.load(fp)
-            col_property = np.load(fp)
-            self._dtype = np.load(fp)[0]
-            self._order = np.load(fp)[0]
+            row = np.load(fp,allow_pickle=True)
+            col = np.load(fp,allow_pickle=True)
+            row_property = np.load(fp,allow_pickle=True)
+            col_property = np.load(fp,allow_pickle=True)
+            self._dtype = np.load(fp,allow_pickle=True)[0]
+            self._order = np.load(fp,allow_pickle=True)[0]
             self._offset = fp.tell()
         val = np.memmap(self._filename, offset=self._offset, dtype=self._dtype, mode='r', order=self._order, shape=(len(row),len(col)))
         return row,col,val,row_property,col_property

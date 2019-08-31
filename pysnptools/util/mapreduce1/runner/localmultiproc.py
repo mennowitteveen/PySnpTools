@@ -4,7 +4,7 @@ Runs a distributable job on multiple processors.  Returns the value of the job.
 See SamplePi.py for examples.
 '''
 
-from pysnptools.util.mapreduce1.runner import *
+from pysnptools.util.mapreduce1.runner import Runner,_JustCheckExists, _run_one_task
 import os
 import logging
 try:
@@ -17,7 +17,7 @@ import multiprocessing
 import pysnptools.util as pstutil
 
 
-class LocalMultiProc: # implements IRunner
+class LocalMultiProc(Runner):
 
     def __init__(self, taskcount, mkl_num_threads = None, just_one_process = False, logging_handler=logging.StreamHandler(sys.stdout)):
         self.just_one_process = just_one_process
@@ -34,7 +34,7 @@ class LocalMultiProc: # implements IRunner
         self.mkl_num_threads = mkl_num_threads
 
     def run(self, distributable):
-        JustCheckExists().input(distributable)
+        _JustCheckExists().input(distributable)
 
         localpath = os.environ["PATH"]
         localwd = os.getcwd()
@@ -51,29 +51,35 @@ class LocalMultiProc: # implements IRunner
 
         distributable_py_file = os.path.join(os.path.dirname(__file__),"..","distributable.py")
         if not os.path.exists(distributable_py_file): raise Exception("Expect file at " + distributable_py_file + ", but it doesn't exist.")
-        command_format_string = sys.executable + " " + distributable_py_file + " " + distributablep_filename +" LocalInParts({0},{1},mkl_num_threads={2})".format("{0}", self.taskcount, self.mkl_num_threads)
+        #!!!cmkcommand_format_string = sys.executable + " " + distributable_py_file + " " + distributablep_filename +" LocalInParts({0},{1},mkl_num_threads={2})".format("{0}", self.taskcount, self.mkl_num_threads)
+        command_format_string_list_lambda = lambda taskindex: [sys.executable, distributable_py_file, distributablep_filename, "LocalInParts({0},{1},mkl_num_threads={2})".format(taskindex, self.taskcount, self.mkl_num_threads)]
+
 
         if not self.just_one_process:
             proc_list = []
             for taskindex in xrange(self.taskcount):
-                command_string = command_format_string.format(taskindex)
-                proc = subprocess.Popen(command_string.split(" "), cwd=os.getcwd())#!!!bug: If Anaconda is installed in c:\program files\anaconda2 this will fail
+                #!!!cmkcommand_string = command_format_string.format(taskindex)
+                command_string_list = command_format_string_list_lambda(taskindex)
+                #!!!cmk proc = subprocess.Popen(command_string.split(" "), cwd=os.getcwd())#!!!bug: If Anaconda is installed in c:\program files\anaconda2 this will fail
+                logging.info(command_string_list)#!!!cmk
+                proc = subprocess.Popen(command_string_list, cwd=os.getcwd())
                 proc_list.append(proc)
 
             for taskindex, proc in enumerate(proc_list):            
                 rc = proc.wait()
-                #for line in proc.stdout.readlines():
-                #    sys.stdout.write(line)
+                if proc.stdout is not None: #!!!cmk
+                    for line in proc.stdout.readlines(): #!!!cmk
+                        sys.stdout.write(line)#!!!cmk
                 if not 0 == rc : raise Exception("Running python in python results in non-zero return code in task#{0}".format(taskindex))
         else:
             from pysnptools.util.mapreduce1.runner import LocalInParts
             for taskindex in xrange(self.taskcount):
                 LocalInParts(taskindex,self.taskcount, mkl_num_threads=self.mkl_num_threads).run(distributable)
 
-        result = run_one_task(distributable, self.taskcount, self.taskcount, distributable.tempdirectory)
+        result = _run_one_task(distributable, self.taskcount, self.taskcount, distributable.tempdirectory)
 
 
-        JustCheckExists().output(distributable)
+        _JustCheckExists().output(distributable)
         return result
 
 

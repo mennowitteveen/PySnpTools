@@ -70,7 +70,7 @@ class PstNpz(PstReader): #!!!cmk confirm that this doceval gets evaled in testin
             return
         self._ran_once = True
 
-        with np.load(self._filename) as data: #!! similar code in epistasis
+        with np.load(self._filename,allow_pickle=True) as data: #!! similar code in epistasis
             if len(data.keys()) == 2 and 'arr_0' in data.keys(): #for backwards compatibility
                 self._row = data['arr_0']
                 self._col = self._row
@@ -98,7 +98,7 @@ class PstNpz(PstReader): #!!!cmk confirm that this doceval gets evaled in testin
         self._run_once()
 
         #np.load does the right thing and doesn't load 'val' into memory until accessed here.
-        with np.load(self._filename) as data: #!! similar code in epistasis
+        with np.load(self._filename,allow_pickle=True) as data: #!! similar code in epistasis
             if len(data.keys()) == 2 and  'arr_1' in data.keys(): #for backwards compatibility
                val = data['arr_1']
             else:

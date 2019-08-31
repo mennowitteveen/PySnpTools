@@ -1,4 +1,5 @@
-import os
+#!!!cmk delete these
+#import os
 import cPickle as pickle
 import subprocess, sys, os.path
 from pysnptools.util.mapreduce1.runner import *

@@ -50,7 +50,7 @@ class SnpGen(SnpReader):
                 self._run_once()
                 np.savez(cache_file, _row=self._row, _col=self._col, _col_property=self._col_property)
             else:
-                with np.load(cache_file) as data:
+                with np.load(cache_file,allow_pickle=True) as data:
                     self._row = data['_row']
                     assert len(self._row) == iid_count, "The iid in the cache file has a different length than iid_count"
                     self._col = data['_col']

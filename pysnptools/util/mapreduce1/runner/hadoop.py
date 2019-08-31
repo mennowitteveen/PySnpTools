@@ -18,7 +18,7 @@ import ctypes
 import datetime
 from tempfile import TemporaryFile
 
-class Hadoop: # implements IRunner
+class Hadoop(Runner):
 
     fileshare = "/user"
 

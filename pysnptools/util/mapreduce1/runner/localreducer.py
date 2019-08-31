@@ -1,11 +1,11 @@
 import os, sys
-from pysnptools.util.mapreduce1.runner import *
+from pysnptools.util.mapreduce1.runner import Runner,_JustCheckExists
 import base64
 import logging
 import pysnptools.util as pstutil
 import cPickle as pickle
 
-class LocalReducer: # implements IRunner
+class LocalReducer(Runner):
 
     def __init__(self, taskcount, result_file, mkl_num_threads, logging_handler=logging.StreamHandler(sys.stdout), instream=sys.stdin):
         logger = logging.getLogger()
@@ -54,7 +54,7 @@ class LocalReducer: # implements IRunner
         #close the instream if it is a file?
 
         #Check that all expected output files are there
-        JustCheckExists(doPrintOutputNames=True).output(original_distributable)
+        _JustCheckExists(doPrintOutputNames=True).output(original_distributable)
 
         #Pickle the result to a file
         #logging.info("AAA\n\n\n\nABCwd='{0}'\n\nfile='{1}'DEF\n\n\nZZZ".format(os.getcwd(),self.output_file))

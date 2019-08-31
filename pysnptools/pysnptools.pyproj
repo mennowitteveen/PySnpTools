@@ -5,9 +5,9 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{60f1cb4a-9da3-47c2-9b89-60ac1ce93347}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>util\snpgen.py</StartupFile>
+    <StartupFile>util\mapreduce1\mapreduce.py</StartupFile>
     <SearchPath>..\;..\..\PySnpTools</SearchPath>
-    <WorkingDirectory>D:\OneDrive\programs\PySnpTools\pysnptools\snpreader</WorkingDirectory>
+    <WorkingDirectory>.\snpreader</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
@@ -110,17 +110,20 @@
     <Compile Include="standardizer\unit.py" />
     <Compile Include="standardizer\__init__.py" />
     <Compile Include="test.py" />
+    <Compile Include="util\mapreduce1\runner\runner.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="util\snpgen.py" />
     <Compile Include="util\intrangeset.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="util\mapreduce1\distributable.py" />
     <Compile Include="util\mapreduce1\distributabletest.py" />
-    <Compile Include="util\mapreduce1\distributed_map.py" />
-    <Compile Include="util\mapreduce1\indirectdistributable.py" />
+    <Compile Include="util\mapreduce1\deletemedistributed_map.py" />
+    <Compile Include="util\mapreduce1\deleteindirectdistributable.py" />
     <Compile Include="util\mapreduce1\mapreduce.py" />
     <Compile Include="util\mapreduce1\mapreducex.py" />
-    <Compile Include="util\mapreduce1\metadistributable.py" />
+    <Compile Include="util\mapreduce1\deletememetadistributable.py" />
     <Compile Include="util\mapreduce1\samplepi.py" />
     <Compile Include="util\mapreduce1\testdistributable.py" />
     <Compile Include="util\mapreduce1\__init__.py">

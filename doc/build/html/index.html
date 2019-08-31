@@ -5469,9 +5469,6 @@ in time linear in the number of ranges, rather than integer elements.</p>
 </dd>
 </dl>
 </div>
-<div class="section" id="module-pysnptools.util.mapreduce1">
-<span id="util-mapreduce1"></span><h3><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.mapreduce1</span></code><a class="headerlink" href="#module-pysnptools.util.mapreduce1" title="Permalink to this headline">¶</a></h3>
-</div>
 <div class="section" id="module-pysnptools.util.pheno">
 <span id="util-pheno"></span><h3><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.pheno</span></code><a class="headerlink" href="#module-pysnptools.util.pheno" title="Permalink to this headline">¶</a></h3>
 <div class="deprecated">
@@ -5539,6 +5536,158 @@ in time linear in the number of ranges, rather than integer elements.</p>
 <li>‘iid’    : [N*2] array of family IDs and case IDs</li>
 </ul>
 </dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-pysnptools.util.mapreduce1">
+<span id="pysnptools-util-mapreduce1-module"></span><h2><a class="reference internal" href="#module-pysnptools.util.mapreduce1" title="pysnptools.util.mapreduce1"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1</span></code></a> Module<a class="headerlink" href="#module-pysnptools.util.mapreduce1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-pysnptools.util.mapreduce1.mapreduce"></span><dl class="function">
+<dt id="pysnptools.util.mapreduce1.mapreduce.map_reduce">
+<code class="descclassname">pysnptools.util.mapreduce1.mapreduce.</code><code class="descname">map_reduce</code><span class="sig-paren">(</span><em>input_seq</em>, <em>mapper=&lt;function _identity&gt;</em>, <em>reducer=&lt;type 'list'&gt;</em>, <em>input_files=None</em>, <em>output_files=None</em>, <em>name=None</em>, <em>runner=None</em>, <em>nested=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.mapreduce1.mapreduce.map_reduce" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs a function on sequence of inputs and runs a second function on the results. Can be nested and clusterized.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>input_seq</strong> (<em>a sequence</em>) – a sequence of inputs. The sequence must support the len function and be indexable. e.g. a list, xrange(100)</li>
+<li><strong>mapper</strong> (<em>a function</em>) – A function to apply to each set of inputs (optional). Defaults to the identity function.</li>
+<li><strong>reducer</strong> (<em>a function that takes a sequence</em>) – A function to turn the results from the mapper to a single value (optional). Defaults to creating a list of the results.</li>
+<li><strong>input_files</strong> (<em>a list</em>) – An optional list that tells what input files are needed. The list can contain the names of files (strings), None (ignored), or
+objects such as <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a>’s that can self-report their input files.</li>
+<li><strong>output_files</strong> (<em>a list</em>) – An optional list that tells what output files will be produced. The list can contain the names of files (strings), None (ignored), or
+objects such as <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a>’s that can self-report their output files.</li>
+<li><strong>name</strong> (<em>a string</em>) – A name to be displayed if this work is done on a cluster.</li>
+<li><strong>runner</strong> (<em>a runner.</em>) – a runner, optional: Tells how to run locally, multi-processor, or on a cluster.
+If not given, the function is run locally.</li>
+<li><strong>nested</strong> (<em>a function</em>) – a mapper function that is itself a map_reduce. Some runners can efficiently clusterize such nested mappers.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">The results from the reducer.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<p>Square the numbers 0 to 99 and report their sum, locally:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.mapreduce1</span> <span class="k">import</span> <span class="n">map_reduce</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.mapreduce1.runner</span> <span class="k">import</span> <span class="n">Local</span><span class="p">,</span> <span class="n">LocalMultiProc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">map_reduce</span><span class="p">(</span><span class="n">xrange</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> 
+<span class="gp">... </span>       <span class="n">mapper</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="p">,</span>
+<span class="gp">... </span>       <span class="n">reducer</span><span class="o">=</span><span class="nb">sum</span><span class="p">,</span>
+<span class="gp">... </span>       <span class="n">runner</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="go">328350</span>
+</pre></div>
+</div>
+<p>Multithreading on four processors:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">map_reduce</span><span class="p">(</span><span class="n">xrange</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> 
+<span class="gp">... </span>       <span class="n">mapper</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="p">,</span>
+<span class="gp">... </span>       <span class="n">reducer</span><span class="o">=</span><span class="nb">sum</span><span class="p">,</span>
+<span class="gp">... </span>       <span class="n">runner</span><span class="o">=</span><span class="n">LocalMultiProc</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+<span class="go">328350</span>
+</pre></div>
+</div>
+<p>Again on four processors, now with named functions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">holder1</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">runner</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">mapper1</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">reducer1</span><span class="p">(</span><span class="n">sequence</span><span class="p">):</span>
+<span class="gp">... </span>       <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">map_reduce</span><span class="p">(</span><span class="n">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="n">mapper</span><span class="o">=</span><span class="n">mapper1</span><span class="p">,</span><span class="n">reducer</span><span class="o">=</span><span class="n">reducer1</span><span class="p">,</span><span class="n">runner</span><span class="o">=</span><span class="n">runner</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">holder1</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="n">LocalMultiProc</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+<span class="go">328350</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<div class="section" id="pysnptools-util-mapreduce1-runner-runner">
+<h3><a class="reference internal" href="#pysnptools.util.mapreduce1.runner.Runner" title="pysnptools.util.mapreduce1.runner.Runner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1.runner.Runner</span></code></a><a class="headerlink" href="#pysnptools-util-mapreduce1-runner-runner" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pysnptools.util.mapreduce1.runner.Runner">
+<em class="property">class </em><code class="descclassname">pysnptools.util.mapreduce1.runner.</code><code class="descname">Runner</code><a class="headerlink" href="#pysnptools.util.mapreduce1.runner.Runner" title="Permalink to this definition">¶</a></dt>
+<dd><p>!!!!cmk
+A runner is executes a ‘distributable’ job. FastLmmSet is an example of a distributable job. #!!!cmk update
+Local is an example of a runner. Local can execute FastLMMSet (or any other distributable job) on a local machine as a single process.
+LocalMultiProc is another runner. It can execute FastLmmSet, etc on a multiple processes on a local machine.</p>
+<p>All runners implement the Runner interface (but Python doesn’t check or enforce this)</p>
+<dl class="docutils">
+<dt>interface IRunner</dt>
+<dd><dl class="first last docutils">
+<dt>def run(self, distributable):</dt>
+<dd># returns the value computed by the distributable job</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="pysnptools-util-mapreduce1-runner-local">
+<h3><a class="reference internal" href="#pysnptools.util.mapreduce1.runner.Local" title="pysnptools.util.mapreduce1.runner.Local"><code class="xref py py-class docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1.runner.Local</span></code></a><a class="headerlink" href="#pysnptools-util-mapreduce1-runner-local" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pysnptools.util.mapreduce1.runner.Local">
+<em class="property">class </em><code class="descclassname">pysnptools.util.mapreduce1.runner.</code><code class="descname">Local</code><span class="sig-paren">(</span><em>mkl_num_threads=None</em>, <em>logging_handler=&lt;logging.StreamHandler object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.mapreduce1.runner.Local" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#pysnptools.util.mapreduce1.runner.Runner" title="pysnptools.util.mapreduce1.runner.Runner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Runner</span></code></a> that runs a map_reduce locally. To save memory, it will feed the results of the mapper to the reducer as those results are computed.</p>
+<p>See <a class="reference internal" href="#pysnptools.util.mapreduce1.mapreduce.map_reduce" title="pysnptools.util.mapreduce1.mapreduce.map_reduce"><code class="xref py py-func docutils literal notranslate"><span class="pre">map_reduce()</span></code></a> for general examples of use.</p>
+<dl class="docutils">
+<dt><strong>Constructor:</strong></dt>
+<dd><table class="first docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mkl_num_threads</strong> (<em>number</em>) – (default None) Limit on the number threads used by the NumPy MKL library.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>logging_handler</strong> (<em>stream</em>) –  (default stdout) Where to output logging messages.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.snpgen</span> <span class="k">import</span> <span class="n">SnpGen</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#Prepare to generate data for 1000 individuals and 1,000,000 SNPs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snp_gen</span> <span class="o">=</span> <span class="n">SnpGen</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">332</span><span class="p">,</span><span class="n">iid_count</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">sid_count</span><span class="o">=</span><span class="mi">1000</span><span class="o">*</span><span class="mi">1000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">snp_gen</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span><span class="n">snp_gen</span><span class="o">.</span><span class="n">sid_count</span>
+<span class="go">1000 1000000</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snp_data</span> <span class="o">=</span> <span class="n">snp_gen</span><span class="p">[:,</span><span class="mi">200</span><span class="o">*</span><span class="mi">1000</span><span class="p">:</span><span class="mi">201</span><span class="o">*</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="c1">#Generate for all users and for SNPs 200K to 201K</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">snp_data</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">snp_data</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span> <span class="n">snp_data</span><span class="o">.</span><span class="n">sid_count</span>
+<span class="go">0.0 1000 1000</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="pysnptools-util-mapreduce1-runner-localmultiproc">
+<h3><a class="reference internal" href="#pysnptools.util.mapreduce1.runner.LocalMultiProc" title="pysnptools.util.mapreduce1.runner.LocalMultiProc"><code class="xref py py-class docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1.runner.LocalMultiProc</span></code></a><a class="headerlink" href="#pysnptools-util-mapreduce1-runner-localmultiproc" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pysnptools.util.mapreduce1.runner.LocalMultiProc">
+<em class="property">class </em><code class="descclassname">pysnptools.util.mapreduce1.runner.</code><code class="descname">LocalMultiProc</code><span class="sig-paren">(</span><em>taskcount</em>, <em>mkl_num_threads=None</em>, <em>just_one_process=False</em>, <em>logging_handler=&lt;logging.StreamHandler object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.mapreduce1.runner.LocalMultiProc" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="pysnptools-util-mapreduce1-runner-localmultithread">
+<h3><a class="reference internal" href="#pysnptools.util.mapreduce1.runner.LocalMultiThread" title="pysnptools.util.mapreduce1.runner.LocalMultiThread"><code class="xref py py-class docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1.runner.LocalMultiThread</span></code></a><a class="headerlink" href="#pysnptools-util-mapreduce1-runner-localmultithread" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pysnptools.util.mapreduce1.runner.LocalMultiThread">
+<em class="property">class </em><code class="descclassname">pysnptools.util.mapreduce1.runner.</code><code class="descname">LocalMultiThread</code><span class="sig-paren">(</span><em>taskcount</em>, <em>mkl_num_threads=None</em>, <em>just_one_process=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.mapreduce1.runner.LocalMultiThread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Designed so that reduce will start running as soon as the 1st task as finished</p>
+</dd></dl>
+
+</div>
+<div class="section" id="pysnptools-util-mapreduce1-runner-localinparts">
+<h3><a class="reference internal" href="#pysnptools.util.mapreduce1.runner.LocalInParts" title="pysnptools.util.mapreduce1.runner.LocalInParts"><code class="xref py py-class docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1.runner.LocalInParts</span></code></a><a class="headerlink" href="#pysnptools-util-mapreduce1-runner-localinparts" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pysnptools.util.mapreduce1.runner.LocalInParts">
+<em class="property">class </em><code class="descclassname">pysnptools.util.mapreduce1.runner.</code><code class="descname">LocalInParts</code><span class="sig-paren">(</span><em>taskindex</em>, <em>taskcount</em>, <em>mkl_num_threads</em>, <em>result_file=None</em>, <em>run_dir='.'</em>, <em>temp_dir=None</em>, <em>logging_handler=&lt;logging.StreamHandler object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.mapreduce1.runner.LocalInParts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 </div>
@@ -5614,8 +5763,15 @@ in time linear in the number of ranges, rather than integer elements.</p>
 <li><a class="reference internal" href="#module-pysnptools.util"><code class="docutils literal notranslate"><span class="pre">util</span></code></a></li>
 <li><a class="reference internal" href="#util-intrangeset"><code class="docutils literal notranslate"><span class="pre">util.IntRangeSet</span></code></a></li>
 <li><a class="reference internal" href="#module-pysnptools.util.snpgen.SnpGen"><code class="docutils literal notranslate"><span class="pre">util.snpgen.SnpGen</span></code></a></li>
-<li><a class="reference internal" href="#module-pysnptools.util.mapreduce1"><code class="docutils literal notranslate"><span class="pre">util.mapreduce1</span></code></a></li>
 <li><a class="reference internal" href="#module-pysnptools.util.pheno"><code class="docutils literal notranslate"><span class="pre">util.pheno</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pysnptools.util.mapreduce1"><code class="docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1</span></code> Module</a><ul>
+<li><a class="reference internal" href="#pysnptools-util-mapreduce1-runner-runner"><code class="docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1.runner.Runner</span></code></a></li>
+<li><a class="reference internal" href="#pysnptools-util-mapreduce1-runner-local"><code class="docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1.runner.Local</span></code></a></li>
+<li><a class="reference internal" href="#pysnptools-util-mapreduce1-runner-localmultiproc"><code class="docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1.runner.LocalMultiProc</span></code></a></li>
+<li><a class="reference internal" href="#pysnptools-util-mapreduce1-runner-localmultithread"><code class="docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1.runner.LocalMultiThread</span></code></a></li>
+<li><a class="reference internal" href="#pysnptools-util-mapreduce1-runner-localinparts"><code class="docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1.runner.LocalInParts</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and Tables</a></li>

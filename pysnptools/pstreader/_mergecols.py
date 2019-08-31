@@ -20,7 +20,7 @@ class _MergeCols(PstReader): #!!! move to PySnptools
                 self._run_once()
                 np.savez(cache_file, _row=self._row, _row_property=self._row_property, _col=self._col, _col_property=self._col_property,sid_count_list=self.sid_count_list)
             else:
-                with np.load(cache_file) as data:
+                with np.load(cache_file,allow_pickle=True) as data:
                     self._col = data['_col']
                     self._col_property = data['_col_property']
                     self.sid_count_list = data['sid_count_list']

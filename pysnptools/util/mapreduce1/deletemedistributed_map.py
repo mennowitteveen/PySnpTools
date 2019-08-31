@@ -63,7 +63,9 @@ class DistributedMap(object): #implements IDistributable
     def dowork(self, i, input_args):
         #logging.info("{0}, {1}".format(len(train_snp_idx), len(test_snp_idx)))
         logging.debug("\nexecuting %s" % str(input_args))
-        result = apply(self.function, [input_args])
+        #result = apply(self.function, [input_args]) #!!!cmk should be ???
+        result = self.function(input_args)
+
 
         return result
    

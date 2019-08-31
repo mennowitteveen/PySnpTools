@@ -420,21 +420,78 @@ PySnpTools: A library for reading and manipulating genetic data.
 	:special-members:
     :exclude-members: copyinputs, col, col_property, row, row_property, col_count, iid, iid_count, pos, row_count, shape, sid,sid_count
 
-:mod:`util.mapreduce1`
-++++++++++++++++++++++++++
-.. automodule:: pysnptools.util.mapreduce1
-    :members:
-    :undoc-members:
-	:show-inheritance:
-	:special-members:
-
 :mod:`util.pheno`
-++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++
 .. automodule:: pysnptools.util.pheno
     :members:
     :undoc-members:
 	:show-inheritance:
 	:special-members:
+
+*******************************************
+:mod:`pysnptools.util.mapreduce1` Module
+*******************************************
+
+.. automodule:: pysnptools.util.mapreduce1
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+	:exclude-members:
+
+.. automodule:: pysnptools.util.mapreduce1.mapreduce
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+	:exclude-members:
+
+:class:`pysnptools.util.mapreduce1.runner.Runner`
+++++++++++++++++++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.util.mapreduce1.runner.Runner
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: run
+
+:class:`pysnptools.util.mapreduce1.runner.Local`
+++++++++++++++++++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.util.mapreduce1.runner.Local
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: run
+
+:class:`pysnptools.util.mapreduce1.runner.LocalMultiProc`
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.util.mapreduce1.runner.LocalMultiProc
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: run
+
+:class:`pysnptools.util.mapreduce1.runner.LocalMultiThread`
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.util.mapreduce1.runner.LocalMultiThread
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: run
+
+:class:`pysnptools.util.mapreduce1.runner.LocalInParts`
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.util.mapreduce1.runner.LocalInParts
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: run
+
+
 
 
 .. only:: html 

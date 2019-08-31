@@ -1,16 +1,3 @@
-'''
-A runner is executes a 'distributable' job. FastLmmSet is an example of a distributable job. #!!!cmk update
-Local is an example of a runner. Local can execute FastLMMSet (or any other distributable job) on a local machine as a single process.
-LocalMultiProc is another runner. It can execute FastLmmSet, etc on a multiple processes on a local machine.
-
-All runners implement the IRunner interface (but Python doesn't check or enforce this)
-
-interface IRunner
-    def run(self, distributable):
-        # returns the value computed by the distributable job
-
-
-'''
 import os
 import dill
 import pysnptools.util as pstutil
@@ -24,10 +11,10 @@ def work_sequence_to_result_sequence(work_sequence):
         if callable(work):
             result = work()
         else:
-            result = run_all_in_memory(work)
+            result = _run_all_in_memory(work)
         yield result
 
-def run_all_in_memory(work):
+def _run_all_in_memory(work):
     '''
     If callable, just calls
     If distributable, does all the work and then calls reduce on the results.
@@ -62,7 +49,7 @@ def shape_to_desired_workcount(distributable, taskcount):
                 distributable = ExpandWork(distributable, workcount, taskcount)
     return distributable
 
-def run_one_task(original_distributable, taskindex, taskcount, workdirectory):
+def _run_one_task(original_distributable, taskindex, taskcount, workdirectory):
     '''
     Does a fraction of the work (e.g. 1 of every 1000 work items) and then saves the results to single file.
     if taskindex == taskcount, does the reduce step
@@ -107,7 +94,7 @@ def doMainWorkForOneIndex(distributable, taskAndWorkcount, taskindex, workdirect
     workDone = False
     with open(task_file_name, mode='wb') as f:
         for work in work_sequence_for_one_index(distributable, taskAndWorkcount, taskindex):
-            result = run_all_in_memory(work)
+            result = _run_all_in_memory(work)
             dill.dump(result, f, dill.HIGHEST_PROTOCOL) # save a result to the temp results file
 
 def work_sequence_from_disk(workdirectory, taskAndWorkcount):
@@ -153,7 +140,7 @@ class BatchUpWork(object): # implements IDistributable
         result = [workIndex]
         start, stop = self.createSubWorkIndexList(workIndex)
         for sub_workIndex, sub_work in self.pull_sub_work(start, stop):
-            sub_result = run_all_in_memory(sub_work)
+            sub_result = _run_all_in_memory(sub_work)
             result.append((sub_workIndex,sub_result))
         return result
 
@@ -393,13 +380,11 @@ class SubGen:
             raise StopIteration()
 
 
-from .local import *
-from .localmultiproc import *
-from .localmultithread import *
-from .localinparts import *
-from .hpc import *
-from .hadoop import *
-from .hadoop2 import *
-from .localmapper import *
-from .localreducer import *
-from .localfromranges import *
+from pysnptools.util.mapreduce1.runner.runner import Runner
+from pysnptools.util.mapreduce1.runner.local import Local, _JustCheckExists
+from pysnptools.util.mapreduce1.runner.localmultiproc import LocalMultiProc
+from pysnptools.util.mapreduce1.runner.localmultithread import LocalMultiThread
+from pysnptools.util.mapreduce1.runner.localinparts import LocalInParts#!!!cmk need this
+from pysnptools.util.mapreduce1.runner.localmapper import LocalMapper #!!!cmk need this?
+from pysnptools.util.mapreduce1.runner.localreducer import LocalReducer#!!!cmk need this
+from pysnptools.util.mapreduce1.runner.localfromranges import LocalFromRanges#!!!cmk need this

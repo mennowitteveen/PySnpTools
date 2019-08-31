@@ -234,3 +234,5 @@ ModelManifest.xml
 /tests/.work_directory.None
 /tests/runs
 /tempdir
+/pysnptools/snpreader/.work_directory.None
+/pysnptools/snpreader/runs

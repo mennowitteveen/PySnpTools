@@ -1,4 +1,4 @@
-from pysnptools.util.mapreduce1.runner import *
+from pysnptools.util.mapreduce1.runner import Runner,_JustCheckExists,_run_all_in_memory
 import os
 import base64
 import numpy as SP
@@ -6,7 +6,7 @@ import sys
 import logging
 import zlib
 
-class LocalMapper: # implements IRunner
+class LocalMapper(Runner):
 
     def __init__(self, taskcount, output_file_ignored, mkl_num_threads,logging_handler=logging.StreamHandler(sys.stdout),instream=sys.stdin,outstream=sys.stdout):
         logger = logging.getLogger()
@@ -33,7 +33,7 @@ class LocalMapper: # implements IRunner
 
 
     def stream_result(self, work, zgoal, workindex):
-        result = run_all_in_memory(work) #!! need to capture all stdout #!!test this and make a new method for the code that is the same on the two branches of the "if"
+        result = _run_all_in_memory(work) #!! need to capture all stdout #!!test this and make a new method for the code that is the same on the two branches of the "if"
         s = pickle.dumps(result, pickle.HIGHEST_PROTOCOL)
         c = zlib.compress(s)
         self.outstream.write(str(workindex).zfill(zgoal))
@@ -67,7 +67,7 @@ class LocalMapper: # implements IRunner
         #import mkl
         #import numpy as SP
         zgoal = int(SP.ceil(SP.log(self.taskcount)/SP.log(10)))
-        JustCheckExists().input(original_distributable)
+        _JustCheckExists().input(original_distributable)
         for line in self.instream:
 
             lineparts = line.split('\t')

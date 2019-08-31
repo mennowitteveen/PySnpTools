@@ -4,7 +4,7 @@ Runs a distributable job on multiple processors.  Returns the value of the job.
 See SamplePi.py for examples.
 '''
 
-from pysnptools.util.mapreduce1.runner import *
+from pysnptools.util.mapreduce1.runner import Runner,_JustCheckExists, _run_all_in_memory
 import os
 import logging
 try:
@@ -17,7 +17,7 @@ import threading
 import pysnptools.util as util
 from Queue import PriorityQueue
 
-class LocalMultiThread: # implements IRunner
+class LocalMultiThread(Runner):
     '''Designed so that reduce will start running as soon as the 1st task as finished
     '''
 
@@ -38,7 +38,7 @@ class LocalMultiThread: # implements IRunner
                 yield result
 
     def run(self, distributable):
-        JustCheckExists().input(distributable)
+        _JustCheckExists().input(distributable)
 
         priority_queue = PriorityQueue()
         thread_list = []
@@ -47,7 +47,7 @@ class LocalMultiThread: # implements IRunner
             def _target(taskindex=taskindex):
                 result_list = []
                 for work in work_sequence_for_one_index(shaped_distributable, self.taskcount, taskindex):
-                    result_list.append(run_all_in_memory(work))
+                    result_list.append(_run_all_in_memory(work))
                 priority_queue.put((taskindex,result_list))
             if not self.just_one_process:
                 thread = threading.Thread(target=_target,name=str(taskindex))
@@ -60,5 +60,5 @@ class LocalMultiThread: # implements IRunner
         result_sequence = self._result_sequence(thread_list, priority_queue,shaped_distributable)
         result = shaped_distributable.reduce(result_sequence)
 
-        JustCheckExists().output(distributable)
+        _JustCheckExists().output(distributable)
         return result

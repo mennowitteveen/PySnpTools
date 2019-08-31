@@ -11,8 +11,16 @@ from pysnptools.util.mapreduce1.runner import Local, Hadoop, Hadoop2, HPC, Local
 from pysnptools.util.mapreduce1.distributabletest import DistributableTest
 
 
-from pysnptools.util.mapreduce1.distributed_map import d_map
-from pysnptools.util.mapreduce1.distributed_map import placeholder
+from pysnptools.util.mapreduce1.mapreduce import map_reduce
+
+# example function to be "mapped"
+def placeholder(input_tuple):
+    a, fn = input_tuple
+    lines = ""
+    for line in open(fn):
+        lines += line.strip()
+    return lines[0:a]
+
 
 
 class TestDistributedMap(unittest.TestCase):

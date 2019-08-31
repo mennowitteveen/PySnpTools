@@ -3,7 +3,7 @@ Runs one part of a distributable job locally. The last part will return the jobs
 
 See SamplePi.py for examples.
 '''
-from pysnptools.util.mapreduce1.runner import *
+from pysnptools.util.mapreduce1.runner import Runner,_JustCheckExists, _run_one_task
 import os, sys
 import logging
 import pysnptools.util as pstutil
@@ -13,7 +13,7 @@ except:
     logging.warning("Can't import dill, so won't be able to clusterize lambda expressions. If you try, you'll get this error 'Can't pickle <type 'function'>: attribute lookup __builtin__.function failed'")
     import cPickle as pickle
 
-class LocalInParts: # implements IRunner
+class LocalInParts(Runner):
 
     def __init__(self, taskindex, taskcount, mkl_num_threads, result_file=None, run_dir=".", temp_dir=None, logging_handler=logging.StreamHandler(sys.stdout)):
         logger = logging.getLogger()
@@ -41,10 +41,10 @@ class LocalInParts: # implements IRunner
             tempdir = os.path.join(self.run_dir,distributable.tempdirectory)
         tempdir = os.path.realpath(tempdir)
         if self.taskindex != self.taskcount:
-            JustCheckExists().input(distributable)
-            return run_one_task(distributable, self.taskindex, self.taskcount, tempdir)
+            _JustCheckExists().input(distributable)
+            return _run_one_task(distributable, self.taskindex, self.taskcount, tempdir)
         else:
-            result = run_one_task(distributable, self.taskindex, self.taskcount, tempdir)
+            result = _run_one_task(distributable, self.taskindex, self.taskcount, tempdir)
             if self.result_file is not None:
                 pstutil.create_directory_if_necessary(self.result_file)
                 with open(self.result_file, mode='wb') as f:

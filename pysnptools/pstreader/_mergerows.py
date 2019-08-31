@@ -17,7 +17,7 @@ class _MergeRows(PstReader): #!!!why does this start with _
                 self._run_once()
                 np.savez(cache_file, _row=self._row, _row_property=self._row_property, _row_count_list=self._row_count_list)
             else:
-                with np.load(cache_file) as data:
+                with np.load(cache_file,allow_pickle=True) as data:
                     self._row = data['_row']
                     self._row_property = data['_row_property']
                     self._row_count_list = data['_row_count_list']

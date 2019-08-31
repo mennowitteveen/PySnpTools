@@ -19,7 +19,7 @@ import datetime
 from tempfile import TemporaryFile
 
 #!!! currently any output files should be in the home directory, e.g. "aric.depnet.txt" not r"tempout\aric.depnet.txt". Fix this.
-class Hadoop2: # implements IRunner
+class Hadoop2(Runner):
 
     fileshare = "/user"
 

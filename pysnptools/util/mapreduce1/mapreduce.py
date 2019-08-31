@@ -1,5 +1,5 @@
 import logging
-from pysnptools.util.mapreduce1.runner import *
+from pysnptools.util.mapreduce1.runner import _run_all_in_memory, Local
 from contextlib import contextmanager
 import threading
 
@@ -41,6 +41,12 @@ class _MapReduce(object): #implements IDistributable
             self.output_files = []
         else:
             self.output_files = output_files
+
+
+    def __str__(self):
+        return "map_reduce(name='{0}',...)".format(self.name)
+    def __repr__(self):
+        return str(self)
 
 
 #start of IDistributable interface--------------------------------------
@@ -93,7 +99,7 @@ class _MapReduce(object): #implements IDistributable
         #logging.info("{0}, {1}".format(len(train_snp_idx), len(test_snp_idx)))
         #logging.debug("\nexecuting {0}".format(input_arg))
         work = lambda : self.mapper(input_arg)
-        result = run_all_in_memory(work)
+        result = _run_all_in_memory(work)
         return result
 
    
@@ -119,23 +125,23 @@ def _is_in_nested():
 
 def map_reduce(input_seq, mapper=_identity, reducer=list, input_files=None, output_files=None, name=None, runner=None, nested=None):
     """
-    Function for running a function on sequence of inputs and running a second function on the results. Can be nested and clusterized.
+    Runs a function on sequence of inputs and runs a second function on the results. Can be nested and clusterized.
 
     :param input_seq: a sequence of inputs. The sequence must support the len function and be indexable. e.g. a list, xrange(100)
     :type input_seq: a sequence
 
-    :param mapper: A function to apply to each set of inputs (optional). Defaults to the identity function. (Also see 'mapper')
+    :param mapper: A function to apply to each set of inputs (optional). Defaults to the identity function.
     :type mapper: a function
 
     :param reducer: A function to turn the results from the mapper to a single value (optional). Defaults to creating a list of the results.
     :type reducer: a function that takes a sequence
 
-    :param input_files: A list that tells what input files are needed. The list can contain the names of files (strings), None (ignored), or
+    :param input_files: An optional list that tells what input files are needed. The list can contain the names of files (strings), None (ignored), or
         objects such as :class:`.SnpReader`'s that can self-report their input files.
     :type input_files: a list
 
-    :param output_files: A list that tells what output files will be produced. The list can contain the names of files (strings), None (ignored), or
-        objects such as :meth:`.map_reduce`'s that can self-report their output files.
+    :param output_files: An optional list that tells what output files will be produced. The list can contain the names of files (strings), None (ignored), or
+        objects such as :class:`.SnpReader`'s that can self-report their output files.
     :type output_files: a list
 
     :param name: A name to be displayed if this work is done on a cluster.
@@ -145,28 +151,41 @@ def map_reduce(input_seq, mapper=_identity, reducer=list, input_files=None, outp
         If not given, the function is run locally.
     :type runner: a runner.
 
-    :param nested: a mapper function that is itself a map_reduce (or other IDistributable). Some runners can efficiently clusterize such nested mappers. 
+    :param nested: a mapper function that is itself a map_reduce. Some runners can efficiently clusterize such nested mappers. 
     :type nested: a function
 
     :rtype: The results from the reducer.
 
     :Example:
 
-    Square the numbers 1 to n (inclusive) and report their sum.
+    Square the numbers 0 to 99 and report their sum, locally:
 
-        >>> def sos(n):
-        ...   return map_reduce(xrange(1,n+1), 
-        ...                     mapper=lambda x: x*x,
-        ...                     reducer=sum)
-        >>> sos(99)
+        >>> from pysnptools.util.mapreduce1 import map_reduce
+        >>> from pysnptools.util.mapreduce1.runner import Local, LocalMultiProc
+        >>> map_reduce(xrange(100), 
+        ...        mapper=lambda x: x*x,
+        ...        reducer=sum,
+        ...        runner=None)
         328350
 
-    Make a list of sos(0) to sos(9). By using nested instead of mapper, we telling runners they can try to distribute both levels of map_reduce.
+    Multithreading on four processors:
 
-        >>> map_reduce(xrange(10),
-        ...            nested=lambda s:sos(s),
-        ...            reducer=list)
-        [0, 1, 5, 14, 30, 55, 91, 140, 204, 285]
+        >>> map_reduce(xrange(100), 
+        ...        mapper=lambda x: x*x,
+        ...        reducer=sum,
+        ...        runner=LocalMultiProc(4))
+        328350
+
+    Again on four processors, now with named functions:
+
+        >>> def holder1(n,runner):
+        ...     def mapper1(x):
+        ...         return x*x
+        ...     def reducer1(sequence):
+        ...        return sum(sequence)
+        ...     return map_reduce(xrange(n),mapper=mapper1,reducer=reducer1,runner=runner)
+        >>> holder1(100,LocalMultiProc(4))
+        328350
 
     """
 
@@ -185,3 +204,4 @@ if __name__ == "__main__":
 
     import doctest
     doctest.testmod()
+    print "!!!cmk"    

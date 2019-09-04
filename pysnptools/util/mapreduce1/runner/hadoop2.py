@@ -1,9 +1,3 @@
-'''
-Runs a distributable job on an Hadoop cluster. Its run method return 'None'
-
-See SamplePi.py for examples.
-'''
-
 import logging
 from pysnptools.util.mapreduce1.runner import *
 import os
@@ -21,6 +15,9 @@ from tempfile import TemporaryFile
 #!!! currently any output files should be in the home directory, e.g. "aric.depnet.txt" not r"tempout\aric.depnet.txt". Fix this.
 class Hadoop2(Runner):
 
+    '''
+    Old code to run on Hadoop. Not currently supported.
+    '''
     fileshare = "/user"
 
     def __init__(self, taskcount, mapmemory=-1, xmx=None, min_alloc=None, reducememory=-1, mkl_num_threads=None,queue="default",skipsourcecheck=False,skipdatacheck=False,logging_handler=logging.StreamHandler(sys.stdout)):

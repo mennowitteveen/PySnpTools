@@ -1,9 +1,3 @@
-'''
-Runs a distributable job on an Hadoop cluster. Its run method return 'None'
-
-See SamplePi.py for examples.
-'''
-
 import logging
 from pysnptools.util.mapreduce1.runner import *
 import os
@@ -19,6 +13,11 @@ import datetime
 from tempfile import TemporaryFile
 
 class Hadoop(Runner):
+
+    '''
+    Old code to run on Hadoop. Not currently supported.
+    '''
+
 
     fileshare = "/user"
 

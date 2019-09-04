@@ -37,7 +37,7 @@ def create_task_file_name(workdirectory, taskindex, taskcount):
 
     
 
-def shape_to_desired_workcount(distributable, taskcount):
+def _shape_to_desired_workcount(distributable, taskcount):
     workcount = distributable.work_count
     if workcount > taskcount:
         distributable = BatchUpWork(distributable, workcount, taskcount)
@@ -58,7 +58,7 @@ def _run_one_task(original_distributable, taskindex, taskcount, workdirectory):
     if not 0 < taskcount: raise Exception("Expect taskcount to be positive")
     if not (0 <= taskindex and taskindex < taskcount+1) :raise Exception("Expect taskindex to be between 0 (inclusive) and taskcount (exclusive)")
 
-    shaped_distributable = shape_to_desired_workcount(original_distributable, taskcount)
+    shaped_distributable = _shape_to_desired_workcount(original_distributable, taskcount)
 
     if shaped_distributable.work_count != taskcount : raise Exception("Assert: expect workcount == taskcount")
 
@@ -72,7 +72,7 @@ def _run_one_task(original_distributable, taskindex, taskcount, workdirectory):
         return shaped_distributable.reduce(result_sequence)
 
 
-def work_sequence_for_one_index(distributable, taskAndWorkcount, taskindex):
+def _work_sequence_for_one_index(distributable, taskAndWorkcount, taskindex):
     if hasattr(distributable,"work_sequence_range"):
         is_first_and_only = True
         for work in distributable.work_sequence_range(taskindex, taskindex+1):
@@ -93,7 +93,7 @@ def doMainWorkForOneIndex(distributable, taskAndWorkcount, taskindex, workdirect
     task_file_name = create_task_file_name(workdirectory, taskindex, taskAndWorkcount)
     workDone = False
     with open(task_file_name, mode='wb') as f:
-        for work in work_sequence_for_one_index(distributable, taskAndWorkcount, taskindex):
+        for work in _work_sequence_for_one_index(distributable, taskAndWorkcount, taskindex):
             result = _run_all_in_memory(work)
             dill.dump(result, f, dill.HIGHEST_PROTOCOL) # save a result to the temp results file
 
@@ -262,7 +262,7 @@ class ExpandWork(object): # implements IDistributable
             expand_to = self.expand_to(sub_workIndex)
             sub_sub_start, sub_sub_stop = self.sub_sub_start_stop(sub_workIndex, start, stop)
             if not callable(sub_work): #i.e. a distributable job. If our expand_to is 3 and i's work_count is 9, then it is batched up 3x3. On the other hand, if its work_count is 2, then we ExpandWork from 2 to 3.
-                shaped_distributable = shape_to_desired_workcount(sub_work, expand_to)
+                shaped_distributable = _shape_to_desired_workcount(sub_work, expand_to)
                 for sub_sub_work in shaped_distributable.work_sequence_range(sub_sub_start, sub_sub_stop):
                     yield sub_sub_work
                     workIndex += 1
@@ -305,7 +305,7 @@ class ExpandWork(object): # implements IDistributable
         for sub_work in self.sub_distributable.work_sequence():
             expand_to = self.expand_to(sub_workIndex)
             if not callable(sub_work):
-                shaped_distributable = shape_to_desired_workcount(sub_work, expand_to)
+                shaped_distributable = _shape_to_desired_workcount(sub_work, expand_to)
                 sub_result = SubGen(result_sequence,expand_to)
                 result = shaped_distributable.reduce(sub_result)
                 if not hasattr(shaped_distributable,"suppress_yield"):
@@ -384,7 +384,4 @@ from pysnptools.util.mapreduce1.runner.runner import Runner
 from pysnptools.util.mapreduce1.runner.local import Local, _JustCheckExists
 from pysnptools.util.mapreduce1.runner.localmultiproc import LocalMultiProc
 from pysnptools.util.mapreduce1.runner.localmultithread import LocalMultiThread
-from pysnptools.util.mapreduce1.runner.localinparts import LocalInParts#!!!cmk need this
-from pysnptools.util.mapreduce1.runner.localmapper import LocalMapper #!!!cmk need this?
-from pysnptools.util.mapreduce1.runner.localreducer import LocalReducer#!!!cmk need this
-from pysnptools.util.mapreduce1.runner.localfromranges import LocalFromRanges#!!!cmk need this
+from pysnptools.util.mapreduce1.runner.localinparts import LocalInParts

@@ -1,9 +1,3 @@
-'''
-Runs a distributable job on multiple processors.  Returns the value of the job.
-
-See SamplePi.py for examples.
-'''
-
 from pysnptools.util.mapreduce1.runner import Runner,_JustCheckExists, _run_one_task
 import os
 import logging
@@ -18,6 +12,29 @@ import pysnptools.util as pstutil
 
 
 class LocalMultiProc(Runner):
+    '''
+    A :class:`.Runner` that runs a :func:`.map_reduce` as multiple processes on a single machine.
+
+    **Constructor:**
+        :Parameters: * **taskcount** (*number*) -- The number of processes to run on.
+        :Parameters: * **mkl_num_threads** (*number*) -- (default None) Limit on the number threads used by the NumPy MKL library.
+        :Parameters: * **just_one_process** (*bool*) -- (default False) Divide the work for multiple processes, but sequentially on one process. Can be useful for debugging.
+        :Parameters: * **logging_handler** (*stream*) --  (default stdout) Where to output logging messages.
+        
+        :Example:
+
+        >>> from pysnptools.util.mapreduce1 import map_reduce
+        >>> from pysnptools.util.mapreduce1.runner import LocalMultiProc
+        >>> def holder1(n,runner):
+        ...     def mapper1(x):
+        ...         return x*x
+        ...     def reducer1(sequence):
+        ...        return sum(sequence)
+        ...     return map_reduce(xrange(n),mapper=mapper1,reducer=reducer1,runner=runner)
+        >>> holder1(100,LocalMultiProc(4))
+        328350
+
+    '''
 
     def __init__(self, taskcount, mkl_num_threads = None, just_one_process = False, logging_handler=logging.StreamHandler(sys.stdout)):
         self.just_one_process = just_one_process
@@ -83,3 +100,8 @@ class LocalMultiProc(Runner):
         return result
 
 
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+
+    import doctest
+    doctest.testmod()

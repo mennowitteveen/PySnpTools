@@ -1,8 +1,3 @@
-'''
-Runs one part of a distributable job locally. The last part will return the jobs value. The other parts return 'None'
-
-See SamplePi.py for examples.
-'''
 from pysnptools.util.mapreduce1.runner import Runner,_JustCheckExists, _run_one_task
 import os, sys
 import logging
@@ -14,8 +9,39 @@ except:
     import cPickle as pickle
 
 class LocalInParts(Runner):
+    '''
+    A :class:`.Runner` that runs one piece of a :func:`.map_reduce` job locally. Partial results are saved to disk.
+    Clustering runners and :class:`LocalMultiProc` use this runner internally to run work.
 
-    def __init__(self, taskindex, taskcount, mkl_num_threads, result_file=None, run_dir=".", temp_dir=None, logging_handler=logging.StreamHandler(sys.stdout)):
+    **Constructor:**
+        :Parameters: * **taskindex** (*number*) -- Which piece of work to run. When 0 to **taskcount**-1, does map work. When **taskcount**, does the reduce work. 
+        :Parameters: * **taskcount** (*number*) -- The number of pieces into which to divide the work.
+        :Parameters: * **mkl_num_threads** (*number*) -- (default None) Limit on the number threads used by the NumPy MKL library.
+        :Parameters: * **result_file** (*string*) -- (default None) Where to pickle the final results. If no file is given, the final results are returned, but not saved to a file.
+        :Parameters: * **result_dir** (*string*) -- (default None) The directory for any result_file. Defaults to the current working directory.
+        :Parameters: * **temp_dir** (*string*) -- (default None) The directory for partial results. Defaults to the **result_dir**/.working_directory.{map_reduce's Name}.
+        :Parameters: * **logging_handler** (*stream*) --  (default stdout) Where to output logging messages.
+        
+        :Example:
+
+        >>> from pysnptools.util.mapreduce1 import map_reduce
+        >>> from pysnptools.util.mapreduce1.runner import LocalInParts
+        >>> def holder1(n,runner):
+        ...     def mapper1(x):
+        ...         return x*x
+        ...     def reducer1(sequence):
+        ...        return sum(sequence)
+        ...     return map_reduce(xrange(n),mapper=mapper1,reducer=reducer1,runner=runner)
+        >>> holder1(100,LocalInParts(0,4)) #Run part 0 of 4 and save partial results to disk as '0.4.p'.
+        >>> holder1(100,LocalInParts(1,4)) #Run part 1 of 4 and save partial results to disk as '1.4.p'.
+        >>> holder1(100,LocalInParts(2,4)) #Run part 2 of 4 and save partial results to disk as '2.4.p'.
+        >>> holder1(100,LocalInParts(3,4)) #Run part 3 of 4 and save partial results to disk as '3.4.p'.
+        >>> holder1(100,LocalInParts(4,4)) #Read the all partial results and then apply the reduce function and return the result.
+        328350
+
+    '''
+
+    def __init__(self, taskindex, taskcount, mkl_num_threads=None, result_file=None, run_dir=".", temp_dir=None, logging_handler=logging.StreamHandler(sys.stdout)):
         logger = logging.getLogger()
         if not logger.handlers:
             logger.setLevel(logging.INFO)
@@ -51,3 +77,9 @@ class LocalInParts(Runner):
                     pickle.dump(result, f, pickle.HIGHEST_PROTOCOL)
 
             return result
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+
+    import doctest
+    doctest.testmod()

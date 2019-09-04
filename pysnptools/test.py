@@ -18,7 +18,7 @@ from pysnptools.pstreader.test import TestPstReader
 from pysnptools.pstreader.test import TestDocStrings as PstDocStrings
 from pysnptools.pstreader.pstmemmap import TestPstMemMap
 from pysnptools.snpreader.snpmemmap import TestSnpMemMap
-from pysnptools.util.snpgen import TestSnpGen
+from pysnptools.snpreader.snpgen import TestSnpGen
 from pysnptools.kernelreader.test import _fortesting_JustCheckExists
 from pysnptools.util.intrangeset import TestIntRangeSet
 import pysnptools.util.mapreduce1.testdistributable

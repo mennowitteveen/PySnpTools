@@ -8,11 +8,9 @@ from pysnptools.util.mapreduce1.runner import Runner, _run_all_in_memory
 import os, sys
 import logging
 
-class Local(Runner):
+class Local(Runner): #!!!cmk be sure that all these 
     '''
-    A :class:`.Runner` that runs a map_reduce locally. To save memory, it will feed the results of the mapper to the reducer as those results are computed.
-
-    See :func:`.map_reduce` for general examples of use.
+    A :class:`.Runner` that runs a :func:`.map_reduce` locally. To save memory, it will feed the results of the mapper to the reducer as those results are computed.
 
     **Constructor:**
         :Parameters: * **mkl_num_threads** (*number*) -- (default None) Limit on the number threads used by the NumPy MKL library.
@@ -20,14 +18,16 @@ class Local(Runner):
         
         :Example:
 
-        >>> from pysnptools.util.snpgen import SnpGen
-        >>> #Prepare to generate data for 1000 individuals and 1,000,000 SNPs
-        >>> snp_gen = SnpGen(seed=332,iid_count=1000,sid_count=1000*1000)
-        >>> print snp_gen.iid_count,snp_gen.sid_count
-        1000 1000000
-        >>> snp_data = snp_gen[:,200*1000:201*1000].read() #Generate for all users and for SNPs 200K to 201K
-        >>> print snp_data.val[1,1], snp_data.iid_count, snp_data.sid_count
-        0.0 1000 1000
+        >>> from pysnptools.util.mapreduce1 import map_reduce
+        >>> from pysnptools.util.mapreduce1.runner import Local
+        >>> def holder1(n,runner):
+        ...     def mapper1(x):
+        ...         return x*x
+        ...     def reducer1(sequence):
+        ...        return sum(sequence)
+        ...     return map_reduce(xrange(n),mapper=mapper1,reducer=reducer1,runner=runner)
+        >>> holder1(100,Local())
+        328350
 
     '''
     def __init__(self, mkl_num_threads = None, logging_handler=logging.StreamHandler(sys.stdout)):
@@ -69,3 +69,9 @@ class _JustCheckExists(object): #Implements ICopier
         elif hasattr(item,"copyoutputs"):
             item.copyoutputs(self)
         # else -- do nothing
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+
+    import doctest
+    doctest.testmod()

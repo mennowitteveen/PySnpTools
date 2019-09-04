@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>pysnptools Documentation &#8212; pysnptools 0.0.1 documentation</title>
+    <title>pysnptools Documentation &#8212; pysnptools 0.0.2 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
@@ -28,7 +28,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">pysnptools 0.0.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">pysnptools 0.0.2 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -50,15 +50,15 @@
 </table>
 <ul class="simple">
 <li><a class="reference internal" href="#module-pysnptools.snpreader" title="pysnptools.snpreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">snpreader</span></code></a>: Efficiently read genetic PLINK formats including *.bed/bim/fam and phenotype files. Also, efficiently read <em>parts</em> of files and standardize data.</li>
+<li><a class="reference internal" href="#pysnptools.snpreader.SnpGen" title="pysnptools.snpreader.SnpGen"><code class="xref py py-class docutils literal notranslate"><span class="pre">snpreader.SnpGen</span></code></a>: Generate synthetic SNP data on the fly.</li>
 <li><a class="reference internal" href="#module-pysnptools.kernelreader" title="pysnptools.kernelreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">kernelreader</span></code></a>: Efficiently create, read, and manipulate kernel data.</li>
 <li><a class="reference internal" href="#module-pysnptools.standardizer" title="pysnptools.standardizer"><code class="xref py py-mod docutils literal notranslate"><span class="pre">standardizer</span></code></a>: Specify standardizers for <a class="reference internal" href="#module-pysnptools.snpreader" title="pysnptools.snpreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">snpreader</span></code></a>.</li>
-<li><code class="xref py py-mod docutils literal notranslate"><span class="pre">kernelstandardizer</span></code>: Specify standardizers for <a class="reference internal" href="#module-pysnptools.kernelreader" title="pysnptools.kernelreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">kernelreader</span></code></a>. !!!cmk show come this mod isn’t a link?</li>
+<li><a class="reference internal" href="#module-pysnptools.kernelstandardizer" title="pysnptools.kernelstandardizer"><code class="xref py py-mod docutils literal notranslate"><span class="pre">kernelstandardizer</span></code></a>: Specify standardizers for <a class="reference internal" href="#module-pysnptools.kernelreader" title="pysnptools.kernelreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">kernelreader</span></code></a>. !!!cmk show come this mod isn’t a link?</li>
 <li><a class="reference internal" href="#module-pysnptools.pstreader" title="pysnptools.pstreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pstreader</span></code></a>: Generalizes <a class="reference internal" href="#module-pysnptools.snpreader" title="pysnptools.snpreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">snpreader</span></code></a> and <a class="reference internal" href="#module-pysnptools.kernelreader" title="pysnptools.kernelreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">kernelreader</span></code></a> (provides the efficiency of numpy arrays with some of the flexibility of pandas)</li>
 <li><a class="reference internal" href="#module-pysnptools.util" title="pysnptools.util"><code class="xref py py-mod docutils literal notranslate"><span class="pre">util</span></code></a>: In one line, intersect and re-order IIDs from <a class="reference internal" href="#module-pysnptools.snpreader" title="pysnptools.snpreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">snpreader</span></code></a>, <a class="reference internal" href="#module-pysnptools.kernelreader" title="pysnptools.kernelreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">kernelreader</span></code></a> and other sources. Also, efficiently extract a submatrix from an ndarray.</li>
 <li><a class="reference internal" href="#pysnptools.util.IntRangeSet" title="pysnptools.util.IntRangeSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">util.IntRangeSet</span></code></a>: Efficiently manipulate ranges of integers – for example, genetic position – with set operators including
 union, intersection, and set difference.</li>
-<li><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.snpgen</span></code>: Generate synthetic SNP data on the fly</li>
-<li><a class="reference internal" href="#module-pysnptools.util.mapreduce1" title="pysnptools.util.mapreduce1"><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.mapreduce1</span></code></a>: !!!cmk</li>
+<li><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.mapreduce1</span></code>: Run in parallel on multiple processes, threads, or clusters.</li>
 </ul>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1503,6 +1503,68 @@ val, iid, sid, and pos information in NPZ format.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="snpreader-snpgen">
+<h3><code class="xref py py-class docutils literal notranslate"><span class="pre">snpreader.SnpGen</span></code><a class="headerlink" href="#snpreader-snpgen" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pysnptools.snpreader.SnpGen">
+<em class="property">class </em><code class="descclassname">pysnptools.snpreader.</code><code class="descname">SnpGen</code><span class="sig-paren">(</span><em>seed</em>, <em>iid_count</em>, <em>sid_count</em>, <em>chrom_count=22</em>, <em>cache_file=None</em>, <em>sid_batch_size=1000</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpGen" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> that generates deterministic SNP data on the fly.</p>
+<p>See <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> for general examples of using SnpReader.</p>
+<dl class="docutils">
+<dt><strong>Constructor:</strong></dt>
+<dd><table class="first docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>seed</strong> (<em>number</em>) – The random seed that (along with <em>sid_batch_size</em>) determines the SNP values.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>iid_count</strong> (<em>number</em>) –  the number of iids (number of individuals)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sid_count</strong> (<em>number</em>) –  the number of sids (number of SNPs)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>chrom_count</strong> (<em>number</em>) –  the number of chromosomes to generate (must be 22 or less)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cache_file</strong> (<em>string</em>) – (default None) If provided, tells where to cache the common iid, sid, and pos information. Using it can save time.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sid_batch_size</strong> (<em>number</em>) – (default 1000) Tells how many SNP at once. The default value is usually good.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">SnpGen</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1">#Prepare to generate data for 1000 individuals and 1,000,000 SNPs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snp_gen</span> <span class="o">=</span> <span class="n">SnpGen</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">332</span><span class="p">,</span><span class="n">iid_count</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">sid_count</span><span class="o">=</span><span class="mi">1000</span><span class="o">*</span><span class="mi">1000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">snp_gen</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span><span class="n">snp_gen</span><span class="o">.</span><span class="n">sid_count</span>
+<span class="go">1000 1000000</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snp_data</span> <span class="o">=</span> <span class="n">snp_gen</span><span class="p">[:,</span><span class="mi">200</span><span class="o">*</span><span class="mi">1000</span><span class="p">:</span><span class="mi">201</span><span class="o">*</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="c1">#Generate for all users and for SNPs 200K to 201K</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">snp_data</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">snp_data</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span> <span class="n">snp_data</span><span class="o">.</span><span class="n">sid_count</span>
+<span class="go">0.0 1000 1000</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 </div>
 <div class="section" id="module-pysnptools.kernelreader">
 <span id="kernelreader-module"></span><h2><code class="xref py py-mod docutils literal notranslate"><span class="pre">kernelreader</span></code> Module<a class="headerlink" href="#module-pysnptools.kernelreader" title="Permalink to this headline">¶</a></h2>
@@ -2543,10 +2605,48 @@ NaN values are then filled with zero.</p>
 
 </div>
 </div>
-<div class="section" id="kernelstandardizer-module">
-<h2><code class="xref py py-mod docutils literal notranslate"><span class="pre">kernelstandardizer</span></code> Module<a class="headerlink" href="#kernelstandardizer-module" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="kernelstandardizer-kernelstandardizer">
-<h3><code class="xref py py-class docutils literal notranslate"><span class="pre">kernelstandardizer.KernelStandardizer</span></code><a class="headerlink" href="#kernelstandardizer-kernelstandardizer" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="module-pysnptools.kernelstandardizer">
+<span id="kernelstandardizer-module"></span><h2><code class="xref py py-mod docutils literal notranslate"><span class="pre">kernelstandardizer</span></code> Module<a class="headerlink" href="#module-pysnptools.kernelstandardizer" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pysnptools.kernelstandardizer.Identity">
+<em class="property">class </em><code class="descclassname">pysnptools.kernelstandardizer.</code><code class="descname">Identity</code><a class="headerlink" href="#pysnptools.kernelstandardizer.Identity" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#pysnptools.kernelstandardizer.KernelStandardizer" title="pysnptools.kernelstandardizer.KernelStandardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelStandardizer</span></code></a> that does nothing to kernel data.</p>
+<p>See <a class="reference internal" href="#pysnptools.kernelstandardizer.KernelStandardizer" title="pysnptools.kernelstandardizer.KernelStandardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelStandardizer</span></code></a> for more information about standardization.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelstandardizer</span> <span class="k">import</span> <span class="n">Identity</span> <span class="k">as</span> <span class="n">KS_Identity</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelreader</span> <span class="k">import</span> <span class="n">KernelNpz</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata1</span> <span class="o">=</span> <span class="n">KernelNpz</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.kernel.npz&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">kerneldata1</span><span class="o">.</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+<span class="go">5000000.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata1</span> <span class="o">=</span> <span class="n">kerneldata1</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">KS_Identity</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">kerneldata1</span><span class="o">.</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+<span class="go">5000000.0</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="pysnptools.kernelstandardizer.Identity.standardize">
+<code class="descname">standardize</code><span class="sig-paren">(</span><em>kerneldata</em>, <em>return_trained=False</em>, <em>force_python_only=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.kernelstandardizer.Identity.standardize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies standardization, in place, to <a class="reference internal" href="#pysnptools.kernelreader.KernelData" title="pysnptools.kernelreader.KernelData"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code></a>. For convenience also returns the <code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>snps</strong> (<a class="reference internal" href="#pysnptools.kernelreader.KernelData" title="pysnptools.kernelreader.KernelData"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code></a>) – kernel values to standardize</li>
+<li><strong>return_trained</strong> (<em>boolean</em>) – If true, returns a second value containing a constant <a class="reference internal" href="#pysnptools.kernelstandardizer.KernelStandardizer" title="pysnptools.kernelstandardizer.KernelStandardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelStandardizer</span></code></a> trained on this data.</li>
+<li><strong>force_python_only</strong> (<em>bool</em>) – optional – If False (default), may use outside library code. If True, requests that the read
+be done without outside library code.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pysnptools.kernelreader.KernelData" title="pysnptools.kernelreader.KernelData"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code></a>, (optional) constant <a class="reference internal" href="#pysnptools.kernelstandardizer.KernelStandardizer" title="pysnptools.kernelstandardizer.KernelStandardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelStandardizer</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="class">
 <dt id="pysnptools.kernelstandardizer.KernelStandardizer">
 <em class="property">class </em><code class="descclassname">pysnptools.kernelstandardizer.</code><code class="descname">KernelStandardizer</code><a class="headerlink" href="#pysnptools.kernelstandardizer.KernelStandardizer" title="Permalink to this definition">¶</a></dt>
@@ -2588,6 +2688,71 @@ It always works in-place <em>and</em> returns the <a class="reference internal" 
 <dl class="method">
 <dt id="pysnptools.kernelstandardizer.KernelStandardizer.standardize">
 <code class="descname">standardize</code><span class="sig-paren">(</span><em>kerneldata</em>, <em>return_trained=False</em>, <em>force_python_only=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.kernelstandardizer.KernelStandardizer.standardize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies standardization, in place, to <a class="reference internal" href="#pysnptools.kernelreader.KernelData" title="pysnptools.kernelreader.KernelData"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code></a>. For convenience also returns the <code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>snps</strong> (<a class="reference internal" href="#pysnptools.kernelreader.KernelData" title="pysnptools.kernelreader.KernelData"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code></a>) – kernel values to standardize</li>
+<li><strong>return_trained</strong> (<em>boolean</em>) – If true, returns a second value containing a constant <a class="reference internal" href="#pysnptools.kernelstandardizer.KernelStandardizer" title="pysnptools.kernelstandardizer.KernelStandardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelStandardizer</span></code></a> trained on this data.</li>
+<li><strong>force_python_only</strong> (<em>bool</em>) – optional – If False (default), may use outside library code. If True, requests that the read
+be done without outside library code.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pysnptools.kernelreader.KernelData" title="pysnptools.kernelreader.KernelData"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code></a>, (optional) constant <a class="reference internal" href="#pysnptools.kernelstandardizer.KernelStandardizer" title="pysnptools.kernelstandardizer.KernelStandardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelStandardizer</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="kernelstandardizer-kernelstandardizer">
+<h3><code class="xref py py-class docutils literal notranslate"><span class="pre">kernelstandardizer.KernelStandardizer</span></code><a class="headerlink" href="#kernelstandardizer-kernelstandardizer" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="descclassname">pysnptools.kernelstandardizer.</code><code class="descname">KernelStandardizer</code></dt>
+<dd><p>A KernelStandardizer is a class such as <a class="reference internal" href="#pysnptools.kernelstandardizer.DiagKtoN" title="pysnptools.kernelstandardizer.DiagKtoN"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiagKtoN</span></code></a> and <a class="reference internal" href="#pysnptools.kernelstandardizer.Identity" title="pysnptools.kernelstandardizer.Identity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Identity</span></code></a> to be used by the <a class="reference internal" href="#pysnptools.kernelreader.KernelData.standardize" title="pysnptools.kernelreader.KernelData.standardize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">KernelData.standardize()</span></code></a> to standardize Kernel data.
+It always works in-place <em>and</em> returns the <a class="reference internal" href="#pysnptools.kernelreader.KernelData" title="pysnptools.kernelreader.KernelData"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code></a> on which it works.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<p>Read and standardize Kernel data.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelstandardizer</span> <span class="k">import</span> <span class="n">DiagKtoN</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelreader</span> <span class="k">import</span> <span class="n">KernelNpz</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata1</span> <span class="o">=</span> <span class="n">KernelNpz</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.kernel.npz&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">kerneldata1</span><span class="o">.</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+<span class="go">5000000.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata1</span> <span class="o">=</span> <span class="n">kerneldata1</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">DiagKtoN</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">kerneldata1</span><span class="o">.</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+<span class="go">500.0</span>
+</pre></div>
+</div>
+<p>Can also return a constant kernel standardizer that be applied to other <a class="reference internal" href="#pysnptools.kernelreader.KernelData" title="pysnptools.kernelreader.KernelData"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code></a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">kernel_whole</span> <span class="o">=</span> <span class="n">KernelNpz</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.kernel.npz&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">train_idx</span><span class="p">,</span> <span class="n">test_idx</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="n">kernel_whole</span><span class="o">.</span><span class="n">iid_count</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>  <span class="c1">#test on the first 10, train on the rest</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kernel_train</span><span class="p">,</span> <span class="n">trained_standardizer</span> <span class="o">=</span> <span class="n">DiagKtoN</span><span class="p">()</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">kernel_whole</span><span class="p">[</span><span class="n">train_idx</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span><span class="n">return_trained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">kernel_train</span><span class="o">.</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+<span class="go">490.000000</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">trained_standardizer</span><span class="o">.</span><span class="n">factor</span><span class="p">))</span>
+<span class="go">0.000100</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kernel_whole_test</span> <span class="o">=</span> <span class="n">kernel_whole</span><span class="p">[:,</span><span class="n">test_idx</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">trained_standardizer</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kernel_whole_test</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
+<span class="go">0.992217</span>
+</pre></div>
+</div>
+<p>Details of Methods &amp; Properties:</p>
+<dl class="method">
+<dt>
+<code class="descname">standardize</code><span class="sig-paren">(</span><em>kerneldata</em>, <em>return_trained=False</em>, <em>force_python_only=False</em><span class="sig-paren">)</span></dt>
 <dd><p>Applies standardization, in place, to <a class="reference internal" href="#pysnptools.kernelreader.KernelData" title="pysnptools.kernelreader.KernelData"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code></a>. For convenience also returns the <code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -2690,8 +2855,8 @@ will have a diagonal that sums to iid_count.</p>
 <div class="section" id="kernelstandardizer-identity">
 <h3><code class="xref py py-class docutils literal notranslate"><span class="pre">kernelstandardizer.Identity</span></code><a class="headerlink" href="#kernelstandardizer-identity" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
-<dt id="pysnptools.kernelstandardizer.Identity">
-<em class="property">class </em><code class="descclassname">pysnptools.kernelstandardizer.</code><code class="descname">Identity</code><a class="headerlink" href="#pysnptools.kernelstandardizer.Identity" title="Permalink to this definition">¶</a></dt>
+<dt>
+<em class="property">class </em><code class="descclassname">pysnptools.kernelstandardizer.</code><code class="descname">Identity</code></dt>
 <dd><p>A <a class="reference internal" href="#pysnptools.kernelstandardizer.KernelStandardizer" title="pysnptools.kernelstandardizer.KernelStandardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelStandardizer</span></code></a> that does nothing to kernel data.</p>
 <p>See <a class="reference internal" href="#pysnptools.kernelstandardizer.KernelStandardizer" title="pysnptools.kernelstandardizer.KernelStandardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelStandardizer</span></code></a> for more information about standardization.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelstandardizer</span> <span class="k">import</span> <span class="n">Identity</span> <span class="k">as</span> <span class="n">KS_Identity</span>
@@ -5412,63 +5577,6 @@ in time linear in the number of ranges, rather than integer elements.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-pysnptools.util.snpgen.SnpGen">
-<span id="util-snpgen-snpgen"></span><h3><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.snpgen.SnpGen</span></code><a class="headerlink" href="#module-pysnptools.util.snpgen.SnpGen" title="Permalink to this headline">¶</a></h3>
-<p>A <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> that generates deterministic SNP data on the fly.</p>
-<p>See <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> for general examples of using SnpReader.</p>
-<dl class="docutils">
-<dt><strong>Constructor:</strong></dt>
-<dd><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>seed</strong> (<em>number</em>) – The random seed that (along with <em>sid_batch_size</em>) determines the SNP values.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>iid_count</strong> (<em>number</em>) –  the number of iids (number of individuals)</li>
-</ul>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>sid_count</strong> (<em>number</em>) –  the number of sids (number of SNPs)</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>chrom_count</strong> (<em>number</em>) –  the number of chromosomes to generate (must be 22 or less)</li>
-</ul>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cache_file</strong> (<em>string</em>) – (default None) If provided, tells where to cache the common iid, sid, and pos information. Using it can save time.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>sid_batch_size</strong> (<em>number</em>) – (default 1000) Tells how many SNP at once. The default value is usually good.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
-</tr>
-</tbody>
-</table>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.snpgen</span> <span class="k">import</span> <span class="n">SnpGen</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1">#Prepare to generate data for 1000 individuals and 1,000,000 SNPs</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">snp_gen</span> <span class="o">=</span> <span class="n">SnpGen</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">332</span><span class="p">,</span><span class="n">iid_count</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">sid_count</span><span class="o">=</span><span class="mi">1000</span><span class="o">*</span><span class="mi">1000</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">snp_gen</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span><span class="n">snp_gen</span><span class="o">.</span><span class="n">sid_count</span>
-<span class="go">1000 1000000</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">snp_data</span> <span class="o">=</span> <span class="n">snp_gen</span><span class="p">[:,</span><span class="mi">200</span><span class="o">*</span><span class="mi">1000</span><span class="p">:</span><span class="mi">201</span><span class="o">*</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="c1">#Generate for all users and for SNPs 200K to 201K</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">snp_data</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">snp_data</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span> <span class="n">snp_data</span><span class="o">.</span><span class="n">sid_count</span>
-<span class="go">0.0 1000 1000</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-</div>
 <div class="section" id="module-pysnptools.util.pheno">
 <span id="util-pheno"></span><h3><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.pheno</span></code><a class="headerlink" href="#module-pysnptools.util.pheno" title="Permalink to this headline">¶</a></h3>
 <div class="deprecated">
@@ -5539,11 +5647,11 @@ in time linear in the number of ranges, rather than integer elements.</p>
 
 </div>
 </div>
-<div class="section" id="module-pysnptools.util.mapreduce1">
-<span id="pysnptools-util-mapreduce1-module"></span><h2><a class="reference internal" href="#module-pysnptools.util.mapreduce1" title="pysnptools.util.mapreduce1"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1</span></code></a> Module<a class="headerlink" href="#module-pysnptools.util.mapreduce1" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-pysnptools.util.mapreduce1.mapreduce"></span><dl class="function">
-<dt id="pysnptools.util.mapreduce1.mapreduce.map_reduce">
-<code class="descclassname">pysnptools.util.mapreduce1.mapreduce.</code><code class="descname">map_reduce</code><span class="sig-paren">(</span><em>input_seq</em>, <em>mapper=&lt;function _identity&gt;</em>, <em>reducer=&lt;type 'list'&gt;</em>, <em>input_files=None</em>, <em>output_files=None</em>, <em>name=None</em>, <em>runner=None</em>, <em>nested=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.mapreduce1.mapreduce.map_reduce" title="Permalink to this definition">¶</a></dt>
+<div class="section" id="pysnptools-util-mapreduce1-module">
+<h2><code class="xref py py-mod docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1</span></code> Module<a class="headerlink" href="#pysnptools-util-mapreduce1-module" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pysnptools.util.mapreduce1.map_reduce">
+<code class="descclassname">pysnptools.util.mapreduce1.</code><code class="descname">map_reduce</code><span class="sig-paren">(</span><em>input_seq</em>, <em>mapper=&lt;function _identity&gt;</em>, <em>reducer=&lt;type 'list'&gt;</em>, <em>input_files=None</em>, <em>output_files=None</em>, <em>name=None</em>, <em>runner=None</em>, <em>nested=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.mapreduce1.map_reduce" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs a function on sequence of inputs and runs a second function on the results. Can be nested and clusterized.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -5581,7 +5689,7 @@ If not given, the function is run locally.</li>
 <span class="go">328350</span>
 </pre></div>
 </div>
-<p>Multithreading on four processors:</p>
+<p>Compute it again, this time run on four processors:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">map_reduce</span><span class="p">(</span><span class="n">xrange</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> 
 <span class="gp">... </span>       <span class="n">mapper</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="p">,</span>
 <span class="gp">... </span>       <span class="n">reducer</span><span class="o">=</span><span class="nb">sum</span><span class="p">,</span>
@@ -5589,7 +5697,7 @@ If not given, the function is run locally.</li>
 <span class="go">328350</span>
 </pre></div>
 </div>
-<p>Again on four processors, now with named functions:</p>
+<p>Compute it using named functions, again using four processors:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">holder1</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">runner</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="k">def</span> <span class="nf">mapper1</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 <span class="gp">... </span>        <span class="k">return</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span>
@@ -5607,19 +5715,8 @@ If not given, the function is run locally.</li>
 <dl class="class">
 <dt id="pysnptools.util.mapreduce1.runner.Runner">
 <em class="property">class </em><code class="descclassname">pysnptools.util.mapreduce1.runner.</code><code class="descname">Runner</code><a class="headerlink" href="#pysnptools.util.mapreduce1.runner.Runner" title="Permalink to this definition">¶</a></dt>
-<dd><p>!!!!cmk
-A runner is executes a ‘distributable’ job. FastLmmSet is an example of a distributable job. #!!!cmk update
-Local is an example of a runner. Local can execute FastLMMSet (or any other distributable job) on a local machine as a single process.
-LocalMultiProc is another runner. It can execute FastLmmSet, etc on a multiple processes on a local machine.</p>
-<p>All runners implement the Runner interface (but Python doesn’t check or enforce this)</p>
-<dl class="docutils">
-<dt>interface IRunner</dt>
-<dd><dl class="first last docutils">
-<dt>def run(self, distributable):</dt>
-<dd># returns the value computed by the distributable job</dd>
-</dl>
-</dd>
-</dl>
+<dd><p>A Runner is an object that tells a <a class="reference internal" href="#pysnptools.util.mapreduce1.map_reduce" title="pysnptools.util.mapreduce1.map_reduce"><code class="xref py py-func docutils literal notranslate"><span class="pre">map_reduce()</span></code></a> how to run on a local machine or cluster. Examples include
+<a class="reference internal" href="#pysnptools.util.mapreduce1.runner.Local" title="pysnptools.util.mapreduce1.runner.Local"><code class="xref py py-class docutils literal notranslate"><span class="pre">Local</span></code></a> and <a class="reference internal" href="#pysnptools.util.mapreduce1.runner.LocalMultiProc" title="pysnptools.util.mapreduce1.runner.LocalMultiProc"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalMultiProc</span></code></a>.</p>
 </dd></dl>
 
 </div>
@@ -5628,8 +5725,7 @@ LocalMultiProc is another runner. It can execute FastLmmSet, etc on a multiple p
 <dl class="class">
 <dt id="pysnptools.util.mapreduce1.runner.Local">
 <em class="property">class </em><code class="descclassname">pysnptools.util.mapreduce1.runner.</code><code class="descname">Local</code><span class="sig-paren">(</span><em>mkl_num_threads=None</em>, <em>logging_handler=&lt;logging.StreamHandler object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.mapreduce1.runner.Local" title="Permalink to this definition">¶</a></dt>
-<dd><p>A <a class="reference internal" href="#pysnptools.util.mapreduce1.runner.Runner" title="pysnptools.util.mapreduce1.runner.Runner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Runner</span></code></a> that runs a map_reduce locally. To save memory, it will feed the results of the mapper to the reducer as those results are computed.</p>
-<p>See <a class="reference internal" href="#pysnptools.util.mapreduce1.mapreduce.map_reduce" title="pysnptools.util.mapreduce1.mapreduce.map_reduce"><code class="xref py py-func docutils literal notranslate"><span class="pre">map_reduce()</span></code></a> for general examples of use.</p>
+<dd><p>A <a class="reference internal" href="#pysnptools.util.mapreduce1.runner.Runner" title="pysnptools.util.mapreduce1.runner.Runner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Runner</span></code></a> that runs a <a class="reference internal" href="#pysnptools.util.mapreduce1.map_reduce" title="pysnptools.util.mapreduce1.map_reduce"><code class="xref py py-func docutils literal notranslate"><span class="pre">map_reduce()</span></code></a> locally. To save memory, it will feed the results of the mapper to the reducer as those results are computed.</p>
 <dl class="docutils">
 <dt><strong>Constructor:</strong></dt>
 <dd><table class="first docutils field-list" frame="void" rules="none">
@@ -5650,14 +5746,16 @@ LocalMultiProc is another runner. It can execute FastLmmSet, etc on a multiple p
 </tr>
 </tbody>
 </table>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.snpgen</span> <span class="k">import</span> <span class="n">SnpGen</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1">#Prepare to generate data for 1000 individuals and 1,000,000 SNPs</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">snp_gen</span> <span class="o">=</span> <span class="n">SnpGen</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">332</span><span class="p">,</span><span class="n">iid_count</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">sid_count</span><span class="o">=</span><span class="mi">1000</span><span class="o">*</span><span class="mi">1000</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">snp_gen</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span><span class="n">snp_gen</span><span class="o">.</span><span class="n">sid_count</span>
-<span class="go">1000 1000000</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">snp_data</span> <span class="o">=</span> <span class="n">snp_gen</span><span class="p">[:,</span><span class="mi">200</span><span class="o">*</span><span class="mi">1000</span><span class="p">:</span><span class="mi">201</span><span class="o">*</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="c1">#Generate for all users and for SNPs 200K to 201K</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">snp_data</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">snp_data</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span> <span class="n">snp_data</span><span class="o">.</span><span class="n">sid_count</span>
-<span class="go">0.0 1000 1000</span>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.mapreduce1</span> <span class="k">import</span> <span class="n">map_reduce</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.mapreduce1.runner</span> <span class="k">import</span> <span class="n">Local</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">holder1</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">runner</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">mapper1</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">reducer1</span><span class="p">(</span><span class="n">sequence</span><span class="p">):</span>
+<span class="gp">... </span>       <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">map_reduce</span><span class="p">(</span><span class="n">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="n">mapper</span><span class="o">=</span><span class="n">mapper1</span><span class="p">,</span><span class="n">reducer</span><span class="o">=</span><span class="n">reducer1</span><span class="p">,</span><span class="n">runner</span><span class="o">=</span><span class="n">runner</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">holder1</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="n">Local</span><span class="p">())</span>
+<span class="go">328350</span>
 </pre></div>
 </div>
 </dd>
@@ -5670,7 +5768,52 @@ LocalMultiProc is another runner. It can execute FastLmmSet, etc on a multiple p
 <dl class="class">
 <dt id="pysnptools.util.mapreduce1.runner.LocalMultiProc">
 <em class="property">class </em><code class="descclassname">pysnptools.util.mapreduce1.runner.</code><code class="descname">LocalMultiProc</code><span class="sig-paren">(</span><em>taskcount</em>, <em>mkl_num_threads=None</em>, <em>just_one_process=False</em>, <em>logging_handler=&lt;logging.StreamHandler object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.mapreduce1.runner.LocalMultiProc" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>A <a class="reference internal" href="#pysnptools.util.mapreduce1.runner.Runner" title="pysnptools.util.mapreduce1.runner.Runner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Runner</span></code></a> that runs a <a class="reference internal" href="#pysnptools.util.mapreduce1.map_reduce" title="pysnptools.util.mapreduce1.map_reduce"><code class="xref py py-func docutils literal notranslate"><span class="pre">map_reduce()</span></code></a> as multiple processes on a single machine.</p>
+<dl class="docutils">
+<dt><strong>Constructor:</strong></dt>
+<dd><table class="first docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>taskcount</strong> (<em>number</em>) – The number of processes to run on.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mkl_num_threads</strong> (<em>number</em>) – (default None) Limit on the number threads used by the NumPy MKL library.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>just_one_process</strong> (<em>bool</em>) – (default False) Divide the work for multiple processes, but sequentially on one process. Can be useful for debugging.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>logging_handler</strong> (<em>stream</em>) –  (default stdout) Where to output logging messages.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.mapreduce1</span> <span class="k">import</span> <span class="n">map_reduce</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.mapreduce1.runner</span> <span class="k">import</span> <span class="n">LocalMultiProc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">holder1</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">runner</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">mapper1</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">reducer1</span><span class="p">(</span><span class="n">sequence</span><span class="p">):</span>
+<span class="gp">... </span>       <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">map_reduce</span><span class="p">(</span><span class="n">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="n">mapper</span><span class="o">=</span><span class="n">mapper1</span><span class="p">,</span><span class="n">reducer</span><span class="o">=</span><span class="n">reducer1</span><span class="p">,</span><span class="n">runner</span><span class="o">=</span><span class="n">runner</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">holder1</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="n">LocalMultiProc</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+<span class="go">328350</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="section" id="pysnptools-util-mapreduce1-runner-localmultithread">
@@ -5678,7 +5821,48 @@ LocalMultiProc is another runner. It can execute FastLmmSet, etc on a multiple p
 <dl class="class">
 <dt id="pysnptools.util.mapreduce1.runner.LocalMultiThread">
 <em class="property">class </em><code class="descclassname">pysnptools.util.mapreduce1.runner.</code><code class="descname">LocalMultiThread</code><span class="sig-paren">(</span><em>taskcount</em>, <em>mkl_num_threads=None</em>, <em>just_one_process=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.mapreduce1.runner.LocalMultiThread" title="Permalink to this definition">¶</a></dt>
-<dd><p>Designed so that reduce will start running as soon as the 1st task as finished</p>
+<dd><p>A <a class="reference internal" href="#pysnptools.util.mapreduce1.runner.Runner" title="pysnptools.util.mapreduce1.runner.Runner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Runner</span></code></a> that runs a <a class="reference internal" href="#pysnptools.util.mapreduce1.map_reduce" title="pysnptools.util.mapreduce1.map_reduce"><code class="xref py py-func docutils literal notranslate"><span class="pre">map_reduce()</span></code></a> as multiple threads on a single machine.</p>
+<p>Note that Python has problems running some programs efficiently on multiple threads. (Search ‘python global interpreter lock’ for details.)
+Of this doesn’t work consider <a class="reference internal" href="#pysnptools.util.mapreduce1.runner.LocalMultiProc" title="pysnptools.util.mapreduce1.runner.LocalMultiProc"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalMultiProc</span></code></a>.</p>
+<dl class="docutils">
+<dt><strong>Constructor:</strong></dt>
+<dd><table class="first docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>taskcount</strong> (<em>number</em>) – The number of threads to run on.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mkl_num_threads</strong> (<em>number</em>) – (default None) Limit on the number threads used by the NumPy MKL library.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>just_one_process</strong> (<em>bool</em>) – (default False) Divide the work for multiple threads, but sequentially on one thread. Can be useful for debugging.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.mapreduce1</span> <span class="k">import</span> <span class="n">map_reduce</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.mapreduce1.runner</span> <span class="k">import</span> <span class="n">LocalMultiThread</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">holder1</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">runner</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">mapper1</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">reducer1</span><span class="p">(</span><span class="n">sequence</span><span class="p">):</span>
+<span class="gp">... </span>       <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">map_reduce</span><span class="p">(</span><span class="n">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="n">mapper</span><span class="o">=</span><span class="n">mapper1</span><span class="p">,</span><span class="n">reducer</span><span class="o">=</span><span class="n">reducer1</span><span class="p">,</span><span class="n">runner</span><span class="o">=</span><span class="n">runner</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">holder1</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="n">LocalMultiThread</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+<span class="go">328350</span>
+</pre></div>
+</div>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -5686,8 +5870,73 @@ LocalMultiProc is another runner. It can execute FastLmmSet, etc on a multiple p
 <h3><a class="reference internal" href="#pysnptools.util.mapreduce1.runner.LocalInParts" title="pysnptools.util.mapreduce1.runner.LocalInParts"><code class="xref py py-class docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1.runner.LocalInParts</span></code></a><a class="headerlink" href="#pysnptools-util-mapreduce1-runner-localinparts" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="pysnptools.util.mapreduce1.runner.LocalInParts">
-<em class="property">class </em><code class="descclassname">pysnptools.util.mapreduce1.runner.</code><code class="descname">LocalInParts</code><span class="sig-paren">(</span><em>taskindex</em>, <em>taskcount</em>, <em>mkl_num_threads</em>, <em>result_file=None</em>, <em>run_dir='.'</em>, <em>temp_dir=None</em>, <em>logging_handler=&lt;logging.StreamHandler object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.mapreduce1.runner.LocalInParts" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property">class </em><code class="descclassname">pysnptools.util.mapreduce1.runner.</code><code class="descname">LocalInParts</code><span class="sig-paren">(</span><em>taskindex</em>, <em>taskcount</em>, <em>mkl_num_threads=None</em>, <em>result_file=None</em>, <em>run_dir='.'</em>, <em>temp_dir=None</em>, <em>logging_handler=&lt;logging.StreamHandler object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.mapreduce1.runner.LocalInParts" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#pysnptools.util.mapreduce1.runner.Runner" title="pysnptools.util.mapreduce1.runner.Runner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Runner</span></code></a> that runs one piece of a <a class="reference internal" href="#pysnptools.util.mapreduce1.map_reduce" title="pysnptools.util.mapreduce1.map_reduce"><code class="xref py py-func docutils literal notranslate"><span class="pre">map_reduce()</span></code></a> job locally. Partial results are saved to disk.
+Clustering runners and <a class="reference internal" href="#pysnptools.util.mapreduce1.runner.LocalMultiProc" title="pysnptools.util.mapreduce1.runner.LocalMultiProc"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalMultiProc</span></code></a> use this runner internally to run work.</p>
+<dl class="docutils">
+<dt><strong>Constructor:</strong></dt>
+<dd><table class="first docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>taskindex</strong> (<em>number</em>) – Which piece of work to run. When 0 to <strong>taskcount</strong>-1, does map work. When <strong>taskcount</strong>, does the reduce work.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>taskcount</strong> (<em>number</em>) – The number of pieces into which to divide the work.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mkl_num_threads</strong> (<em>number</em>) – (default None) Limit on the number threads used by the NumPy MKL library.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>result_file</strong> (<em>string</em>) – (default None) Where to pickle the final results. If no file is given, the final results are returned, but not saved to file.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>result_dir</strong> (<em>string</em>) – (default None) The directory for any result_file. Defaults to the current working directory.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>temp_dir</strong> (<em>string</em>) – (default None) The directory for partial results. Defaults to the <em>result_dir</em>/.working_directory.*{map_reduce’s Name}*.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>logging_handler</strong> (<em>stream</em>) –  (default stdout) Where to output logging messages.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.mapreduce1</span> <span class="k">import</span> <span class="n">map_reduce</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.mapreduce1.runner</span> <span class="k">import</span> <span class="n">LocalInParts</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">holder1</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">runner</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">mapper1</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">reducer1</span><span class="p">(</span><span class="n">sequence</span><span class="p">):</span>
+<span class="gp">... </span>       <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">map_reduce</span><span class="p">(</span><span class="n">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="n">mapper</span><span class="o">=</span><span class="n">mapper1</span><span class="p">,</span><span class="n">reducer</span><span class="o">=</span><span class="n">reducer1</span><span class="p">,</span><span class="n">runner</span><span class="o">=</span><span class="n">runner</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">holder1</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="n">LocalInParts</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span> <span class="c1">#Run part 0 of 4 and save partial results to disk as &#39;0.4.p&#39;.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">holder1</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="n">LocalInParts</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span> <span class="c1">#Run part 1 of 4 and save partial results to disk as &#39;1.4.p&#39;.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">holder1</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="n">LocalInParts</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span> <span class="c1">#Run part 2 of 4 and save partial results to disk as &#39;2.4.p&#39;.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">holder1</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="n">LocalInParts</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span> <span class="c1">#Run part 3 of 4 and save partial results to disk as &#39;3.4.p&#39;.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">holder1</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="n">LocalInParts</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span> <span class="c1">#Read the all partial results and then apply the reduce function and return the result.</span>
+<span class="go">328350</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 </div>
@@ -5723,6 +5972,7 @@ LocalMultiProc is another runner. It can execute FastLmmSet, etc on a multiple p
 <li><a class="reference internal" href="#snpreader-snphdf5"><code class="docutils literal notranslate"><span class="pre">snpreader.SnpHdf5</span></code></a></li>
 <li><a class="reference internal" href="#snpreader-snpnpz"><code class="docutils literal notranslate"><span class="pre">snpreader.SnpNpz</span></code></a></li>
 <li><a class="reference internal" href="#snpreader-snpmemmap"><code class="docutils literal notranslate"><span class="pre">snpreader.SnpMemMap</span></code></a></li>
+<li><a class="reference internal" href="#snpreader-snpgen"><code class="docutils literal notranslate"><span class="pre">snpreader.SnpGen</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-pysnptools.kernelreader"><code class="docutils literal notranslate"><span class="pre">kernelreader</span></code> Module</a><ul>
@@ -5744,7 +5994,7 @@ LocalMultiProc is another runner. It can execute FastLmmSet, etc on a multiple p
 <li><a class="reference internal" href="#standardizer-diagktontrained"><code class="docutils literal notranslate"><span class="pre">standardizer.DiagKtoNTrained</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#kernelstandardizer-module"><code class="docutils literal notranslate"><span class="pre">kernelstandardizer</span></code> Module</a><ul>
+<li><a class="reference internal" href="#module-pysnptools.kernelstandardizer"><code class="docutils literal notranslate"><span class="pre">kernelstandardizer</span></code> Module</a><ul>
 <li><a class="reference internal" href="#kernelstandardizer-kernelstandardizer"><code class="docutils literal notranslate"><span class="pre">kernelstandardizer.KernelStandardizer</span></code></a></li>
 <li><a class="reference internal" href="#kernelstandardizer-diagkton"><code class="docutils literal notranslate"><span class="pre">kernelstandardizer.DiagKtoN</span></code></a></li>
 <li><a class="reference internal" href="#kernelstandardizer-diagktontrained"><code class="docutils literal notranslate"><span class="pre">kernelstandardizer.DiagKtoNTrained</span></code></a></li>
@@ -5762,11 +6012,10 @@ LocalMultiProc is another runner. It can execute FastLmmSet, etc on a multiple p
 <li><a class="reference internal" href="#util-module"><code class="docutils literal notranslate"><span class="pre">util</span></code> Module</a><ul>
 <li><a class="reference internal" href="#module-pysnptools.util"><code class="docutils literal notranslate"><span class="pre">util</span></code></a></li>
 <li><a class="reference internal" href="#util-intrangeset"><code class="docutils literal notranslate"><span class="pre">util.IntRangeSet</span></code></a></li>
-<li><a class="reference internal" href="#module-pysnptools.util.snpgen.SnpGen"><code class="docutils literal notranslate"><span class="pre">util.snpgen.SnpGen</span></code></a></li>
 <li><a class="reference internal" href="#module-pysnptools.util.pheno"><code class="docutils literal notranslate"><span class="pre">util.pheno</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-pysnptools.util.mapreduce1"><code class="docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1</span></code> Module</a><ul>
+<li><a class="reference internal" href="#pysnptools-util-mapreduce1-module"><code class="docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1</span></code> Module</a><ul>
 <li><a class="reference internal" href="#pysnptools-util-mapreduce1-runner-runner"><code class="docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1.runner.Runner</span></code></a></li>
 <li><a class="reference internal" href="#pysnptools-util-mapreduce1-runner-local"><code class="docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1.runner.Local</span></code></a></li>
 <li><a class="reference internal" href="#pysnptools-util-mapreduce1-runner-localmultiproc"><code class="docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1.runner.LocalMultiProc</span></code></a></li>
@@ -5811,11 +6060,11 @@ LocalMultiProc is another runner. It can execute FastLmmSet, etc on a multiple p
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">pysnptools 0.0.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">pysnptools 0.0.2 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2014, Carl Kadie.
+        &#169; Copyright 20198.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
     </div>
   </body>

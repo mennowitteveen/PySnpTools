@@ -8,6 +8,8 @@ PySnpTools: A library for reading and manipulating genetic data.
 
 * :mod:`.snpreader`: Efficiently read genetic PLINK formats including \*.bed/bim/fam and phenotype files. Also, efficiently read *parts* of files and standardize data.
 
+* :class:`.snpreader.SnpGen`: Generate synthetic SNP data on the fly.
+
 * :mod:`.kernelreader`: Efficiently create, read, and manipulate kernel data.
 
 * :mod:`.standardizer`: Specify standardizers for :mod:`.snpreader`.
@@ -21,9 +23,7 @@ PySnpTools: A library for reading and manipulating genetic data.
 * :class:`.util.IntRangeSet`: Efficiently manipulate ranges of integers -- for example, genetic position -- with set operators including
   union, intersection, and set difference. 
 
-* :mod:`.util.snpgen`: Generate synthetic SNP data on the fly 
-
-* :mod:`.util.mapreduce1`: !!!cmk
+* :mod:`.util.mapreduce1`: Run in parallel on multiple processes, threads, or clusters.
 
 
 :Tutorial:
@@ -144,6 +144,14 @@ PySnpTools: A library for reading and manipulating genetic data.
 	:special-members:
     :exclude-members: copyinputs, col, col_property, row, row_property
 
+:class:`snpreader.SnpGen`
+++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.snpreader.SnpGen
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: copyinputs, col, col_property, row, row_property
 
 ****************************
 :mod:`kernelreader` Module
@@ -294,6 +302,13 @@ PySnpTools: A library for reading and manipulating genetic data.
 :mod:`kernelstandardizer` Module
 ******************************************************
 
+.. automodule:: pysnptools.kernelstandardizer
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+
+
 :class:`kernelstandardizer.KernelStandardizer`
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 .. autoclass:: pysnptools.kernelstandardizer.KernelStandardizer
@@ -411,14 +426,6 @@ PySnpTools: A library for reading and manipulating genetic data.
   :special-members:
   :exclude-members: __and__, __weakref__,__module__,__dict__, __add__
 
-:mod:`util.snpgen.SnpGen`
-++++++++++++++++++++++++++
-.. automodule:: pysnptools.util.snpgen.SnpGen
-    :members:
-    :undoc-members:
-	:show-inheritance:
-	:special-members:
-    :exclude-members: copyinputs, col, col_property, row, row_property, col_count, iid, iid_count, pos, row_count, shape, sid,sid_count
 
 :mod:`util.pheno`
 +++++++++++++++++++++++++++++++++++++++++++++
@@ -432,19 +439,7 @@ PySnpTools: A library for reading and manipulating genetic data.
 :mod:`pysnptools.util.mapreduce1` Module
 *******************************************
 
-.. automodule:: pysnptools.util.mapreduce1
-    :members:
-    :undoc-members:
-	:show-inheritance:
-	:special-members:
-	:exclude-members:
-
-.. automodule:: pysnptools.util.mapreduce1.mapreduce
-    :members:
-    :undoc-members:
-	:show-inheritance:
-	:special-members:
-	:exclude-members:
+.. autofunction:: pysnptools.util.mapreduce1.map_reduce
 
 :class:`pysnptools.util.mapreduce1.runner.Runner`
 ++++++++++++++++++++++++++++++++++++++++++++++++++

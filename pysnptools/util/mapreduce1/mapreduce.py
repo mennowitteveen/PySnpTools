@@ -156,6 +156,7 @@ def map_reduce(input_seq, mapper=_identity, reducer=list, input_files=None, outp
 
     :rtype: The results from the reducer.
 
+
     :Example:
 
     Square the numbers 0 to 99 and report their sum, locally:
@@ -168,7 +169,7 @@ def map_reduce(input_seq, mapper=_identity, reducer=list, input_files=None, outp
         ...        runner=None)
         328350
 
-    Multithreading on four processors:
+    Compute it again, this time run on four processors:
 
         >>> map_reduce(xrange(100), 
         ...        mapper=lambda x: x*x,
@@ -176,7 +177,7 @@ def map_reduce(input_seq, mapper=_identity, reducer=list, input_files=None, outp
         ...        runner=LocalMultiProc(4))
         328350
 
-    Again on four processors, now with named functions:
+    Compute it using named functions, again using four processors:
 
         >>> def holder1(n,runner):
         ...     def mapper1(x):

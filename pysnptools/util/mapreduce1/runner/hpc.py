@@ -1,8 +1,3 @@
-'''
-Runs a distributable job on an HPC cluster. Its run method return 'None'
-
-See SamplePi.py for examples.
-'''
 
 from pysnptools.util.mapreduce1.runner import *
 import os
@@ -18,6 +13,9 @@ except:
     import cPickle as pickle
 
 class HPC(Runner):
+    '''
+    Old code to run on a Microsoft Widows HPC Cluster. Not currently supported.
+    '''
     #!!LATER make it (and Hadoop) work from root directories -- or give a clear error message
     def __init__(self, taskcount, clustername, fileshare, priority="Normal", unit="core", mkl_num_threads=None, runtime="infinite", remote_python_parent=None,
                 update_remote_python_parent=False, min=None, max=None, excluded_nodes=[], template=None, nodegroups=None, skipinputcopy=False, node_local=True,clean_up=True,preemptable=True,FailOnTaskFailure=False,logging_handler=logging.StreamHandler(sys.stdout)):

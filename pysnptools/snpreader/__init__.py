@@ -29,5 +29,6 @@ from pysnptools.snpreader.pairs import Pairs
 from pysnptools.snpreader.snpmemmap import SnpMemMap
 from pysnptools.snpreader._mergesids import _MergeSIDs
 from pysnptools.snpreader._mergeiids import _MergeIIDs
+from pysnptools.snpreader.snpgen import SnpGen
 
 

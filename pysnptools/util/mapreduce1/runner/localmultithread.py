@@ -1,10 +1,4 @@
-'''
-Runs a distributable job on multiple processors.  Returns the value of the job.
-
-See SamplePi.py for examples.
-'''
-
-from pysnptools.util.mapreduce1.runner import Runner,_JustCheckExists, _run_all_in_memory
+from pysnptools.util.mapreduce1.runner import Runner,_JustCheckExists, _run_all_in_memory, _shape_to_desired_workcount, _work_sequence_for_one_index
 import os
 import logging
 try:
@@ -18,7 +12,30 @@ import pysnptools.util as util
 from Queue import PriorityQueue
 
 class LocalMultiThread(Runner):
-    '''Designed so that reduce will start running as soon as the 1st task as finished
+    '''
+    A :class:`.Runner` that runs a :func:`.map_reduce` as multiple threads on a single machine.
+
+    Note that Python has problems running some programs efficiently on multiple threads. (Search 'python global interpreter lock' for details.)
+    Of this doesn't work consider :class:`LocalMultiProc`.
+
+    **Constructor:**
+        :Parameters: * **taskcount** (*number*) -- The number of threads to run on.
+        :Parameters: * **mkl_num_threads** (*number*) -- (default None) Limit on the number threads used by the NumPy MKL library.
+        :Parameters: * **just_one_process** (*bool*) -- (default False) Divide the work for multiple threads, but sequentially on one thread. Can be useful for debugging.
+        
+        :Example:
+
+        >>> from pysnptools.util.mapreduce1 import map_reduce
+        >>> from pysnptools.util.mapreduce1.runner import LocalMultiThread
+        >>> def holder1(n,runner):
+        ...     def mapper1(x):
+        ...         return x*x
+        ...     def reducer1(sequence):
+        ...        return sum(sequence)
+        ...     return map_reduce(xrange(n),mapper=mapper1,reducer=reducer1,runner=runner)
+        >>> holder1(100,LocalMultiThread(4))
+        328350
+
     '''
 
     def __init__(self, taskcount, mkl_num_threads = None, just_one_process = False,):
@@ -42,11 +59,11 @@ class LocalMultiThread(Runner):
 
         priority_queue = PriorityQueue()
         thread_list = []
-        shaped_distributable = shape_to_desired_workcount(distributable, self.taskcount)
+        shaped_distributable = _shape_to_desired_workcount(distributable, self.taskcount)
         for taskindex in xrange(self.taskcount):
             def _target(taskindex=taskindex):
                 result_list = []
-                for work in work_sequence_for_one_index(shaped_distributable, self.taskcount, taskindex):
+                for work in _work_sequence_for_one_index(shaped_distributable, self.taskcount, taskindex):
                     result_list.append(_run_all_in_memory(work))
                 priority_queue.put((taskindex,result_list))
             if not self.just_one_process:
@@ -62,3 +79,9 @@ class LocalMultiThread(Runner):
 
         _JustCheckExists().output(distributable)
         return result
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+
+    import doctest
+    doctest.testmod()

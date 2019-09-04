@@ -162,15 +162,14 @@ def map_reduce(input_seq, mapper=_identity, reducer=list, input_files=None, outp
     Square the numbers 0 to 99 and report their sum, locally:
 
         >>> from pysnptools.util.mapreduce1 import map_reduce
-        >>> from pysnptools.util.mapreduce1.runner import Local, LocalMultiProc
         >>> map_reduce(xrange(100), 
         ...        mapper=lambda x: x*x,
-        ...        reducer=sum,
-        ...        runner=None)
+        ...        reducer=sum)
         328350
 
     Compute it again, this time run on four processors:
 
+        >>> from pysnptools.util.mapreduce1.runner import LocalMultiProc
         >>> map_reduce(xrange(100), 
         ...        mapper=lambda x: x*x,
         ...        reducer=sum,

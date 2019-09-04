@@ -58,7 +58,7 @@
 <li><a class="reference internal" href="#module-pysnptools.util" title="pysnptools.util"><code class="xref py py-mod docutils literal notranslate"><span class="pre">util</span></code></a>: In one line, intersect and re-order IIDs from <a class="reference internal" href="#module-pysnptools.snpreader" title="pysnptools.snpreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">snpreader</span></code></a>, <a class="reference internal" href="#module-pysnptools.kernelreader" title="pysnptools.kernelreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">kernelreader</span></code></a> and other sources. Also, efficiently extract a submatrix from an ndarray.</li>
 <li><a class="reference internal" href="#pysnptools.util.IntRangeSet" title="pysnptools.util.IntRangeSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">util.IntRangeSet</span></code></a>: Efficiently manipulate ranges of integers – for example, genetic position – with set operators including
 union, intersection, and set difference.</li>
-<li><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.mapreduce1</span></code>: Run in parallel on multiple processes, threads, or clusters.</li>
+<li><a class="reference internal" href="#module-pysnptools.util.mapreduce1" title="pysnptools.util.mapreduce1"><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.mapreduce1</span></code></a>: Run in parallel on multiple processes, threads, or clusters.</li>
 </ul>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -68,7 +68,8 @@ union, intersection, and set difference.</li>
 </tr>
 </tbody>
 </table>
-<p><em>From PyData Conference, Seattle, 2015</em></p>
+<p><em>From PyData Conference, Seattle</em></p>
+<p>#!!!cmk update these and move the zip</p>
 <ul class="simple">
 <li><a class="reference external" href="https://1drv.ms/p/s!AkoPP4cC5J64jOc15JXgDsXmD9EEaw">Slides</a></li>
 <li><a class="reference external" href="https://www.youtube.com/watch?v=KPI6479ctAQ">Video</a></li>
@@ -5647,8 +5648,10 @@ in time linear in the number of ranges, rather than integer elements.</p>
 
 </div>
 </div>
-<div class="section" id="pysnptools-util-mapreduce1-module">
-<h2><code class="xref py py-mod docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1</span></code> Module<a class="headerlink" href="#pysnptools-util-mapreduce1-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-pysnptools.util.mapreduce1">
+<span id="util-mapreduce1-module"></span><h2><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.mapreduce1</span></code> Module<a class="headerlink" href="#module-pysnptools.util.mapreduce1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="util-mapreduce1">
+<h3><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.mapreduce1</span></code><a class="headerlink" href="#util-mapreduce1" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="pysnptools.util.mapreduce1.map_reduce">
 <code class="descclassname">pysnptools.util.mapreduce1.</code><code class="descname">map_reduce</code><span class="sig-paren">(</span><em>input_seq</em>, <em>mapper=&lt;function _identity&gt;</em>, <em>reducer=&lt;type 'list'&gt;</em>, <em>input_files=None</em>, <em>output_files=None</em>, <em>name=None</em>, <em>runner=None</em>, <em>nested=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.mapreduce1.map_reduce" title="Permalink to this definition">¶</a></dt>
@@ -5710,8 +5713,9 @@ If not given, the function is run locally.</li>
 </div>
 </dd></dl>
 
-<div class="section" id="pysnptools-util-mapreduce1-runner-runner">
-<h3><a class="reference internal" href="#pysnptools.util.mapreduce1.runner.Runner" title="pysnptools.util.mapreduce1.runner.Runner"><code class="xref py py-class docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1.runner.Runner</span></code></a><a class="headerlink" href="#pysnptools-util-mapreduce1-runner-runner" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="util-mapreduce1-runner-runner">
+<h3><code class="xref py py-class docutils literal notranslate"><span class="pre">util.mapreduce1.runner.Runner</span></code><a class="headerlink" href="#util-mapreduce1-runner-runner" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="pysnptools.util.mapreduce1.runner.Runner">
 <em class="property">class </em><code class="descclassname">pysnptools.util.mapreduce1.runner.</code><code class="descname">Runner</code><a class="headerlink" href="#pysnptools.util.mapreduce1.runner.Runner" title="Permalink to this definition">¶</a></dt>
@@ -5720,8 +5724,8 @@ If not given, the function is run locally.</li>
 </dd></dl>
 
 </div>
-<div class="section" id="pysnptools-util-mapreduce1-runner-local">
-<h3><a class="reference internal" href="#pysnptools.util.mapreduce1.runner.Local" title="pysnptools.util.mapreduce1.runner.Local"><code class="xref py py-class docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1.runner.Local</span></code></a><a class="headerlink" href="#pysnptools-util-mapreduce1-runner-local" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="util-mapreduce1-runner-local">
+<h3><code class="xref py py-class docutils literal notranslate"><span class="pre">util.mapreduce1.runner.Local</span></code><a class="headerlink" href="#util-mapreduce1-runner-local" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="pysnptools.util.mapreduce1.runner.Local">
 <em class="property">class </em><code class="descclassname">pysnptools.util.mapreduce1.runner.</code><code class="descname">Local</code><span class="sig-paren">(</span><em>mkl_num_threads=None</em>, <em>logging_handler=&lt;logging.StreamHandler object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.mapreduce1.runner.Local" title="Permalink to this definition">¶</a></dt>
@@ -5763,8 +5767,8 @@ If not given, the function is run locally.</li>
 </dd></dl>
 
 </div>
-<div class="section" id="pysnptools-util-mapreduce1-runner-localmultiproc">
-<h3><a class="reference internal" href="#pysnptools.util.mapreduce1.runner.LocalMultiProc" title="pysnptools.util.mapreduce1.runner.LocalMultiProc"><code class="xref py py-class docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1.runner.LocalMultiProc</span></code></a><a class="headerlink" href="#pysnptools-util-mapreduce1-runner-localmultiproc" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="util-mapreduce1-runner-localmultiproc">
+<h3><code class="xref py py-class docutils literal notranslate"><span class="pre">util.mapreduce1.runner.LocalMultiProc</span></code><a class="headerlink" href="#util-mapreduce1-runner-localmultiproc" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="pysnptools.util.mapreduce1.runner.LocalMultiProc">
 <em class="property">class </em><code class="descclassname">pysnptools.util.mapreduce1.runner.</code><code class="descname">LocalMultiProc</code><span class="sig-paren">(</span><em>taskcount</em>, <em>mkl_num_threads=None</em>, <em>just_one_process=False</em>, <em>logging_handler=&lt;logging.StreamHandler object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.mapreduce1.runner.LocalMultiProc" title="Permalink to this definition">¶</a></dt>
@@ -5816,8 +5820,8 @@ If not given, the function is run locally.</li>
 </dd></dl>
 
 </div>
-<div class="section" id="pysnptools-util-mapreduce1-runner-localmultithread">
-<h3><a class="reference internal" href="#pysnptools.util.mapreduce1.runner.LocalMultiThread" title="pysnptools.util.mapreduce1.runner.LocalMultiThread"><code class="xref py py-class docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1.runner.LocalMultiThread</span></code></a><a class="headerlink" href="#pysnptools-util-mapreduce1-runner-localmultithread" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="util-mapreduce1-runner-localmultithread">
+<h3><code class="xref py py-class docutils literal notranslate"><span class="pre">util.mapreduce1.runner.LocalMultiThread</span></code><a class="headerlink" href="#util-mapreduce1-runner-localmultithread" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="pysnptools.util.mapreduce1.runner.LocalMultiThread">
 <em class="property">class </em><code class="descclassname">pysnptools.util.mapreduce1.runner.</code><code class="descname">LocalMultiThread</code><span class="sig-paren">(</span><em>taskcount</em>, <em>mkl_num_threads=None</em>, <em>just_one_process=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.mapreduce1.runner.LocalMultiThread" title="Permalink to this definition">¶</a></dt>
@@ -5866,8 +5870,8 @@ Of this doesn’t work consider <a class="reference internal" href="#pysnptools.
 </dd></dl>
 
 </div>
-<div class="section" id="pysnptools-util-mapreduce1-runner-localinparts">
-<h3><a class="reference internal" href="#pysnptools.util.mapreduce1.runner.LocalInParts" title="pysnptools.util.mapreduce1.runner.LocalInParts"><code class="xref py py-class docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1.runner.LocalInParts</span></code></a><a class="headerlink" href="#pysnptools-util-mapreduce1-runner-localinparts" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="util-mapreduce1-runner-localinparts">
+<h3><code class="xref py py-class docutils literal notranslate"><span class="pre">util.mapreduce1.runner.LocalInParts</span></code><a class="headerlink" href="#util-mapreduce1-runner-localinparts" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="pysnptools.util.mapreduce1.runner.LocalInParts">
 <em class="property">class </em><code class="descclassname">pysnptools.util.mapreduce1.runner.</code><code class="descname">LocalInParts</code><span class="sig-paren">(</span><em>taskindex</em>, <em>taskcount</em>, <em>mkl_num_threads=None</em>, <em>result_file=None</em>, <em>run_dir='.'</em>, <em>temp_dir=None</em>, <em>logging_handler=&lt;logging.StreamHandler object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.mapreduce1.runner.LocalInParts" title="Permalink to this definition">¶</a></dt>
@@ -5895,7 +5899,7 @@ Clustering runners and <a class="reference internal" href="#pysnptools.util.mapr
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>result_file</strong> (<em>string</em>) – (default None) Where to pickle the final results. If no file is given, the final results are returned, but not saved to file.</li>
+<li><strong>result_file</strong> (<em>string</em>) – (default None) Where to pickle the final results. If no file is given, the final results are returned, but not saved to a file.</li>
 </ul>
 </td>
 </tr>
@@ -5905,7 +5909,7 @@ Clustering runners and <a class="reference internal" href="#pysnptools.util.mapr
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>temp_dir</strong> (<em>string</em>) – (default None) The directory for partial results. Defaults to the <em>result_dir</em>/.working_directory.*{map_reduce’s Name}*.</li>
+<li><strong>temp_dir</strong> (<em>string</em>) – (default None) The directory for partial results. Defaults to the <strong>result_dir</strong>/.working_directory.{map_reduce’s Name}.</li>
 </ul>
 </td>
 </tr>
@@ -6015,12 +6019,13 @@ Clustering runners and <a class="reference internal" href="#pysnptools.util.mapr
 <li><a class="reference internal" href="#module-pysnptools.util.pheno"><code class="docutils literal notranslate"><span class="pre">util.pheno</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#pysnptools-util-mapreduce1-module"><code class="docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1</span></code> Module</a><ul>
-<li><a class="reference internal" href="#pysnptools-util-mapreduce1-runner-runner"><code class="docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1.runner.Runner</span></code></a></li>
-<li><a class="reference internal" href="#pysnptools-util-mapreduce1-runner-local"><code class="docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1.runner.Local</span></code></a></li>
-<li><a class="reference internal" href="#pysnptools-util-mapreduce1-runner-localmultiproc"><code class="docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1.runner.LocalMultiProc</span></code></a></li>
-<li><a class="reference internal" href="#pysnptools-util-mapreduce1-runner-localmultithread"><code class="docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1.runner.LocalMultiThread</span></code></a></li>
-<li><a class="reference internal" href="#pysnptools-util-mapreduce1-runner-localinparts"><code class="docutils literal notranslate"><span class="pre">pysnptools.util.mapreduce1.runner.LocalInParts</span></code></a></li>
+<li><a class="reference internal" href="#module-pysnptools.util.mapreduce1"><code class="docutils literal notranslate"><span class="pre">util.mapreduce1</span></code> Module</a><ul>
+<li><a class="reference internal" href="#util-mapreduce1"><code class="docutils literal notranslate"><span class="pre">util.mapreduce1</span></code></a></li>
+<li><a class="reference internal" href="#util-mapreduce1-runner-runner"><code class="docutils literal notranslate"><span class="pre">util.mapreduce1.runner.Runner</span></code></a></li>
+<li><a class="reference internal" href="#util-mapreduce1-runner-local"><code class="docutils literal notranslate"><span class="pre">util.mapreduce1.runner.Local</span></code></a></li>
+<li><a class="reference internal" href="#util-mapreduce1-runner-localmultiproc"><code class="docutils literal notranslate"><span class="pre">util.mapreduce1.runner.LocalMultiProc</span></code></a></li>
+<li><a class="reference internal" href="#util-mapreduce1-runner-localmultithread"><code class="docutils literal notranslate"><span class="pre">util.mapreduce1.runner.LocalMultiThread</span></code></a></li>
+<li><a class="reference internal" href="#util-mapreduce1-runner-localinparts"><code class="docutils literal notranslate"><span class="pre">util.mapreduce1.runner.LocalInParts</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and Tables</a></li>

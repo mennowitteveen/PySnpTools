@@ -28,7 +28,9 @@ PySnpTools: A library for reading and manipulating genetic data.
 
 :Tutorial:
 
-*From PyData Conference, Seattle, 2015*
+*From PyData Conference, Seattle*
+
+#!!!cmk update these and move the zip
 
 * `Slides <https://1drv.ms/p/s!AkoPP4cC5J64jOc15JXgDsXmD9EEaw>`_
 * `Video <https://www.youtube.com/watch?v=KPI6479ctAQ>`_
@@ -436,12 +438,21 @@ PySnpTools: A library for reading and manipulating genetic data.
 	:special-members:
 
 *******************************************
-:mod:`pysnptools.util.mapreduce1` Module
+:mod:`util.mapreduce1` Module
 *******************************************
+.. automodule:: pysnptools.util.mapreduce1
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+
+
+:mod:`util.mapreduce1`
+++++++++++++++++++++++++++
 
 .. autofunction:: pysnptools.util.mapreduce1.map_reduce
 
-:class:`pysnptools.util.mapreduce1.runner.Runner`
+:class:`util.mapreduce1.runner.Runner`
 ++++++++++++++++++++++++++++++++++++++++++++++++++
 .. autoclass:: pysnptools.util.mapreduce1.runner.Runner
     :members:
@@ -450,7 +461,7 @@ PySnpTools: A library for reading and manipulating genetic data.
 	:special-members:
     :exclude-members: run
 
-:class:`pysnptools.util.mapreduce1.runner.Local`
+:class:`util.mapreduce1.runner.Local`
 ++++++++++++++++++++++++++++++++++++++++++++++++++
 .. autoclass:: pysnptools.util.mapreduce1.runner.Local
     :members:
@@ -459,7 +470,7 @@ PySnpTools: A library for reading and manipulating genetic data.
 	:special-members:
     :exclude-members: run
 
-:class:`pysnptools.util.mapreduce1.runner.LocalMultiProc`
+:class:`util.mapreduce1.runner.LocalMultiProc`
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 .. autoclass:: pysnptools.util.mapreduce1.runner.LocalMultiProc
     :members:
@@ -468,7 +479,7 @@ PySnpTools: A library for reading and manipulating genetic data.
 	:special-members:
     :exclude-members: run
 
-:class:`pysnptools.util.mapreduce1.runner.LocalMultiThread`
+:class:`util.mapreduce1.runner.LocalMultiThread`
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 .. autoclass:: pysnptools.util.mapreduce1.runner.LocalMultiThread
     :members:
@@ -477,7 +488,7 @@ PySnpTools: A library for reading and manipulating genetic data.
 	:special-members:
     :exclude-members: run
 
-:class:`pysnptools.util.mapreduce1.runner.LocalInParts`
+:class:`util.mapreduce1.runner.LocalInParts`
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 .. autoclass:: pysnptools.util.mapreduce1.runner.LocalInParts
     :members:

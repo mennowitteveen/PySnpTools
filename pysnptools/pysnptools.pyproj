@@ -119,13 +119,9 @@
     </Compile>
     <Compile Include="util\mapreduce1\distributable.py" />
     <Compile Include="util\mapreduce1\distributabletest.py" />
-    <Compile Include="util\mapreduce1\deletemedistributed_map.py" />
-    <Compile Include="util\mapreduce1\deleteindirectdistributable.py" />
     <Compile Include="util\mapreduce1\mapreduce.py" />
     <Compile Include="util\mapreduce1\mapreducex.py" />
-    <Compile Include="util\mapreduce1\deletememetadistributable.py" />
     <Compile Include="util\mapreduce1\examples.py" />
-    <Compile Include="util\mapreduce1\deletemetestdistributable.py" />
     <Compile Include="util\mapreduce1\__init__.py">
       <SubType>Code</SubType>
     </Compile>
@@ -137,12 +133,9 @@
     <Compile Include="util\mapreduce1\runner\hadoop2.py" />
     <Compile Include="util\mapreduce1\runner\hpc.py" />
     <Compile Include="util\mapreduce1\runner\local.py" />
-    <Compile Include="util\mapreduce1\runner\delete4melocalfromranges.py" />
     <Compile Include="util\mapreduce1\runner\localinparts.py" />
-    <Compile Include="util\mapreduce1\runner\deletemelocalmapper.py" />
     <Compile Include="util\mapreduce1\runner\localmultiproc.py" />
     <Compile Include="util\mapreduce1\runner\localmultithread.py" />
-    <Compile Include="util\mapreduce1\runner\deletemelocalreducer.py" />
     <Compile Include="util\mapreduce1\runner\__init__.py" />
     <Compile Include="util\__init__.py" />
     <Compile Include="__init__.py">

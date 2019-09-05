@@ -12,7 +12,7 @@ class KernelData(KernelReader,PstData):
     """A :class:`.KernelReader` for holding kernel values in-memory, along with related iid information.
     It is usually created by calling the :meth:`.SnpReader.read_kernel` method on a :class:`.SnpReader`, for example, :class:`.Bed`.
     It can also be created by calling the :meth:`.KernelReader.read` method on :class:`.SnpKernel`, for example, :class:`.KernelNpz`.
-    It can also be constructed.
+    It can also be constructed directly.
 
     See :class:`.KernelReader` for details and examples.
 
@@ -34,11 +34,15 @@ class KernelData(KernelReader,PstData):
 
     **Equality:**
 
-        Two KernelData objects are equal if their three arrays (:attr:`.iid0`, :attr:`.iid1`, and :attr:`.PstData.val`) are 'array_equal'.
+        Two KernelData objects are equal if their three arrays (:attr:`.iid0`, :attr:`.iid1`, and :attr:`.KernelData.val`) are 'array_equal'.
         (Their 'string' does not need to be the same).
+        If either :attr:`.KernelData.val` contains NaN, the objects will not be equal. However, :meth:`.KernelData.allclose` can be used to treat NaN as
+        regular values.
+
 
         :Example:
 
+        >>> import numpy as np
         >>> from pysnptools.kernelreader import KernelData
         >>> kerneldata1 = KernelData(iid=[['fam0','iid0'],['fam0','iid1']], val=[[1.,.5],[.5,1.]])
         >>> kerneldata2 = KernelData(iid=[['fam0','iid0'],['fam0','iid1']], val=[[1.,.5],[.5,1.]])
@@ -50,6 +54,12 @@ class KernelData(KernelReader,PstData):
         >>> kerneldata4 = KernelData(iid=[['fam0','iid0'],['fam0','iid1']], val=[[1.,.5],[.5,1.]])
         >>> print(kerneldata3 == kerneldata4) #False, because the iids are different.
         False
+        >>> kerneldata5 = KernelData(iid=[['fam0','iid0'],['fam0','iid1']], val=[[1.,.5],[.5,np.nan]])
+        >>> kerneldata6 = KernelData(iid=[['fam0','iid0'],['fam0','iid1']], val=[[1.,.5],[.5,np.nan]])
+        >>> print(kerneldata5 == kerneldata6) #False, because the val's contain NaN
+        False
+        >>> print(kerneldata5.allclose(kerneldata6)) #True, if we consider the NaN as regular values, all the arrays have the same values.
+        True
 
 
     **Methods beyond** :class:`.KernelReader`
@@ -89,6 +99,25 @@ class KernelData(KernelReader,PstData):
     >>> print((kerneldata.val[0,1], kerneldata.iid_count))
     (0.5, 2)
     """
+
+    def allclose(a,b,equal_nan=True):
+        '''
+        :param b: Other object with which to compare.
+        :type b: :class:`KernelData`
+        :param equal_nan: (Default: True) Tells if NaN in .val should be treated as regular values when testing equality.
+        :type equal_nan: bool
+
+        >>> import numpy as np
+        >>> kerneldata5 = KernelData(iid=[['fam0','iid0'],['fam0','iid1']], val=[[1.,.5],[.5,np.nan]])
+        >>> kerneldata6 = KernelData(iid=[['fam0','iid0'],['fam0','iid1']], val=[[1.,.5],[.5,np.nan]])
+        >>> print(kerneldata5.allclose(kerneldata6)) #True, if we consider the NaN as regular values, all the arrays have the same values.
+        True
+        >>> print(kerneldata5.allclose(kerneldata6,equal_nan=False)) #False, if we consider the NaN as special values, all the arrays are not equal.
+        False
+
+        '''
+        return PstData.allclose(a,b,equal_nan=equal_nan)
+
 
     #!! SnpData.standardize() changes the str to help show that the data has been standardized. Should this to that too?
     def standardize(self, standardizer=DiagKtoN(), return_trained=False, force_python_only=False):

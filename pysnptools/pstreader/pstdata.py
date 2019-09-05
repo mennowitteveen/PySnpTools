@@ -14,7 +14,7 @@ def _default_empty_creator_val(row_count,col_count):
 
 class PstData(PstReader):
     '''A :class:`.PstReader` for holding values in-memory, along with related row and col information.
-    It is usually created by calling the :meth:`.PstReader.read` method on another :class:`.PstReader`, for example, :class:`.PstNpz`. It can also be constructed.
+    It is usually created by calling the :meth:`.PstReader.read` method on another :class:`.PstReader`, for example, :class:`.PstNpz`. It can also be constructed directly.
 
     See :class:`.PstReader` for details and examples.
 
@@ -36,11 +36,13 @@ class PstData(PstReader):
 
     **Equality:**
 
-        Two PstData objects are equal if their five arrays (:attr:`.PstReader.row`, :attr:`.PstReader.col`, :attr:`.PstReader.val`, :attr:`.PstReader.row_property`, and :attr:`.PstReader.col_property`) are 'array_equal'.
-        (Their 'name' does not need to be the same).
+        Two PstData objects are equal if their five arrays (:attr:`.PstData.val`, :attr:`.PstReader.row`, :attr:`.PstReader.col`, :attr:`.PstReader.row_property`, and :attr:`.PstReader.col_property`) are 'array_equal'.
+        (Their 'name' does not need to be the same). If either :attr:`.PstData.val` contains NaN, the objects will not be equal. However, :meth:`.PstData.allclose` can be used to treat NaN as
+        regular values.
 
         :Example:
 
+        >>> import numpy as np
         >>> from pysnptools.pstreader import PstData
         >>> pstdata1 = PstData(row=[['fam0','iid0'],['fam0','iid1']], col=['snp334','snp349','snp921'], val=[[0.,2.,0.],[0.,1.,2.]])
         >>> pstdata2 = PstData(row=[['fam0','iid0'],['fam0','iid1']], col=['snp334','snp349','snp921'], val=[[0.,2.,0.],[0.,1.,2.]])
@@ -52,7 +54,12 @@ class PstData(PstReader):
         >>> pstdata4 = PstData(row=[['fam0','iid0'],['fam0','iid1']], col=['snp334','snp349','snp921'], val=[[0.,2.,0.],[0.,1.,2.]])
         >>> print(pstdata3 == pstdata4) #False, because the rows have different ids.
         False
-
+        >>> pstdata5 = PstData(row=[['fam0','iid0'],['fam0','iid1']], col=['snp334','snp349','snp921'], val=[[0.,2.,0.],[0.,1.,np.nan]])
+        >>> pstdata6 = PstData(row=[['fam0','iid0'],['fam0','iid1']], col=['snp334','snp349','snp921'], val=[[0.,2.,0.],[0.,1.,np.nan]])
+        >>> print(pstdata5 == pstdata6) #False, because the val's contain NaN
+        False
+        >>> print(pstdata5.allclose(pstdata6)) #True, if we consider the NaN as regular values, all the arrays have the same values.
+        True
 
     **Methods beyond** :class:`.PstReader`
 
@@ -83,7 +90,19 @@ class PstData(PstReader):
 
     def allclose(a,b,equal_nan=True):
         '''
-        !!!cmk document
+        :param b: Other object with which to compare.
+        :type b: :class:`PstData`
+        :param equal_nan: (Default: True) Tells if NaN in .val should be treated as regular values when testing equality.
+        :type equal_nan: bool
+
+        >>> import numpy as np
+        >>> pstdata5 = PstData(row=[['fam0','iid0'],['fam0','iid1']], col=['snp334','snp349','snp921'], val=[[0.,2.,0.],[0.,1.,np.nan]])
+        >>> pstdata6 = PstData(row=[['fam0','iid0'],['fam0','iid1']], col=['snp334','snp349','snp921'], val=[[0.,2.,0.],[0.,1.,np.nan]])
+        >>> print(pstdata5.allclose(pstdata6)) #True, if we consider the NaN as regular values, all the arrays have the same values.
+        True
+        >>> print(pstdata5.allclose(pstdata6,equal_nan=False)) #False, if we consider the NaN as special values, all the arrays are not equal.
+        False
+
         '''
         try:
             return (np.array_equal(a.row,b.row) and

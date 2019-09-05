@@ -12,7 +12,7 @@ import time
 
 class SnpData(PstData,SnpReader):
     """A :class:`.SnpReader` for holding SNP values (or similar values) in-memory, along with related iid and sid information.
-    It is usually created by calling the :meth:`.SnpReader.read` method on another :class:`.SnpReader`, for example, :class:`.Bed`. It can also be constructed.
+    It is usually created by calling the :meth:`.SnpReader.read` method on another :class:`.SnpReader`, for example, :class:`.Bed`. It can also be constructed directly.
 
     See :class:`.SnpReader` for details and examples.
 
@@ -33,11 +33,14 @@ class SnpData(PstData,SnpReader):
 
     **Equality:**
 
-        Two SnpData objects are equal if their four arrays (:attr:`SnpReader.iid`, :attr:`.SnpReader.sid`, :attr:`.SnpReader.val`, and :attr:`.SnpReader.pos_property`) are 'array_equal'.
+        Two SnpData objects are equal if their four arrays (:attr:`.SnpData.val`, :attr:`SnpReader.iid`, :attr:`.SnpReader.sid`, and :attr:`.SnpReader.pos_property`) are 'array_equal'.
         (Their 'name' does not need to be the same).
+        If either :attr:`.SnpData.val` contains NaN, the objects will not be equal. However, :meth:`.SnpData.allclose` can be used to treat NaN as
+        regular values.
 
         :Example:
 
+        >>> import numpy as np
         >>> from pysnptools.snpreader import SnpData
         >>> snpdata1 = SnpData(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'], val=[[0.,2.,0.],[0.,1.,2.]], pos=[[0,0,0],[0,0,0],[0,0,0]])
         >>> snpdata2 = SnpData(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'], val=[[0.,2.,0.],[0.,1.,2.]], pos=[[0,0,0],[0,0,0],[0,0,0]])
@@ -49,6 +52,12 @@ class SnpData(PstData,SnpReader):
         >>> snpdata4 = SnpData(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'], val=[[0.,2.,0.],[0.,1.,2.]], pos=[[0,0,0],[0,0,0],[0,0,0]])
         >>> print(snpdata3 == snpdata4) #False, because the iids are different.
         False
+        >>> snpdata5 = SnpData(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'], val=[[0.,2.,0.],[0.,1.,np.nan]], pos=[[0,0,0],[0,0,0],[0,0,0]])
+        >>> snpdata6 = SnpData(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'], val=[[0.,2.,0.],[0.,1.,np.nan]], pos=[[0,0,0],[0,0,0],[0,0,0]])
+        >>> print(snpdata5 == snpdata6) #False, because the val's contain NaN
+        False
+        >>> print(snpdata5.allclose(snpdata6)) #True, if we consider the NaN as regular values, all the arrays have the same values.
+        True
 
     **Methods beyond** :class:`.SnpReader`
     """
@@ -78,6 +87,24 @@ class SnpData(PstData,SnpReader):
     >>> print(snpdata.val[4,100]) #print one of the SNP values
     2.0
     """
+
+    def allclose(a,b,equal_nan=True):
+        '''
+        :param b: Other object with which to compare.
+        :type b: :class:`SnpData`
+        :param equal_nan: (Default: True) Tells if NaN in .val should be treated as regular values when testing equality.
+        :type equal_nan: bool
+
+        >>> import numpy as np
+        >>> snpdata5 = SnpData(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'], val=[[0.,2.,0.],[0.,1.,np.nan]], pos=[[0,0,0],[0,0,0],[0,0,0]])
+        >>> snpdata6 = SnpData(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'], val=[[0.,2.,0.],[0.,1.,np.nan]], pos=[[0,0,0],[0,0,0],[0,0,0]])
+        >>> print(snpdata5.allclose(snpdata6)) #True, if we consider the NaN as regular values, all the arrays have the same values.
+        True
+        >>> print(snpdata5.allclose(snpdata6,equal_nan=False)) #False, if we consider the NaN as special values, all the arrays are not equal.
+        False
+
+        '''
+        return PstData.allclose(a,b,equal_nan=equal_nan)
 
     def train_standardizer(self, apply_in_place, standardizer=Unit(), force_python_only=False):
         """

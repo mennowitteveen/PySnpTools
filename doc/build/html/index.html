@@ -206,6 +206,7 @@ See below for details.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata</span> <span class="o">=</span> <span class="n">Pheno</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.phe&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="c1"># Read data from Pheno format</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pstutil</span><span class="o">.</span><span class="n">create_directory_if_necessary</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata.bed&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Bed</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata.bed&quot;</span><span class="p">,</span><span class="n">snpdata</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>   <span class="c1"># Write data in Bed format</span>
+<span class="go">Bed(&#39;tempdir/toydata.bed&#39;,count_A1=False)</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -811,16 +812,19 @@ share memory and so it may ignore your suggestion and allocate a new ndarray any
 <dl class="staticmethod">
 <dt id="pysnptools.snpreader.Bed.write">
 <em class="property">static </em><code class="descname">write</code><span class="sig-paren">(</span><em>filename</em>, <em>snpdata</em>, <em>count_A1=False</em>, <em>force_python_only=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.Bed.write" title="Permalink to this definition">¶</a></dt>
-<dd><p>Writes a <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> to Bed format.</p>
+<dd><p>Writes a <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> to Bed format and returns the <a class="reference internal" href="#pysnptools.snpreader.Bed" title="pysnptools.snpreader.Bed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bed</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>filename</strong> (<em>string</em>) – the name of the file to create</li>
 <li><strong>snpdata</strong> (<a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a>) – The in-memory data that should be written to disk.</li>
 <li><strong>count_A1</strong> (<em>bool</em>) – Tells if it should count the number of A1 alleles (the PLINK standard) or the number of A2 alleles. False is the current default, but in the future the default will change to True.</li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pysnptools.snpreader.Bed" title="pysnptools.snpreader.Bed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bed</span></code></a></p>
 </td>
 </tr>
 </tbody>
@@ -830,6 +834,7 @@ share memory and so it may ignore your suggestion and allocate a new ndarray any
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata</span> <span class="o">=</span> <span class="n">Pheno</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.phe&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>         <span class="c1"># Read data from Pheno format</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pstutil</span><span class="o">.</span><span class="n">create_directory_if_necessary</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata.bed&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Bed</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata.bed&quot;</span><span class="p">,</span><span class="n">snpdata</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>   <span class="c1"># Write data in Bed format</span>
+<span class="go">Bed(&#39;tempdir/toydata.bed&#39;,count_A1=False)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -843,7 +848,7 @@ share memory and so it may ignore your suggestion and allocate a new ndarray any
 <dt id="pysnptools.snpreader.SnpData">
 <em class="property">class </em><code class="descclassname">pysnptools.snpreader.</code><code class="descname">SnpData</code><span class="sig-paren">(</span><em>iid</em>, <em>sid</em>, <em>val</em>, <em>pos=None</em>, <em>name=None</em>, <em>parent_string=None</em>, <em>copyinputs_function=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpData" title="Permalink to this definition">¶</a></dt>
 <dd><p>A <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> for holding SNP values (or similar values) in-memory, along with related iid and sid information.
-It is usually created by calling the <a class="reference internal" href="#pysnptools.snpreader.SnpReader.read" title="pysnptools.snpreader.SnpReader.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SnpReader.read()</span></code></a> method on another <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a>, for example, <a class="reference internal" href="#pysnptools.snpreader.Bed" title="pysnptools.snpreader.Bed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bed</span></code></a>. It can also be constructed.</p>
+It is usually created by calling the <a class="reference internal" href="#pysnptools.snpreader.SnpReader.read" title="pysnptools.snpreader.SnpReader.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SnpReader.read()</span></code></a> method on another <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a>, for example, <a class="reference internal" href="#pysnptools.snpreader.Bed" title="pysnptools.snpreader.Bed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bed</span></code></a>. It can also be constructed directly.</p>
 <p>See <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> for details and examples.</p>
 <dl class="docutils">
 <dt><strong>Constructor:</strong></dt>
@@ -875,8 +880,10 @@ It is usually created by calling the <a class="reference internal" href="#pysnpt
 </dl>
 <p><strong>Equality:</strong></p>
 <blockquote>
-<div><p>Two SnpData objects are equal if their four arrays (<a class="reference internal" href="#pysnptools.snpreader.SnpReader.iid" title="pysnptools.snpreader.SnpReader.iid"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpReader.iid</span></code></a>, <a class="reference internal" href="#pysnptools.snpreader.SnpReader.sid" title="pysnptools.snpreader.SnpReader.sid"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpReader.sid</span></code></a>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpReader.val</span></code>, and <code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpReader.pos_property</span></code>) are ‘array_equal’.
-(Their ‘name’ does not need to be the same).</p>
+<div><p>Two SnpData objects are equal if their four arrays (<a class="reference internal" href="#pysnptools.snpreader.SnpData.val" title="pysnptools.snpreader.SnpData.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpData.val</span></code></a>, <a class="reference internal" href="#pysnptools.snpreader.SnpReader.iid" title="pysnptools.snpreader.SnpReader.iid"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpReader.iid</span></code></a>, <a class="reference internal" href="#pysnptools.snpreader.SnpReader.sid" title="pysnptools.snpreader.SnpReader.sid"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpReader.sid</span></code></a>, and <code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpReader.pos_property</span></code>) are ‘array_equal’.
+(Their ‘name’ does not need to be the same).
+If either <a class="reference internal" href="#pysnptools.snpreader.SnpData.val" title="pysnptools.snpreader.SnpData.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpData.val</span></code></a> contains NaN, the objects will not be equal. However, <a class="reference internal" href="#pysnptools.snpreader.SnpData.allclose" title="pysnptools.snpreader.SnpData.allclose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SnpData.allclose()</span></code></a> can be used to treat NaN as
+regular values.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -885,7 +892,8 @@ It is usually created by calling the <a class="reference internal" href="#pysnpt
 </tr>
 </tbody>
 </table>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">SnpData</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">SnpData</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata1</span> <span class="o">=</span> <span class="n">SnpData</span><span class="p">(</span><span class="n">iid</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">sid</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;snp334&#39;</span><span class="p">,</span><span class="s1">&#39;snp349&#39;</span><span class="p">,</span><span class="s1">&#39;snp921&#39;</span><span class="p">],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">]],</span> <span class="n">pos</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata2</span> <span class="o">=</span> <span class="n">SnpData</span><span class="p">(</span><span class="n">iid</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">sid</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;snp334&#39;</span><span class="p">,</span><span class="s1">&#39;snp349&#39;</span><span class="p">,</span><span class="s1">&#39;snp921&#39;</span><span class="p">],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">]],</span> <span class="n">pos</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snpdata1</span> <span class="o">==</span> <span class="n">snpdata2</span><span class="p">)</span> <span class="c1">#True, because all the arrays have the same values.</span>
@@ -896,10 +904,42 @@ It is usually created by calling the <a class="reference internal" href="#pysnpt
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata4</span> <span class="o">=</span> <span class="n">SnpData</span><span class="p">(</span><span class="n">iid</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">sid</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;snp334&#39;</span><span class="p">,</span><span class="s1">&#39;snp349&#39;</span><span class="p">,</span><span class="s1">&#39;snp921&#39;</span><span class="p">],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">]],</span> <span class="n">pos</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snpdata3</span> <span class="o">==</span> <span class="n">snpdata4</span><span class="p">)</span> <span class="c1">#False, because the iids are different.</span>
 <span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata5</span> <span class="o">=</span> <span class="n">SnpData</span><span class="p">(</span><span class="n">iid</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">sid</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;snp334&#39;</span><span class="p">,</span><span class="s1">&#39;snp349&#39;</span><span class="p">,</span><span class="s1">&#39;snp921&#39;</span><span class="p">],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]],</span> <span class="n">pos</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata6</span> <span class="o">=</span> <span class="n">SnpData</span><span class="p">(</span><span class="n">iid</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">sid</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;snp334&#39;</span><span class="p">,</span><span class="s1">&#39;snp349&#39;</span><span class="p">,</span><span class="s1">&#39;snp921&#39;</span><span class="p">],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]],</span> <span class="n">pos</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snpdata5</span> <span class="o">==</span> <span class="n">snpdata6</span><span class="p">)</span> <span class="c1">#False, because the val&#39;s contain NaN</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snpdata5</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">snpdata6</span><span class="p">))</span> <span class="c1">#True, if we consider the NaN as regular values, all the arrays have the same values.</span>
+<span class="go">True</span>
 </pre></div>
 </div>
 </div></blockquote>
 <p><strong>Methods beyond</strong> <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a></p>
+<dl class="method">
+<dt id="pysnptools.snpreader.SnpData.allclose">
+<code class="descname">allclose</code><span class="sig-paren">(</span><em>b</em>, <em>equal_nan=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpData.allclose" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>b</strong> (<a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a>) – Other object with which to compare.</li>
+<li><strong>equal_nan</strong> (<em>bool</em>) – (Default: True) Tells if NaN in .val should be treated as regular values when testing equality.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata5</span> <span class="o">=</span> <span class="n">SnpData</span><span class="p">(</span><span class="n">iid</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">sid</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;snp334&#39;</span><span class="p">,</span><span class="s1">&#39;snp349&#39;</span><span class="p">,</span><span class="s1">&#39;snp921&#39;</span><span class="p">],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]],</span> <span class="n">pos</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata6</span> <span class="o">=</span> <span class="n">SnpData</span><span class="p">(</span><span class="n">iid</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">sid</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;snp334&#39;</span><span class="p">,</span><span class="s1">&#39;snp349&#39;</span><span class="p">,</span><span class="s1">&#39;snp921&#39;</span><span class="p">],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]],</span> <span class="n">pos</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snpdata5</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">snpdata6</span><span class="p">))</span> <span class="c1">#True, if we consider the NaN as regular values, all the arrays have the same values.</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snpdata5</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">snpdata6</span><span class="p">,</span><span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span> <span class="c1">#False, if we consider the NaN as special values, all the arrays are not equal.</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
 <dl class="method">
 <dt id="pysnptools.snpreader.SnpData.standardize">
 <code class="descname">standardize</code><span class="sig-paren">(</span><em>standardizer=Unit()</em>, <em>block_size=None</em>, <em>return_trained=False</em>, <em>force_python_only=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpData.standardize" title="Permalink to this definition">¶</a></dt>
@@ -973,7 +1013,7 @@ standard deviation 1.0) and <a class="reference internal" href="#pysnptools.stan
 <dl class="class">
 <dt id="pysnptools.snpreader.Pheno">
 <em class="property">class </em><code class="descclassname">pysnptools.snpreader.</code><code class="descname">Pheno</code><span class="sig-paren">(</span><em>input</em>, <em>iid_if_none=None</em>, <em>missing=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.Pheno" title="Permalink to this definition">¶</a></dt>
-<dd><p>A <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> for reading “alternative alternative” phenotype files from disk.</p>
+<dd><p>A <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> for reading “alternative” phenotype files from disk.</p>
 <p>See <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> for general examples of using SnpReaders.</p>
 <p>This text format is described in <a class="reference external" href="http://pngu.mgh.harvard.edu/~purcell/plink/data.shtml#pheno">http://pngu.mgh.harvard.edu/~purcell/plink/data.shtml#pheno</a> and looks like:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FID</span>    <span class="n">IID</span>      <span class="n">qt1</span>   <span class="n">bmi</span>    <span class="n">site</span>  
@@ -1024,12 +1064,29 @@ standard deviation 1.0) and <a class="reference internal" href="#pysnptools.stan
 <dl class="staticmethod">
 <dt id="pysnptools.snpreader.Pheno.write">
 <em class="property">static </em><code class="descname">write</code><span class="sig-paren">(</span><em>filename</em>, <em>snpdata</em>, <em>missing='NaN'</em>, <em>sep='\t'</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.Pheno.write" title="Permalink to this definition">¶</a></dt>
-<dd><p>Writes a <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> to Pheno format.</p>
+<dd><p>Writes a <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> to Pheno format and returns the <a class="reference internal" href="#pysnptools.snpreader.Pheno" title="pysnptools.snpreader.Pheno"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pheno</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filename</strong> (<em>string</em>) – the name of the file to create</li>
+<li><strong>missing</strong> (<em>string</em>) – value to threat as missing (default ‘NaN’)</li>
+<li><strong>sep</strong> (<em>string</em>) – the separator (default ‘    ‘)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pysnptools.snpreader.Pheno" title="pysnptools.snpreader.Pheno"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pheno</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Pheno</span><span class="p">,</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pysnptools.util</span> <span class="k">as</span> <span class="nn">pstutil</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.bed&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)[:,:</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>  <span class="c1"># Read first 10 snps from Bed format</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pstutil</span><span class="o">.</span><span class="n">create_directory_if_necessary</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata10.phe&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Pheno</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata10.txt&quot;</span><span class="p">,</span><span class="n">snpdata</span><span class="p">)</span>       <span class="c1"># Write data in Pheno format</span>
+<span class="go">Pheno(&#39;tempdir/toydata10.txt&#39;)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1080,15 +1137,19 @@ standard deviation 1.0) and <a class="reference internal" href="#pysnptools.stan
 <dt id="pysnptools.snpreader.Ped.write">
 <em class="property">static </em><code class="descname">write</code><span class="sig-paren">(</span><em>filename</em>, <em>snpdata</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.Ped.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes a <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> to Ped format. The values must be 0,1,2. The direction of the encoding to allele pairs is arbitrary. This means
-that if a SnpData is written in Ped format and then read back, then 0’s may become 2’s and 2’s may become 0’s. (1’s will stay 1’s).</p>
+that if a SnpData is written in Ped format and then read back, then 0’s may become 2’s and 2’s may become 0’s. (1’s will stay 1’s).
+Returns the <a class="reference internal" href="#pysnptools.snpreader.Ped" title="pysnptools.snpreader.Ped"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ped</span></code></a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>filename</strong> (<em>string</em>) – the name of the file to create</li>
 <li><strong>snpdata</strong> (<a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a>) – The in-memory data that should be written to disk.</li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pysnptools.snpreader.Ped" title="pysnptools.snpreader.Ped"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ped</span></code></a></p>
 </td>
 </tr>
 </tbody>
@@ -1098,6 +1159,7 @@ that if a SnpData is written in Ped format and then read back, then 0’s may be
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.bed&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)[:,:</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>  <span class="c1"># Read first 10 snps from Bed format</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pstutil</span><span class="o">.</span><span class="n">create_directory_if_necessary</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata10.ped&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Ped</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata10.ped&quot;</span><span class="p">,</span><span class="n">snpdata</span><span class="p">)</span>            <span class="c1"># Write data in Ped format</span>
+<span class="go">Ped(&#39;tempdir/toydata10.ped&#39;)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1147,15 +1209,18 @@ that if a SnpData is written in Ped format and then read back, then 0’s may be
 <dl class="staticmethod">
 <dt id="pysnptools.snpreader.Dat.write">
 <em class="property">static </em><code class="descname">write</code><span class="sig-paren">(</span><em>filename</em>, <em>snpdata</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.Dat.write" title="Permalink to this definition">¶</a></dt>
-<dd><p>Writes a <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> to dat/fam/map format.</p>
+<dd><p>Writes a <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> to dat/fam/map format and returns the <a class="reference internal" href="#pysnptools.snpreader.Dat" title="pysnptools.snpreader.Dat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dat</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>filename</strong> (<em>string</em>) – the name of the file to create</li>
 <li><strong>snpdata</strong> (<a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a>) – The in-memory data that should be written to disk.</li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pysnptools.snpreader.Dat" title="pysnptools.snpreader.Dat"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dat</span></code></a></p>
 </td>
 </tr>
 </tbody>
@@ -1165,6 +1230,7 @@ that if a SnpData is written in Ped format and then read back, then 0’s may be
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.bed&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)[:,:</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>  <span class="c1"># Read first 10 snps from Bed format</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pstutil</span><span class="o">.</span><span class="n">create_directory_if_necessary</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata10.dat&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Dat</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata10.dat&quot;</span><span class="p">,</span><span class="n">snpdata</span><span class="p">)</span>              <span class="c1"># Write data in dat/fam/map format</span>
+<span class="go">Dat(&#39;tempdir/toydata10.dat&#39;)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1219,12 +1285,12 @@ Defaults to setting the <a class="reference internal" href="#pysnptools.snpreade
 <dl class="staticmethod">
 <dt id="pysnptools.snpreader.Dense.write">
 <em class="property">static </em><code class="descname">write</code><span class="sig-paren">(</span><em>filename</em>, <em>snpdata</em>, <em>join_iid_function=&lt;function just_case&gt;</em>, <em>join_sid_pos_function=&lt;function just_sid&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.Dense.write" title="Permalink to this definition">¶</a></dt>
-<dd><p>Writes a <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> to Dense format. The values must be 0,1,2 (or missing).</p>
+<dd><p>Writes a <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> to Dense format. The values must be 0,1,2 (or missing). Returns a <a class="reference internal" href="#pysnptools.snpreader.Dense" title="pysnptools.snpreader.Dense"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dense</span></code></a> with the default extractors.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>filename</strong> (<em>string</em>) – the name of the file to create</li>
 <li><strong>snpdata</strong> (<a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a>) – The in-memory data that should be written to disk.</li>
 <li><strong>join_iid_function</strong> (<em>a function</em>) – function to turn a family id and case id into a file id for columns.
@@ -1234,6 +1300,9 @@ Defaults ignoring the <a class="reference internal" href="#pysnptools.snpreader.
 </ul>
 </td>
 </tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pysnptools.snpreader.Dense" title="pysnptools.snpreader.Dense"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dense</span></code></a></p>
+</td>
+</tr>
 </tbody>
 </table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Bed</span>
@@ -1241,6 +1310,7 @@ Defaults ignoring the <a class="reference internal" href="#pysnptools.snpreader.
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.bed&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)[:,:</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>  <span class="c1"># Read first 10 snps from Bed format</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pstutil</span><span class="o">.</span><span class="n">create_directory_if_necessary</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata10.dense.txt&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Dense</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata10.dense.txt&quot;</span><span class="p">,</span><span class="n">snpdata</span><span class="p">)</span>        <span class="c1"># Write data in Dense format</span>
+<span class="go">Dense(&#39;tempdir/toydata10.dense.txt&#39;)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1284,17 +1354,20 @@ val, iid, sid, and pos information in Hdf5 format.</p>
 <dl class="staticmethod">
 <dt id="pysnptools.snpreader.SnpHdf5.write">
 <em class="property">static </em><code class="descname">write</code><span class="sig-paren">(</span><em>filename</em>, <em>snpdata</em>, <em>hdf5_dtype=None</em>, <em>sid_major=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpHdf5.write" title="Permalink to this definition">¶</a></dt>
-<dd><p>Writes a <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> to SnpHdf5 format.</p>
+<dd><p>Writes a <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> to SnpHdf5 format and return a the <a class="reference internal" href="#pysnptools.snpreader.SnpHdf5" title="pysnptools.snpreader.SnpHdf5"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpHdf5</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>filename</strong> (<em>string</em>) – the name of the file to create</li>
 <li><strong>snpdata</strong> (<a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a>) – The in-memory data that should be written to disk.</li>
 <li><strong>hdf5_dtype</strong> (<em>string</em>) – None (use the .val’s dtype) or a Hdf5 dtype, e.g. ‘f8’,’f4’,etc.</li>
 <li><strong>col_major</strong> (<em>bool</em>) – Tells if vals should be stored on disk in sid_major (default) or iid_major format.</li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pysnptools.snpreader.SnpHdf5" title="pysnptools.snpreader.SnpHdf5"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpHdf5</span></code></a></p>
 </td>
 </tr>
 </tbody>
@@ -1304,6 +1377,7 @@ val, iid, sid, and pos information in Hdf5 format.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.bed&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)[:,:</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>     <span class="c1"># Read first 10 snps from Bed format</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pstutil</span><span class="o">.</span><span class="n">create_directory_if_necessary</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata10.snp.hdf5&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">SnpHdf5</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata10.snp.hdf5&quot;</span><span class="p">,</span><span class="n">snpdata</span><span class="p">)</span>        <span class="c1"># Write data in SnpHdf5 format</span>
+<span class="go">SnpHdf5(&#39;tempdir/toydata10.snp.hdf5&#39;)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1347,15 +1421,18 @@ val, iid, sid, and pos information in NPZ format.</p>
 <dl class="staticmethod">
 <dt id="pysnptools.snpreader.SnpNpz.write">
 <em class="property">static </em><code class="descname">write</code><span class="sig-paren">(</span><em>filename</em>, <em>snpdata</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpNpz.write" title="Permalink to this definition">¶</a></dt>
-<dd><p>Writes a <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> to SnpNpz format.</p>
+<dd><p>Writes a <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> to SnpNpz format and returns the <a class="reference internal" href="#pysnptools.snpreader.SnpNpz" title="pysnptools.snpreader.SnpNpz"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpNpz</span></code></a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>filename</strong> (<em>string</em>) – the name of the file to create</li>
 <li><strong>snpdata</strong> (<a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a>) – The in-memory data that should be written to disk.</li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pysnptools.snpreader.SnpNpz" title="pysnptools.snpreader.SnpNpz"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpNpz</span></code></a></p>
 </td>
 </tr>
 </tbody>
@@ -1365,6 +1442,7 @@ val, iid, sid, and pos information in NPZ format.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.bed&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)[:,:</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>     <span class="c1"># Read first 10 snps from Bed format</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pstutil</span><span class="o">.</span><span class="n">create_directory_if_necessary</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata10.snp.npz&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">SnpNpz</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata10.snp.npz&quot;</span><span class="p">,</span><span class="n">snpdata</span><span class="p">)</span>          <span class="c1"># Write data in SnpNpz format</span>
+<span class="go">SnpNpz(&#39;tempdir/toydata10.snp.npz&#39;)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1409,6 +1487,9 @@ val, iid, sid, and pos information in NPZ format.</p>
 </div>
 </dd>
 </dl>
+<p><strong>Methods inherited from</strong> <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a></p>
+<blockquote>
+<div><a class="reference internal" href="#pysnptools.snpreader.SnpData.allclose" title="pysnptools.snpreader.SnpData.allclose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SnpData.allclose()</span></code></a>, <a class="reference internal" href="#pysnptools.snpreader.SnpData.standardize" title="pysnptools.snpreader.SnpData.standardize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SnpData.standardize()</span></code></a>, <a class="reference internal" href="#pysnptools.snpreader.SnpData.train_standardizer" title="pysnptools.snpreader.SnpData.train_standardizer"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SnpData.train_standardizer()</span></code></a></div></blockquote>
 <p><strong>Methods beyond</strong> <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a></p>
 <dl class="staticmethod">
 <dt id="pysnptools.snpreader.SnpMemMap.empty">
@@ -1709,6 +1790,7 @@ See below for details.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.bed&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">read_kernel</span><span class="p">(</span><span class="n">Unit</span><span class="p">())</span>     <span class="c1"># Create a kernel from the data in the Bed file</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pstutil</span><span class="o">.</span><span class="n">create_directory_if_necessary</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata.kernel.npz&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">KernelNpz</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata.kernel.npz&quot;</span><span class="p">,</span><span class="n">kerneldata</span><span class="p">)</span>      <span class="c1"># Write data in KernelNpz format</span>
+<span class="go">KernelNpz(&#39;tempdir/toydata.kernel.npz&#39;)</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -1960,7 +2042,7 @@ share memory and so it may ignore your suggestion and allocate a new ndarray any
 <dd><p>A <a class="reference internal" href="#pysnptools.kernelreader.KernelReader" title="pysnptools.kernelreader.KernelReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelReader</span></code></a> for holding kernel values in-memory, along with related iid information.
 It is usually created by calling the <a class="reference internal" href="#pysnptools.snpreader.SnpReader.read_kernel" title="pysnptools.snpreader.SnpReader.read_kernel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SnpReader.read_kernel()</span></code></a> method on a <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a>, for example, <a class="reference internal" href="#pysnptools.snpreader.Bed" title="pysnptools.snpreader.Bed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bed</span></code></a>.
 It can also be created by calling the <a class="reference internal" href="#pysnptools.kernelreader.KernelReader.read" title="pysnptools.kernelreader.KernelReader.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">KernelReader.read()</span></code></a> method on <a class="reference internal" href="#pysnptools.kernelreader.SnpKernel" title="pysnptools.kernelreader.SnpKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpKernel</span></code></a>, for example, <a class="reference internal" href="#pysnptools.kernelreader.KernelNpz" title="pysnptools.kernelreader.KernelNpz"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelNpz</span></code></a>.
-It can also be constructed.</p>
+It can also be constructed directly.</p>
 <p>See <a class="reference internal" href="#pysnptools.kernelreader.KernelReader" title="pysnptools.kernelreader.KernelReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelReader</span></code></a> for details and examples.</p>
 <dl class="docutils">
 <dt><strong>Constructor:</strong></dt>
@@ -1998,8 +2080,10 @@ It can also be constructed.</p>
 </dl>
 <p><strong>Equality:</strong></p>
 <blockquote>
-<div><p>Two KernelData objects are equal if their three arrays (<a class="reference internal" href="#pysnptools.kernelreader.KernelReader.iid0" title="pysnptools.kernelreader.KernelReader.iid0"><code class="xref py py-attr docutils literal notranslate"><span class="pre">iid0</span></code></a>, <a class="reference internal" href="#pysnptools.kernelreader.KernelReader.iid1" title="pysnptools.kernelreader.KernelReader.iid1"><code class="xref py py-attr docutils literal notranslate"><span class="pre">iid1</span></code></a>, and <a class="reference internal" href="#pysnptools.pstreader.PstData.val" title="pysnptools.pstreader.PstData.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstData.val</span></code></a>) are ‘array_equal’.
-(Their ‘string’ does not need to be the same).</p>
+<div><p>Two KernelData objects are equal if their three arrays (<a class="reference internal" href="#pysnptools.kernelreader.KernelReader.iid0" title="pysnptools.kernelreader.KernelReader.iid0"><code class="xref py py-attr docutils literal notranslate"><span class="pre">iid0</span></code></a>, <a class="reference internal" href="#pysnptools.kernelreader.KernelReader.iid1" title="pysnptools.kernelreader.KernelReader.iid1"><code class="xref py py-attr docutils literal notranslate"><span class="pre">iid1</span></code></a>, and <a class="reference internal" href="#pysnptools.kernelreader.KernelData.val" title="pysnptools.kernelreader.KernelData.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">KernelData.val</span></code></a>) are ‘array_equal’.
+(Their ‘string’ does not need to be the same).
+If either <a class="reference internal" href="#pysnptools.kernelreader.KernelData.val" title="pysnptools.kernelreader.KernelData.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">KernelData.val</span></code></a> contains NaN, the objects will not be equal. However, <a class="reference internal" href="#pysnptools.kernelreader.KernelData.allclose" title="pysnptools.kernelreader.KernelData.allclose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">KernelData.allclose()</span></code></a> can be used to treat NaN as
+regular values.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2008,7 +2092,8 @@ It can also be constructed.</p>
 </tr>
 </tbody>
 </table>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelreader</span> <span class="k">import</span> <span class="n">KernelData</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelreader</span> <span class="k">import</span> <span class="n">KernelData</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata1</span> <span class="o">=</span> <span class="n">KernelData</span><span class="p">(</span><span class="n">iid</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">1.</span><span class="p">,</span><span class="o">.</span><span class="mi">5</span><span class="p">],[</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span><span class="mf">1.</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata2</span> <span class="o">=</span> <span class="n">KernelData</span><span class="p">(</span><span class="n">iid</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">1.</span><span class="p">,</span><span class="o">.</span><span class="mi">5</span><span class="p">],[</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span><span class="mf">1.</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">kerneldata1</span> <span class="o">==</span> <span class="n">kerneldata2</span><span class="p">)</span> <span class="c1">#True, because all the arrays have the same values.</span>
@@ -2019,10 +2104,42 @@ It can also be constructed.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata4</span> <span class="o">=</span> <span class="n">KernelData</span><span class="p">(</span><span class="n">iid</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">1.</span><span class="p">,</span><span class="o">.</span><span class="mi">5</span><span class="p">],[</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span><span class="mf">1.</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">kerneldata3</span> <span class="o">==</span> <span class="n">kerneldata4</span><span class="p">)</span> <span class="c1">#False, because the iids are different.</span>
 <span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata5</span> <span class="o">=</span> <span class="n">KernelData</span><span class="p">(</span><span class="n">iid</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">1.</span><span class="p">,</span><span class="o">.</span><span class="mi">5</span><span class="p">],[</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata6</span> <span class="o">=</span> <span class="n">KernelData</span><span class="p">(</span><span class="n">iid</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">1.</span><span class="p">,</span><span class="o">.</span><span class="mi">5</span><span class="p">],[</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">kerneldata5</span> <span class="o">==</span> <span class="n">kerneldata6</span><span class="p">)</span> <span class="c1">#False, because the val&#39;s contain NaN</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">kerneldata5</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">kerneldata6</span><span class="p">))</span> <span class="c1">#True, if we consider the NaN as regular values, all the arrays have the same values.</span>
+<span class="go">True</span>
 </pre></div>
 </div>
 </div></blockquote>
 <p><strong>Methods beyond</strong> <a class="reference internal" href="#pysnptools.kernelreader.KernelReader" title="pysnptools.kernelreader.KernelReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelReader</span></code></a></p>
+<dl class="method">
+<dt id="pysnptools.kernelreader.KernelData.allclose">
+<code class="descname">allclose</code><span class="sig-paren">(</span><em>b</em>, <em>equal_nan=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.kernelreader.KernelData.allclose" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>b</strong> (<a class="reference internal" href="#pysnptools.kernelreader.KernelData" title="pysnptools.kernelreader.KernelData"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code></a>) – Other object with which to compare.</li>
+<li><strong>equal_nan</strong> (<em>bool</em>) – (Default: True) Tells if NaN in .val should be treated as regular values when testing equality.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata5</span> <span class="o">=</span> <span class="n">KernelData</span><span class="p">(</span><span class="n">iid</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">1.</span><span class="p">,</span><span class="o">.</span><span class="mi">5</span><span class="p">],[</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata6</span> <span class="o">=</span> <span class="n">KernelData</span><span class="p">(</span><span class="n">iid</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">1.</span><span class="p">,</span><span class="o">.</span><span class="mi">5</span><span class="p">],[</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">kerneldata5</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">kerneldata6</span><span class="p">))</span> <span class="c1">#True, if we consider the NaN as regular values, all the arrays have the same values.</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">kerneldata5</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">kerneldata6</span><span class="p">,</span><span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span> <span class="c1">#False, if we consider the NaN as special values, all the arrays are not equal.</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
 <dl class="method">
 <dt id="pysnptools.kernelreader.KernelData.standardize">
 <code class="descname">standardize</code><span class="sig-paren">(</span><em>standardizer=DiagKtoN()</em>, <em>return_trained=False</em>, <em>force_python_only=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.kernelreader.KernelData.standardize" title="Permalink to this definition">¶</a></dt>
@@ -2105,15 +2222,18 @@ val, iid0, and iid1 information in NPZ format.</p>
 <dl class="staticmethod">
 <dt id="pysnptools.kernelreader.KernelNpz.write">
 <em class="property">static </em><code class="descname">write</code><span class="sig-paren">(</span><em>filename</em>, <em>kerneldata</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.kernelreader.KernelNpz.write" title="Permalink to this definition">¶</a></dt>
-<dd><p>Writes a <a class="reference internal" href="#pysnptools.kernelreader.KernelData" title="pysnptools.kernelreader.KernelData"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code></a> to KernelNpz format.</p>
+<dd><p>Writes a <a class="reference internal" href="#pysnptools.kernelreader.KernelData" title="pysnptools.kernelreader.KernelData"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code></a> to KernelNpz format and returns the <a class="reference internal" href="#pysnptools.kernelreader.KernelNpz" title="pysnptools.kernelreader.KernelNpz"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelNpz</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>filename</strong> (<em>string</em>) – the name of the file to create</li>
 <li><strong>kerneldata</strong> (<a class="reference internal" href="#pysnptools.kernelreader.KernelData" title="pysnptools.kernelreader.KernelData"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code></a>) – The in-memory data that should be written to disk.</li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pysnptools.kernelreader.KernelNpz" title="pysnptools.kernelreader.KernelNpz"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelNpz</span></code></a></p>
 </td>
 </tr>
 </tbody>
@@ -2124,6 +2244,7 @@ val, iid0, and iid1 information in NPZ format.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.bed&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">read_kernel</span><span class="p">(</span><span class="n">Unit</span><span class="p">())</span>     <span class="c1"># Create a kernel from the data in the Bed file</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pstutil</span><span class="o">.</span><span class="n">create_directory_if_necessary</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata.kernel.npz&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">KernelNpz</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata.kernel.npz&quot;</span><span class="p">,</span><span class="n">kerneldata</span><span class="p">)</span>      <span class="c1"># Write data in KernelNpz format</span>
+<span class="go">KernelNpz(&#39;tempdir/toydata.kernel.npz&#39;)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -2167,17 +2288,20 @@ val, iid, sid, and pos information in Hdf5 format.</p>
 <dl class="staticmethod">
 <dt id="pysnptools.kernelreader.KernelHdf5.write">
 <em class="property">static </em><code class="descname">write</code><span class="sig-paren">(</span><em>filename</em>, <em>kerneldata</em>, <em>hdf5_dtype=None</em>, <em>sid_major=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.kernelreader.KernelHdf5.write" title="Permalink to this definition">¶</a></dt>
-<dd><p>Writes a <a class="reference internal" href="#pysnptools.kernelreader.KernelData" title="pysnptools.kernelreader.KernelData"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code></a> to KernelHdf5 format.</p>
+<dd><p>Writes a <a class="reference internal" href="#pysnptools.kernelreader.KernelData" title="pysnptools.kernelreader.KernelData"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code></a> to KernelHdf5 format and returns the <a class="reference internal" href="#pysnptools.kernelreader.KernelHdf5" title="pysnptools.kernelreader.KernelHdf5"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelHdf5</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>filename</strong> (<em>string</em>) – the name of the file to create</li>
 <li><strong>kerneldata</strong> (<a class="reference internal" href="#pysnptools.kernelreader.KernelData" title="pysnptools.kernelreader.KernelData"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code></a>) – The in-memory data that should be written to disk.</li>
 <li><strong>hdf5_dtype</strong> (<em>string</em>) – None (use the .val’s dtype) or a Hdf5 dtype, e.g. ‘f8’,’f4’,etc.</li>
 <li><strong>col_major</strong> (<em>bool</em>) – Tells if vals should be stored on disk in sid_major (default) or iid_major format.</li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pysnptools.kernelreader.KernelHdf5" title="pysnptools.kernelreader.KernelHdf5"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelHdf5</span></code></a></p>
 </td>
 </tr>
 </tbody>
@@ -2188,6 +2312,7 @@ val, iid, sid, and pos information in Hdf5 format.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.bed&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">read_kernel</span><span class="p">(</span><span class="n">Unit</span><span class="p">())</span>     <span class="c1"># Create a kernel from the data in the Bed file</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pstutil</span><span class="o">.</span><span class="n">create_directory_if_necessary</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata.kernel.hdf5&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">KernelHdf5</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata.kernel.hdf5&quot;</span><span class="p">,</span><span class="n">kerneldata</span><span class="p">)</span>          <span class="c1"># Write data in KernelHdf5 format</span>
+<span class="go">KernelHdf5(&#39;tempdir/toydata.kernel.hdf5&#39;)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -3587,7 +3712,7 @@ Moreover, the row and col data is read from file only once.</p>
 <dt id="pysnptools.pstreader.PstData">
 <em class="property">class </em><code class="descclassname">pysnptools.pstreader.</code><code class="descname">PstData</code><span class="sig-paren">(</span><em>row</em>, <em>col</em>, <em>val</em>, <em>row_property=None</em>, <em>col_property=None</em>, <em>name=None</em>, <em>parent_string=None</em>, <em>copyinputs_function=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.pstreader.PstData" title="Permalink to this definition">¶</a></dt>
 <dd><p>A <a class="reference internal" href="#pysnptools.pstreader.PstReader" title="pysnptools.pstreader.PstReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstReader</span></code></a> for holding values in-memory, along with related row and col information.
-It is usually created by calling the <a class="reference internal" href="#pysnptools.pstreader.PstReader.read" title="pysnptools.pstreader.PstReader.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PstReader.read()</span></code></a> method on another <a class="reference internal" href="#pysnptools.pstreader.PstReader" title="pysnptools.pstreader.PstReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstReader</span></code></a>, for example, <a class="reference internal" href="#pysnptools.pstreader.PstNpz" title="pysnptools.pstreader.PstNpz"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstNpz</span></code></a>. It can also be constructed.</p>
+It is usually created by calling the <a class="reference internal" href="#pysnptools.pstreader.PstReader.read" title="pysnptools.pstreader.PstReader.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PstReader.read()</span></code></a> method on another <a class="reference internal" href="#pysnptools.pstreader.PstReader" title="pysnptools.pstreader.PstReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstReader</span></code></a>, for example, <a class="reference internal" href="#pysnptools.pstreader.PstNpz" title="pysnptools.pstreader.PstNpz"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstNpz</span></code></a>. It can also be constructed directly.</p>
 <p>See <a class="reference internal" href="#pysnptools.pstreader.PstReader" title="pysnptools.pstreader.PstReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstReader</span></code></a> for details and examples.</p>
 <dl class="docutils">
 <dt><strong>Constructor:</strong></dt>
@@ -3620,8 +3745,9 @@ It is usually created by calling the <a class="reference internal" href="#pysnpt
 </dl>
 <p><strong>Equality:</strong></p>
 <blockquote>
-<div><p>Two PstData objects are equal if their five arrays (<a class="reference internal" href="#pysnptools.pstreader.PstReader.row" title="pysnptools.pstreader.PstReader.row"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.row</span></code></a>, <a class="reference internal" href="#pysnptools.pstreader.PstReader.col" title="pysnptools.pstreader.PstReader.col"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.col</span></code></a>, <code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.val</span></code>, <a class="reference internal" href="#pysnptools.pstreader.PstReader.row_property" title="pysnptools.pstreader.PstReader.row_property"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.row_property</span></code></a>, and <a class="reference internal" href="#pysnptools.pstreader.PstReader.col_property" title="pysnptools.pstreader.PstReader.col_property"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.col_property</span></code></a>) are ‘array_equal’.
-(Their ‘name’ does not need to be the same).</p>
+<div><p>Two PstData objects are equal if their five arrays (<a class="reference internal" href="#pysnptools.pstreader.PstData.val" title="pysnptools.pstreader.PstData.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstData.val</span></code></a>, <a class="reference internal" href="#pysnptools.pstreader.PstReader.row" title="pysnptools.pstreader.PstReader.row"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.row</span></code></a>, <a class="reference internal" href="#pysnptools.pstreader.PstReader.col" title="pysnptools.pstreader.PstReader.col"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.col</span></code></a>, <a class="reference internal" href="#pysnptools.pstreader.PstReader.row_property" title="pysnptools.pstreader.PstReader.row_property"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.row_property</span></code></a>, and <a class="reference internal" href="#pysnptools.pstreader.PstReader.col_property" title="pysnptools.pstreader.PstReader.col_property"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.col_property</span></code></a>) are ‘array_equal’.
+(Their ‘name’ does not need to be the same). If either <a class="reference internal" href="#pysnptools.pstreader.PstData.val" title="pysnptools.pstreader.PstData.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstData.val</span></code></a> contains NaN, the objects will not be equal. However, <a class="reference internal" href="#pysnptools.pstreader.PstData.allclose" title="pysnptools.pstreader.PstData.allclose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PstData.allclose()</span></code></a> can be used to treat NaN as
+regular values.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -3630,7 +3756,8 @@ It is usually created by calling the <a class="reference internal" href="#pysnpt
 </tr>
 </tbody>
 </table>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.pstreader</span> <span class="k">import</span> <span class="n">PstData</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.pstreader</span> <span class="k">import</span> <span class="n">PstData</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pstdata1</span> <span class="o">=</span> <span class="n">PstData</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">col</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;snp334&#39;</span><span class="p">,</span><span class="s1">&#39;snp349&#39;</span><span class="p">,</span><span class="s1">&#39;snp921&#39;</span><span class="p">],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pstdata2</span> <span class="o">=</span> <span class="n">PstData</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">col</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;snp334&#39;</span><span class="p">,</span><span class="s1">&#39;snp349&#39;</span><span class="p">,</span><span class="s1">&#39;snp921&#39;</span><span class="p">],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pstdata1</span> <span class="o">==</span> <span class="n">pstdata2</span><span class="p">)</span> <span class="c1">#True, because all the arrays have the same values.</span>
@@ -3641,6 +3768,12 @@ It is usually created by calling the <a class="reference internal" href="#pysnpt
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pstdata4</span> <span class="o">=</span> <span class="n">PstData</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">col</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;snp334&#39;</span><span class="p">,</span><span class="s1">&#39;snp349&#39;</span><span class="p">,</span><span class="s1">&#39;snp921&#39;</span><span class="p">],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pstdata3</span> <span class="o">==</span> <span class="n">pstdata4</span><span class="p">)</span> <span class="c1">#False, because the rows have different ids.</span>
 <span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pstdata5</span> <span class="o">=</span> <span class="n">PstData</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">col</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;snp334&#39;</span><span class="p">,</span><span class="s1">&#39;snp349&#39;</span><span class="p">,</span><span class="s1">&#39;snp921&#39;</span><span class="p">],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pstdata6</span> <span class="o">=</span> <span class="n">PstData</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">col</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;snp334&#39;</span><span class="p">,</span><span class="s1">&#39;snp349&#39;</span><span class="p">,</span><span class="s1">&#39;snp921&#39;</span><span class="p">],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pstdata5</span> <span class="o">==</span> <span class="n">pstdata6</span><span class="p">)</span> <span class="c1">#False, because the val&#39;s contain NaN</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pstdata5</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">pstdata6</span><span class="p">))</span> <span class="c1">#True, if we consider the NaN as regular values, all the arrays have the same values.</span>
+<span class="go">True</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -3648,7 +3781,27 @@ It is usually created by calling the <a class="reference internal" href="#pysnpt
 <dl class="method">
 <dt id="pysnptools.pstreader.PstData.allclose">
 <code class="descname">allclose</code><span class="sig-paren">(</span><em>b</em>, <em>equal_nan=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.pstreader.PstData.allclose" title="Permalink to this definition">¶</a></dt>
-<dd><p>!!!cmk document</p>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>b</strong> (<a class="reference internal" href="#pysnptools.pstreader.PstData" title="pysnptools.pstreader.PstData"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstData</span></code></a>) – Other object with which to compare.</li>
+<li><strong>equal_nan</strong> (<em>bool</em>) – (Default: True) Tells if NaN in .val should be treated as regular values when testing equality.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pstdata5</span> <span class="o">=</span> <span class="n">PstData</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">col</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;snp334&#39;</span><span class="p">,</span><span class="s1">&#39;snp349&#39;</span><span class="p">,</span><span class="s1">&#39;snp921&#39;</span><span class="p">],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pstdata6</span> <span class="o">=</span> <span class="n">PstData</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">col</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;snp334&#39;</span><span class="p">,</span><span class="s1">&#39;snp349&#39;</span><span class="p">,</span><span class="s1">&#39;snp921&#39;</span><span class="p">],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pstdata5</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">pstdata6</span><span class="p">))</span> <span class="c1">#True, if we consider the NaN as regular values, all the arrays have the same values.</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pstdata5</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">pstdata6</span><span class="p">,</span><span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span> <span class="c1">#False, if we consider the NaN as special values, all the arrays are not equal.</span>
+<span class="go">False</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="attribute">
@@ -3702,17 +3855,20 @@ val, row, col, row_property, and col_property information in Hdf5 format.</p>
 <dl class="staticmethod">
 <dt id="pysnptools.pstreader.PstHdf5.write">
 <em class="property">static </em><code class="descname">write</code><span class="sig-paren">(</span><em>filename</em>, <em>pstdata</em>, <em>hdf5_dtype=None</em>, <em>col_major=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.pstreader.PstHdf5.write" title="Permalink to this definition">¶</a></dt>
-<dd><p>Writes a <a class="reference internal" href="#pysnptools.pstreader.PstData" title="pysnptools.pstreader.PstData"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstData</span></code></a> to PstHdf5 format.</p>
+<dd><p>Writes a <a class="reference internal" href="#pysnptools.pstreader.PstData" title="pysnptools.pstreader.PstData"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstData</span></code></a> to PstHdf5 format and returns the <a class="reference internal" href="#pysnptools.pstreader.PstHdf5" title="pysnptools.pstreader.PstHdf5"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstHdf5</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>filename</strong> (<em>string</em>) – the name of the file to create</li>
 <li><strong>pstdata</strong> (<a class="reference internal" href="#pysnptools.pstreader.PstData" title="pysnptools.pstreader.PstData"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstData</span></code></a>) – The in-memory data that should be written to disk.</li>
 <li><strong>hdf5_dtype</strong> (<em>string</em>) – None (use the .val’s dtype) or a Hdf5 dtype, e.g. ‘f8’,’f4’,etc.</li>
 <li><strong>col_major</strong> (<em>bool</em>) – Tells if vals should be stored on disk in col_major (default) or row_major format.</li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pysnptools.pstreader.PstHdf5" title="pysnptools.pstreader.PstHdf5"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstHdf5</span></code></a></p>
 </td>
 </tr>
 </tbody>
@@ -3723,6 +3879,7 @@ val, row, col, row_property, and col_property information in Hdf5 format.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="n">PstData</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;c&#39;</span><span class="p">],</span><span class="n">col</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">,</span><span class="s1">&#39;z&#39;</span><span class="p">],</span><span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span><span class="mi">6</span><span class="p">]],</span><span class="n">row_property</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span><span class="s1">&#39;B&#39;</span><span class="p">,</span><span class="s1">&#39;C&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pstutil</span><span class="o">.</span><span class="n">create_directory_if_necessary</span><span class="p">(</span><span class="s2">&quot;tempdir/tiny.pst.hdf5&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">PstHdf5</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;tempdir/tiny.pst.hdf5&quot;</span><span class="p">,</span><span class="n">data1</span><span class="p">)</span>          <span class="c1"># Write data in PstHdf5 format</span>
+<span class="go">PstHdf5(&#39;tempdir/tiny.pst.hdf5&#39;)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -3766,15 +3923,18 @@ val, row, col, row_property, and col_property information in NPZ format.</p>
 <dl class="staticmethod">
 <dt id="pysnptools.pstreader.PstNpz.write">
 <em class="property">static </em><code class="descname">write</code><span class="sig-paren">(</span><em>filename</em>, <em>pstdata</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.pstreader.PstNpz.write" title="Permalink to this definition">¶</a></dt>
-<dd><p>Writes a <a class="reference internal" href="#pysnptools.pstreader.PstData" title="pysnptools.pstreader.PstData"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstData</span></code></a> to PstNpz format.</p>
+<dd><p>Writes a <a class="reference internal" href="#pysnptools.pstreader.PstData" title="pysnptools.pstreader.PstData"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstData</span></code></a> to PstNpz format and returns the <a class="reference internal" href="#pysnptools.pstreader.PstNpz" title="pysnptools.pstreader.PstNpz"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstNpz</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>filename</strong> (<em>string</em>) – the name of the file to create</li>
 <li><strong>pstdata</strong> (<a class="reference internal" href="#pysnptools.pstreader.PstData" title="pysnptools.pstreader.PstData"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstData</span></code></a>) – The in-memory data that should be written to disk.</li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pysnptools.pstreader.PstNpz" title="pysnptools.pstreader.PstNpz"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstNpz</span></code></a></p>
 </td>
 </tr>
 </tbody>
@@ -3784,6 +3944,7 @@ val, row, col, row_property, and col_property information in NPZ format.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data1</span> <span class="o">=</span> <span class="n">PstData</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;c&#39;</span><span class="p">],</span><span class="n">col</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">,</span><span class="s1">&#39;z&#39;</span><span class="p">],</span><span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span><span class="mi">6</span><span class="p">]],</span><span class="n">row_property</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span><span class="s1">&#39;B&#39;</span><span class="p">,</span><span class="s1">&#39;C&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pstutil</span><span class="o">.</span><span class="n">create_directory_if_necessary</span><span class="p">(</span><span class="s2">&quot;tempdir/tiny.pst.npz&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">PstNpz</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;tempdir/tiny.pst.npz&quot;</span><span class="p">,</span><span class="n">data1</span><span class="p">)</span>          <span class="c1"># Write data in PstNz format</span>
+<span class="go">PstNpz(&#39;tempdir/tiny.pst.npz&#39;)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -3906,7 +4067,7 @@ val, row, col, row_property, and col_property information in NPZ format.</p>
 <dl class="staticmethod">
 <dt id="pysnptools.pstreader.PstMemMap.write">
 <em class="property">static </em><code class="descname">write</code><span class="sig-paren">(</span><em>filename</em>, <em>pstdata</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.pstreader.PstMemMap.write" title="Permalink to this definition">¶</a></dt>
-<dd><p>Writes a <a class="reference internal" href="#pysnptools.pstreader.PstData" title="pysnptools.pstreader.PstData"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstData</span></code></a> to <a class="reference internal" href="#pysnptools.pstreader.PstMemMap" title="pysnptools.pstreader.PstMemMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstMemMap</span></code></a> format.</p>
+<dd><p>Writes a <a class="reference internal" href="#pysnptools.pstreader.PstData" title="pysnptools.pstreader.PstData"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstData</span></code></a> to <a class="reference internal" href="#pysnptools.pstreader.PstMemMap" title="pysnptools.pstreader.PstMemMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstMemMap</span></code></a> format and returns the <a class="reference internal" href="#pysnptools.pstreader.PstMemMap" title="pysnptools.pstreader.PstMemMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstMemMap</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />

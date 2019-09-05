@@ -98,6 +98,7 @@ class KernelReader(PstReader):
         >>> kerneldata = Bed('../examples/toydata.bed',count_A1=False).read_kernel(Unit())     # Create a kernel from the data in the Bed file
         >>> pstutil.create_directory_if_necessary("tempdir/toydata.kernel.npz")
         >>> KernelNpz.write("tempdir/toydata.kernel.npz",kerneldata)      # Write data in KernelNpz format
+        KernelNpz('tempdir/toydata.kernel.npz')
 
     iids:
 

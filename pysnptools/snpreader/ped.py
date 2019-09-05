@@ -77,17 +77,20 @@ class Ped(_OneShot,SnpReader):
     def write(filename, snpdata):
         """Writes a :class:`SnpData` to Ped format. The values must be 0,1,2. The direction of the encoding to allele pairs is arbitrary. This means
         that if a SnpData is written in Ped format and then read back, then 0's may become 2's and 2's may become 0's. (1's will stay 1's).
+        Returns the :class:`.Ped`
 
         :param filename: the name of the file to create
         :type filename: string
         :param snpdata: The in-memory data that should be written to disk.
         :type snpdata: :class:`SnpData`
+        :rtype: :class:`.Ped`
 
         >>> from pysnptools.snpreader import Ped, Bed
         >>> import pysnptools.util as pstutil
         >>> snpdata = Bed('../examples/toydata.bed',count_A1=False)[:,:10].read()  # Read first 10 snps from Bed format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata10.ped")
         >>> Ped.write("tempdir/toydata10.ped",snpdata)            # Write data in Ped format
+        Ped('tempdir/toydata10.ped')
         """
 
         if isinstance(filename,SnpData) and isinstance(snpdata,str): #For backwards compatibility, reverse inputs if necessary
@@ -121,7 +124,8 @@ class Ped(_OneShot,SnpReader):
                     else:
                         raise Exception("Expect values for ped file to be 0,1,2, or NAN. Instead, saw '{0}'".format(val))
                     ped_filepointer.write(b"\t"+s)
-                ped_filepointer.write(b"\n")#!!!cmk shouldn't all writers return their reader
+                ped_filepointer.write(b"\n")
+        return Ped(filename)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

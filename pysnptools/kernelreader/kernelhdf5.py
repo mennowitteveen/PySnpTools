@@ -32,7 +32,7 @@ class KernelHdf5(PstHdf5,KernelReader):
 
     @staticmethod
     def write(filename, kerneldata, hdf5_dtype=None, sid_major=True):
-        """Writes a :class:`KernelData` to KernelHdf5 format.
+        """Writes a :class:`KernelData` to KernelHdf5 format and returns the :class:`.KernelHdf5`.
 
         :param filename: the name of the file to create
         :type filename: string
@@ -42,6 +42,7 @@ class KernelHdf5(PstHdf5,KernelReader):
         :type hdf5_dtype: string
         :param col_major: Tells if vals should be stored on disk in sid_major (default) or iid_major format.
         :type col_major: bool
+        :rtype: :class:`.KernelHdf5`
 
         >>> from pysnptools.snpreader import Bed
         >>> from pysnptools.standardizer import Unit
@@ -49,8 +50,10 @@ class KernelHdf5(PstHdf5,KernelReader):
         >>> kerneldata = Bed('../examples/toydata.bed',count_A1=False).read_kernel(Unit())     # Create a kernel from the data in the Bed file
         >>> pstutil.create_directory_if_necessary("tempdir/toydata.kernel.hdf5")
         >>> KernelHdf5.write("tempdir/toydata.kernel.hdf5",kerneldata)          # Write data in KernelHdf5 format
+        KernelHdf5('tempdir/toydata.kernel.hdf5')
         """
-        PstHdf5.write(filename,kerneldata,hdf5_dtype=hdf5_dtype,col_major=sid_major)#!!!cmk shouldn't all writers return their reader
+        PstHdf5.write(filename,kerneldata,hdf5_dtype=hdf5_dtype,col_major=sid_major)
+        return KernelHdf5(filename)
 
 
 if __name__ == "__main__":

@@ -5,8 +5,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{60f1cb4a-9da3-47c2-9b89-60ac1ce93347}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>util\mapreduce1\examples.py</StartupFile>
-    <SearchPath>..\;..\..\PySnpTools</SearchPath>
+    <StartupFile>test.py</StartupFile>
+    <SearchPath>..\;..\..\PySnpTools;..\..\PySnpTools</SearchPath>
     <WorkingDirectory>.\snpreader</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>

@@ -66,18 +66,20 @@ class Dat(_OneShot,SnpReader):
 
     @staticmethod
     def write(filename, snpdata):
-        """Writes a :class:`SnpData` to dat/fam/map format.
+        """Writes a :class:`SnpData` to dat/fam/map format and returns the :class:`.Dat`.
 
         :param filename: the name of the file to create
         :type filename: string
         :param snpdata: The in-memory data that should be written to disk.
         :type snpdata: :class:`SnpData`
+        :rtype: :class:`.Dat`
 
         >>> from pysnptools.snpreader import Dat, Bed
         >>> import pysnptools.util as pstutil
         >>> snpdata = Bed('../examples/toydata.bed',count_A1=False)[:,:10].read()  # Read first 10 snps from Bed format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata10.dat")
         >>> Dat.write("tempdir/toydata10.dat",snpdata)              # Write data in dat/fam/map format
+        Dat('tempdir/toydata10.dat')
         """
 
         if isinstance(filename,SnpData) and isinstance(snpdata,str): #For backwards compatibility, reverse inputs if necessary
@@ -97,6 +99,7 @@ class Dat(_OneShot,SnpReader):
                 row = snpsarray[:,sid_index]
                 dat_filepointer.write(b"\t".join((str(i).encode('ascii') for i in row)) + b"\n")
         logging.info("Done writing " + filename)#!!!cmk shouldn't all writers return their reader
+        return Dat(filename)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

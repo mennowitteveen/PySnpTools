@@ -86,7 +86,7 @@ class SnpReader(PstReader):
         >>> snpdata = Pheno('../examples/toydata.phe').read() # Read data from Pheno format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata.bed")
         >>> Bed.write("tempdir/toydata.bed",snpdata,count_A1=False)   # Write data in Bed format
-
+        Bed('tempdir/toydata.bed',count_A1=False)
 
 
     iids and sids:

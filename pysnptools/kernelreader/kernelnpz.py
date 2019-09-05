@@ -31,12 +31,13 @@ class KernelNpz(KernelReader,PstNpz):
 
     @staticmethod
     def write(filename, kerneldata):
-        """Writes a :class:`KernelData` to KernelNpz format.
+        """Writes a :class:`KernelData` to KernelNpz format and returns the :class:`.KernelNpz`.
 
         :param filename: the name of the file to create
         :type filename: string
         :param kerneldata: The in-memory data that should be written to disk.
         :type kerneldata: :class:`KernelData`
+        :rtype: :class:`.KernelNpz`
 
         >>> from pysnptools.snpreader import Bed
         >>> from pysnptools.standardizer import Unit
@@ -44,8 +45,10 @@ class KernelNpz(KernelReader,PstNpz):
         >>> kerneldata = Bed('../examples/toydata.bed',count_A1=False).read_kernel(Unit())     # Create a kernel from the data in the Bed file
         >>> pstutil.create_directory_if_necessary("tempdir/toydata.kernel.npz")
         >>> KernelNpz.write("tempdir/toydata.kernel.npz",kerneldata)      # Write data in KernelNpz format
+        KernelNpz('tempdir/toydata.kernel.npz')
         """
-        PstNpz.write(filename,kerneldata)#!!!cmk shouldn't all writers return their reader
+        PstNpz.write(filename,kerneldata)
+        return KernelNpz(filename)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

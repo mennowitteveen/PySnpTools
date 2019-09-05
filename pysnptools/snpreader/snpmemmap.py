@@ -27,7 +27,7 @@ class SnpMemMap(PstMemMap,SnpData):
         >>> print snp_mem_map.val[0,1], snp_mem_map.iid_count, snp_mem_map.sid_count
         2.0 2 3
 
-    **Methods beyond** :class:`.PstReader`
+    **Methods beyond** :class:`.SnpReader`
 
     '''
 

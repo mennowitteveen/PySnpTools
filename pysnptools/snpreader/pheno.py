@@ -16,7 +16,7 @@ from pysnptools.util import to_ascii
 
 class Pheno(_OneShot, SnpReader):
     '''
-    A :class:`.SnpReader` for reading "alternative alternative" phenotype files from disk.
+    A :class:`.SnpReader` for reading "alternative" phenotype files from disk.
 
     See :class:`.SnpReader` for general examples of using SnpReaders.
 
@@ -100,13 +100,23 @@ class Pheno(_OneShot, SnpReader):
 
     @staticmethod
     def write(filename, snpdata, missing='NaN', sep='\t'):
-        """Writes a :class:`SnpData` to Pheno format.
+        """Writes a :class:`SnpData` to Pheno format and returns the :class:`.Pheno`.
+
+        :param filename: the name of the file to create
+        :type filename: string
+        :param missing: value to threat as missing (default 'NaN')
+        :type missing: string
+        :param sep: the separator (default '\t')
+        :type sep: string
+        :rtype: :class:`.Pheno`
+
 
         >>> from pysnptools.snpreader import Pheno, Bed
         >>> import pysnptools.util as pstutil
         >>> snpdata = Bed('../examples/toydata.bed',count_A1=False)[:,:10].read()  # Read first 10 snps from Bed format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata10.phe")
         >>> Pheno.write("tempdir/toydata10.txt",snpdata)       # Write data in Pheno format
+        Pheno('tempdir/toydata10.txt')
         """
         missing = to_ascii(missing) # This is for Python2/3 compatibility
         sep = to_ascii(sep)
@@ -121,7 +131,8 @@ class Pheno(_OneShot, SnpReader):
                         vs = str(v).encode('ascii')
                     tmpstr += sep + vs
                 tmpstr += b"\n"
-                f.write(tmpstr)#!!!cmk shouldn't all writers return their reader
+                f.write(tmpstr)
+        return Pheno(filename,missing=missing)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

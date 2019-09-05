@@ -224,7 +224,7 @@ class PstMemMap(PstData):
 
     @staticmethod
     def write(filename, pstdata):
-        """Writes a :class:`PstData` to :class:`PstMemMap` format.
+        """Writes a :class:`PstData` to :class:`PstMemMap` format and returns the :class:`.PstMemMap`.
 
         :param filename: the name of the file to create
         :type filename: string

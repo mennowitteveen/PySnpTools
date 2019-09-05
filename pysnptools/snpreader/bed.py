@@ -123,7 +123,7 @@ class Bed(SnpReader):
 
     @staticmethod
     def write(filename, snpdata, count_A1=False, force_python_only=False):
-        """Writes a :class:`SnpData` to Bed format.
+        """Writes a :class:`SnpData` to Bed format and returns the :class:`.Bed`.
 
         :param filename: the name of the file to create
         :type filename: string
@@ -131,12 +131,14 @@ class Bed(SnpReader):
         :type snpdata: :class:`SnpData`
         :param count_A1: Tells if it should count the number of A1 alleles (the PLINK standard) or the number of A2 alleles. False is the current default, but in the future the default will change to True.
         :type count_A1: bool
+        :rtype: :class:`.Bed`
 
         >>> from pysnptools.snpreader import Pheno, Bed
         >>> import pysnptools.util as pstutil
         >>> snpdata = Pheno('../examples/toydata.phe').read()         # Read data from Pheno format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata.bed")
         >>> Bed.write("tempdir/toydata.bed",snpdata,count_A1=False)   # Write data in Bed format
+        Bed('tempdir/toydata.bed',count_A1=False)
         """
 
         if isinstance(filename,SnpData) and isinstance(snpdata,str): #For backwards compatibility, reverse inputs if necessary
@@ -212,6 +214,7 @@ class Bed(SnpReader):
                             byte |= (code << (val_index*2))
                         bed_filepointer.write(bytes(bytearray([byte])))
         logging.info("Done writing " + filename)#!!!cmk shouldn't all writers return their reader
+        return Bed(filename,count_A1=count_A1)
 
     def _read(self, iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok):
         self._run_once()

@@ -102,7 +102,7 @@ class Dense(_OneShot,SnpReader):
 
     @staticmethod
     def write(filename, snpdata, join_iid_function=just_case,join_sid_pos_function=just_sid):
-        """Writes a :class:`SnpData` to Dense format. The values must be 0,1,2 (or missing).
+        """Writes a :class:`SnpData` to Dense format. The values must be 0,1,2 (or missing). Returns a :class:`.Dense` with the default extractors.
 
         :param filename: the name of the file to create
         :type filename: string
@@ -114,12 +114,14 @@ class Dense(_OneShot,SnpReader):
         :param join_sid_pos_function: function to turn a sid and pos data into a file id for rows.
                                       Defaults ignoring the :attr:`.SnpReader.pos` information and using the sid id as the row id.
         :type join_sid_pos_function: a function
+        :rtype: :class:`.Dense`
 
         >>> from pysnptools.snpreader import Dense, Bed
         >>> import pysnptools.util as pstutil
         >>> snpdata = Bed('../examples/toydata.bed',count_A1=False)[:,:10].read()  # Read first 10 snps from Bed format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata10.dense.txt")
         >>> Dense.write("tempdir/toydata10.dense.txt",snpdata)        # Write data in Dense format
+        Dense('tempdir/toydata10.dense.txt')
         """
 
         if isinstance(filename,SnpData) and isinstance(snpdata,'S'): #For backwards compatibility, reverse inputs if necessary
@@ -139,6 +141,7 @@ class Dense(_OneShot,SnpReader):
                 row = snpsarray[:,sid_index]
                 filepointer.write(b"".join((str(int(i)).encode('ascii') if i==i else b"?" for i in row)) + b"\n")
         logging.info("Done writing " + filename)#!!!cmk shouldn't all writers return their reader
+        return Dense(filename)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

@@ -32,20 +32,23 @@ class SnpNpz(PstNpz,SnpReader):
 
     @staticmethod
     def write(filename, snpdata):
-        """Writes a :class:`SnpData` to SnpNpz format.
+        """Writes a :class:`SnpData` to SnpNpz format and returns the :class:`.SnpNpz`
 
         :param filename: the name of the file to create
         :type filename: string
         :param snpdata: The in-memory data that should be written to disk.
         :type snpdata: :class:`SnpData`
+        :rtype: :class:`.SnpNpz`
 
         >>> from pysnptools.snpreader import SnpNpz, Bed
         >>> import pysnptools.util as pstutil
         >>> snpdata = Bed('../examples/toydata.bed',count_A1=False)[:,:10].read()     # Read first 10 snps from Bed format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata10.snp.npz")
         >>> SnpNpz.write("tempdir/toydata10.snp.npz",snpdata)          # Write data in SnpNpz format
+        SnpNpz('tempdir/toydata10.snp.npz')
         """
         PstNpz.write(filename,snpdata)#!!!cmk shouldn't all writers return their reader
+        return SnpNpz(filename)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

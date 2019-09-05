@@ -53,7 +53,6 @@ class SnpData(PstData,SnpReader):
     **Methods beyond** :class:`.SnpReader`
     """
 
-    #!!!cmk need doc for .val?????
     def __init__(self, iid, sid, val, pos=None, name=None, parent_string=None, copyinputs_function=None):
 
         #We don't have a 'super(SnpData, self).__init__()' here because SnpData takes full responsibility for initializing both its superclasses
@@ -71,7 +70,7 @@ class SnpData(PstData,SnpReader):
         self._name = name or parent_string or ""
         self._std_string_list = []
 
-    #!!!cmk does this make it to docs?
+    val = property(PstData._get_val,PstData._set_val)
     """The 2D NumPy array of floats that represents the values of the SNPs.
 
     >>> from pysnptools.snpreader import Bed

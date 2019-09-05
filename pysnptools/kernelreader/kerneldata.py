@@ -55,7 +55,6 @@ class KernelData(KernelReader,PstData):
     **Methods beyond** :class:`.KernelReader`
     """
 
-    #!!!cmk need doc for .val?????
     def __init__(self, iid=None, iid0=None, iid1=None, val=None, name=None, parent_string=None): #!!!autodoc doesn't generate good doc for this constructor
         #We don't have a 'super(KernelData, self).__init__()' here because KernelData takes full responsiblity for initializing both its superclasses
 
@@ -82,7 +81,7 @@ class KernelData(KernelReader,PstData):
         self._std_string_list = []
 
 
-    #!!!cmk does this make it to docs?
+    val = property(PstData._get_val,PstData._set_val)
     """The 2D NumPy array of floats that represents the values of the kernel.
 
     >>> from pysnptools.kernelreader import KernelData

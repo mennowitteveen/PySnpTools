@@ -109,18 +109,20 @@ class PstNpz(PstReader): #!!!cmk confirm that this doceval gets evaled in testin
 
     @staticmethod
     def write(filename, pstdata): #!!!cmk fix so returns the PstNpz. Update docs
-        """Writes a :class:`PstData` to PstNpz format.
+        """Writes a :class:`PstData` to PstNpz format and returns the :class:`.PstNpz`.
 
         :param filename: the name of the file to create
         :type filename: string
         :param pstdata: The in-memory data that should be written to disk.
         :type pstdata: :class:`PstData`
+        :rtype: :class:`.PstNpz`
 
         >>> from pysnptools.pstreader import PstData, PstNpz
         >>> import pysnptools.util as pstutil
         >>> data1 = PstData(row=['a','b','c'],col=['y','z'],val=[[1,2],[3,4],[np.nan,6]],row_property=['A','B','C'])
         >>> pstutil.create_directory_if_necessary("tempdir/tiny.pst.npz")
         >>> PstNpz.write("tempdir/tiny.pst.npz",data1)          # Write data in PstNz format
+        PstNpz('tempdir/tiny.pst.npz')
         """
         if isinstance(filename,PstData) and isinstance(pstdata,str): #For backwards compatibility, reverse inputs if necessary
             warnings.warn("write statement should have filename before data to write", DeprecationWarning)
@@ -128,6 +130,7 @@ class PstNpz(PstReader): #!!!cmk confirm that this doceval gets evaled in testin
 
         np.savez(filename, row=pstdata.row, col=pstdata.col, row_property=pstdata.row_property, col_property=pstdata.col_property,val=pstdata.val)
         logging.debug("Done writing " + filename)#!!!cmk shouldn't all writers return their reader
+        return PstNpz(filename)
 
 
 if __name__ == "__main__":

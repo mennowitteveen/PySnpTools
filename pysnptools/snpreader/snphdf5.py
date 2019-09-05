@@ -31,7 +31,7 @@ class SnpHdf5(PstHdf5,SnpReader):
 
     @staticmethod
     def write(filename, snpdata, hdf5_dtype=None, sid_major=True):
-        """Writes a :class:`SnpData` to SnpHdf5 format.
+        """Writes a :class:`SnpData` to SnpHdf5 format and return a the :class:`.SnpHdf5`.
 
         :param filename: the name of the file to create
         :type filename: string
@@ -41,14 +41,17 @@ class SnpHdf5(PstHdf5,SnpReader):
         :type hdf5_dtype: string
         :param col_major: Tells if vals should be stored on disk in sid_major (default) or iid_major format.
         :type col_major: bool
+        :rtype: :class:`.SnpHdf5`
 
         >>> from pysnptools.snpreader import SnpHdf5, Bed
         >>> import pysnptools.util as pstutil
         >>> snpdata = Bed('../examples/toydata.bed',count_A1=False)[:,:10].read()     # Read first 10 snps from Bed format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata10.snp.hdf5")
         >>> SnpHdf5.write("tempdir/toydata10.snp.hdf5",snpdata)        # Write data in SnpHdf5 format
+        SnpHdf5('tempdir/toydata10.snp.hdf5')
         """
         PstHdf5.write(filename,snpdata,hdf5_dtype=hdf5_dtype,col_major=sid_major)#!!!cmk shouldn't all writers return their reader
+        return SnpHdf5(filename)
 
 class Hdf5(SnpHdf5):
     #!! warnings.warn("class 'Hdf5' is deprecated. Use the standard class 'SnpHdf5' instead", DeprecationWarning)

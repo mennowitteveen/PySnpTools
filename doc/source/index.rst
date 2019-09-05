@@ -14,7 +14,7 @@ PySnpTools: A library for reading and manipulating genetic data.
 
 * :mod:`.standardizer`: Specify standardizers for :mod:`.snpreader`.
 
-* :mod:`.kernelstandardizer`: Specify standardizers for :mod:`.kernelreader`. !!!cmk show come this mod isn't a link?
+* :mod:`.kernelstandardizer`: Specify standardizers for :mod:`.kernelreader`.
 
 * :mod:`.pstreader`: Generalizes :mod:`.snpreader` and :mod:`.kernelreader` (provides the efficiency of numpy arrays with some of the flexibility of pandas)
 
@@ -30,12 +30,10 @@ PySnpTools: A library for reading and manipulating genetic data.
 
 *From PyData Conference, Seattle*
 
-#!!!cmk update these and move the zip
-
 * `Slides <https://1drv.ms/p/s!AkoPP4cC5J64jOc15JXgDsXmD9EEaw>`_
 * `Video <https://www.youtube.com/watch?v=KPI6479ctAQ>`_
 * `Notebook <https://github.com/MicrosoftGenomics/PySnpTools/blob/master/doc/ipynb/tutorial.ipynb>`_
-* `Data file <http://research.microsoft.com/en-us/um/redmond/projects/MSCompBio/PySnpTools/psttutorial.zip>`_
+* `Data file <https://1drv.ms/u/s!AkoPP4cC5J64qrkHOEE77OWHJm1W4g?e=FHiLzf>`_
 
 .. automodule:: pysnptools
     :members:

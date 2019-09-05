@@ -234,7 +234,7 @@ class PstHdf5(PstReader):
 
     @staticmethod
     def write(filename, pstdata, hdf5_dtype=None, col_major=True):
-        """Writes a :class:`PstData` to PstHdf5 format.
+        """Writes a :class:`PstData` to PstHdf5 format and returns the :class:`.PstHdf5`.
 
         :param filename: the name of the file to create
         :type filename: string
@@ -244,6 +244,7 @@ class PstHdf5(PstReader):
         :type hdf5_dtype: string
         :param col_major: Tells if vals should be stored on disk in col_major (default) or row_major format.
         :type col_major: bool
+        :rtype: :class:`.PstHdf5`
 
         >>> import numpy as np
         >>> from pysnptools.pstreader import PstData, PstHdf5
@@ -251,6 +252,7 @@ class PstHdf5(PstReader):
         >>> data1 = PstData(row=['a','b','c'],col=['y','z'],val=[[1,2],[3,4],[np.nan,6]],row_property=['A','B','C'])
         >>> pstutil.create_directory_if_necessary("tempdir/tiny.pst.hdf5")
         >>> PstHdf5.write("tempdir/tiny.pst.hdf5",data1)          # Write data in PstHdf5 format
+        PstHdf5('tempdir/tiny.pst.hdf5')
         """
 
         if isinstance(filename,PstData) and isinstance(pstdata,str): #For backwards compatibility, reverse inputs if necessary
@@ -275,6 +277,8 @@ class PstHdf5(PstReader):
             h5.create_dataset('col_property', data=any_u_to_a(pstdata.col_property))
             h5.create_dataset('val', data=val,dtype=hdf5_dtype,shuffle=True)#compression="gzip", doesn't seem to work with Anaconda
             h5['val'].attrs["col-major"] = col_major#!!!cmk shouldn't all writers return their reader
+
+        return PstHdf5(filename)
 
 
 if __name__ == "__main__":

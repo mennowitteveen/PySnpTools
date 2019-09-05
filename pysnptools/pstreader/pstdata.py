@@ -65,11 +65,10 @@ class PstData(PstReader):
 
         self._row = PstData._fixup_input(row)
         self._col = PstData._fixup_input(col)
+        if self._row.dtype == self._col.dtype and np.array_equal(self._row, self._col): #If it's square, mark it so by making the col and row the same object
+            self._col = self._row
         self._row_property = PstData._fixup_input(row_property,count=len(self._row))
         self._col_property = PstData._fixup_input(col_property,count=len(self._col))
-        #!!!cmk need this?
-        #if np.array_equal(self._row, self._col): #If it's square, mark it so by making the col and row the same object
-        #    self._col = self._row
 
 
         self._val = PstData._fixup_input_val(val,row_count=len(self._row),col_count=len(self._col))
@@ -78,15 +77,6 @@ class PstData(PstReader):
         if parent_string is not None:
             warnings.warn("'parent_string' is deprecated. Use 'name'", DeprecationWarning)
         self._name = name
-
-    #!!!cmk does this make it to docs?
-    """The 2D NumPy array of floats that represents the values.
-
-    >>> from pysnptools.pstreader import PstNpz #!!!cmk this example doesn't make sense here.
-    >>> pstdata = PstNpz('../examples/toydata.pst.npz')[:5,:].read() #read data for first 5 rows
-    >>> print(pstdata.val[4,100]) #print one of the values
-    2.0
-    """
 
     def __eq__(a,b):
         return a.allclose(b,equal_nan=False)
@@ -166,9 +156,13 @@ class PstData(PstReader):
         self._val = new_value
 
     val = property(_get_val,_set_val)
-    '''
-    !!!cmk put documenation back
-    '''
+    """The 2D NumPy array of floats that represents the values.
+
+    >>> from pysnptools.pstreader import PstNpz
+    >>> pstdata = PstNpz('../examples/toydata.pst.npz')[:5,:].read() #read data for first 5 rows
+    >>> print(pstdata.val[4,100]) #print one of the values
+    2.0
+    """
 
     # Most _read's support only indexlists or None, but this one supports Slices, too.
     _read_accepts_slices = True

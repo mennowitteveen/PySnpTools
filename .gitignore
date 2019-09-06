@@ -237,3 +237,6 @@ ModelManifest.xml
 /pysnptools/snpreader/.work_directory.None
 /pysnptools/snpreader/runs
 /pysnptools/snpreader/.work_directory.prime_search1
+/pysnptools/util/.work_directory.None
+/pysnptools/util/.work_directory.prime_search1
+/pysnptools/util/runs

@@ -54,7 +54,7 @@ class SnpReader(PstReader):
         (2, 508)
 
 
-    The SnpReaders Classes #!!!cmk update these
+    The SnpReaders Classes
 
         ========================= =================== ====================== ================== ======================
         *Class*                   *Format*            *Random Access*        *Suffixes*         *Write* method?
@@ -66,6 +66,8 @@ class SnpReader(PstReader):
         :class:`.Dense`           text, 0,1,2         No                     .dense.txt         Yes
         :class:`.SnpNpz`          binary, floats      No                     .snp.npz           Yes
         :class:`.SnpHdf5`         binary, floats      Yes (by sid or iid)    .snp.hdf5          Yes
+        :class:`.SnpMemMap`       mem-mapped floats   Yes                    .snp.memmap        Yes              
+        :class:`.SnpGen`          generated values    Yes (by sid)           *n/a*              *n/a*              
         ========================= =================== ====================== ================== ======================
     
   

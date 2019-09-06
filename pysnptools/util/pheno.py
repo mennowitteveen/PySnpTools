@@ -3,11 +3,10 @@
     Use :class:`.Pheno` instead.    
 '''
 
-import scipy as sp
 import logging
 import sys
 from pysnptools.util import to_ascii
-
+import scipy as sp
 
 def loadOnePhen(filename,  i_pheno = 0, missing = '-9', vectorize = False):
     '''
@@ -113,4 +112,4 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     import doctest
-    doctest.testmod() #!!!cmk besure this doctest gets run
+    doctest.testmod()

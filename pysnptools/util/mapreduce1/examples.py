@@ -1,5 +1,4 @@
 import math
-from pysnptools.util.mapreduce1 import map_reduce
 import os
 import logging
 
@@ -43,6 +42,7 @@ def prime_search1(start,stop,runner):
     >>> prime_search1(2,10,LocalMultiProc(4))
     [2, 3, 5, 7]
     '''
+    from pysnptools.util.mapreduce1 import map_reduce
 
     def mapper(i):
         if is_prime(i):

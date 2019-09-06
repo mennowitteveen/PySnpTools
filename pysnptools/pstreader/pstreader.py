@@ -58,6 +58,7 @@ class PstReader(object):
                                                                                                      .kernel.npz
         :class:`.PstHdf5`                  binary, floats                     Yes                    .pst.hdf5,.snp.hdf5,
                                                                                                      .kernel.hdf5
+        :class:`.PstMemMap`                mem-mapped floats                  Yes                    .pst.memmap,.snp.memmap
         various :class:`.SnpReader`        varies                             varies                 varies
         various :class:`.KernelReader`     varies                             varies                 varies
         ================================== ================================== ====================== =====================

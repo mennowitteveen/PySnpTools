@@ -1,7 +1,7 @@
 '''
 A distributable job is a map/reduce (aka scatter/rather aka split/tabulate) job defined by a class that implements the
 IDistributable interface (which Python doesn't check). FastLmmSet is an example of an distributable job.
-Such distributable jobs can by run by Runners.
+Such distributable jobs can by run by IRunners.
 
 See SamplePi.py for examples.
 
@@ -10,7 +10,6 @@ See SamplePi.py for examples.
 
 import os
 import logging
-import dill as pickle #!!!cmk
 try:
     import dill as pickle
 except:

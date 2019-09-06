@@ -3,31 +3,14 @@ import numpy as np
 import logging
 from pysnptools.snpreader import SnpReader
 
-class Pairs(SnpReader):
+class _Pairs(SnpReader):
     '''
-    !!!cmk need to update
-    A :class:`.SnpReader` for random-access reads of Bed/Bim/Fam files from disk.
-
-    See :class:`.SnpReader` for details and examples.
-
-    The format is described in http://pngu.mgh.harvard.edu/~purcell/plink/binary.shtml.
-
-    **Constructor:**
-        :Parameters: * **filename** (*string*) -- The \*.bed file to read. The '.bed' suffix is optional. The related \*.bim and \*.fam files will also be read.
-                     * **count_A1** (*bool*) -- Tells if it should count the number of A1 alleles (the PLINK standard) or the number of A2 alleles. False is the current default, but in the future the default will change to True.
-
-                     *The following options are never needed, but can be used to avoid reading large '.fam' and '.bim' files when their information is already known.*
-
-                     * **iid** (an array of strings) -- The :attr:`.SnpReader.iid` information. If not given, reads info from '.fam' file.
-                     * **sid** (an array of strings) -- The :attr:`.SnpReader.sid` information. If not given, reads info from '.bim' file.
-                     * **pos** (optional, an array of strings) -- The :attr:`.SnpReader.pos` information.  If not given, reads info from '.bim' file.
-                     * **skip_format_check** (*bool*) -- If False (default), will check that '.bed' file has expected starting bytes.
-
-    **Methods beyond** :class:`.SnpReader`
+    Experimental.
     '''
 
-    #!!!cmk see fastlmm\association\epistasis.py for code that allows ranges of snps to be specified when making pairs
-    def __init__(self, snpreader0,snpreader1=None, do_standardize=True,sid_materialize_limit=1000*1000,_include_single_times_single=False): #!!!cmk could add option to change snp separator and another to encode chrom, etc in the snp name
+    #!!!see fastlmm\association\epistasis.py for code that allows ranges of snps to be specified when making pairs
+    def __init__(self, snpreader0,snpreader1=None, do_standardize=True,sid_materialize_limit=1000*1000,_include_single_times_single=False): 
+        #!!! could add option to change snp separator and another to encode chrom, etc in the snp name
         super(Pairs, self).__init__()
         self._ran_once = False
         self.snpreader0 = snpreader0
@@ -201,7 +184,7 @@ if __name__ == "__main__":
     part_count = 1000
     part_list = list(split_on_sids(synbed,part_count))
 
-    pairs00 = Pairs(part_list[0])
+    pairs00 = _Pairs(part_list[0])
     from fastlmm.association import single_snp
     pheno_fn = r"d:\OneDrive\programs\epiCornell\pheno.txt"
     cov_fn = r"d:\OneDrive\programs\epiCornell\cov.txt"
@@ -213,7 +196,7 @@ if __name__ == "__main__":
                 if j<i:
                     continue #not break
                 print("Looking at pair {0},{1}".format(i,j))
-                pairs = Pairs(synbed_part_i) if i==j else Pairs(synbed_part_i,synbed_part_j)
+                pairs = _Pairs(synbed_part_i) if i==j else _Pairs(synbed_part_i,synbed_part_j)
                 #print(pairs.iid)
                 print('{:,}'.format(pairs.sid_count))
                 #print(pairs.sid)
@@ -260,6 +243,3 @@ if __name__ == "__main__":
         total_time_estimate = time_so_far*part_pair_count/(part_pair_index+1)
         print(total_time_estimate)
 
-    #!!!cmkimport doctest
-    #doctest.testmod()
-    # There is also a unit test case in 'pysnptools\test.py' that calls this doc test

@@ -8,7 +8,7 @@ from pysnptools.pstreader.pstdata import PstData
 import pysnptools.util as pstutil
 import warnings
 
-class PstNpz(PstReader): #!!!cmk confirm that this doceval gets evaled in testing
+class PstNpz(PstReader):
     '''
     A :class:`.PstReader` for reading \*.pst.npz files from disk.
 
@@ -108,7 +108,7 @@ class PstNpz(PstReader): #!!!cmk confirm that this doceval gets evaled in testin
         return val
 
     @staticmethod
-    def write(filename, pstdata): #!!!cmk fix so returns the PstNpz. Update docs
+    def write(filename, pstdata):
         """Writes a :class:`PstData` to PstNpz format and returns the :class:`.PstNpz`.
 
         :param filename: the name of the file to create
@@ -129,7 +129,7 @@ class PstNpz(PstReader): #!!!cmk confirm that this doceval gets evaled in testin
             filename, pstdata = pstdata, filename 
 
         np.savez(filename, row=pstdata.row, col=pstdata.col, row_property=pstdata.row_property, col_property=pstdata.col_property,val=pstdata.val)
-        logging.debug("Done writing " + filename)#!!!cmk shouldn't all writers return their reader
+        logging.debug("Done writing " + filename)
         return PstNpz(filename)
 
 
@@ -137,7 +137,7 @@ if __name__ == "__main__":
     import doctest
     logging.basicConfig(level=logging.INFO)
     
-    doctest.testmod() #!!!cmk besure this doctest gets run
+    doctest.testmod()
 
     #from pysnptools.snpreader.dat import Dat
     #snpreader = Dat(r'../tests/datasets/all_chr.maf0.001.N300.dat')

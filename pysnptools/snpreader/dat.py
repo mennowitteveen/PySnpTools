@@ -98,7 +98,7 @@ class Dat(_OneShot,SnpReader):
                 dat_filepointer.write(b"%s\tj\tn\t"%sid) #use "j" and "n" as the major and minor allele
                 row = snpsarray[:,sid_index]
                 dat_filepointer.write(b"\t".join((str(i).encode('ascii') for i in row)) + b"\n")
-        logging.info("Done writing " + filename)#!!!cmk shouldn't all writers return their reader
+        logging.info("Done writing " + filename)
         return Dat(filename)
 
 if __name__ == "__main__":

@@ -10,7 +10,7 @@ except:
     pass
 import numbers
 
-class IntRangeSet(object):#!!!cmk check that this has tests and that it's doctest gets run
+class IntRangeSet(object):
     '''
     A class for efficiently manipulating ranges of integers (including negatives and longs) using set operations such as :meth:`union`, :meth:`intersection`, and difference.
 

@@ -140,7 +140,7 @@ class Dense(_OneShot,SnpReader):
                 filepointer.write(b"%s\t" % join_sid_pos_function(sid,pos)) #Must use % formating because Python3 doesn't support .format on bytes
                 row = snpsarray[:,sid_index]
                 filepointer.write(b"".join((str(int(i)).encode('ascii') if i==i else b"?" for i in row)) + b"\n")
-        logging.info("Done writing " + filename)#!!!cmk shouldn't all writers return their reader
+        logging.info("Done writing " + filename)
         return Dense(filename)
 
 if __name__ == "__main__":

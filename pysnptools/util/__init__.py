@@ -1,7 +1,7 @@
 import os
-import scipy as sp
 import logging
 import numpy as np
+import scipy as sp
 try:
     from builtins import range
 except:
@@ -355,7 +355,7 @@ def sub_matrix(val, row_index_list, col_index_list, order='A', dtype=sp.float64)
     return sub_val
 
 
-def create_directory_if_necessary(name, isfile=True, robust=False): #!!!cmk update
+def create_directory_if_necessary(name, isfile=True, robust=False):
     '''
     Create a directory for a file if the directory doesn't already exist.
 
@@ -363,6 +363,8 @@ def create_directory_if_necessary(name, isfile=True, robust=False): #!!!cmk upda
     :type name: string
     :param isfile: If True (default), the name is a file, otherwise it is a directory.
     :type isfile: bool
+    :param robust: If False (default), will try once to create the directory. If True, will try 25 times.
+    :type robust: bool
 
     '''
     if isfile:
@@ -463,10 +465,10 @@ def format_delta(delta):
     '''
     return datetime.timedelta(seconds=delta)
 
-def _mbps(size, delta):#!!!cmk document or hide
+def _mbps(size, delta):
     return size * 8 / delta / 1e6
 
-def _mbps_str(t0, size, total=0):#!!!cmk document or hide
+def _mbps_str(t0, size, total=0):
     delta = time.time()-t0
     mbps0 = _mbps(size, delta) if delta > 0 else 0
     percent = float(size)/total if total > 0 else 1
@@ -475,7 +477,7 @@ def _mbps_str(t0, size, total=0):#!!!cmk document or hide
 
 
 @contextmanager
-def log_in_place(name, level, time_lambda=time.time, show_log_diffs=False):#!!!cmk document or hide
+def log_in_place(name, level, time_lambda=time.time, show_log_diffs=False):
     '''
         Create an one-argument lambda to write messages to. Messages will appear on the same line.
 
@@ -520,7 +522,7 @@ def log_in_place(name, level, time_lambda=time.time, show_log_diffs=False):#!!!c
 @contextmanager
 def _progress_reporter(name,size=None,updater=None):
     '''
-    If an update is given, we use that. Otherwise, we create our own.#!!!cmk document or hide
+    If an update is given, we use that. Otherwise, we create our own.
     '''
     if updater is None:
         bytes_so_far = [0] #We have to make this an array so that the value is by reference.
@@ -536,7 +538,7 @@ def _progress_reporter(name,size=None,updater=None):
 
 
 @contextmanager
-def _multiopen(open_lambda, input_list):#!!!cmk document or hide
+def _multiopen(open_lambda, input_list):
     handle_list = [open_lambda(input) for input in input_list]        # Open the related inputs
     list_to_yield = [handle.__enter__() for handle in handle_list]    # Get the list to yield
     yield list_to_yield                                               # yield it

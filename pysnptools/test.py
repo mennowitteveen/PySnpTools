@@ -13,14 +13,15 @@ from pysnptools.standardizer import Unit
 from pysnptools.standardizer import Beta
 from pysnptools.util import create_directory_if_necessary
 from pysnptools.kernelreader.test import TestKernelReader
-from pysnptools.kernelreader.test import TestDocStrings as KrDocStrings
+from pysnptools.kernelreader.test import TestKrDocStrings
 from pysnptools.pstreader.test import TestPstReader
-from pysnptools.pstreader.test import TestDocStrings as PstDocStrings
+from pysnptools.pstreader.test import TestPstDocStrings
 from pysnptools.pstreader.pstmemmap import TestPstMemMap
 from pysnptools.snpreader.snpmemmap import TestSnpMemMap
 from pysnptools.snpreader.snpgen import TestSnpGen
 from pysnptools.kernelreader.test import _fortesting_JustCheckExists
 from pysnptools.util.intrangeset import TestIntRangeSet
+from pysnptools.util.test import TestUtilTools
     
 
 import unittest
@@ -608,7 +609,7 @@ class NaNCNCTestCases(unittest.TestCase):
 
 # We do it this way instead of using doctest.DocTestSuite because doctest.DocTestSuite requires modules to be pickled, which python doesn't allow.
 # We need tests to be pickleable so that they can be run on a cluster.
-class TestDocStrings(unittest.TestCase):
+class TestSnpDocStrings(unittest.TestCase):
 
     def test_bed(self):
         import pysnptools.snpreader.bed
@@ -634,16 +635,7 @@ class TestDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    #!!!cmk move fastlmm
-    #def test_distributed_bed(self):
-    #    import pysnptools.snpreader.snpdata
-    #    old_dir = os.getcwd()
-    #    os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
-    #    result = doctest.testmod(pysnptools.snpreader.distributed_bed)
-    #    os.chdir(old_dir)
-    #    assert result.failed == 0, "failed doc test: " + __file__
-
-    def test_distributed_pairs(self):
+    def test_pairs(self):
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
         import pysnptools.snpreader.pairs
@@ -724,15 +716,6 @@ class TestDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    def test_util_pheno(self):
-        import pysnptools.util.pheno
-        old_dir = os.getcwd()
-        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/util")
-        import pysnptools.snpreader.pheno
-        result = doctest.testmod(pysnptools.util.pheno)
-        os.chdir(old_dir)
-        assert result.failed == 0, "failed doc test: " + __file__
-
     def test_standardize_testmod(self):
         import pysnptools.standardizer
         old_dir = os.getcwd()
@@ -768,17 +751,18 @@ def getTestSuite():
     """
 
     test_suite = unittest.TestSuite([])
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDocStrings))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestUtilTools))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestIntRangeSet))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestSnpDocStrings))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPstDocStrings))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestKrDocStrings))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestSnpGen))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPstMemMap))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestSnpMemMap))
     test_suite.addTests(NaNCNCTestCases.factory_iterator())
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPstReader))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(PstDocStrings))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestKernelReader))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(KrDocStrings))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPySnpTools))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestIntRangeSet))
 
 
     return test_suite

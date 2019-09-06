@@ -1,5 +1,4 @@
 import logging
-import scipy as sp
 from pysnptools.kernelreader import KernelReader
 from pysnptools.pstreader import PstHdf5
 import warnings

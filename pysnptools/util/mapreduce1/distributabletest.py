@@ -5,8 +5,7 @@ import cStringIO
 
 class DistributableTest(object) : #implements IDistributable
     '''
-    This is a class for distributing any testing. It shouldn't be confused with TestDistributable which is a class for
-    testing the distributable classes.
+    This is a class for distributing any testing.
     '''
     def __init__(self,test_or_suite,tempdirectory=None):
         self._test_or_suite = test_or_suite

@@ -47,7 +47,7 @@ class SnpNpz(PstNpz,SnpReader):
         >>> SnpNpz.write("tempdir/toydata10.snp.npz",snpdata)          # Write data in SnpNpz format
         SnpNpz('tempdir/toydata10.snp.npz')
         """
-        PstNpz.write(filename,snpdata)#!!!cmk shouldn't all writers return their reader
+        PstNpz.write(filename,snpdata)
         return SnpNpz(filename)
 
 if __name__ == "__main__":

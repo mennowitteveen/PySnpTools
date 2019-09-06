@@ -191,7 +191,7 @@ class PstMemMap(PstData):
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
         val, shares_memory = self._apply_sparray_or_slice_to_val(self.val, row_index_or_none, col_index_or_none, order, dtype, force_python_only)
         if not shares_memory and view_ok:
-            logging.warn("Read from {0} required copy".format(self)) #!!!cmk keep this warning?
+            logging.warn("Read from {0} required copy".format(self)) #!!!keep this warning?
         if shares_memory and not view_ok:
             val = val.copy(order='K')
         return val

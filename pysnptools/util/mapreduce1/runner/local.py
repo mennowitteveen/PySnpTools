@@ -8,7 +8,7 @@ from pysnptools.util.mapreduce1.runner import Runner, _run_all_in_memory
 import os, sys
 import logging
 
-class Local(Runner): #!!!cmk be sure that all these 
+class Local(Runner):
     '''
     A :class:`.Runner` that runs a :func:`.map_reduce` locally. To save memory, it will feed the results of the mapper to the reducer as those results are computed.
 

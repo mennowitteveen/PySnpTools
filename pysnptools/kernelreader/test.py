@@ -1,5 +1,4 @@
 import numpy as np
-import scipy as sp
 import logging
 import doctest
 import unittest
@@ -267,7 +266,7 @@ class TestKernelReader(unittest.TestCase):
 
 # We do it this way instead of using doctest.DocTestSuite because doctest.DocTestSuite requires modules to be pickled, which python doesn't allow.
 # We need tests to be pickleable so that they can be run on a cluster.
-class TestDocStrings(unittest.TestCase):
+class TestKrDocStrings(unittest.TestCase):
     def test_kernelreader(self):
         import pysnptools.kernelreader.kernelreader
         old_dir = os.getcwd()
@@ -325,7 +324,7 @@ def getTestSuite():
     
     test_suite = unittest.TestSuite([])
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestKernelReader))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDocStrings))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestKrDocStrings))
     return test_suite
 
 if __name__ == '__main__':

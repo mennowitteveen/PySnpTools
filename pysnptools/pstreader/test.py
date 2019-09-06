@@ -222,7 +222,7 @@ class TestPstReader(unittest.TestCase):
 
 # We do it this way instead of using doctest.DocTestSuite because doctest.DocTestSuite requires modules to be pickled, which python doesn't allow.
 # We need tests to be pickleable so that they can be run on a cluster.
-class TestDocStrings(unittest.TestCase): #!!!cmk confirm that these are ca
+class TestPstDocStrings(unittest.TestCase):
     pass
 
     def test_pstdata(self):
@@ -271,7 +271,7 @@ def getTestSuite():
     """
     
     test_suite = unittest.TestSuite([])
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDocStrings))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPstDocStrings))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPstReader))
     return test_suite
 

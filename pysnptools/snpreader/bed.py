@@ -213,7 +213,7 @@ class Bed(SnpReader):
                                 raise Exception("Can't convert value '{0}' to BED format (only 0,1,2,NAN allowed)".format(val))
                             byte |= (code << (val_index*2))
                         bed_filepointer.write(bytes(bytearray([byte])))
-        logging.info("Done writing " + filename)#!!!cmk shouldn't all writers return their reader
+        logging.info("Done writing " + filename)
         return Bed(filename,count_A1=count_A1)
 
     def _read(self, iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok):

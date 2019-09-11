@@ -124,7 +124,7 @@ also be used to re-order the values.</p>
 </div>
 </li>
 </ul>
-<p>The SnpReaders Classes #!!!cmk update these</p>
+<p>The SnpReaders Classes</p>
 <blockquote>
 <div><table border="1" class="docutils">
 <colgroup>
@@ -188,6 +188,18 @@ also be used to re-order the values.</p>
 <td>Yes (by sid or iid)</td>
 <td>.snp.hdf5</td>
 <td>Yes</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#pysnptools.snpreader.SnpMemMap" title="pysnptools.snpreader.SnpMemMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpMemMap</span></code></a></td>
+<td>mem-mapped floats</td>
+<td>Yes</td>
+<td>.snp.memmap</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#pysnptools.snpreader.SnpGen" title="pysnptools.snpreader.SnpGen"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpGen</span></code></a></td>
+<td>generated values</td>
+<td>Yes (by sid)</td>
+<td><em>n/a</em></td>
+<td><em>n/a</em></td>
 </tr>
 </tbody>
 </table>
@@ -3074,10 +3086,10 @@ will have a diagonal that sums to iid_count.</p>
 <blockquote>
 <div><table border="1" class="docutils">
 <colgroup>
-<col width="31%" />
-<col width="31%" />
-<col width="20%" />
+<col width="30%" />
+<col width="30%" />
 <col width="19%" />
+<col width="20%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><em>Class</em></td>
@@ -3102,12 +3114,17 @@ will have a diagonal that sums to iid_count.</p>
 <td>.pst.hdf5,.snp.hdf5,
 .kernel.hdf5</td>
 </tr>
-<tr class="row-odd"><td>various <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a></td>
+<tr class="row-odd"><td><a class="reference internal" href="#pysnptools.pstreader.PstMemMap" title="pysnptools.pstreader.PstMemMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstMemMap</span></code></a></td>
+<td>mem-mapped floats</td>
+<td>Yes</td>
+<td>.pst.memmap,.snp.memmap</td>
+</tr>
+<tr class="row-even"><td>various <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a></td>
 <td>varies</td>
 <td>varies</td>
 <td>varies</td>
 </tr>
-<tr class="row-even"><td>various <a class="reference internal" href="#pysnptools.kernelreader.KernelReader" title="pysnptools.kernelreader.KernelReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelReader</span></code></a></td>
+<tr class="row-odd"><td>various <a class="reference internal" href="#pysnptools.kernelreader.KernelReader" title="pysnptools.kernelreader.KernelReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelReader</span></code></a></td>
 <td>varies</td>
 <td>varies</td>
 <td>varies</td>
@@ -4112,6 +4129,7 @@ val, row, col, row_property, and col_property information in NPZ format.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>name</strong> (<em>string</em>) – file or directory name</li>
 <li><strong>isfile</strong> (<em>bool</em>) – If True (default), the name is a file, otherwise it is a directory.</li>
+<li><strong>robust</strong> (<em>bool</em>) – If False (default), will try once to create the directory. If True, will try 25 times.</li>
 </ul>
 </td>
 </tr>

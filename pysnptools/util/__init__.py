@@ -481,7 +481,7 @@ def log_in_place(name, level, time_lambda=time.time, show_log_diffs=False):
     '''
         Create an one-argument lambda to write messages to. Messages will appear on the same line.
 
-        Example::
+        :Example:
 
             with log_in_place("creating job_id_etc", logging.INFO) as log_writer:            
                 job_id_etc_list = []

@@ -209,7 +209,7 @@ if __name__ == "__main__":
     from pysnptools.kernelreader import SnpKernel
     from pysnptools.standardizer import Unit
     from pysnptools.util.mapreduce1.runner import LocalMultiProc
-    from pysnptools.util.mapreduce1.mapreduce import map_reduce
+    from pysnptools.util.mapreduce1 import map_reduce
     #runner=None
     runner = LocalMultiProc(1,just_one_process=False)
 

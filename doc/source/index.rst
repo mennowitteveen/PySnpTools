@@ -25,6 +25,7 @@ PySnpTools: A library for reading and manipulating genetic data.
 
 * :mod:`.util.mapreduce1`: Run in parallel on multiple processes, threads, or clusters.
 
+* :mod:`.util.filecache`: Copy files to and from any remote storage.
 
 :Tutorial:
 
@@ -152,6 +153,16 @@ PySnpTools: A library for reading and manipulating genetic data.
 	:show-inheritance:
 	:special-members:
     :exclude-members: copyinputs, col, col_property, row, row_property
+
+:class:`snpreader.DistributedBed`
+++++++++++++++++++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.snpreader.DistributedBed
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: copyinputs, col, col_property, row, row_property
+
 
 ****************************
 :mod:`kernelreader` Module
@@ -495,6 +506,42 @@ PySnpTools: A library for reading and manipulating genetic data.
 	:special-members:
     :exclude-members: run
 
+
+*******************************************
+:mod:`util.filecache` Module
+*******************************************
+.. automodule:: pysnptools.util.filecache
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+
+:class:`util.filecache.FileCache`
+++++++++++++++++++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.util.filecache.FileCache
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members:
+
+:class:`util.filecache.LocalCache`
+++++++++++++++++++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.util.filecache.LocalCache
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members:
+
+:class:`util.filecache.PeerToPeer`
+++++++++++++++++++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.util.filecache.PeerToPeer
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members:
 
 
 

@@ -86,7 +86,7 @@ class SnpGen(SnpReader):
         self._ran_once = True
         self._row = np.array([('0','iid_{0}'.format(i)) for i in xrange(self._iid_count)])
         self._col = np.array(['sid_{0}'.format(i) for i in xrange(self._sid_count)])
-        self._col_property = np.empty(((self._sid_count),3))
+        self._col_property = np.zeros(((self._sid_count),3))
 
         chrom_total = SnpGen._chrom_size[:self._chrom_count].sum()
         step = chrom_total // self._sid_count

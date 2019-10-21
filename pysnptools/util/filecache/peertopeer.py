@@ -12,11 +12,41 @@ from pysnptools.util.filecache import FileCache, _DibLib
 import pysnptools.util as pstutil #don't confuse pstutil (pysnptools) with psutil (processes)
 from pysnptools.util import format_delta
 
-#!!!cmk update everyting and confirm testing
-#!!!cmk str of PeerToPeer should not show LocalCache unless necessary.
-#!!!cmk id_and_path_function should be simple in simiple cases
+class PeerToPeer(FileCache):
+    '''
+    A :class:`.FileCache` that allows multiple machines (or processes on one machine) to share files in a peer-to-peer fashion.
 
-class PeerToPeer(FileCache): #!!!cmk rename FileShare to PeerToPeer (and put all these classes in their own file)
+    See :class:`.FileCache` for general examples of using FileCache.
+
+    This is useful for a cluster with multiple machines with persistent storage and a fast network. Every time a machine writes a file,
+    the file stays on that machine, but information about the file's name and location is saved to a common directory. When a new
+    machine needs the file, it looks to the common directory for a location and then copies from that location. That second location
+    is also saved to the common directory. Later machines that need the file will randomly pick among the available locations. When a file is removed, it
+    is only removed from the common directory; clean up of local copies happens later when space is needed for other reads.
+
+
+    **Constructor:**
+        :Parameters: * **common_directory** (:class:`.FileCache` or *string*) -- The path or :class:`.FileCache` where
+                       each file's name and locations (but not contents) are stored. This path must be read/writable by every machine in the cluster.             
+                     * **id_and_path_function** (*function*) -- A function (or lambda) that deterministically returns two values: 1. an id unique to each machine
+                       (or process) and 2. a file path to this machine's local storage that any machine
+                       in the cluster can read.
+                     * **leave_space** (*number*) -- (Default "0") How much free space must be left on local drive after downloads and writes.
+
+        :Example:
+
+        >>> #Suppose that every machine can access a shared 'peertopeer1' and that 'peertopeer1/IPADDRESS' is local to each machine.
+        >>> from pysnptools.util.filecache import PeerToPeer, ip_address
+        >>> def id_and_path_function():
+        ...     ip = ip_address()
+        ...     return ip, 'peertopeer1/{0}'.format(ip)
+        >>> file_cache = PeerToPeer(common_directory='peertopeer1/common',id_and_path_function=id_and_path_function)
+        >>> file_cache.rmtree()
+        >>> file_cache.save('sub1/file1.txt','Hello')
+        >>> file_cache.file_exists('sub1/file1.txt')
+        True
+
+    '''
     #Later features:
     #   Limit the amount of copying for a given file
     #   Work even when multiple tasks on same node ask for the same file
@@ -33,30 +63,35 @@ class PeerToPeer(FileCache): #!!!cmk rename FileShare to PeerToPeer (and put all
         self.leave_space = leave_space
         assert not self.common_directory._simple_file_exists("main.txt"), "A common_directory cannot exist where a file already exists."
         self._str = "{0}('{1}',id_and_path_function=...{2}')".format(self.__class__.__name__,shared_directory_str,'' if self.leave_space==0 else ',leave_space={0}'.format(leave_space))
-        #!!!cmk test  if self.leave_space==0
-        #!!!cmk test on one machine and multiple processes
+        #!!!test  if self.leave_space==0
+        #!!!test on one machine and multiple processes
     def __repr__(self): 
         return self._str
 
     @property
     def name(self):
+        '''
+        A path-like name for this `PeerToPeer`.
+
+        :rtype: string
+        '''
         return self.common_directory
 
     def _simple_file_exists(self,simple_file_name):
         return self.common_directory.file_exists(simple_file_name+"/main.txt")
 
     def _far_file_sequence(self,dir_path):
-        storage_list = [f for f in dir_path.walk() if self.copy_main_pattern.match(f)]
+        storage_list = [f for f in dir_path.walk() if self._copy_main_pattern.match(f)]
         random.shuffle(storage_list)
         
         for storage_item in storage_list:
             storage_path = dir_path.load(storage_item)
             yield storage_path, len(storage_list)
 
-    copy_main_pattern = re.compile("^((main)|(copy_.*))\.txt$")
-    copy_pattern = re.compile("^copy_.*\.txt$")
+    _copy_main_pattern = re.compile("^((main)|(copy_.*))\.txt$")
+    _copy_pattern = re.compile("^copy_.*\.txt$")
 
-    def copy_time_stamp(self,storage_path,local_path):
+    def _copy_time_stamp(self,storage_path,local_path):
         timestamp = os.path.getmtime(storage_path)
         with open(local_path, 'a'): #Touch the local file so that its mod time will be later than the remote time (see http://stackoverflow.com/questions/1158076/implement-touch-using-python)
             os.utime(local_path, (timestamp,timestamp))
@@ -114,7 +149,7 @@ class PeerToPeer(FileCache): #!!!cmk rename FileShare to PeerToPeer (and put all
                     then = datetime.datetime.now()
                     shutil.copyfile(storage_path,local_path)
                     shutil.copystat(storage_path,local_path)
-                    self.copy_time_stamp(storage_path,local_path)
+                    self._copy_time_stamp(storage_path,local_path)
                     dir_path.save(copy_name,local_path)
                     delta_sec = max((datetime.datetime.now()-then).total_seconds(),1.)
                     try: #The 'try' stops this logging message from getting a div by zero error some times
@@ -163,7 +198,7 @@ class PeerToPeer(FileCache): #!!!cmk rename FileShare to PeerToPeer (and put all
             return main_path
         logging.info("'{0}' does not exist, so looking for other copies.".format(main_path))
         for copy_file in dir_path._simple_walk():
-            if not self.copy_pattern.match(copy_file):
+            if not self._copy_pattern.match(copy_file):
                 continue
             copy_path = dir_path.load(copy_file)
             try:
@@ -228,11 +263,11 @@ class PeerToPeer(FileCache): #!!!cmk rename FileShare to PeerToPeer (and put all
                     logging.debug("Can't remove (because it's not there): '{0}'".format(storage_path))
         self.common_directory.rmtree(path)
 
-    def _simple_rmtree(self,log_writer=None):
+    def _simple_rmtree(self,updater=None):
         logging.info("rmtree -- {0}".format(self.common_directory))
         self._remove_internal(None)
 
-    def _simple_remove(self,simple_file_name,log_writer=None):
+    def _simple_remove(self,simple_file_name,updater=None):
         assert self._simple_file_exists(simple_file_name), "Expect file to exist (and be a file)"
         self._remove_internal(simple_file_name)
 
@@ -253,3 +288,8 @@ class PeerToPeer(FileCache): #!!!cmk rename FileShare to PeerToPeer (and put all
                 yield head
 
 
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+
+    import doctest
+    doctest.testmod()

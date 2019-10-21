@@ -240,3 +240,8 @@ ModelManifest.xml
 /pysnptools/util/.work_directory.None
 /pysnptools/util/.work_directory.prime_search1
 /pysnptools/util/runs
+/pysnptools/snpreader/localcache1/sub1
+/pysnptools/snpreader/peertopeer1
+/pysnptools/util/filecache/localcache1/sub1
+/pysnptools/util/filecache/peertopeer1
+/pysnptools/util/filecache/tempdir

@@ -147,9 +147,9 @@ def map_reduce(input_seq, mapper=_identity, reducer=list, input_files=None, outp
     :param name: A name to be displayed if this work is done on a cluster.
     :type name: a string
 
-    :param runner: a runner, optional: Tells how to run locally, multi-processor, or on a cluster.
+    :param runner: a :class:`.Runner`, optional: Tells how to run locally, multi-processor, or on a cluster.
         If not given, the function is run locally.
-    :type runner: a runner.
+    :type runner: :class:`.Runner`
 
     :param nested: a mapper function that is itself a map_reduce. Some runners can efficiently clusterize such nested mappers. 
     :type nested: a function

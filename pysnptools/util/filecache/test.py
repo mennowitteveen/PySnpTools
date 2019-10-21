@@ -84,7 +84,8 @@ class TestFileCache(unittest.TestCase):
         assert not test_storage.file_exists(r"main.txt\test.txt")
         assert self._is_error(lambda : test_storage.file_exists("test.txt/")) #Can't query something that can't be a file name
         assert self._is_error(lambda : test_storage.file_exists("../test.txt")) #Can't leave the current directory
-        assert self._is_error(lambda : test_storage.file_exists(r"c:\test.txt")) #Can't leave the current directory
+        if os.name == 'nt':
+            assert self._is_error(lambda : test_storage.file_exists(r"c:\test.txt")) #Can't leave the current directory
 
         #Rule: '/' and '\' are both OK, but you can't use ':' or '..' to leave the current root.
         assert 0 == self._len(test_storage.walk())
@@ -197,6 +198,22 @@ class TestFileCache(unittest.TestCase):
         storage1.save("a/b/c.txt","There")
         #read on #2 and see that it is different.
         assert storage2.load("a/b/c.txt")=="There"
+
+    def test_util_filecache_testmod(self):
+        import doctest
+        import pysnptools.util.filecache
+        old_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+        for mod in [
+                    pysnptools.util.filecache,
+                    pysnptools.util.filecache.filecache,
+                    pysnptools.util.filecache.localcache,
+                    pysnptools.util.filecache.peertopeer,
+                    ]:
+            result = doctest.testmod(mod,optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)
+            assert result.failed == 0, "failed doc test: " + __file__
+        os.chdir(old_dir)
+
 
 def getTestSuite():
     """

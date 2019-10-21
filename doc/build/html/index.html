@@ -59,6 +59,7 @@
 <li><a class="reference internal" href="#pysnptools.util.IntRangeSet" title="pysnptools.util.IntRangeSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">util.IntRangeSet</span></code></a>: Efficiently manipulate ranges of integers – for example, genetic position – with set operators including
 union, intersection, and set difference.</li>
 <li><a class="reference internal" href="#module-pysnptools.util.mapreduce1" title="pysnptools.util.mapreduce1"><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.mapreduce1</span></code></a>: Run in parallel on multiple processes, threads, or clusters.</li>
+<li><a class="reference internal" href="#module-pysnptools.util.filecache" title="pysnptools.util.filecache"><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.filecache</span></code></a>: Copy files to and from any remote storage.</li>
 </ul>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1667,6 +1668,72 @@ val, iid, sid, and pos information in NPZ format.</p>
 </div>
 </dd>
 </dl>
+</dd></dl>
+
+</div>
+<div class="section" id="snpreader-distributedbed">
+<h3><code class="xref py py-class docutils literal notranslate"><span class="pre">snpreader.DistributedBed</span></code><a class="headerlink" href="#snpreader-distributedbed" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pysnptools.snpreader.DistributedBed">
+<em class="property">class </em><code class="descclassname">pysnptools.snpreader.</code><code class="descname">DistributedBed</code><span class="sig-paren">(</span><em>storage</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.DistributedBed" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class that implements the <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> interface. It stores <a class="reference internal" href="#pysnptools.snpreader.Bed" title="pysnptools.snpreader.Bed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bed</span></code></a>-like data in pieces on storage. When requested, it retrieves requested parts of the data.</p>
+<dl class="docutils">
+<dt><strong>Constructor:</strong></dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>storage</strong> (<a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a> or string) – Tells where the SNP data was stored. A <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a> instance can be given, which provides a</li>
+</ul>
+<p>method to specify cluster-distributed storage. (<a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a>’s will <strong>not</strong> be automatically erased and must be user managed.)
+A string can be given and will be interpreted as the path of a local directory to use for storage. (The local
+directory will <strong>not</strong> be automatically erased and so must be user managed.)</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">type storage:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a> or string.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+<dl class="staticmethod">
+<dt id="pysnptools.snpreader.DistributedBed.write">
+<em class="property">static </em><code class="descname">write</code><span class="sig-paren">(</span><em>storage</em>, <em>snpreader</em>, <em>piece_per_chrom_count</em>, <em>updater=None</em>, <em>runner=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.DistributedBed.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uploads from any <a class="reference internal" href="#pysnptools.snpreader.Bed" title="pysnptools.snpreader.Bed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bed</span></code></a>-like data to cluster storage for efficient retrieval later.
+If some of the contents already exists in storage, it skips uploading that part of the contents. (To avoid this behavior,
+clear the storage.)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>storage</strong> (<a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a> or None or string.) – Tells where to upload SNP data.
+A <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a> instance can be given, which provides a
+method to specify cluster-distributed storage. (<a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a>’s will <strong>not</strong> be automatically erased and must be user managed.)
+If <cite>None</cite>, the storage will be in an automatically-erasing temporary directory. (If the TEMP environment variable is set, Python places the temp directory under it.)
+A string can be given and will be interpreted as the path of a local directory to use for storage. (The local
+directory will <strong>not</strong> be automatically erased and so must be user managed.)</li>
+<li><strong>snpreader</strong> (<a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a>) – A <a class="reference internal" href="#pysnptools.snpreader.Bed" title="pysnptools.snpreader.Bed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bed</span></code></a> or other <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> that with values of 0,1,2, or missing.
+(Note that this differs from most other <cite>write`methods that take a :class:</cite>.SnpData`)</li>
+<li><strong>piece_per_chrom_count</strong> (<em>A number</em>) – The number of pieces in which to store the data from each chromosome. Data is split across
+SNPs. If <cite>piece_per_chrom_count</cite> is set to 100 and 22 chromosomes are uploaded, then data will be stored in 2200 pieces. Later, when data is requested
+only the pieces necessary for the request will be downloaded to local storage.</li>
+<li><strong>updater</strong> (A lambda such as created by <a class="reference internal" href="#pysnptools.util.log_in_place" title="pysnptools.util.log_in_place"><code class="xref py py-func docutils literal notranslate"><span class="pre">log_in_place()</span></code></a>) – A single argument function to write logging message to.</li>
+<li><strong>runner</strong> (<a class="reference internal" href="#pysnptools.util.mapreduce1.runner.Runner" title="pysnptools.util.mapreduce1.runner.Runner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Runner</span></code></a>) – a <a class="reference internal" href="#pysnptools.util.mapreduce1.runner.Runner" title="pysnptools.util.mapreduce1.runner.Runner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Runner</span></code></a>, optional: Tells how to run.
+(Note that <a class="reference internal" href="#pysnptools.util.mapreduce1.runner.Local" title="pysnptools.util.mapreduce1.runner.Local"><code class="xref py py-class docutils literal notranslate"><span class="pre">Local</span></code></a> and <code class="xref py py-class docutils literal notranslate"><span class="pre">LocalMultProc</span></code> are good options.)
+If not given, the function is run locally.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pysnptools.snpreader.DistributedBed" title="pysnptools.snpreader.DistributedBed">DistributedBed</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -4263,16 +4330,33 @@ across all data sets.</td>
 <dl class="function">
 <dt id="pysnptools.util.log_in_place">
 <code class="descclassname">pysnptools.util.</code><code class="descname">log_in_place</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.log_in_place" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create an one-argument lambda to write messages to. Messages will appear on the same line.</p>
-<p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">log_in_place</span><span class="p">(</span><span class="s2">&quot;creating job_id_etc&quot;</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span> <span class="k">as</span> <span class="n">log_writer</span><span class="p">:</span>            
-    <span class="n">job_id_etc_list</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">index</span><span class="p">,(</span><span class="n">distributable</span><span class="p">,</span><span class="n">pool_id</span><span class="p">,</span><span class="n">name_in</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">izip</span><span class="p">(</span><span class="n">distributable_list</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">pool_id_list</span><span class="p">,</span><span class="n">name_list</span><span class="p">)):</span>
-       <span class="n">log_writer</span><span class="p">(</span><span class="n">name_in</span><span class="p">)</span>
-       <span class="n">job_id_etc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_job</span><span class="p">([</span><span class="n">distributable</span><span class="p">],</span><span class="n">pool_id</span><span class="p">,</span><span class="n">name_in</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-       <span class="n">job_id_etc_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">job_id_etc</span><span class="p">)</span>
-</pre></div>
+<dd><p>Create an one-argument function to write messages to. If the logging level
+is met, messages will appear. All messages will be on the same line and
+will include time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="line-block">
+<div class="line">from pysnptools.util import log_in_place</div>
+<div class="line">import logging</div>
+<div class="line">import time</div>
+<div class="line">logging.basicConfig(level=logging.INFO)</div>
+<div class="line"><br /></div>
+<div class="line">with log_in_place(“counting”, logging.INFO) as updater:</div>
+<div class="line-block">
+<div class="line">for i in xrange(100):</div>
+<div class="line-block">
+<div class="line">updater(i)</div>
+<div class="line">time.sleep(.1) #typically, work – not a delay – goes here</div>
 </div>
+</div>
+</div>
+<p>Outputs 100 messages on the same line, ending with something like “counting – time=0:00:09.99, 99”</p>
 </dd></dl>
 
 <dl class="function">
@@ -5877,7 +5961,7 @@ objects such as <a class="reference internal" href="#pysnptools.snpreader.SnpRea
 <li><strong>output_files</strong> (<em>a list</em>) – An optional list that tells what output files will be produced. The list can contain the names of files (strings), None (ignored), or
 objects such as <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a>’s that can self-report their output files.</li>
 <li><strong>name</strong> (<em>a string</em>) – A name to be displayed if this work is done on a cluster.</li>
-<li><strong>runner</strong> (<em>a runner.</em>) – a runner, optional: Tells how to run locally, multi-processor, or on a cluster.
+<li><strong>runner</strong> (<a class="reference internal" href="#pysnptools.util.mapreduce1.runner.Runner" title="pysnptools.util.mapreduce1.runner.Runner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Runner</span></code></a>) – a <a class="reference internal" href="#pysnptools.util.mapreduce1.runner.Runner" title="pysnptools.util.mapreduce1.runner.Runner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Runner</span></code></a>, optional: Tells how to run locally, multi-processor, or on a cluster.
 If not given, the function is run locally.</li>
 <li><strong>nested</strong> (<em>a function</em>) – a mapper function that is itself a map_reduce. Some runners can efficiently clusterize such nested mappers.</li>
 </ul>
@@ -6151,6 +6235,499 @@ Clustering runners and <a class="reference internal" href="#pysnptools.util.mapr
 
 </div>
 </div>
+<div class="section" id="module-pysnptools.util.filecache">
+<span id="util-filecache-module"></span><h2><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.filecache</span></code> Module<a class="headerlink" href="#module-pysnptools.util.filecache" title="Permalink to this headline">¶</a></h2>
+<p>Tools for reading and writing files, locally or across clusters.</p>
+<dl class="function">
+<dt id="pysnptools.util.filecache.ip_address">
+<code class="descclassname">pysnptools.util.filecache.</code><code class="descname">ip_address</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.filecache.ip_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the ip address of this computer.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pysnptools.util.filecache.ip_address_pid">
+<code class="descclassname">pysnptools.util.filecache.</code><code class="descname">ip_address_pid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.filecache.ip_address_pid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the ip address of this computer and process id of the executing process.</p>
+</dd></dl>
+
+<div class="section" id="util-filecache-filecache">
+<h3><code class="xref py py-class docutils literal notranslate"><span class="pre">util.filecache.FileCache</span></code><a class="headerlink" href="#util-filecache-filecache" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pysnptools.util.filecache.FileCache">
+<em class="property">class </em><code class="descclassname">pysnptools.util.filecache.</code><code class="descname">FileCache</code><a class="headerlink" href="#pysnptools.util.filecache.FileCache" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>A FileCache is class such as <a class="reference internal" href="#pysnptools.util.filecache.LocalCache" title="pysnptools.util.filecache.LocalCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalCache</span></code></a> or <a class="reference internal" href="#pysnptools.util.filecache.PeerToPeer" title="pysnptools.util.filecache.PeerToPeer"><code class="xref py py-class docutils literal notranslate"><span class="pre">PeerToPeer</span></code></a> that</dt>
+<dd><ul class="first last simple">
+<li>For reading, copies a (possibly remote) file to a local disk. (If the local file already exists 
+and is up-to-date, retrieval is typically skipped.)</li>
+<li>For writing, copies a newly-written local file to (possibly remote) storage.</li>
+<li>Provides an assortment of file- and directory-related commands.</li>
+</ul>
+</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><p class="first">Suppose all machines in a cluster can read &amp; write the storage at ‘peertopeer1/common’.
+Also, suppose that ‘peertopeer1/192.168.1.105’ is stored locally
+on machine 192.168.1.105 but readable other machines in the cluster 
+(and so on for all the machines and their IPs).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.filecache</span> <span class="k">import</span> <span class="n">PeerToPeer</span><span class="p">,</span> <span class="n">ip_address</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">id_and_path_function</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="n">ip</span> <span class="o">=</span> <span class="n">ip_address</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">ip</span><span class="p">,</span> <span class="s1">&#39;peertopeer1/</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span> <span class="o">=</span> <span class="n">PeerToPeer</span><span class="p">(</span><span class="n">common_directory</span><span class="o">=</span><span class="s1">&#39;peertopeer1/common&#39;</span><span class="p">,</span><span class="n">id_and_path_function</span><span class="o">=</span><span class="n">id_and_path_function</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span>
+<span class="go">PeerToPeer(&#39;peertopeer1/common&#39;,id_and_path_function=...&#39;)</span>
+</pre></div>
+</div>
+<p>Remove anything already in remote storage</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">rmtree</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Create a random SNP file and store it remotely.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">SnpGen</span><span class="p">,</span> <span class="n">Dense</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snp_gen</span> <span class="o">=</span> <span class="n">SnpGen</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span><span class="n">iid_count</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="n">sid_count</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">file_cache</span><span class="o">.</span><span class="n">open_write</span><span class="p">(</span><span class="s1">&#39;r123.100x500.dense.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">local_filename</span><span class="p">:</span>
+<span class="gp">... </span>   <span class="n">dense1</span> <span class="o">=</span> <span class="n">Dense</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">local_filename</span><span class="p">,</span><span class="n">snp_gen</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">file_cache</span><span class="o">.</span><span class="n">walk</span><span class="p">())</span>
+<span class="go">[&#39;r123.100x500.dense.txt&#39;]</span>
+</pre></div>
+</div>
+<p>Copy back from remote storage (if needed) and then read SNP data from local file.</p>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">file_cache</span><span class="o">.</span><span class="n">open_read</span><span class="p">(</span><span class="s1">&#39;r123.100x500.dense.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">local_filename</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">dense2</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">local_filename</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="nb">print</span> <span class="n">dense2</span><span class="p">[:</span><span class="mi">3</span><span class="p">,:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">val</span> <span class="c1">#Read 1st 3 individuals and SNPs</span>
+<span class="go">[[ 0. nan nan]</span>
+<span class="go"> [ 0.  0. nan]</span>
+<span class="go"> [ 0.  0.  0.]]</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Given the appropriate module, <cite>FileCache</cite> library provides a unified way work to work with any remote storage scheme. It differs from
+virtual file systems, such as CIFS VFS, because:</p>
+<blockquote>
+<div><ul class="simple">
+<li><cite>FileCache</cite> works with all operating systems and requires no operating system changes.</li>
+<li><cite>FileCache</cite> can take advantage of the highest performance file retrieval methods (e.g. kernel space, peer-to-peer, tree copies, etc).</li>
+<li><cite>FileCache</cite> can take advantage of the highest performance local read and write storage (e.g. SSDs)</li>
+<li><cite>FileCache</cite> can work on top of CIFS VFS and any other remote storage system with an appropriate module.</li>
+</ul>
+<p>The downside of <cite>FileCache</cite> is that:</p>
+<ul class="simple">
+<li>Writing generally requires two statements (e.g. ‘open_write’,’Dense.write’) instead of just one. Likewise,
+Reading generally requires two statements (e.g. ‘open_read’, ‘dense[:3,:3].read()’ instead of just one.</li>
+</ul>
+</div></blockquote>
+<p>Methods &amp; Properties:</p>
+<blockquote>
+<div>Every <cite>FileCache</cite>, such as <a class="reference internal" href="#pysnptools.util.filecache.LocalCache" title="pysnptools.util.filecache.LocalCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalCache</span></code></a> and <a class="reference internal" href="#pysnptools.util.filecache.PeerToPeer" title="pysnptools.util.filecache.PeerToPeer"><code class="xref py py-class docutils literal notranslate"><span class="pre">PeerToPeer</span></code></a>, has this property:
+<a class="reference internal" href="#pysnptools.util.filecache.FileCache.name" title="pysnptools.util.filecache.FileCache.name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">name</span></code></a>, 
+and these methods:
+<a class="reference internal" href="#pysnptools.util.filecache.FileCache.file_exists" title="pysnptools.util.filecache.FileCache.file_exists"><code class="xref py py-meth docutils literal notranslate"><span class="pre">file_exists()</span></code></a>, <a class="reference internal" href="#pysnptools.util.filecache.FileCache.getmtime" title="pysnptools.util.filecache.FileCache.getmtime"><code class="xref py py-meth docutils literal notranslate"><span class="pre">getmtime()</span></code></a>, <a class="reference internal" href="#pysnptools.util.filecache.FileCache.join" title="pysnptools.util.filecache.FileCache.join"><code class="xref py py-meth docutils literal notranslate"><span class="pre">join()</span></code></a>, <a class="reference internal" href="#pysnptools.util.filecache.FileCache.load" title="pysnptools.util.filecache.FileCache.load"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load()</span></code></a>, <a class="reference internal" href="#pysnptools.util.filecache.FileCache.open_read" title="pysnptools.util.filecache.FileCache.open_read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open_read()</span></code></a>, <a class="reference internal" href="#pysnptools.util.filecache.FileCache.open_write" title="pysnptools.util.filecache.FileCache.open_write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open_write()</span></code></a>, <a class="reference internal" href="#pysnptools.util.filecache.FileCache.remove" title="pysnptools.util.filecache.FileCache.remove"><code class="xref py py-meth docutils literal notranslate"><span class="pre">remove()</span></code></a>, <a class="reference internal" href="#pysnptools.util.filecache.FileCache.rmtree" title="pysnptools.util.filecache.FileCache.rmtree"><code class="xref py py-meth docutils literal notranslate"><span class="pre">rmtree()</span></code></a>,
+<a class="reference internal" href="#pysnptools.util.filecache.FileCache.save" title="pysnptools.util.filecache.FileCache.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a>, and <a class="reference internal" href="#pysnptools.util.filecache.FileCache.walk" title="pysnptools.util.filecache.FileCache.walk"><code class="xref py py-meth docutils literal notranslate"><span class="pre">walk()</span></code></a>. See below for details.</div></blockquote>
+<p>Details of Methods &amp; Properties:</p>
+<dl class="method">
+<dt id="pysnptools.util.filecache.FileCache.file_exists">
+<code class="descname">file_exists</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.filecache.FileCache.file_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tells if there a file with this name. (A directory with the name doesn’t count.)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_name</strong> (<em>string</em>) – The name of the file to look for</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">boolean</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.filecache</span> <span class="k">import</span> <span class="n">LocalCache</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span> <span class="o">=</span> <span class="n">LocalCache</span><span class="p">(</span><span class="s1">&#39;localcache1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">rmtree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">file_exists</span><span class="p">(</span><span class="s1">&#39;sub1/file1.txt&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;sub1/file1.txt&#39;</span><span class="p">,</span><span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">file_exists</span><span class="p">(</span><span class="s1">&#39;sub1/file1.txt&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pysnptools.util.filecache.FileCache.getmtime">
+<code class="descname">getmtime</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.filecache.FileCache.getmtime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the time that the file was last modified.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_name</strong> (<em>string</em>) – The name of the (possibly remote) file of interest</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">number, the number of seconds since the epoch</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pysnptools.util.filecache.FileCache.join">
+<code class="descname">join</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.filecache.FileCache.join" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a> created by appending a path to the current <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<em>string</em>) – path to join to current <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pysnptools.util.filecache.FileCache.load">
+<code class="descname">load</code><span class="sig-paren">(</span><em>file_name</em>, <em>updater=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.filecache.FileCache.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the contents of a file in storage as a string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>file_name</strong> (<em>string</em>) – The name of the (possibly remote) file to read</li>
+<li><strong>updater</strong> (<em>function</em><em> or </em><em>lambda</em>) – (Default, None). Optional function to which status messages may be written. For example, 
+<a class="reference internal" href="#pysnptools.util.log_in_place" title="pysnptools.util.log_in_place"><code class="xref py py-func docutils literal notranslate"><span class="pre">log_in_place()</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">string - what was written in the file.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.filecache</span> <span class="k">import</span> <span class="n">LocalCache</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span> <span class="o">=</span> <span class="n">LocalCache</span><span class="p">(</span><span class="s1">&#39;localcache1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">rmtree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;file1.txt&#39;</span><span class="p">,</span><span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;file1.txt&#39;</span><span class="p">)</span>
+<span class="go">&#39;Hello&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pysnptools.util.filecache.FileCache.name">
+<code class="descname">name</code><a class="headerlink" href="#pysnptools.util.filecache.FileCache.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A path-like name for this <cite>FileCache</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pysnptools.util.filecache.FileCache.open_read">
+<code class="descname">open_read</code><span class="sig-paren">(</span><em>file_name</em>, <em>updater=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.filecache.FileCache.open_read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used with a ‘with’ statement to produce a local copy of a (possibly remote) file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>file_name</strong> (<em>string</em>) – The name of the (possibly remote) file to read</li>
+<li><strong>updater</strong> (<em>function</em><em> or </em><em>lambda</em>) – (Default, None). Optional function to which status messages may be written. For example, 
+<a class="reference internal" href="#pysnptools.util.log_in_place" title="pysnptools.util.log_in_place"><code class="xref py py-func docutils literal notranslate"><span class="pre">log_in_place()</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">a local filename to read.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.filecache</span> <span class="k">import</span> <span class="n">LocalCache</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span> <span class="o">=</span> <span class="n">LocalCache</span><span class="p">(</span><span class="s1">&#39;localcache1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">rmtree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;file1.txt&#39;</span><span class="p">,</span><span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">file_cache</span><span class="o">.</span><span class="n">open_read</span><span class="p">(</span><span class="s1">&#39;file1.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">local_filename</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">local_filename</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">line</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">line</span>
+<span class="go">&#39;Hello&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pysnptools.util.filecache.FileCache.open_write">
+<code class="descname">open_write</code><span class="sig-paren">(</span><em>file_name</em>, <em>size=0</em>, <em>updater=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.filecache.FileCache.open_write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used with a ‘with’ statement to produce a local file name that will be copied to remote storage
+when the ‘with’ statement is exited.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>file_name</strong> (<em>string</em>) – The name of the (possibly remote) file to which to write.</li>
+<li><strong>size</strong> (<em>number</em>) – (default 0) if given, an error will be thrown immediately if local storage doesn’t
+have room for that many bytes.</li>
+<li><strong>updater</strong> (<em>function</em><em> or </em><em>lambda</em>) – (Default, None). Optional function to which status messages may be written. For example, 
+<a class="reference internal" href="#pysnptools.util.log_in_place" title="pysnptools.util.log_in_place"><code class="xref py py-func docutils literal notranslate"><span class="pre">log_in_place()</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">a local filename to read.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.filecache</span> <span class="k">import</span> <span class="n">LocalCache</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span> <span class="o">=</span> <span class="n">LocalCache</span><span class="p">(</span><span class="s1">&#39;localcache1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">rmtree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">file_cache</span><span class="o">.</span><span class="n">open_write</span><span class="p">(</span><span class="s1">&#39;file1.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">local_filename</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">local_filename</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;file1.txt&#39;</span><span class="p">)</span>
+<span class="go">&#39;Hello&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pysnptools.util.filecache.FileCache.remove">
+<code class="descname">remove</code><span class="sig-paren">(</span><em>file_name</em>, <em>updater=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.filecache.FileCache.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a file from storage. It is an error to remove a directory this way.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>file_name</strong> (<em>string</em>) – The name of the (possibly remote) file to remove.</li>
+<li><strong>updater</strong> (<em>function</em><em> or </em><em>lambda</em>) – (Default, None). Optional function to which status messages may be written. For example, 
+<a class="reference internal" href="#pysnptools.util.log_in_place" title="pysnptools.util.log_in_place"><code class="xref py py-func docutils literal notranslate"><span class="pre">log_in_place()</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pysnptools.util.filecache.FileCache.rmtree">
+<code class="descname">rmtree</code><span class="sig-paren">(</span><em>path=None</em>, <em>updater=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.filecache.FileCache.rmtree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete all files under this <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a>. It is OK if there are no files.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>path</strong> (<em>string</em>) – (Default, None, the current <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a>). Optional a path (subdirectory, not file) to start in.</li>
+<li><strong>updater</strong> (<em>function</em><em> or </em><em>lambda</em>) – (Default, None). Optional function to which status messages may be written. For example, 
+<a class="reference internal" href="#pysnptools.util.log_in_place" title="pysnptools.util.log_in_place"><code class="xref py py-func docutils literal notranslate"><span class="pre">log_in_place()</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pysnptools.util.filecache.FileCache.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>file_name</em>, <em>contents</em>, <em>size=0</em>, <em>updater=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.filecache.FileCache.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a string to a file in storage.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>file_name</strong> (<em>string</em>) – The name of the (possibly remote) file to which to write.</li>
+<li><strong>contents</strong> (<em>string</em>) – What to write to the file.</li>
+<li><strong>size</strong> (<em>number</em>) – (default 0) if given, an error will be thrown immediately if local storage doesn’t
+have room for that many bytes.</li>
+<li><strong>updater</strong> (<em>function</em><em> or </em><em>lambda</em>) – (Default, None). Optional function to which status messages may be written. For example, 
+<a class="reference internal" href="#pysnptools.util.log_in_place" title="pysnptools.util.log_in_place"><code class="xref py py-func docutils literal notranslate"><span class="pre">log_in_place()</span></code></a>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.filecache</span> <span class="k">import</span> <span class="n">LocalCache</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span> <span class="o">=</span> <span class="n">LocalCache</span><span class="p">(</span><span class="s1">&#39;localcache1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">rmtree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;file1.txt&#39;</span><span class="p">,</span><span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;file1.txt&#39;</span><span class="p">)</span>
+<span class="go">&#39;Hello&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pysnptools.util.filecache.FileCache.walk">
+<code class="descname">walk</code><span class="sig-paren">(</span><em>path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.filecache.FileCache.walk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates the relative paths of the files in the <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a>. It is OK if there are no files.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<em>string</em>) – (Default, None, the current <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a>). Optional path (subdirectory, not file) to start in.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">a generator of strings</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.filecache</span> <span class="k">import</span> <span class="n">LocalCache</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span> <span class="o">=</span> <span class="n">LocalCache</span><span class="p">(</span><span class="s1">&#39;localcache1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">rmtree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">file_cache</span><span class="o">.</span><span class="n">walk</span><span class="p">())</span>
+<span class="go">[]</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;file1.txt&#39;</span><span class="p">,</span><span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">file_cache</span><span class="o">.</span><span class="n">walk</span><span class="p">())</span>
+<span class="go">[&#39;file1.txt&#39;]</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">file_cache</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="s1">&#39;no_such_sub_path&#39;</span><span class="p">))</span>
+<span class="go">[]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="util-filecache-localcache">
+<h3><code class="xref py py-class docutils literal notranslate"><span class="pre">util.filecache.LocalCache</span></code><a class="headerlink" href="#util-filecache-localcache" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pysnptools.util.filecache.LocalCache">
+<em class="property">class </em><code class="descclassname">pysnptools.util.filecache.</code><code class="descname">LocalCache</code><span class="sig-paren">(</span><em>directory='local_cache'</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.filecache.LocalCache" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a> for working with files locally.</p>
+<p>See <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a> for general examples of using FileCache.</p>
+<p>This is the simplest <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a> in that it stores everything on a local disk rather than storing things remotely.</p>
+<dl class="docutils">
+<dt><strong>Constructor:</strong></dt>
+<dd><table class="first docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>directory</strong> (<em>string</em>) – (Default “local_cache”) The directory under which files should be written and read.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.filecache</span> <span class="k">import</span> <span class="n">LocalCache</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span> <span class="o">=</span> <span class="n">LocalCache</span><span class="p">(</span><span class="s1">&#39;localcache1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">rmtree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;sub1/file1.txt&#39;</span><span class="p">,</span><span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">file_exists</span><span class="p">(</span><span class="s1">&#39;sub1/file1.txt&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="pysnptools.util.filecache.LocalCache.name">
+<code class="descname">name</code><a class="headerlink" href="#pysnptools.util.filecache.LocalCache.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A path-like name for this <cite>LocalCache</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="util-filecache-peertopeer">
+<h3><code class="xref py py-class docutils literal notranslate"><span class="pre">util.filecache.PeerToPeer</span></code><a class="headerlink" href="#util-filecache-peertopeer" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="pysnptools.util.filecache.PeerToPeer">
+<em class="property">class </em><code class="descclassname">pysnptools.util.filecache.</code><code class="descname">PeerToPeer</code><span class="sig-paren">(</span><em>common_directory</em>, <em>id_and_path_function</em>, <em>leave_space=0</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.filecache.PeerToPeer" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a> that allows multiple machines (or processes on one machine) to share files in a peer-to-peer fashion.</p>
+<p>See <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a> for general examples of using FileCache.</p>
+<p>This is useful for a cluster with multiple machines with persistent storage and a fast network. Every time a machine writes a file,
+the file stays on that machine, but information about the file’s name and location is saved to a common directory. When a new
+machine needs the file, it looks to the common directory for a location and then copies from that location. That second location
+is also saved to the common directory. Later machines that need the file will randomly pick among the available locations. When a file is removed, it
+is only removed from the common directory; clean up of local copies happens later when space is needed for other reads.</p>
+<dl class="docutils">
+<dt><strong>Constructor:</strong></dt>
+<dd><table class="first docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>common_directory</strong> (<a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a> or <em>string</em>) – The path or <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a> where
+each file’s name and locations (but not contents) are stored. This path must be read/writable by every machine in the cluster.</li>
+<li><strong>id_and_path_function</strong> (<em>function</em>) – A function (or lambda) that deterministically returns two values: 1. an id unique to each machine
+(or process) and 2. a file path to this machine’s local storage that any machine
+in the cluster can read.</li>
+<li><strong>leave_space</strong> (<em>number</em>) – (Default “0”) How much free space must be left on local drive after downloads and writes.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1">#Suppose that every machine can access a shared &#39;peertopeer1&#39; and that &#39;peertopeer1/IPADDRESS&#39; is local to each machine.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.filecache</span> <span class="k">import</span> <span class="n">PeerToPeer</span><span class="p">,</span> <span class="n">ip_address</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">id_and_path_function</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="n">ip</span> <span class="o">=</span> <span class="n">ip_address</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">ip</span><span class="p">,</span> <span class="s1">&#39;peertopeer1/</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span> <span class="o">=</span> <span class="n">PeerToPeer</span><span class="p">(</span><span class="n">common_directory</span><span class="o">=</span><span class="s1">&#39;peertopeer1/common&#39;</span><span class="p">,</span><span class="n">id_and_path_function</span><span class="o">=</span><span class="n">id_and_path_function</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">rmtree</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;sub1/file1.txt&#39;</span><span class="p">,</span><span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">file_exists</span><span class="p">(</span><span class="s1">&#39;sub1/file1.txt&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="pysnptools.util.filecache.PeerToPeer.name">
+<code class="descname">name</code><a class="headerlink" href="#pysnptools.util.filecache.PeerToPeer.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>A path-like name for this <cite>PeerToPeer</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
 <div class="section" id="indices-and-tables">
 <h2>Indices and Tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
 <blockquote>
@@ -6184,6 +6761,7 @@ Clustering runners and <a class="reference internal" href="#pysnptools.util.mapr
 <li><a class="reference internal" href="#snpreader-snpnpz"><code class="docutils literal notranslate"><span class="pre">snpreader.SnpNpz</span></code></a></li>
 <li><a class="reference internal" href="#snpreader-snpmemmap"><code class="docutils literal notranslate"><span class="pre">snpreader.SnpMemMap</span></code></a></li>
 <li><a class="reference internal" href="#snpreader-snpgen"><code class="docutils literal notranslate"><span class="pre">snpreader.SnpGen</span></code></a></li>
+<li><a class="reference internal" href="#snpreader-distributedbed"><code class="docutils literal notranslate"><span class="pre">snpreader.DistributedBed</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-pysnptools.kernelreader"><code class="docutils literal notranslate"><span class="pre">kernelreader</span></code> Module</a><ul>
@@ -6233,6 +6811,12 @@ Clustering runners and <a class="reference internal" href="#pysnptools.util.mapr
 <li><a class="reference internal" href="#util-mapreduce1-runner-localmultiproc"><code class="docutils literal notranslate"><span class="pre">util.mapreduce1.runner.LocalMultiProc</span></code></a></li>
 <li><a class="reference internal" href="#util-mapreduce1-runner-localmultithread"><code class="docutils literal notranslate"><span class="pre">util.mapreduce1.runner.LocalMultiThread</span></code></a></li>
 <li><a class="reference internal" href="#util-mapreduce1-runner-localinparts"><code class="docutils literal notranslate"><span class="pre">util.mapreduce1.runner.LocalInParts</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-pysnptools.util.filecache"><code class="docutils literal notranslate"><span class="pre">util.filecache</span></code> Module</a><ul>
+<li><a class="reference internal" href="#util-filecache-filecache"><code class="docutils literal notranslate"><span class="pre">util.filecache.FileCache</span></code></a></li>
+<li><a class="reference internal" href="#util-filecache-localcache"><code class="docutils literal notranslate"><span class="pre">util.filecache.LocalCache</span></code></a></li>
+<li><a class="reference internal" href="#util-filecache-peertopeer"><code class="docutils literal notranslate"><span class="pre">util.filecache.PeerToPeer</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and Tables</a></li>

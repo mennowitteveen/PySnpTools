@@ -193,7 +193,7 @@ def _all_same(iids_list):
 def intersect_ids(idslist):
     '''
     .. deprecated::
-       Use :func:`intersect_apply` instead.    
+       Use :func:`.intersect_apply` instead.    
     
     Takes a list of 2d string arrays of family and case ids.
     These are intersected.
@@ -479,17 +479,23 @@ def _mbps_str(t0, size, total=0):
 @contextmanager
 def log_in_place(name, level, time_lambda=time.time, show_log_diffs=False):
     '''
-        Create an one-argument lambda to write messages to. Messages will appear on the same line.
+        Create an one-argument function to write messages to. If the logging level
+        is met, messages will appear. All messages will be on the same line and
+        will include time.
 
         :Example:
 
-            with log_in_place("creating job_id_etc", logging.INFO) as log_writer:            
-                job_id_etc_list = []
-                for index,(distributable,pool_id,name_in) in enumerate(izip(distributable_list,self.pool_id_list,name_list)):
-                   log_writer(name_in)
-                   job_id_etc = self._setup_job([distributable],pool_id,name_in)[0]
-                   job_id_etc_list.append(job_id_etc)
+        | from pysnptools.util import log_in_place
+        | import logging
+        | import time
+        | logging.basicConfig(level=logging.INFO)
+        | 
+        | with log_in_place("counting", logging.INFO) as updater:
+        |    for i in xrange(100):
+        |         updater(i)
+        |         time.sleep(.1) #typically, work -- not a delay -- goes here
 
+        Outputs 100 messages on the same line, ending with something like "counting -- time=0:00:09.99, 99"
     '''
     #!!! what if logging messages aren't suppose to go to stdout?
     t_wait = time_lambda()
@@ -520,7 +526,7 @@ def log_in_place(name, level, time_lambda=time.time, show_log_diffs=False):
     sys.stdout.write("\n")                
 
 @contextmanager
-def _progress_reporter(name,size=None,updater=None):
+def _file_transfer_reporter(name,size=None,updater=None):
     '''
     If an update is given, we use that. Otherwise, we create our own.
     '''

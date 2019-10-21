@@ -10,7 +10,7 @@ import logging
 
 def ip_address():
     '''
-    !!!cmk doc
+    Return the ip address of this computer.
     '''
     import socket
     #see http://stackoverflow.com/questions/166506/finding-local-ip-addresses-using-pythons-stdlib
@@ -18,7 +18,7 @@ def ip_address():
 
 def ip_address_pid():
     '''
-    !!!cmk doc
+    Return the ip address of this computer and process id of the executing process.
     '''
     ip = ip_address()
     pid = os.getpid()
@@ -39,8 +39,8 @@ class _DibLib(object):
             raise Exception("Don't know what test goes with dib_name of '{0}'".format(dib_name))
 
     def tree_copy(self,priority,dibs_time,try_index):
-        copy_count = len([f for f in self.dir_path.walk() if PeerToPeer.copy_main_pattern.match(f)]) #count main + copies
-        logging.info("FileShare priority is {0} and copy_count is {1}".format(priority,copy_count))
+        copy_count = len([f for f in self.dir_path.walk() if PeerToPeer._copy_main_pattern.match(f)]) #count main + copies
+        logging.info("PeerToPeer priority is {0} and copy_count is {1}".format(priority,copy_count))
         if priority+1 <= copy_count * 2:
             return 'go'
         else:
@@ -54,7 +54,7 @@ class _DibLib(object):
             logging.info("Priority was > 0, but there is now a p2p file to copy, so the wait is over")
             return "fixed"
         for f in self.dir_path.walk():
-            if PeerToPeer.copy_main_pattern.match(f) and self.dir_path._simple_getmtime(f) > dibs_time:
+            if PeerToPeer._copy_main_pattern.match(f) and self.dir_path._simple_getmtime(f) > dibs_time:
                 logging.info("Priority > 0, but there is now a p2p file to copy, so the wait is over")
                 return "fixed" #If dibs later, but there is a new "main" or "copy" file, then go
         else:
@@ -99,7 +99,6 @@ class _DibLib(object):
 
  
 
-#!!!cmk update everyting and confirm testing
 from pysnptools.util.filecache.filecache import FileCache
 from pysnptools.util.filecache.localcache import LocalCache
 from pysnptools.util.filecache.peertopeer import PeerToPeer

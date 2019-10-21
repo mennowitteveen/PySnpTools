@@ -9,6 +9,7 @@ from pysnptools.snpreader import Dat
 from pysnptools.snpreader import Dense
 from pysnptools.snpreader import Pheno
 from pysnptools.snpreader import Ped
+from pysnptools.snpreader import DistributedBed
 from pysnptools.standardizer import Unit
 from pysnptools.standardizer import Beta
 from pysnptools.util import create_directory_if_necessary
@@ -22,7 +23,7 @@ from pysnptools.snpreader.snpgen import TestSnpGen
 from pysnptools.kernelreader.test import _fortesting_JustCheckExists
 from pysnptools.util.intrangeset import TestIntRangeSet
 from pysnptools.util.test import TestUtilTools
-    
+from pysnptools.util.filecache.test import TestFileCache
 
 import unittest
 import os.path
@@ -226,6 +227,19 @@ class TestPySnpTools(unittest.TestCase):
         create_directory_if_necessary(output)
         Dense.write(output, snpdata1)
         snpreader = Dense(output)
+        _fortesting_JustCheckExists().input(snpreader)
+        snpdata2 = snpreader.read()
+        np.testing.assert_array_almost_equal(snpdata1.val, snpdata2.val, decimal=10)
+
+    def test_c_reader_distributedbed(self):
+        from pysnptools.util.filecache import LocalCache
+
+        snpdata1 = self.snpdata[:,::100].read()
+        snpdata1.val[1,2] = np.NaN # Inject a missing value to test writing and reading missing values
+        output = "tempdir/snpreader/toydata.distributedbed"
+        LocalCache(output).rmtree()
+        DistributedBed.write(output, snpdata1, piece_per_chrom_count=5)
+        snpreader = DistributedBed(output)
         _fortesting_JustCheckExists().input(snpreader)
         snpdata2 = snpreader.read()
         np.testing.assert_array_almost_equal(snpdata1.val, snpdata2.val, decimal=10)
@@ -699,6 +713,15 @@ class TestSnpDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
+    def test_distributedbed(self):
+        import pysnptools.snpreader.distributedbed
+        old_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
+        result = doctest.testmod(pysnptools.snpreader.distributedbed)
+        os.chdir(old_dir)
+        assert result.failed == 0, "failed doc test: " + __file__
+
+
     def test_snpreader(self):
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
@@ -751,6 +774,8 @@ def getTestSuite():
     """
 
     test_suite = unittest.TestSuite([])
+    
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestFileCache))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestUtilTools))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestIntRangeSet))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestSnpDocStrings))

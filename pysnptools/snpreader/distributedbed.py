@@ -9,24 +9,25 @@ from pysnptools.util import _multiopen
 from pysnptools.snpreader import _snps_fixup
 from pysnptools.util import log_in_place
 from pysnptools.util.mapreduce1 import map_reduce
+from pysnptools.util.filecache import FileCache
 
-
-#!!!cmk update everything and confirm testing
-
-class DistributedBed(SnpReader): #!!!cmk is this tested anywhere
-    #!!!cmk update
+class DistributedBed(SnpReader):
     '''
-    A class that implements the :class:`SnpReader` interface. It stores BED-like data in pieces on storage. When requested, it retrieves requested parts of the data. 
+    A class that implements the :class:`SnpReader` interface. It stores :class:`.Bed`-like data in pieces on storage. When requested, it retrieves requested parts of the data. 
 
     **Constructor:**
-        :Parameters: * **storage** (*FileCache*) -- The :class:`LocalCache` or other :class:`FileCache` where the data should or is stored.
+        :Parameters: * **storage** (:class:`.FileCache` or string) -- Tells where the SNP data was stored. A :class:`.FileCache` instance can be given, which provides a
+                      method to specify cluster-distributed storage. (:class:`.FileCache`'s will **not** be automatically erased and must be user managed.)
+                      A string can be given and will be interpreted as the path of a local directory to use for storage. (The local
+                      directory will **not** be automatically erased and so must be user managed.) 
+        :type storage: :class:`.FileCache` or string.
+
     '''
     def __init__(self, storage):
         super(DistributedBed, self).__init__()
 
         self._ran_once = False
-
-        self._storage = storage
+        self._storage = FileCache._fixup(storage)
         self._merge = None
 
 
@@ -86,42 +87,51 @@ class DistributedBed(SnpReader): #!!!cmk is this tested anywhere
         self._run_once()
         return self._merge._read(iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok)
 
+    #!!! in future could make a default for piece_per_chrom_count that made each piece some GB size
     @staticmethod
-    def write(storage, snpreader, piece_per_chrom_count, updater=None, runner=None): #!!!cmk might want to set pieces_per_chrom such that it is a certain size
+    def write(storage, snpreader, piece_per_chrom_count, updater=None, runner=None): #!!! might want to set pieces_per_chrom such that it is a certain size
         '''
-        Uploads from any BED-like data to cluster storage for efficient retrieval later.
-        If some of the content already exists in storage, it skips uploading that part of the content. (To avoid this behavior,
+        Uploads from any :class:`.Bed`-like data to cluster storage for efficient retrieval later.
+        If some of the contents already exists in storage, it skips uploading that part of the contents. (To avoid this behavior,
         clear the storage.)
 
-        Additional data formats can be supported by creating new readers that follow that :class:`.SnpReader` interface.
-
-        :param storage: A :class:`.LocalCache` or other :class:`.FileCache` to upload to.
-        :type storage: :class:`.FileCache`
+        :param storage: Tells where to upload SNP data.
+                      A :class:`.FileCache` instance can be given, which provides a
+                      method to specify cluster-distributed storage. (:class:`.FileCache`'s will **not** be automatically erased and must be user managed.)
+                      If `None`, the storage will be in an automatically-erasing temporary directory. (If the TEMP environment variable is set, Python places the temp directory under it.)
+                      A string can be given and will be interpreted as the path of a local directory to use for storage. (The local
+                      directory will **not** be automatically erased and so must be user managed.) 
+        :type storage: :class:`.FileCache` or None or string.
 
         :param snpreader: A :class:`.Bed` or other :class:`.SnpReader` that with values of 0,1,2, or missing.
+            (Note that this differs from most other `write`methods that take a :class:`.SnpData`)
         :type snpreader: :class:`.SnpReader`
 
         :param piece_per_chrom_count: The number of pieces in which to store the data from each chromosome. Data is split across
-            SNPs. If set to 100 and 22 chromosomes are uploaded, then data will be stored in 2200 pieces. Later, when data is requested
-            only the pieces necessary for the request will be downloaded.
+            SNPs. If `piece_per_chrom_count` is set to 100 and 22 chromosomes are uploaded, then data will be stored in 2200 pieces. Later, when data is requested
+            only the pieces necessary for the request will be downloaded to local storage.
         :type piece_per_chrom_count: A number
 
         :param updater: A single argument function to write logging message to.
-        :type updater: A lambda such as created by :func:`log_in_place`
+        :type updater: A lambda such as created by :func:`.log_in_place`
 
-        :param runner: a runner, optional: Tells how to run locally or multi-processor are good options.
+        :param runner: a :class:`.Runner`, optional: Tells how to run.
+            (Note that :class:`.Local` and :class:`.LocalMultProc` are good options.)
             If not given, the function is run locally.
-        :type runner: a runner.
+        :type runner: :class:`.Runner`
 
         :rtype: DistributedBed
 
         '''
-        from pysnptools.util import _progress_reporter
+        from pysnptools.util import _file_transfer_reporter
+        from pysnptools.util.filecache import FileCache
 
         count_A1 = True #Make all these's the same for reading and writing so that nothing will change.
         snpreader = _snps_fixup(snpreader, count_A1=count_A1)
 
-        with _progress_reporter("DistributedBed.write", size=0, updater=updater) as updater2:
+        storage = FileCache._fixup(storage)
+
+        with _file_transfer_reporter("DistributedBed.write", size=0, updater=updater) as updater2:
             chrom_set = list(set(snpreader.pos[:,0]))
             def mapper_closure(chrom):
                 chrom_reader = snpreader[:,snpreader.pos[:,0]==chrom]
@@ -238,7 +248,7 @@ class _Distributed1Bed(SnpReader):
         return self.local._read(iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok)
     
     @staticmethod
-    def write(path, storage, snpdata,count_A1=True,updater=None):
+    def write(path, storage, snpdata, count_A1=True,updater=None):
         file_list = [SnpReader._name_of_other_file(path,remove_suffix="bed", add_suffix=new_suffix) for new_suffix in ["bim","fam","bed"]] #'bed' should be last
         with _multiopen(lambda file_name:storage.open_write(file_name,updater=updater),file_list) as local_file_name_list:
             Bed.write(local_file_name_list[-1],snpdata,count_A1=count_A1)
@@ -246,12 +256,3 @@ class _Distributed1Bed(SnpReader):
         return _Distributed1Bed(path,storage)
 
 
-    #!!!cmk get this working and running as part of main tests
-class TestDistributedBedDocStrings(unittest.TestCase):
-    def test_distributed_bed(self):
-        import pysnptools.snpreader.snpdata
-        old_dir = os.getcwd()
-        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
-        result = doctest.testmod(pysnptools.snpreader.distributed_bed)
-        os.chdir(old_dir)
-        assert result.failed == 0, "failed doc test: " + __file__

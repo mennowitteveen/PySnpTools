@@ -108,21 +108,27 @@ setup(
     author='MSR',
     author_email='fastlmm@microsoft.com',
     license='Apache 2.0',
-    packages=[
-        "pysnptools/snpreader",
-        "pysnptools/kernelreader",
-        "pysnptools/pstreader",
-        "pysnptools/standardizer",
-        "pysnptools/kernelstandardizer",
-        "pysnptools/util",
+    packages=[  #basically everything with a __init__.py
         "pysnptools"
+        "pysnptools/kernelreader",
+        "pysnptools/kernelstandardizer",
+        "pysnptools/pstreader",
+        "pysnptools/snpreader",
+        "pysnptools/standardizer",
+        "pysnptools/util",
+        "pysnptools/util/filecache",
+        "pysnptools/util/mapreduce1",
+        "pysnptools/util/mapreduce1/runner",
     ],
     package_data={"pysnptools" : [
         "test/datasets/all_chr.maf0.001.N300.bed",
         "test/datasets/all_chr.maf0.001.N300.bim",
         "test/datasets/all_chr.maf0.001.N300.fam",
+        "tests/datasets/all_chr.maf0.001.covariates.N300.txt",
         "test/datasets/phenSynthFrom22.23.N300.randcidorder.txt",
-        "tests/datasets/all_chr.maf0.001.covariates.N300.txt"
+        "tests/datasets/snpgen.bed",
+        "tests/datasets/snpgen.bim",
+        "tests/datasets/snpgen.fam",
         ]
                  },
     install_requires = ['scipy>=1.1.0', 'numpy>=1.11.3', 'pandas>=0.19.0'],

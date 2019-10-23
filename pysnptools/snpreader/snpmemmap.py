@@ -29,7 +29,7 @@ class SnpMemMap(PstMemMap,SnpData):
 
     **Methods inherited from** :class:`.SnpData`
 
-        :meth:`.SnpData.allclose`, :meth:`.SnpData.standardize`, :meth:`.SnpData.train_standardizer`
+        :meth:`.SnpData.allclose`, :meth:`.SnpData.standardize`
 
     **Methods beyond** :class:`.SnpReader`
 
@@ -50,6 +50,10 @@ class SnpMemMap(PstMemMap,SnpData):
     @property
     def offset(self):
         '''The byte position in the file where the memory-mapped values start.
+       
+        (The disk space before this is used to store :attr:`.SnpReader.iid`, etc. information.
+        This property is useful when interfacing with, for example, external Fortran and C matrix libraries.)
+        
         '''
         self._run_once()
         return self._offset

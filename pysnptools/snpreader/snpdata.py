@@ -33,8 +33,8 @@ class SnpData(PstData,SnpReader):
 
     **Equality:**
 
-        Two SnpData objects are equal if their four arrays (:attr:`.SnpData.val`, :attr:`SnpReader.iid`, :attr:`.SnpReader.sid`, and :attr:`.SnpReader.pos_property`) are 'array_equal'.
-        (Their 'name' does not need to be the same).
+        Two SnpData objects are equal if their four arrays (:attr:`.SnpData.val`, :attr:`SnpReader.iid`, :attr:`.SnpReader.sid`, and :attr:`.SnpReader.pos`)
+        are 'array_equal'. (Their 'name' does not need to be the same).
         If either :attr:`.SnpData.val` contains NaN, the objects will not be equal. However, :meth:`.SnpData.allclose` can be used to treat NaN as
         regular values.
 
@@ -88,11 +88,11 @@ class SnpData(PstData,SnpReader):
     2.0
     """
 
-    def allclose(a,b,equal_nan=True):
+    def allclose(self,value,equal_nan=True):
         '''
-        :param b: Other object with which to compare.
-        :type b: :class:`SnpData`
-        :param equal_nan: (Default: True) Tells if NaN in .val should be treated as regular values when testing equality.
+        :param value: Other object with which to compare.
+        :type value: :class:`SnpData`
+        :param equal_nan: (Default: True) Tells if NaN in :attr:`.SnpData.val` should be treated as regular values when testing equality.
         :type equal_nan: bool
 
         >>> import numpy as np
@@ -104,7 +104,7 @@ class SnpData(PstData,SnpReader):
         False
 
         '''
-        return PstData.allclose(a,b,equal_nan=equal_nan)
+        return PstData.allclose(self,value,equal_nan=equal_nan)
 
     def train_standardizer(self, apply_in_place, standardizer=Unit(), force_python_only=False):
         """

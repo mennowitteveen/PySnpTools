@@ -15,9 +15,9 @@ class SnpGen(SnpReader):
         :Parameters: * **seed** (*number*) -- The random seed that (along with *sid_batch_size*) determines the SNP values.
         :Parameters: * **iid_count** (*number*) --  the number of iids (number of individuals)
         :Parameters: * **sid_count** (*number*) --  the number of sids (number of SNPs)
-        :Parameters: * **chrom_count** (*number*) --  the number of chromosomes to generate (must be 22 or less)
+        :Parameters: * **chrom_count** (*number*) --  the number of chromosomes to generate (must be 22 or fewer)
         :Parameters: * **cache_file** (*string*) -- (default None) If provided, tells where to cache the common iid, sid, and pos information. Using it can save time.
-        :Parameters: * **sid_batch_size** (*number*) -- (default 1000) Tells how many SNP at once. The default value is usually good.
+        :Parameters: * **sid_batch_size** (*number*) -- (default 1000) Tells how many SNP to generate at once. The default value is usually good.
         
         :Example:
 

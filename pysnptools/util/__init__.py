@@ -459,11 +459,19 @@ def to_ascii(s):
         return s
     return s.encode('ascii') 
 
-def format_delta(delta):
+def format_delta(delta_seconds):
     '''
     Format a time delta nicely.
+
+    :param delta_seconds: The number of seconds
+    :type delta_seconds: number
+    :rtype: string
+
+    >>> from pysnptools.util import format_delta
+    >>> print format_delta(86403.5)
+    1 day, 0:00:03.500000
     '''
-    return datetime.timedelta(seconds=delta)
+    return datetime.timedelta(seconds=delta_seconds)
 
 def _mbps(size, delta):
     return size * 8 / delta / 1e6
@@ -485,15 +493,17 @@ def log_in_place(name, level, time_lambda=time.time, show_log_diffs=False):
 
         :Example:
 
-        | from pysnptools.util import log_in_place
-        | import logging
-        | import time
-        | logging.basicConfig(level=logging.INFO)
-        | 
-        | with log_in_place("counting", logging.INFO) as updater:
-        |    for i in xrange(100):
-        |         updater(i)
-        |         time.sleep(.1) #typically, work -- not a delay -- goes here
+        .. code-block:: python
+
+            from pysnptools.util import log_in_place
+            import logging
+            import time
+            logging.basicConfig(level=logging.INFO)
+         
+            with log_in_place("counting", logging.INFO) as updater:
+            for i in xrange(100):
+                    updater(i)
+                    time.sleep(.1) #typically, some work -- not a delay -- goes here
 
         Outputs 100 messages on the same line, ending with something like "counting -- time=0:00:09.99, 99"
     '''

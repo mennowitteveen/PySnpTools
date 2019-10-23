@@ -7,18 +7,18 @@ import tempfile
 
 class FileCache(object):
     '''
-    A FileCache is class such as :class:`.LocalCache` or :class:`.PeerToPeer` that
-       * For reading, copies a (possibly remote) file to a local disk. (If the local file already exists 
+    A FileCache is class such as :class:`.LocalCache` or :class:`.PeerToPeer` such that
+       * for reading, copies a (possibly remote) file to a local disk. (If the local file already exists 
          and is up-to-date, retrieval is typically skipped.)
-       * For writing, copies a newly-written local file to (possibly remote) storage.
-       * Provides an assortment of file- and directory-related commands.
+       * for writing, copies a newly-written local file to (possibly remote) storage.
+       * provides an assortment of file- and directory-related commands.
 
     :Example:
 
         Suppose all machines in a cluster can read & write the storage at 'peertopeer1/common'.
         Also, suppose that 'peertopeer1/192.168.1.105' is stored locally
         on machine 192.168.1.105 but readable other machines in the cluster 
-        (and so on for all the machines and their IPs).
+        (and so on for all the machines and their IP addresses).
         
         >>> from pysnptools.util.filecache import PeerToPeer, ip_address
         >>> def id_and_path_function():
@@ -50,18 +50,18 @@ class FileCache(object):
          [ 0.  0. nan]
          [ 0.  0.  0.]]
 
-    Given the appropriate module, `FileCache` library provides a unified way work to work with any remote storage scheme. It differs from
-    virtual file systems, such as CIFS VFS, because:
+    Given an appropriate module, such as :class:`.LocalCache` or :class:`.PeerToPeer`, the `FileCache` library provides a unified way 
+    to work with any remote storage scheme. It differs from virtual file systems, such as CIFS VFS, because:
 
         * `FileCache` works with all operating systems and requires no operating system changes.
-        * `FileCache` can take advantage of the highest performance file retrieval methods (e.g. kernel space, peer-to-peer, tree copies, etc).
+        * `FileCache` can take advantage of the highest performance file retrieval methods (e.g. kernel-space file systems, peer-to-peer transfers, tree copies, etc).
         * `FileCache` can take advantage of the highest performance local read and write storage (e.g. SSDs)
         * `FileCache` can work on top of CIFS VFS and any other remote storage system with an appropriate module.
 
         The downside of `FileCache` is that:
 
-        * Writing generally requires two statements (e.g. 'open_write','Dense.write') instead of just one. Likewise,
-          Reading generally requires two statements (e.g. 'open_read', 'dense[:3,:3].read()' instead of just one.
+        * Writing generally requires two statements (e.g. :meth:`open_write`, :meth:`.Dense.write`) instead of just one. Likewise,
+          Reading generally requires two statements (e.g. :meth:`open_read`, :meth:`.SnpReader.read`) instead of just one.
 
 
     Methods & Properties:
@@ -101,6 +101,14 @@ class FileCache(object):
 
         :rtype: :class:`FileCache`
 
+        >>> from pysnptools.util.filecache import LocalCache
+        >>> file_cache = LocalCache('localcache1')
+        >>> file_cache
+        LocalCache('localcache1')
+        >>> sub = file_cache.join('sub1')
+        >>> sub
+        LocalCache('localcache1/sub1')
+
         '''
         head = self._normpath(path)
         if head is None:
@@ -137,13 +145,13 @@ class FileCache(object):
 
     def rmtree(self,path=None,updater=None):
         '''
-        Delete all files under this :class:`FileCache`. It is OK if there are no files.
+        Delete all files in this :class:`FileCache`. It is OK if there are no files.
 
         :param path: (Default, None, the current :class:`FileCache`). Optional a path (subdirectory, not file) to start in.
         :type path: string
 
         :param updater: (Default, None). Optional function to which status messages may be written. For example, 
-            :func:`.log_in_place`.
+            the function created by :func:`.log_in_place`.
         :type updater: function or lambda
         '''
         self.join(path)._simple_rmtree(updater=updater)
@@ -162,11 +170,11 @@ class FileCache(object):
         >>> from pysnptools.util.filecache import LocalCache
         >>> file_cache = LocalCache('localcache1')
         >>> file_cache.rmtree()
-        >>> file_cache.file_exists('sub1/file1.txt')
+        >>> file_cache.file_exists('localcache1/file1.txt')
         False
 
-        >>> file_cache.save('sub1/file1.txt','Hello')
-        >>> file_cache.file_exists('sub1/file1.txt')
+        >>> file_cache.save('localcache1/file1.txt','Hello')
+        >>> file_cache.file_exists('localcache1/file1.txt')
         True
         '''
         directory, simple_file = self._split(file_name)
@@ -180,7 +188,7 @@ class FileCache(object):
         :type file_name: string
 
         :param updater: (Default, None). Optional function to which status messages may be written. For example, 
-            :func:`.log_in_place`.
+            the function created by :func:`.log_in_place`.
         :type updater: function or lambda
 
         :rtype: a local filename to read.
@@ -214,7 +222,7 @@ class FileCache(object):
         :type size: number
 
         :param updater: (Default, None). Optional function to which status messages may be written. For example, 
-            :func:`.log_in_place`.
+            the function created by :func:`.log_in_place`.
         :type updater: function or lambda
 
         :rtype: a local filename to read.
@@ -243,7 +251,7 @@ class FileCache(object):
         :type file_name: string
 
         :param updater: (Default, None). Optional function to which status messages may be written. For example, 
-            :func:`.log_in_place`.
+            the function created by :func:`.log_in_place`.
         :type updater: function or lambda
 
         '''
@@ -265,7 +273,7 @@ class FileCache(object):
         :type size: number
 
         :param updater: (Default, None). Optional function to which status messages may be written. For example, 
-            :func:`.log_in_place`.
+            the function created by :func:`.log_in_place`.
         :type updater: function or lambda
 
 
@@ -289,7 +297,7 @@ class FileCache(object):
         :type file_name: string
 
         :param updater: (Default, None). Optional function to which status messages may be written. For example, 
-            :func:`.log_in_place`.
+            the function created by :func:`.log_in_place`.
         :type updater: function or lambda
 
         :rtype: string - what was written in the file.
@@ -328,6 +336,12 @@ class FileCache(object):
         A path-like name for this `FileCache`.
 
         :rtype: string
+
+        >>> from pysnptools.util.filecache import LocalCache
+        >>> file_cache = LocalCache('localcache1')
+        >>> file_cache.name
+        'localcache1'
+
         '''
         return "FileCache"
 

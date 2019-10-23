@@ -13,14 +13,13 @@ from pysnptools.util.filecache import FileCache
 
 class DistributedBed(SnpReader):
     '''
-    A class that implements the :class:`SnpReader` interface. It stores :class:`.Bed`-like data in pieces on storage. When requested, it retrieves requested parts of the data. 
+    A class that implements the :class:`SnpReader` interface. It stores :class:`.Bed`-like data in pieces on storage. When you request data, it retrieves only the needed pieces.
 
     **Constructor:**
-        :Parameters: * **storage** (:class:`.FileCache` or string) -- Tells where the SNP data was stored. A :class:`.FileCache` instance can be given, which provides a
-                      method to specify cluster-distributed storage. (:class:`.FileCache`'s will **not** be automatically erased and must be user managed.)
-                      A string can be given and will be interpreted as the path of a local directory to use for storage. (The local
-                      directory will **not** be automatically erased and so must be user managed.) 
-        :type storage: :class:`.FileCache` or string.
+        :Parameters: **storage** (string or :class:`.FileCache`) -- Tells where the DistirubtedBed data is stored.
+                      A string can be given and will be interpreted as the path to a directory.
+                      A :class:`.FileCache` instance can be given, which provides a method to specify cluster-distributed storage.
+        :type storage: string or :class:`.FileCache`
 
     '''
     def __init__(self, storage):
@@ -95,25 +94,26 @@ class DistributedBed(SnpReader):
         If some of the contents already exists in storage, it skips uploading that part of the contents. (To avoid this behavior,
         clear the storage.)
 
-        :param storage: Tells where to upload SNP data.
+        :param storage: Tells where to store SNP data.
+                      A string can be given and will be interpreted as the path of a local directory to use for storage. (The local
+                      directory will **not** be automatically erased and so must be user managed.) 
                       A :class:`.FileCache` instance can be given, which provides a
                       method to specify cluster-distributed storage. (:class:`.FileCache`'s will **not** be automatically erased and must be user managed.)
                       If `None`, the storage will be in an automatically-erasing temporary directory. (If the TEMP environment variable is set, Python places the temp directory under it.)
-                      A string can be given and will be interpreted as the path of a local directory to use for storage. (The local
-                      directory will **not** be automatically erased and so must be user managed.) 
-        :type storage: :class:`.FileCache` or None or string.
+                      
+        :type storage: string or :class:`.FileCache` or None.
 
-        :param snpreader: A :class:`.Bed` or other :class:`.SnpReader` that with values of 0,1,2, or missing.
-            (Note that this differs from most other `write`methods that take a :class:`.SnpData`)
+        :param snpreader: A :class:`.Bed` or other :class:`.SnpReader` with values of 0,1,2, or missing.
+            (Note that this differs from most other `write` methods that take a :class:`.SnpData`)
         :type snpreader: :class:`.SnpReader`
 
         :param piece_per_chrom_count: The number of pieces in which to store the data from each chromosome. Data is split across
-            SNPs. If `piece_per_chrom_count` is set to 100 and 22 chromosomes are uploaded, then data will be stored in 2200 pieces. Later, when data is requested
+            SNPs. For exmple, if `piece_per_chrom_count` is set to 100 and 22 chromosomes are uploaded, then data will be stored in 2200 pieces. Later, when data is requested
             only the pieces necessary for the request will be downloaded to local storage.
         :type piece_per_chrom_count: A number
 
-        :param updater: A single argument function to write logging message to.
-        :type updater: A lambda such as created by :func:`.log_in_place`
+        :param updater: A single argument function to write logging message to, for example, the function created by :func:`.log_in_place`.
+        :type updater: A function or lambda
 
         :param runner: a :class:`.Runner`, optional: Tells how to run.
             (Note that :class:`.Local` and :class:`.LocalMultProc` are good options.)

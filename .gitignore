@@ -245,3 +245,4 @@ ModelManifest.xml
 /pysnptools/util/filecache/localcache1/sub1
 /pysnptools/util/filecache/peertopeer1
 /pysnptools/util/filecache/tempdir
+/pysnptools/snpreader/localcache1

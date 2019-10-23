@@ -4,11 +4,13 @@
 
 PySnpTools: A library for reading and manipulating genetic data.
 
-:synopsis:
+:Synopsis:
 
 * :mod:`.snpreader`: Efficiently read genetic PLINK formats including \*.bed/bim/fam and phenotype files. Also, efficiently read *parts* of files and standardize data.
 
-* :class:`.snpreader.SnpGen`: Generate synthetic SNP data on the fly.
+	:new: :class:`.snpreader.SnpGen`: Generate synthetic SNP data on the fly.
+	:new: :class:`.snpreader.SnpMemMap`: Support larger in-memory data via on-disk memory mapping.
+	:new: :class:`.snpreader.DistributedBed`: Split :class:`.Bed`-like data into multiple files for more efficient cluster use.
 
 * :mod:`.kernelreader`: Efficiently create, read, and manipulate kernel data.
 
@@ -23,9 +25,12 @@ PySnpTools: A library for reading and manipulating genetic data.
 * :class:`.util.IntRangeSet`: Efficiently manipulate ranges of integers -- for example, genetic position -- with set operators including
   union, intersection, and set difference. 
 
-* :mod:`.util.mapreduce1`: Run in parallel on multiple processes, threads, or clusters.
+:new:
 
-* :mod:`.util.filecache`: Copy files to and from any remote storage.
+* :mod:`.util.mapreduce1`: Run loops in parallel on multiple processes, threads, or clusters.
+
+* :mod:`.util.filecache`: Automatically copy files to and from any remote storage.
+
 
 :Tutorial:
 

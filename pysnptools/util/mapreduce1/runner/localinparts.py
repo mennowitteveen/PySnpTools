@@ -11,16 +11,16 @@ except:
 class LocalInParts(Runner):
     '''
     A :class:`.Runner` that runs one piece of a :func:`.map_reduce` job locally. Partial results are saved to disk.
-    Clustering runners and :class:`LocalMultiProc` use this runner internally to run work.
+    Clustering runners and :class:`LocalMultiProc` use this runner internally.
 
     **Constructor:**
         :Parameters: * **taskindex** (*number*) -- Which piece of work to run. When 0 to **taskcount**-1, does map work. When **taskcount**, does the reduce work. 
-        :Parameters: * **taskcount** (*number*) -- The number of pieces into which to divide the work.
-        :Parameters: * **mkl_num_threads** (*number*) -- (default None) Limit on the number threads used by the NumPy MKL library.
-        :Parameters: * **result_file** (*string*) -- (default None) Where to pickle the final results. If no file is given, the final results are returned, but not saved to a file.
-        :Parameters: * **result_dir** (*string*) -- (default None) The directory for any result_file. Defaults to the current working directory.
-        :Parameters: * **temp_dir** (*string*) -- (default None) The directory for partial results. Defaults to the **result_dir**/.working_directory.{map_reduce's Name}.
-        :Parameters: * **logging_handler** (*stream*) --  (default stdout) Where to output logging messages.
+                     * **taskcount** (*number*) -- The number of pieces into which to divide the work.
+                     * **mkl_num_threads** (*number*) -- (default None) Limit on the number threads used by the NumPy MKL library.
+                     * **result_file** (*string*) -- (default None) Where to pickle the final results. If no file is given, the final results are returned, but not saved to a file.
+                     * **result_dir** (*string*) -- (default None) The directory for any result_file. Defaults to the current working directory.
+                     * **temp_dir** (*string*) -- (default None) The directory for partial results. Defaults to the **result_dir**/.working_directory.{map_reduce's Name}.
+                     * **logging_handler** (*stream*) --  (default stdout) Where to output logging messages.
         
         :Example:
 

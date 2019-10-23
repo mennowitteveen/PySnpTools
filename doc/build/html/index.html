@@ -44,22 +44,52 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">synopsis:</th><td class="field-body"></td>
+<tr class="field-odd field"><th class="field-name">Synopsis:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><p class="first"><a class="reference internal" href="#module-pysnptools.snpreader" title="pysnptools.snpreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">snpreader</span></code></a>: Efficiently read genetic PLINK formats including *.bed/bim/fam and phenotype files. Also, efficiently read <em>parts</em> of files and standardize data.</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">new:</th><td class="field-body"><a class="reference internal" href="#pysnptools.snpreader.SnpGen" title="pysnptools.snpreader.SnpGen"><code class="xref py py-class docutils literal notranslate"><span class="pre">snpreader.SnpGen</span></code></a>: Generate synthetic SNP data on the fly.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">new:</th><td class="field-body"><a class="reference internal" href="#pysnptools.snpreader.SnpMemMap" title="pysnptools.snpreader.SnpMemMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">snpreader.SnpMemMap</span></code></a>: Support larger in-memory data via on-disk memory mapping.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">new:</th><td class="field-body"><a class="reference internal" href="#pysnptools.snpreader.DistributedBed" title="pysnptools.snpreader.DistributedBed"><code class="xref py py-class docutils literal notranslate"><span class="pre">snpreader.DistributedBed</span></code></a>: Split <a class="reference internal" href="#pysnptools.snpreader.Bed" title="pysnptools.snpreader.Bed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bed</span></code></a>-like data into multiple files for more efficient cluster use.</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</li>
+<li><p class="first"><a class="reference internal" href="#module-pysnptools.kernelreader" title="pysnptools.kernelreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">kernelreader</span></code></a>: Efficiently create, read, and manipulate kernel data.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="#module-pysnptools.standardizer" title="pysnptools.standardizer"><code class="xref py py-mod docutils literal notranslate"><span class="pre">standardizer</span></code></a>: Specify standardizers for <a class="reference internal" href="#module-pysnptools.snpreader" title="pysnptools.snpreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">snpreader</span></code></a>.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="#module-pysnptools.kernelstandardizer" title="pysnptools.kernelstandardizer"><code class="xref py py-mod docutils literal notranslate"><span class="pre">kernelstandardizer</span></code></a>: Specify standardizers for <a class="reference internal" href="#module-pysnptools.kernelreader" title="pysnptools.kernelreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">kernelreader</span></code></a>.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="#module-pysnptools.pstreader" title="pysnptools.pstreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pstreader</span></code></a>: Generalizes <a class="reference internal" href="#module-pysnptools.snpreader" title="pysnptools.snpreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">snpreader</span></code></a> and <a class="reference internal" href="#module-pysnptools.kernelreader" title="pysnptools.kernelreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">kernelreader</span></code></a> (provides the efficiency of numpy arrays with some of the flexibility of pandas)</p>
+</li>
+<li><p class="first"><a class="reference internal" href="#module-pysnptools.util" title="pysnptools.util"><code class="xref py py-mod docutils literal notranslate"><span class="pre">util</span></code></a>: In one line, intersect and re-order IIDs from <a class="reference internal" href="#module-pysnptools.snpreader" title="pysnptools.snpreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">snpreader</span></code></a>, <a class="reference internal" href="#module-pysnptools.kernelreader" title="pysnptools.kernelreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">kernelreader</span></code></a> and other sources. Also, efficiently extract a submatrix from an ndarray.</p>
+</li>
+<li><p class="first"><a class="reference internal" href="#pysnptools.util.IntRangeSet" title="pysnptools.util.IntRangeSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">util.IntRangeSet</span></code></a>: Efficiently manipulate ranges of integers – for example, genetic position – with set operators including
+union, intersection, and set difference.</p>
+</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">new:</th><td class="field-body"></td>
 </tr>
 </tbody>
 </table>
 <ul class="simple">
-<li><a class="reference internal" href="#module-pysnptools.snpreader" title="pysnptools.snpreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">snpreader</span></code></a>: Efficiently read genetic PLINK formats including *.bed/bim/fam and phenotype files. Also, efficiently read <em>parts</em> of files and standardize data.</li>
-<li><a class="reference internal" href="#pysnptools.snpreader.SnpGen" title="pysnptools.snpreader.SnpGen"><code class="xref py py-class docutils literal notranslate"><span class="pre">snpreader.SnpGen</span></code></a>: Generate synthetic SNP data on the fly.</li>
-<li><a class="reference internal" href="#module-pysnptools.kernelreader" title="pysnptools.kernelreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">kernelreader</span></code></a>: Efficiently create, read, and manipulate kernel data.</li>
-<li><a class="reference internal" href="#module-pysnptools.standardizer" title="pysnptools.standardizer"><code class="xref py py-mod docutils literal notranslate"><span class="pre">standardizer</span></code></a>: Specify standardizers for <a class="reference internal" href="#module-pysnptools.snpreader" title="pysnptools.snpreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">snpreader</span></code></a>.</li>
-<li><a class="reference internal" href="#module-pysnptools.kernelstandardizer" title="pysnptools.kernelstandardizer"><code class="xref py py-mod docutils literal notranslate"><span class="pre">kernelstandardizer</span></code></a>: Specify standardizers for <a class="reference internal" href="#module-pysnptools.kernelreader" title="pysnptools.kernelreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">kernelreader</span></code></a>.</li>
-<li><a class="reference internal" href="#module-pysnptools.pstreader" title="pysnptools.pstreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pstreader</span></code></a>: Generalizes <a class="reference internal" href="#module-pysnptools.snpreader" title="pysnptools.snpreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">snpreader</span></code></a> and <a class="reference internal" href="#module-pysnptools.kernelreader" title="pysnptools.kernelreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">kernelreader</span></code></a> (provides the efficiency of numpy arrays with some of the flexibility of pandas)</li>
-<li><a class="reference internal" href="#module-pysnptools.util" title="pysnptools.util"><code class="xref py py-mod docutils literal notranslate"><span class="pre">util</span></code></a>: In one line, intersect and re-order IIDs from <a class="reference internal" href="#module-pysnptools.snpreader" title="pysnptools.snpreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">snpreader</span></code></a>, <a class="reference internal" href="#module-pysnptools.kernelreader" title="pysnptools.kernelreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">kernelreader</span></code></a> and other sources. Also, efficiently extract a submatrix from an ndarray.</li>
-<li><a class="reference internal" href="#pysnptools.util.IntRangeSet" title="pysnptools.util.IntRangeSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">util.IntRangeSet</span></code></a>: Efficiently manipulate ranges of integers – for example, genetic position – with set operators including
-union, intersection, and set difference.</li>
-<li><a class="reference internal" href="#module-pysnptools.util.mapreduce1" title="pysnptools.util.mapreduce1"><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.mapreduce1</span></code></a>: Run in parallel on multiple processes, threads, or clusters.</li>
-<li><a class="reference internal" href="#module-pysnptools.util.filecache" title="pysnptools.util.filecache"><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.filecache</span></code></a>: Copy files to and from any remote storage.</li>
+<li><a class="reference internal" href="#module-pysnptools.util.mapreduce1" title="pysnptools.util.mapreduce1"><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.mapreduce1</span></code></a>: Run loops in parallel on multiple processes, threads, or clusters.</li>
+<li><a class="reference internal" href="#module-pysnptools.util.filecache" title="pysnptools.util.filecache"><code class="xref py py-mod docutils literal notranslate"><span class="pre">util.filecache</span></code></a>: Automatically copy files to and from any remote storage.</li>
 </ul>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -211,7 +241,7 @@ also be used to re-order the values.</p>
 <a class="reference internal" href="#pysnptools.snpreader.SnpReader.pos" title="pysnptools.snpreader.SnpReader.pos"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pos</span></code></a> and these methods: <a class="reference internal" href="#pysnptools.snpreader.SnpReader.read" title="pysnptools.snpreader.SnpReader.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code></a>, <a class="reference internal" href="#pysnptools.snpreader.SnpReader.iid_to_index" title="pysnptools.snpreader.SnpReader.iid_to_index"><code class="xref py py-meth docutils literal notranslate"><span class="pre">iid_to_index()</span></code></a>, <a class="reference internal" href="#pysnptools.snpreader.SnpReader.sid_to_index" title="pysnptools.snpreader.SnpReader.sid_to_index"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sid_to_index()</span></code></a>, <a class="reference internal" href="#pysnptools.snpreader.SnpReader.read_kernel" title="pysnptools.snpreader.SnpReader.read_kernel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_kernel()</span></code></a>. See below for details.</p>
 <p><a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> is a SnpReader so it supports the above properties and methods. In addition, it supports property <a class="reference internal" href="#pysnptools.snpreader.SnpData.val" title="pysnptools.snpreader.SnpData.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpData.val</span></code></a>, method <a class="reference internal" href="#pysnptools.snpreader.SnpData.standardize" title="pysnptools.snpreader.SnpData.standardize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SnpData.standardize()</span></code></a>, and equality testing.
 See below for details.</p>
-<p>Many of the classes, such as <a class="reference internal" href="#pysnptools.snpreader.Bed" title="pysnptools.snpreader.Bed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bed</span></code></a>, also provide a static <a class="reference internal" href="#pysnptools.snpreader.Bed.write" title="pysnptools.snpreader.Bed.write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Bed.write()</span></code></a> method for writing <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a>.</p>
+<p>Many of the classes, such as <a class="reference internal" href="#pysnptools.snpreader.Bed" title="pysnptools.snpreader.Bed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bed</span></code></a>, also provide a static <a class="reference internal" href="#pysnptools.snpreader.Bed.write" title="pysnptools.snpreader.Bed.write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Bed.write()</span></code></a> method for writing <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> to disk.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># read from Pheno, write to Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Pheno</span><span class="p">,</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pysnptools.util</span> <span class="k">as</span> <span class="nn">pstutil</span>
@@ -225,8 +255,8 @@ See below for details.</p>
 </div></blockquote>
 <p>iids and sids:</p>
 <blockquote>
-<div><p>Individual are identified with an iid, which is a ndarray of two strings: a family ID and a case ID. SNP locations 
-are identified with sid string. For example:</p>
+<div><p>Individuals are identified with an iid, which is a ndarray of two strings: a family ID and a case ID.
+SNP locations are identified with an sid string in a ndarray. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">snp_on_disk</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">print2</span><span class="p">(</span><span class="n">snp_on_disk</span><span class="o">.</span><span class="n">iid</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span> <span class="c1"># print the first three iids</span>
 <span class="go">[[&#39;POP1&#39; &#39;0&#39;]</span>
@@ -439,7 +469,7 @@ it also returns itself. See <a class="reference internal" href="#pysnptools.snpr
 </dl>
 <p>The <a class="reference internal" href="#pysnptools.snpreader.SnpReader.read_kernel" title="pysnptools.snpreader.SnpReader.read_kernel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_kernel()</span></code></a> Method</p>
 <blockquote>
-<div><p>The <a class="reference internal" href="#pysnptools.snpreader.SnpReader.read_kernel" title="pysnptools.snpreader.SnpReader.read_kernel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_kernel()</span></code></a> method, available on any SnpReader, returns a <code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code>. The <code class="xref py py-meth docutils literal notranslate"><span class="pre">val()</span></code> property of the <code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code> is
+<div><p>The <a class="reference internal" href="#pysnptools.snpreader.SnpReader.read_kernel" title="pysnptools.snpreader.SnpReader.read_kernel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_kernel()</span></code></a> method, available on any SnpReader, returns a <code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code>. The <code class="xref py py-attr docutils literal notranslate"><span class="pre">val</span></code> property of the <code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code> is
 an ndarray of the (possibility standardized) SNP values multiplied with their transposed selves. When applied to an read-from-disk SnpReader, such as <a class="reference internal" href="#pysnptools.snpreader.Bed" title="pysnptools.snpreader.Bed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bed</span></code></a>,
 the method can save memory by reading (and standardizing) the data in blocks. See <a class="reference internal" href="#pysnptools.snpreader.SnpReader.read_kernel" title="pysnptools.snpreader.SnpReader.read_kernel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_kernel()</span></code></a> for details.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">Unit</span>
@@ -893,8 +923,8 @@ It is usually created by calling the <a class="reference internal" href="#pysnpt
 </dl>
 <p><strong>Equality:</strong></p>
 <blockquote>
-<div><p>Two SnpData objects are equal if their four arrays (<a class="reference internal" href="#pysnptools.snpreader.SnpData.val" title="pysnptools.snpreader.SnpData.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpData.val</span></code></a>, <a class="reference internal" href="#pysnptools.snpreader.SnpReader.iid" title="pysnptools.snpreader.SnpReader.iid"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpReader.iid</span></code></a>, <a class="reference internal" href="#pysnptools.snpreader.SnpReader.sid" title="pysnptools.snpreader.SnpReader.sid"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpReader.sid</span></code></a>, and <code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpReader.pos_property</span></code>) are ‘array_equal’.
-(Their ‘name’ does not need to be the same).
+<div><p>Two SnpData objects are equal if their four arrays (<a class="reference internal" href="#pysnptools.snpreader.SnpData.val" title="pysnptools.snpreader.SnpData.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpData.val</span></code></a>, <a class="reference internal" href="#pysnptools.snpreader.SnpReader.iid" title="pysnptools.snpreader.SnpReader.iid"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpReader.iid</span></code></a>, <a class="reference internal" href="#pysnptools.snpreader.SnpReader.sid" title="pysnptools.snpreader.SnpReader.sid"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpReader.sid</span></code></a>, and <a class="reference internal" href="#pysnptools.snpreader.SnpReader.pos" title="pysnptools.snpreader.SnpReader.pos"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpReader.pos</span></code></a>)
+are ‘array_equal’. (Their ‘name’ does not need to be the same).
 If either <a class="reference internal" href="#pysnptools.snpreader.SnpData.val" title="pysnptools.snpreader.SnpData.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpData.val</span></code></a> contains NaN, the objects will not be equal. However, <a class="reference internal" href="#pysnptools.snpreader.SnpData.allclose" title="pysnptools.snpreader.SnpData.allclose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SnpData.allclose()</span></code></a> can be used to treat NaN as
 regular values.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -929,14 +959,14 @@ regular values.</p>
 <p><strong>Methods beyond</strong> <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a></p>
 <dl class="method">
 <dt id="pysnptools.snpreader.SnpData.allclose">
-<code class="descname">allclose</code><span class="sig-paren">(</span><em>b</em>, <em>equal_nan=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpData.allclose" title="Permalink to this definition">¶</a></dt>
+<code class="descname">allclose</code><span class="sig-paren">(</span><em>value</em>, <em>equal_nan=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpData.allclose" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>b</strong> (<a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a>) – Other object with which to compare.</li>
-<li><strong>equal_nan</strong> (<em>bool</em>) – (Default: True) Tells if NaN in .val should be treated as regular values when testing equality.</li>
+<li><strong>value</strong> (<a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a>) – Other object with which to compare.</li>
+<li><strong>equal_nan</strong> (<em>bool</em>) – (Default: True) Tells if NaN in <a class="reference internal" href="#pysnptools.snpreader.SnpData.val" title="pysnptools.snpreader.SnpData.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpData.val</span></code></a> should be treated as regular values when testing equality.</li>
 </ul>
 </td>
 </tr>
@@ -1502,7 +1532,7 @@ val, iid, sid, and pos information in NPZ format.</p>
 </dl>
 <p><strong>Methods inherited from</strong> <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a></p>
 <blockquote>
-<div><a class="reference internal" href="#pysnptools.snpreader.SnpData.allclose" title="pysnptools.snpreader.SnpData.allclose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SnpData.allclose()</span></code></a>, <a class="reference internal" href="#pysnptools.snpreader.SnpData.standardize" title="pysnptools.snpreader.SnpData.standardize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SnpData.standardize()</span></code></a>, <a class="reference internal" href="#pysnptools.snpreader.SnpData.train_standardizer" title="pysnptools.snpreader.SnpData.train_standardizer"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SnpData.train_standardizer()</span></code></a></div></blockquote>
+<div><a class="reference internal" href="#pysnptools.snpreader.SnpData.allclose" title="pysnptools.snpreader.SnpData.allclose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SnpData.allclose()</span></code></a>, <a class="reference internal" href="#pysnptools.snpreader.SnpData.standardize" title="pysnptools.snpreader.SnpData.standardize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SnpData.standardize()</span></code></a></div></blockquote>
 <p><strong>Methods beyond</strong> <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a></p>
 <dl class="staticmethod">
 <dt id="pysnptools.snpreader.SnpMemMap.empty">
@@ -1563,6 +1593,8 @@ val, iid, sid, and pos information in NPZ format.</p>
 <dt id="pysnptools.snpreader.SnpMemMap.offset">
 <code class="descname">offset</code><a class="headerlink" href="#pysnptools.snpreader.SnpMemMap.offset" title="Permalink to this definition">¶</a></dt>
 <dd><p>The byte position in the file where the memory-mapped values start.</p>
+<p>(The disk space before this is used to store <a class="reference internal" href="#pysnptools.snpreader.SnpReader.iid" title="pysnptools.snpreader.SnpReader.iid"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpReader.iid</span></code></a>, etc. information.
+This property is useful when interfacing with, for example, external Fortran and C matrix libraries.)</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -1638,7 +1670,7 @@ val, iid, sid, and pos information in NPZ format.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>chrom_count</strong> (<em>number</em>) –  the number of chromosomes to generate (must be 22 or less)</li>
+<li><strong>chrom_count</strong> (<em>number</em>) –  the number of chromosomes to generate (must be 22 or fewer)</li>
 </ul>
 </td>
 </tr>
@@ -1648,7 +1680,7 @@ val, iid, sid, and pos information in NPZ format.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>sid_batch_size</strong> (<em>number</em>) – (default 1000) Tells how many SNP at once. The default value is usually good.</li>
+<li><strong>sid_batch_size</strong> (<em>number</em>) – (default 1000) Tells how many SNP to generate at once. The default value is usually good.</li>
 </ul>
 </td>
 </tr>
@@ -1676,23 +1708,18 @@ val, iid, sid, and pos information in NPZ format.</p>
 <dl class="class">
 <dt id="pysnptools.snpreader.DistributedBed">
 <em class="property">class </em><code class="descclassname">pysnptools.snpreader.</code><code class="descname">DistributedBed</code><span class="sig-paren">(</span><em>storage</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.DistributedBed" title="Permalink to this definition">¶</a></dt>
-<dd><p>A class that implements the <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> interface. It stores <a class="reference internal" href="#pysnptools.snpreader.Bed" title="pysnptools.snpreader.Bed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bed</span></code></a>-like data in pieces on storage. When requested, it retrieves requested parts of the data.</p>
+<dd><p>A class that implements the <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> interface. It stores <a class="reference internal" href="#pysnptools.snpreader.Bed" title="pysnptools.snpreader.Bed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bed</span></code></a>-like data in pieces on storage. When you request data, it retrieves only the needed pieces.</p>
 <dl class="docutils">
 <dt><strong>Constructor:</strong></dt>
 <dd><table class="first last docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>storage</strong> (<a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a> or string) – Tells where the SNP data was stored. A <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a> instance can be given, which provides a</li>
-</ul>
-<p>method to specify cluster-distributed storage. (<a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a>’s will <strong>not</strong> be automatically erased and must be user managed.)
-A string can be given and will be interpreted as the path of a local directory to use for storage. (The local
-directory will <strong>not</strong> be automatically erased and so must be user managed.)</p>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>storage</strong> (string or <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a>) – Tells where the DistirubtedBed data is stored.
+A string can be given and will be interpreted as the path to a directory.
+A <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a> instance can be given, which provides a method to specify cluster-distributed storage.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">type storage:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a> or string.</p>
-</td>
+<tr class="field-even field"><th class="field-name">type storage:</th><td class="field-body">string or <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a></td>
 </tr>
 </tbody>
 </table>
@@ -1709,18 +1736,18 @@ clear the storage.)</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>storage</strong> (<a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a> or None or string.) – Tells where to upload SNP data.
+<li><strong>storage</strong> (string or <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a> or None.) – Tells where to store SNP data.
+A string can be given and will be interpreted as the path of a local directory to use for storage. (The local
+directory will <strong>not</strong> be automatically erased and so must be user managed.) 
 A <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a> instance can be given, which provides a
 method to specify cluster-distributed storage. (<a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a>’s will <strong>not</strong> be automatically erased and must be user managed.)
-If <cite>None</cite>, the storage will be in an automatically-erasing temporary directory. (If the TEMP environment variable is set, Python places the temp directory under it.)
-A string can be given and will be interpreted as the path of a local directory to use for storage. (The local
-directory will <strong>not</strong> be automatically erased and so must be user managed.)</li>
-<li><strong>snpreader</strong> (<a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a>) – A <a class="reference internal" href="#pysnptools.snpreader.Bed" title="pysnptools.snpreader.Bed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bed</span></code></a> or other <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> that with values of 0,1,2, or missing.
-(Note that this differs from most other <cite>write`methods that take a :class:</cite>.SnpData`)</li>
+If <cite>None</cite>, the storage will be in an automatically-erasing temporary directory. (If the TEMP environment variable is set, Python places the temp directory under it.)</li>
+<li><strong>snpreader</strong> (<a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a>) – A <a class="reference internal" href="#pysnptools.snpreader.Bed" title="pysnptools.snpreader.Bed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bed</span></code></a> or other <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> with values of 0,1,2, or missing.
+(Note that this differs from most other <cite>write</cite> methods that take a <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a>)</li>
 <li><strong>piece_per_chrom_count</strong> (<em>A number</em>) – The number of pieces in which to store the data from each chromosome. Data is split across
-SNPs. If <cite>piece_per_chrom_count</cite> is set to 100 and 22 chromosomes are uploaded, then data will be stored in 2200 pieces. Later, when data is requested
+SNPs. For exmple, if <cite>piece_per_chrom_count</cite> is set to 100 and 22 chromosomes are uploaded, then data will be stored in 2200 pieces. Later, when data is requested
 only the pieces necessary for the request will be downloaded to local storage.</li>
-<li><strong>updater</strong> (A lambda such as created by <a class="reference internal" href="#pysnptools.util.log_in_place" title="pysnptools.util.log_in_place"><code class="xref py py-func docutils literal notranslate"><span class="pre">log_in_place()</span></code></a>) – A single argument function to write logging message to.</li>
+<li><strong>updater</strong> (<em>A function</em><em> or </em><em>lambda</em>) – A single argument function to write logging message to, for example, the function created by <a class="reference internal" href="#pysnptools.util.log_in_place" title="pysnptools.util.log_in_place"><code class="xref py py-func docutils literal notranslate"><span class="pre">log_in_place()</span></code></a>.</li>
 <li><strong>runner</strong> (<a class="reference internal" href="#pysnptools.util.mapreduce1.runner.Runner" title="pysnptools.util.mapreduce1.runner.Runner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Runner</span></code></a>) – a <a class="reference internal" href="#pysnptools.util.mapreduce1.runner.Runner" title="pysnptools.util.mapreduce1.runner.Runner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Runner</span></code></a>, optional: Tells how to run.
 (Note that <a class="reference internal" href="#pysnptools.util.mapreduce1.runner.Local" title="pysnptools.util.mapreduce1.runner.Local"><code class="xref py py-class docutils literal notranslate"><span class="pre">Local</span></code></a> and <code class="xref py py-class docutils literal notranslate"><span class="pre">LocalMultProc</span></code> are good options.)
 If not given, the function is run locally.</li>
@@ -2195,14 +2222,14 @@ regular values.</p>
 <p><strong>Methods beyond</strong> <a class="reference internal" href="#pysnptools.kernelreader.KernelReader" title="pysnptools.kernelreader.KernelReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelReader</span></code></a></p>
 <dl class="method">
 <dt id="pysnptools.kernelreader.KernelData.allclose">
-<code class="descname">allclose</code><span class="sig-paren">(</span><em>b</em>, <em>equal_nan=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.kernelreader.KernelData.allclose" title="Permalink to this definition">¶</a></dt>
+<code class="descname">allclose</code><span class="sig-paren">(</span><em>value</em>, <em>equal_nan=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.kernelreader.KernelData.allclose" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>b</strong> (<a class="reference internal" href="#pysnptools.kernelreader.KernelData" title="pysnptools.kernelreader.KernelData"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code></a>) – Other object with which to compare.</li>
-<li><strong>equal_nan</strong> (<em>bool</em>) – (Default: True) Tells if NaN in .val should be treated as regular values when testing equality.</li>
+<li><strong>value</strong> (<a class="reference internal" href="#pysnptools.kernelreader.KernelData" title="pysnptools.kernelreader.KernelData"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code></a>) – Other object with which to compare.</li>
+<li><strong>equal_nan</strong> (<em>bool</em>) – (Default: True) Tells if NaN in <a class="reference internal" href="#pysnptools.kernelreader.KernelData.val" title="pysnptools.kernelreader.KernelData.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">KernelData.val</span></code></a> should be treated as regular values when testing equality.</li>
 </ul>
 </td>
 </tr>
@@ -3864,14 +3891,14 @@ regular values.</p>
 <p><strong>Methods beyond</strong> <a class="reference internal" href="#pysnptools.pstreader.PstReader" title="pysnptools.pstreader.PstReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstReader</span></code></a></p>
 <dl class="method">
 <dt id="pysnptools.pstreader.PstData.allclose">
-<code class="descname">allclose</code><span class="sig-paren">(</span><em>b</em>, <em>equal_nan=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.pstreader.PstData.allclose" title="Permalink to this definition">¶</a></dt>
+<code class="descname">allclose</code><span class="sig-paren">(</span><em>value</em>, <em>equal_nan=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.pstreader.PstData.allclose" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>b</strong> (<a class="reference internal" href="#pysnptools.pstreader.PstData" title="pysnptools.pstreader.PstData"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstData</span></code></a>) – Other object with which to compare.</li>
-<li><strong>equal_nan</strong> (<em>bool</em>) – (Default: True) Tells if NaN in .val should be treated as regular values when testing equality.</li>
+<li><strong>value</strong> (<a class="reference internal" href="#pysnptools.pstreader.PstData" title="pysnptools.pstreader.PstData"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstData</span></code></a>) – Other object with which to compare.</li>
+<li><strong>equal_nan</strong> (<em>bool</em>) – (Default: True) Tells if NaN in <a class="reference internal" href="#pysnptools.pstreader.PstData.val" title="pysnptools.pstreader.PstData.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstData.val</span></code></a> should be treated as regular values when testing equality.</li>
 </ul>
 </td>
 </tr>
@@ -4206,8 +4233,23 @@ val, row, col, row_property, and col_property information in NPZ format.</p>
 
 <dl class="function">
 <dt id="pysnptools.util.format_delta">
-<code class="descclassname">pysnptools.util.</code><code class="descname">format_delta</code><span class="sig-paren">(</span><em>delta</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.format_delta" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pysnptools.util.</code><code class="descname">format_delta</code><span class="sig-paren">(</span><em>delta_seconds</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.format_delta" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format a time delta nicely.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>delta_seconds</strong> (<em>number</em>) – The number of seconds</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">string</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util</span> <span class="k">import</span> <span class="n">format_delta</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">format_delta</span><span class="p">(</span><span class="mf">86403.5</span><span class="p">)</span>
+<span class="go">1 day, 0:00:03.500000</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
@@ -4341,20 +4383,16 @@ will include time.</p>
 </tr>
 </tbody>
 </table>
-<div class="line-block">
-<div class="line">from pysnptools.util import log_in_place</div>
-<div class="line">import logging</div>
-<div class="line">import time</div>
-<div class="line">logging.basicConfig(level=logging.INFO)</div>
-<div class="line"><br /></div>
-<div class="line">with log_in_place(“counting”, logging.INFO) as updater:</div>
-<div class="line-block">
-<div class="line">for i in xrange(100):</div>
-<div class="line-block">
-<div class="line">updater(i)</div>
-<div class="line">time.sleep(.1) #typically, work – not a delay – goes here</div>
-</div>
-</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pysnptools.util</span> <span class="kn">import</span> <span class="n">log_in_place</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">log_in_place</span><span class="p">(</span><span class="s2">&quot;counting&quot;</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span> <span class="k">as</span> <span class="n">updater</span><span class="p">:</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">updater</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="p">)</span> <span class="c1">#typically, some work -- not a delay -- goes here</span>
+</pre></div>
 </div>
 <p>Outputs 100 messages on the same line, ending with something like “counting – time=0:00:09.99, 99”</p>
 </dd></dl>
@@ -6118,7 +6156,7 @@ If not given, the function is run locally.</li>
 <em class="property">class </em><code class="descclassname">pysnptools.util.mapreduce1.runner.</code><code class="descname">LocalMultiThread</code><span class="sig-paren">(</span><em>taskcount</em>, <em>mkl_num_threads=None</em>, <em>just_one_process=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.mapreduce1.runner.LocalMultiThread" title="Permalink to this definition">¶</a></dt>
 <dd><p>A <a class="reference internal" href="#pysnptools.util.mapreduce1.runner.Runner" title="pysnptools.util.mapreduce1.runner.Runner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Runner</span></code></a> that runs a <a class="reference internal" href="#pysnptools.util.mapreduce1.map_reduce" title="pysnptools.util.mapreduce1.map_reduce"><code class="xref py py-func docutils literal notranslate"><span class="pre">map_reduce()</span></code></a> as multiple threads on a single machine.</p>
 <p>Note that Python has problems running some programs efficiently on multiple threads. (Search ‘python global interpreter lock’ for details.)
-Of this doesn’t work consider <a class="reference internal" href="#pysnptools.util.mapreduce1.runner.LocalMultiProc" title="pysnptools.util.mapreduce1.runner.LocalMultiProc"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalMultiProc</span></code></a>.</p>
+If this <a class="reference internal" href="#pysnptools.util.mapreduce1.runner.Runner" title="pysnptools.util.mapreduce1.runner.Runner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Runner</span></code></a> doesn’t work, consider <a class="reference internal" href="#pysnptools.util.mapreduce1.runner.LocalMultiProc" title="pysnptools.util.mapreduce1.runner.LocalMultiProc"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalMultiProc</span></code></a> instead.</p>
 <dl class="docutils">
 <dt><strong>Constructor:</strong></dt>
 <dd><table class="first docutils field-list" frame="void" rules="none">
@@ -6167,7 +6205,7 @@ Of this doesn’t work consider <a class="reference internal" href="#pysnptools.
 <dt id="pysnptools.util.mapreduce1.runner.LocalInParts">
 <em class="property">class </em><code class="descclassname">pysnptools.util.mapreduce1.runner.</code><code class="descname">LocalInParts</code><span class="sig-paren">(</span><em>taskindex</em>, <em>taskcount</em>, <em>mkl_num_threads=None</em>, <em>result_file=None</em>, <em>run_dir='.'</em>, <em>temp_dir=None</em>, <em>logging_handler=&lt;logging.StreamHandler object&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.mapreduce1.runner.LocalInParts" title="Permalink to this definition">¶</a></dt>
 <dd><p>A <a class="reference internal" href="#pysnptools.util.mapreduce1.runner.Runner" title="pysnptools.util.mapreduce1.runner.Runner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Runner</span></code></a> that runs one piece of a <a class="reference internal" href="#pysnptools.util.mapreduce1.map_reduce" title="pysnptools.util.mapreduce1.map_reduce"><code class="xref py py-func docutils literal notranslate"><span class="pre">map_reduce()</span></code></a> job locally. Partial results are saved to disk.
-Clustering runners and <a class="reference internal" href="#pysnptools.util.mapreduce1.runner.LocalMultiProc" title="pysnptools.util.mapreduce1.runner.LocalMultiProc"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalMultiProc</span></code></a> use this runner internally to run work.</p>
+Clustering runners and <a class="reference internal" href="#pysnptools.util.mapreduce1.runner.LocalMultiProc" title="pysnptools.util.mapreduce1.runner.LocalMultiProc"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalMultiProc</span></code></a> use this runner internally.</p>
 <dl class="docutils">
 <dt><strong>Constructor:</strong></dt>
 <dd><table class="first docutils field-list" frame="void" rules="none">
@@ -6176,35 +6214,11 @@ Clustering runners and <a class="reference internal" href="#pysnptools.util.mapr
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>taskindex</strong> (<em>number</em>) – Which piece of work to run. When 0 to <strong>taskcount</strong>-1, does map work. When <strong>taskcount</strong>, does the reduce work.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>taskcount</strong> (<em>number</em>) – The number of pieces into which to divide the work.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>mkl_num_threads</strong> (<em>number</em>) – (default None) Limit on the number threads used by the NumPy MKL library.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>result_file</strong> (<em>string</em>) – (default None) Where to pickle the final results. If no file is given, the final results are returned, but not saved to a file.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>result_dir</strong> (<em>string</em>) – (default None) The directory for any result_file. Defaults to the current working directory.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>temp_dir</strong> (<em>string</em>) – (default None) The directory for partial results. Defaults to the <strong>result_dir</strong>/.working_directory.{map_reduce’s Name}.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>logging_handler</strong> (<em>stream</em>) –  (default stdout) Where to output logging messages.</li>
 </ul>
 </td>
@@ -6256,12 +6270,12 @@ Clustering runners and <a class="reference internal" href="#pysnptools.util.mapr
 <dt id="pysnptools.util.filecache.FileCache">
 <em class="property">class </em><code class="descclassname">pysnptools.util.filecache.</code><code class="descname">FileCache</code><a class="headerlink" href="#pysnptools.util.filecache.FileCache" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>A FileCache is class such as <a class="reference internal" href="#pysnptools.util.filecache.LocalCache" title="pysnptools.util.filecache.LocalCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalCache</span></code></a> or <a class="reference internal" href="#pysnptools.util.filecache.PeerToPeer" title="pysnptools.util.filecache.PeerToPeer"><code class="xref py py-class docutils literal notranslate"><span class="pre">PeerToPeer</span></code></a> that</dt>
+<dt>A FileCache is class such as <a class="reference internal" href="#pysnptools.util.filecache.LocalCache" title="pysnptools.util.filecache.LocalCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalCache</span></code></a> or <a class="reference internal" href="#pysnptools.util.filecache.PeerToPeer" title="pysnptools.util.filecache.PeerToPeer"><code class="xref py py-class docutils literal notranslate"><span class="pre">PeerToPeer</span></code></a> such that</dt>
 <dd><ul class="first last simple">
-<li>For reading, copies a (possibly remote) file to a local disk. (If the local file already exists 
+<li>for reading, copies a (possibly remote) file to a local disk. (If the local file already exists 
 and is up-to-date, retrieval is typically skipped.)</li>
-<li>For writing, copies a newly-written local file to (possibly remote) storage.</li>
-<li>Provides an assortment of file- and directory-related commands.</li>
+<li>for writing, copies a newly-written local file to (possibly remote) storage.</li>
+<li>provides an assortment of file- and directory-related commands.</li>
 </ul>
 </dd>
 </dl>
@@ -6272,7 +6286,7 @@ and is up-to-date, retrieval is typically skipped.)</li>
 <tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"><p class="first">Suppose all machines in a cluster can read &amp; write the storage at ‘peertopeer1/common’.
 Also, suppose that ‘peertopeer1/192.168.1.105’ is stored locally
 on machine 192.168.1.105 but readable other machines in the cluster 
-(and so on for all the machines and their IPs).</p>
+(and so on for all the machines and their IP addresses).</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.filecache</span> <span class="k">import</span> <span class="n">PeerToPeer</span><span class="p">,</span> <span class="n">ip_address</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">id_and_path_function</span><span class="p">():</span>
 <span class="gp">... </span>    <span class="n">ip</span> <span class="o">=</span> <span class="n">ip_address</span><span class="p">()</span>
@@ -6308,19 +6322,19 @@ on machine 192.168.1.105 but readable other machines in the cluster
 </tr>
 </tbody>
 </table>
-<p>Given the appropriate module, <cite>FileCache</cite> library provides a unified way work to work with any remote storage scheme. It differs from
-virtual file systems, such as CIFS VFS, because:</p>
+<p>Given an appropriate module, such as <a class="reference internal" href="#pysnptools.util.filecache.LocalCache" title="pysnptools.util.filecache.LocalCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalCache</span></code></a> or <a class="reference internal" href="#pysnptools.util.filecache.PeerToPeer" title="pysnptools.util.filecache.PeerToPeer"><code class="xref py py-class docutils literal notranslate"><span class="pre">PeerToPeer</span></code></a>, the <cite>FileCache</cite> library provides a unified way 
+to work with any remote storage scheme. It differs from virtual file systems, such as CIFS VFS, because:</p>
 <blockquote>
 <div><ul class="simple">
 <li><cite>FileCache</cite> works with all operating systems and requires no operating system changes.</li>
-<li><cite>FileCache</cite> can take advantage of the highest performance file retrieval methods (e.g. kernel space, peer-to-peer, tree copies, etc).</li>
+<li><cite>FileCache</cite> can take advantage of the highest performance file retrieval methods (e.g. kernel-space file systems, peer-to-peer transfers, tree copies, etc).</li>
 <li><cite>FileCache</cite> can take advantage of the highest performance local read and write storage (e.g. SSDs)</li>
 <li><cite>FileCache</cite> can work on top of CIFS VFS and any other remote storage system with an appropriate module.</li>
 </ul>
 <p>The downside of <cite>FileCache</cite> is that:</p>
 <ul class="simple">
-<li>Writing generally requires two statements (e.g. ‘open_write’,’Dense.write’) instead of just one. Likewise,
-Reading generally requires two statements (e.g. ‘open_read’, ‘dense[:3,:3].read()’ instead of just one.</li>
+<li>Writing generally requires two statements (e.g. <a class="reference internal" href="#pysnptools.util.filecache.FileCache.open_write" title="pysnptools.util.filecache.FileCache.open_write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open_write()</span></code></a>, <a class="reference internal" href="#pysnptools.snpreader.Dense.write" title="pysnptools.snpreader.Dense.write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Dense.write()</span></code></a>) instead of just one. Likewise,
+Reading generally requires two statements (e.g. <a class="reference internal" href="#pysnptools.util.filecache.FileCache.open_read" title="pysnptools.util.filecache.FileCache.open_read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open_read()</span></code></a>, <a class="reference internal" href="#pysnptools.snpreader.SnpReader.read" title="pysnptools.snpreader.SnpReader.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SnpReader.read()</span></code></a>) instead of just one.</li>
 </ul>
 </div></blockquote>
 <p>Methods &amp; Properties:</p>
@@ -6350,12 +6364,12 @@ and these methods:
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.filecache</span> <span class="k">import</span> <span class="n">LocalCache</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span> <span class="o">=</span> <span class="n">LocalCache</span><span class="p">(</span><span class="s1">&#39;localcache1&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">rmtree</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">file_exists</span><span class="p">(</span><span class="s1">&#39;sub1/file1.txt&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">file_exists</span><span class="p">(</span><span class="s1">&#39;localcache1/file1.txt&#39;</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;sub1/file1.txt&#39;</span><span class="p">,</span><span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">file_exists</span><span class="p">(</span><span class="s1">&#39;sub1/file1.txt&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s1">&#39;localcache1/file1.txt&#39;</span><span class="p">,</span><span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">file_exists</span><span class="p">(</span><span class="s1">&#39;localcache1/file1.txt&#39;</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
@@ -6391,6 +6405,15 @@ and these methods:
 </tr>
 </tbody>
 </table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.filecache</span> <span class="k">import</span> <span class="n">LocalCache</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span> <span class="o">=</span> <span class="n">LocalCache</span><span class="p">(</span><span class="s1">&#39;localcache1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span>
+<span class="go">LocalCache(&#39;localcache1&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sub</span> <span class="o">=</span> <span class="n">file_cache</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;sub1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sub</span>
+<span class="go">LocalCache(&#39;localcache1/sub1&#39;)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -6404,7 +6427,7 @@ and these methods:
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>file_name</strong> (<em>string</em>) – The name of the (possibly remote) file to read</li>
 <li><strong>updater</strong> (<em>function</em><em> or </em><em>lambda</em>) – (Default, None). Optional function to which status messages may be written. For example, 
-<a class="reference internal" href="#pysnptools.util.log_in_place" title="pysnptools.util.log_in_place"><code class="xref py py-func docutils literal notranslate"><span class="pre">log_in_place()</span></code></a>.</li>
+the function created by <a class="reference internal" href="#pysnptools.util.log_in_place" title="pysnptools.util.log_in_place"><code class="xref py py-func docutils literal notranslate"><span class="pre">log_in_place()</span></code></a>.</li>
 </ul>
 </td>
 </tr>
@@ -6435,6 +6458,12 @@ and these methods:
 </tr>
 </tbody>
 </table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.filecache</span> <span class="k">import</span> <span class="n">LocalCache</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span> <span class="o">=</span> <span class="n">LocalCache</span><span class="p">(</span><span class="s1">&#39;localcache1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;localcache1&#39;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
@@ -6448,7 +6477,7 @@ and these methods:
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>file_name</strong> (<em>string</em>) – The name of the (possibly remote) file to read</li>
 <li><strong>updater</strong> (<em>function</em><em> or </em><em>lambda</em>) – (Default, None). Optional function to which status messages may be written. For example, 
-<a class="reference internal" href="#pysnptools.util.log_in_place" title="pysnptools.util.log_in_place"><code class="xref py py-func docutils literal notranslate"><span class="pre">log_in_place()</span></code></a>.</li>
+the function created by <a class="reference internal" href="#pysnptools.util.log_in_place" title="pysnptools.util.log_in_place"><code class="xref py py-func docutils literal notranslate"><span class="pre">log_in_place()</span></code></a>.</li>
 </ul>
 </td>
 </tr>
@@ -6486,7 +6515,7 @@ when the ‘with’ statement is exited.</p>
 <li><strong>size</strong> (<em>number</em>) – (default 0) if given, an error will be thrown immediately if local storage doesn’t
 have room for that many bytes.</li>
 <li><strong>updater</strong> (<em>function</em><em> or </em><em>lambda</em>) – (Default, None). Optional function to which status messages may be written. For example, 
-<a class="reference internal" href="#pysnptools.util.log_in_place" title="pysnptools.util.log_in_place"><code class="xref py py-func docutils literal notranslate"><span class="pre">log_in_place()</span></code></a>.</li>
+the function created by <a class="reference internal" href="#pysnptools.util.log_in_place" title="pysnptools.util.log_in_place"><code class="xref py py-func docutils literal notranslate"><span class="pre">log_in_place()</span></code></a>.</li>
 </ul>
 </td>
 </tr>
@@ -6520,7 +6549,7 @@ have room for that many bytes.</li>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>file_name</strong> (<em>string</em>) – The name of the (possibly remote) file to remove.</li>
 <li><strong>updater</strong> (<em>function</em><em> or </em><em>lambda</em>) – (Default, None). Optional function to which status messages may be written. For example, 
-<a class="reference internal" href="#pysnptools.util.log_in_place" title="pysnptools.util.log_in_place"><code class="xref py py-func docutils literal notranslate"><span class="pre">log_in_place()</span></code></a>.</li>
+the function created by <a class="reference internal" href="#pysnptools.util.log_in_place" title="pysnptools.util.log_in_place"><code class="xref py py-func docutils literal notranslate"><span class="pre">log_in_place()</span></code></a>.</li>
 </ul>
 </td>
 </tr>
@@ -6531,7 +6560,7 @@ have room for that many bytes.</li>
 <dl class="method">
 <dt id="pysnptools.util.filecache.FileCache.rmtree">
 <code class="descname">rmtree</code><span class="sig-paren">(</span><em>path=None</em>, <em>updater=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.filecache.FileCache.rmtree" title="Permalink to this definition">¶</a></dt>
-<dd><p>Delete all files under this <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a>. It is OK if there are no files.</p>
+<dd><p>Delete all files in this <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a>. It is OK if there are no files.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -6539,7 +6568,7 @@ have room for that many bytes.</li>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>path</strong> (<em>string</em>) – (Default, None, the current <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a>). Optional a path (subdirectory, not file) to start in.</li>
 <li><strong>updater</strong> (<em>function</em><em> or </em><em>lambda</em>) – (Default, None). Optional function to which status messages may be written. For example, 
-<a class="reference internal" href="#pysnptools.util.log_in_place" title="pysnptools.util.log_in_place"><code class="xref py py-func docutils literal notranslate"><span class="pre">log_in_place()</span></code></a>.</li>
+the function created by <a class="reference internal" href="#pysnptools.util.log_in_place" title="pysnptools.util.log_in_place"><code class="xref py py-func docutils literal notranslate"><span class="pre">log_in_place()</span></code></a>.</li>
 </ul>
 </td>
 </tr>
@@ -6561,7 +6590,7 @@ have room for that many bytes.</li>
 <li><strong>size</strong> (<em>number</em>) – (default 0) if given, an error will be thrown immediately if local storage doesn’t
 have room for that many bytes.</li>
 <li><strong>updater</strong> (<em>function</em><em> or </em><em>lambda</em>) – (Default, None). Optional function to which status messages may be written. For example, 
-<a class="reference internal" href="#pysnptools.util.log_in_place" title="pysnptools.util.log_in_place"><code class="xref py py-func docutils literal notranslate"><span class="pre">log_in_place()</span></code></a>.</li>
+the function created by <a class="reference internal" href="#pysnptools.util.log_in_place" title="pysnptools.util.log_in_place"><code class="xref py py-func docutils literal notranslate"><span class="pre">log_in_place()</span></code></a>.</li>
 </ul>
 </td>
 </tr>
@@ -6618,7 +6647,7 @@ have room for that many bytes.</li>
 <h3><code class="xref py py-class docutils literal notranslate"><span class="pre">util.filecache.LocalCache</span></code><a class="headerlink" href="#util-filecache-localcache" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="pysnptools.util.filecache.LocalCache">
-<em class="property">class </em><code class="descclassname">pysnptools.util.filecache.</code><code class="descname">LocalCache</code><span class="sig-paren">(</span><em>directory='local_cache'</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.filecache.LocalCache" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pysnptools.util.filecache.</code><code class="descname">LocalCache</code><span class="sig-paren">(</span><em>directory</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.filecache.LocalCache" title="Permalink to this definition">¶</a></dt>
 <dd><p>A <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a> for working with files locally.</p>
 <p>See <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a> for general examples of using FileCache.</p>
 <p>This is the simplest <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a> in that it stores everything on a local disk rather than storing things remotely.</p>
@@ -6629,7 +6658,7 @@ have room for that many bytes.</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>directory</strong> (<em>string</em>) – (Default “local_cache”) The directory under which files should be written and read.</li>
+<li><strong>directory</strong> (<em>string</em>) – The directory under which files should be written and read.</li>
 </ul>
 </td>
 </tr>

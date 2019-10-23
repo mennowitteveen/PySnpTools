@@ -16,7 +16,7 @@ class LocalMultiThread(Runner):
     A :class:`.Runner` that runs a :func:`.map_reduce` as multiple threads on a single machine.
 
     Note that Python has problems running some programs efficiently on multiple threads. (Search 'python global interpreter lock' for details.)
-    Of this doesn't work consider :class:`LocalMultiProc`.
+    If this :class:`.Runner` doesn't work, consider :class:`LocalMultiProc` instead.
 
     **Constructor:**
         :Parameters: * **taskcount** (*number*) -- The number of threads to run on.

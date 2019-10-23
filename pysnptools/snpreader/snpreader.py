@@ -79,7 +79,7 @@ class SnpReader(PstReader):
         :class:`.SnpData` is a SnpReader so it supports the above properties and methods. In addition, it supports property :attr:`.SnpData.val`, method :meth:`.SnpData.standardize`, and equality testing.
         See below for details.
 
-        Many of the classes, such as :class:`.Bed`, also provide a static :meth:`Bed.write` method for writing :class:`.SnpData`.
+        Many of the classes, such as :class:`.Bed`, also provide a static :meth:`Bed.write` method for writing :class:`.SnpData` to disk.
 
         >>> # read from Pheno, write to Bed
         >>> from pysnptools.snpreader import Pheno, Bed
@@ -93,8 +93,8 @@ class SnpReader(PstReader):
 
     iids and sids:
 
-        Individual are identified with an iid, which is a ndarray of two strings: a family ID and a case ID. SNP locations 
-        are identified with sid string. For example:
+        Individuals are identified with an iid, which is a ndarray of two strings: a family ID and a case ID.
+        SNP locations are identified with an sid string in a ndarray. For example:
 
         >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
         >>> print2(snp_on_disk.iid[:3]) # print the first three iids
@@ -299,7 +299,7 @@ class SnpReader(PstReader):
    
     The :meth:`read_kernel` Method
 
-        The :meth:`read_kernel` method, available on any SnpReader, returns a :class:`KernelData`. The :meth:`val` property of the :class:`KernelData` is
+        The :meth:`read_kernel` method, available on any SnpReader, returns a :class:`KernelData`. The :attr:`val` property of the :class:`KernelData` is
         an ndarray of the (possibility standardized) SNP values multiplied with their transposed selves. When applied to an read-from-disk SnpReader, such as :class:`.Bed`,
         the method can save memory by reading (and standardizing) the data in blocks. See :meth:`read_kernel` for details.
 

@@ -13,7 +13,10 @@ util: In one line, intersect and re-order IIDs from snpreader and other sources.
 
 util.IntRangeSet: Efficiently manipulate ranges of integers - for example, genetic position - with set operators including union, intersection, and set difference. 
 
-util.pheno: Read the PLINK pheno type file format. 
+util.mapreduce1: Run loops on locally, on multiple processors, or on any cluster. 
+
+util.filecache:  Read and write files locally or from/to any remote storage.
+
 
 Find the PySnpTools documentation (including links to tutorial slides, notesbooks, and video):
 http://microsoftgenomics.github.io/PySnpTools/
@@ -53,7 +56,7 @@ Packages:
 We highly recommend using a python distribution such as 
 Anaconda (https://store.continuum.io/cshop/anaconda/) 
 or Enthought (https://www.enthought.com/products/epd/free/).
-Both these distributions can be used on linux and Windows, are free 
+Both these distributions can be used on Linux and Windows, are free 
 for non-commercial use, and optionally include an MKL-compiled distribution
 for optimal speed. This is the easiest way to get all the required package
 dependencies.
@@ -64,7 +67,7 @@ dependencies.
 
 Go to the directory where you copied the source code for fastlmm.
 
-On linux:
+On Linux:
 
 At the shell, type: 
 

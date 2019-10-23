@@ -100,11 +100,11 @@ class KernelData(KernelReader,PstData):
     (0.5, 2)
     """
 
-    def allclose(a,b,equal_nan=True):
+    def allclose(self, value,equal_nan=True):
         '''
-        :param b: Other object with which to compare.
-        :type b: :class:`KernelData`
-        :param equal_nan: (Default: True) Tells if NaN in .val should be treated as regular values when testing equality.
+        :param value: Other object with which to compare.
+        :type value: :class:`KernelData`
+        :param equal_nan: (Default: True) Tells if NaN in :attr:`.KernelData.val` should be treated as regular values when testing equality.
         :type equal_nan: bool
 
         >>> import numpy as np
@@ -116,7 +116,7 @@ class KernelData(KernelReader,PstData):
         False
 
         '''
-        return PstData.allclose(a,b,equal_nan=equal_nan)
+        return PstData.allclose(self,value,equal_nan=equal_nan)
 
 
     #!! SnpData.standardize() changes the str to help show that the data has been standardized. Should this to that too?

@@ -88,11 +88,11 @@ class PstData(PstReader):
     def __eq__(a,b):
         return a.allclose(b,equal_nan=False)
 
-    def allclose(a,b,equal_nan=True):
+    def allclose(self,value,equal_nan=True):
         '''
-        :param b: Other object with which to compare.
-        :type b: :class:`PstData`
-        :param equal_nan: (Default: True) Tells if NaN in .val should be treated as regular values when testing equality.
+        :param value: Other object with which to compare.
+        :type value: :class:`PstData`
+        :param equal_nan: (Default: True) Tells if NaN in :attr:`.PstData.val` should be treated as regular values when testing equality.
         :type equal_nan: bool
 
         >>> import numpy as np
@@ -105,11 +105,11 @@ class PstData(PstReader):
 
         '''
         try:
-            return (np.array_equal(a.row,b.row) and
-                    np.array_equal(a.col,b.col) and
-                    np.array_equal(a.row_property,b.row_property) and
-                    np.array_equal(a.col_property,b.col_property) and
-                    np.allclose(a.val,b.val,equal_nan=equal_nan))
+            return (np.array_equal(self.row,value.row) and
+                    np.array_equal(self.col,value.col) and
+                    np.array_equal(self.row_property,value.row_property) and
+                    np.array_equal(self.col_property,value.col_property) and
+                    np.allclose(self.val,value.val,equal_nan=equal_nan))
         except:
             return False
 

@@ -14,7 +14,7 @@ class LocalCache(FileCache):
     This is the simplest :class:`.FileCache` in that it stores everything on a local disk rather than storing things remotely.
 
     **Constructor:**
-        :Parameters: * **directory** (*string*) -- (Default "local_cache") The directory under which files should be written and read.
+        :Parameters: * **directory** (*string*) -- The directory under which files should be written and read.
 
         :Example:
 
@@ -26,7 +26,7 @@ class LocalCache(FileCache):
         True
 
     '''
-    def __init__(self,directory="local_cache"):
+    def __init__(self,directory):
         super(LocalCache, self).__init__()
         self.directory =  os.path.normpath(directory).replace('\\','/')
         if os.path.exists(self.directory): assert not os.path.isfile(self.directory), "A directory cannot exist where a file already exists."

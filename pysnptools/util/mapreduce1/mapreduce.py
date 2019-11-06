@@ -122,7 +122,7 @@ def _identity(x):
 
 def _is_in_nested():
     return hasattr(dyn,"is_in_nested") and dyn.is_in_nested
-
+    
 def map_reduce(input_seq, mapper=_identity, reducer=list, input_files=None, output_files=None, name=None, runner=None, nested=None):
     """
     Runs a function on sequence of inputs and runs a second function on the results. Can be nested and clusterized.

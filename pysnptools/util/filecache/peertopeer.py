@@ -75,7 +75,7 @@ class PeerToPeer(FileCache):
 
         :rtype: string
         '''
-        return self.common_directory
+        return self.common_directory.name
 
     def _simple_file_exists(self,simple_file_name):
         return self.common_directory.file_exists(simple_file_name+"/main.txt")

@@ -30,6 +30,9 @@ class SnpGen(SnpReader):
         >>> print snp_data.val[1,1], snp_data.iid_count, snp_data.sid_count
         0.0 1000 1000
 
+
+    :Also See: :func:`.snp_gen`
+
     '''
 
     def __init__(self, seed, iid_count, sid_count, chrom_count=22, cache_file=None, sid_batch_size=1000):

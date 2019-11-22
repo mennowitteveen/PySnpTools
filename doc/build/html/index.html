@@ -1700,6 +1700,14 @@ This property is useful when interfacing with, for example, external Fortran and
 </div>
 </dd>
 </dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Also See:</th><td class="field-body"><a class="reference internal" href="#pysnptools.util.snp_gen" title="pysnptools.util.snp_gen"><code class="xref py py-func docutils literal notranslate"><span class="pre">snp_gen()</span></code></a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -3856,9 +3864,10 @@ It is usually created by calling the <a class="reference internal" href="#pysnpt
 </dl>
 <p><strong>Equality:</strong></p>
 <blockquote>
-<div><p>Two PstData objects are equal if their five arrays (<a class="reference internal" href="#pysnptools.pstreader.PstData.val" title="pysnptools.pstreader.PstData.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstData.val</span></code></a>, <a class="reference internal" href="#pysnptools.pstreader.PstReader.row" title="pysnptools.pstreader.PstReader.row"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.row</span></code></a>, <a class="reference internal" href="#pysnptools.pstreader.PstReader.col" title="pysnptools.pstreader.PstReader.col"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.col</span></code></a>, <a class="reference internal" href="#pysnptools.pstreader.PstReader.row_property" title="pysnptools.pstreader.PstReader.row_property"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.row_property</span></code></a>, and <a class="reference internal" href="#pysnptools.pstreader.PstReader.col_property" title="pysnptools.pstreader.PstReader.col_property"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.col_property</span></code></a>) are ‘array_equal’.
-(Their ‘name’ does not need to be the same). If either <a class="reference internal" href="#pysnptools.pstreader.PstData.val" title="pysnptools.pstreader.PstData.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstData.val</span></code></a> contains NaN, the objects will not be equal. However, <a class="reference internal" href="#pysnptools.pstreader.PstData.allclose" title="pysnptools.pstreader.PstData.allclose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PstData.allclose()</span></code></a> can be used to treat NaN as
-regular values.</p>
+<div><p>Two PstData objects are equal if their five arrays (<a class="reference internal" href="#pysnptools.pstreader.PstData.val" title="pysnptools.pstreader.PstData.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstData.val</span></code></a>, <a class="reference internal" href="#pysnptools.pstreader.PstReader.row" title="pysnptools.pstreader.PstReader.row"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.row</span></code></a>, <a class="reference internal" href="#pysnptools.pstreader.PstReader.col" title="pysnptools.pstreader.PstReader.col"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.col</span></code></a>, <a class="reference internal" href="#pysnptools.pstreader.PstReader.row_property" title="pysnptools.pstreader.PstReader.row_property"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.row_property</span></code></a>, and <a class="reference internal" href="#pysnptools.pstreader.PstReader.col_property" title="pysnptools.pstreader.PstReader.col_property"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.col_property</span></code></a>) arrays are equal.
+(Their ‘name’ does not need to be the same).  
+If either <a class="reference internal" href="#pysnptools.pstreader.PstData.val" title="pysnptools.pstreader.PstData.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstData.val</span></code></a> contains NaN, the objects will not be equal. However, <a class="reference internal" href="#pysnptools.pstreader.PstData.allclose" title="pysnptools.pstreader.PstData.allclose"><code class="xref py py-meth docutils literal notranslate"><span class="pre">PstData.allclose()</span></code></a> can be used to treat NaN as regular values.
+Any NaN’s in the other four arrays are treated as regular values.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -4501,6 +4510,52 @@ If order is ‘A’, then sub-matrix may be in any order F or C.</li>
 <span class="go">-3.52643 293.05586 56.46133 93.9487</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="function">
+<dt id="pysnptools.util.snp_gen">
+<code class="descclassname">pysnptools.util.</code><code class="descname">snp_gen</code><span class="sig-paren">(</span><em>fst</em>, <em>dfr</em>, <em>iid_count</em>, <em>sid_count</em>, <em>maf_low=0.05</em>, <em>maf_high=0.5</em>, <em>seed=0</em>, <em>sibs_per_family=10</em>, <em>freq_pop_0=0.5</em>, <em>chr_count=None</em>, <em>label_with_pop=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.snp_gen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a random <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fst</strong> (<em>float</em>) – Degree of Population Structure, e.g. 0 (a special case), 0.005, 0.01, 0.05, 0.1</li>
+<li><strong>dfr</strong> (<em>float</em>) – Degree of Family Relatedness, the fraction of individuals belonging to a family, ie. fracSibs, e.g. 0.0, 0.5, 0.6, 0.7, 0.8, 0.9</li>
+<li><strong>iid_count</strong> (<em>int</em>) – The number of individuals to generate. Because of rounding the actual number may be less.</li>
+<li><strong>sid_count</strong> (<em>int</em>) – The number of snps to generate.</li>
+<li><strong>maf_low</strong> (<em>float</em>) – (default .05) lower bound of uniformly-generated Minor allele frequency</li>
+<li><strong>maf_high</strong> (<em>float</em>) – (default .5) upper bound of uniformly-generated Minor allele frequency</li>
+<li><strong>seed</strong> (<em>int</em>) – (default 0) Random seed</li>
+<li><strong>sibs_per_family</strong> (<em>int</em>) – (default 10) number of siblings in each family</li>
+<li><strong>freq_pop_0</strong> (<em>float</em>) – (default .5) Fraction of individuals in population 0 (the rest will be in population 1)</li>
+<li><strong>chr_count</strong> (<em>int</em>) – (default one chromosome per SNP) Number of chromosomes to which SNPs should be assigned. The SNPs will
+be assigned as evenly as possible. Chromosome names are integers starting with 1. SNP positions within a chromosome are sequential
+integers starting with 1.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata</span> <span class="o">=</span> <span class="n">snp_gen</span><span class="p">(</span><span class="n">fst</span><span class="o">=.</span><span class="mi">1</span><span class="p">,</span><span class="n">dfr</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span><span class="n">iid_count</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span><span class="n">sid_count</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span><span class="n">maf_low</span><span class="o">=.</span><span class="mi">05</span><span class="p">,</span><span class="n">seed</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="nb">int</span><span class="p">(</span><span class="n">snpdata</span><span class="o">.</span><span class="n">iid_count</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">snpdata</span><span class="o">.</span><span class="n">sid_count</span><span class="p">)</span> <span class="c1">#because of rounding got 190 individuals</span>
+<span class="go">190 20</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Also See:</th><td class="field-body"><a class="reference internal" href="#pysnptools.snpreader.SnpGen" title="pysnptools.snpreader.SnpGen"><code class="xref py py-class docutils literal notranslate"><span class="pre">snpreader.SnpGen</span></code></a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>

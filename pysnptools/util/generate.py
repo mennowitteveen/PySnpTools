@@ -4,8 +4,8 @@ import unittest
 import logging
 import sys
 import os
-from pysnptools.snpreader import SnpData
-from pysnptools.snpreader import Bed
+import doctest
+#from pysnptools.snpreader import SnpData, Bed, SnpNpz -- putting this here would cause a loop
 
 def snp_gen(fst, dfr, iid_count, sid_count, maf_low=.05, maf_high=.5, seed=0, sibs_per_family=10, freq_pop_0=.5, chr_count=None, label_with_pop=False):
     """Generates a random :class:`.SnpData`
@@ -38,18 +38,23 @@ def snp_gen(fst, dfr, iid_count, sid_count, maf_low=.05, maf_high=.5, seed=0, si
     :type freq_pop_0: float
 
     :param chr_count: (default one chromosome per SNP) Number of chromosomes to which SNPs should be assigned. The SNPs will
-    be assigned as evenly as possible. Chromosome names are integers starting with 1. SNP positions within a chromosome are sequential
-    integers starting with 1.
+     be assigned as evenly as possible. Chromosome names are integers starting with 1. SNP positions within a chromosome are sequential
+     integers starting with 1.
     :type chr_count: int
 
     :rtype: :class:`.SnpData`
+
     :Example:
 
     >>> snpdata = snp_gen(fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=6)
     >>> print int(snpdata.iid_count), int(snpdata.sid_count) #because of rounding got 190 individuals
     190 20
 
+    :Also See: :class:`.snpreader.SnpGen`
+
     """
+    from pysnptools.snpreader import SnpData
+
     assert 0 <= freq_pop_0 and freq_pop_0 <=1.0,"assert 0 <= freq_pop_0 and freq_pop_0 <=1.0"
 
     if seed is not None:
@@ -100,7 +105,7 @@ def snp_gen(fst, dfr, iid_count, sid_count, maf_low=.05, maf_high=.5, seed=0, si
 
     return snpdata
 
-def beta_mode(a,f): #!!!
+def _beta_mode(a,f): #!!!
     alpha,beta = ((a*(1.0-f)/f,(1.0-a)*(1.0-f)/f))
     print alpha,beta
     mean = alpha/(alpha+beta)
@@ -146,9 +151,9 @@ def _generate_kids(parent_snps, family_count, sibs_per_family): #!!! should it b
     return snps
 
 
-from pysnptools.snpreader import SnpReader
 
-def encode_snp(entry):
+
+def _encode_snp(entry):
     if entry == 0:
         return "A A"
     elif entry == 1:
@@ -157,7 +162,7 @@ def encode_snp(entry):
         return "C C"
 
 
-def generate_phenotype(snp_data, causals, genetic_var, noise_var, seed=None):
+def _generate_phenotype(snp_data, causals, genetic_var, noise_var, seed=None):
     """
     generate phenotype given genotype
 
@@ -165,7 +170,7 @@ def generate_phenotype(snp_data, causals, genetic_var, noise_var, seed=None):
     """
 
     if seed is not None:
-        np.random.seed(int(seed % sys.maxint))
+        np.random.seed(int(seed % sys.maxint)) #!!!Better to use numpy.random.RandomState instead (look for other places in code, too)
     
     try:
         num_causal = len(causals)
@@ -191,32 +196,21 @@ def generate_phenotype(snp_data, causals, genetic_var, noise_var, seed=None):
     return y
 
 
-class TestSnpGen(unittest.TestCase):     
+class TestGenerate(unittest.TestCase):     
 
 
     @classmethod
     def setUpClass(self):
         self.currentFolder = os.path.dirname(os.path.realpath(__file__))
 
-    @staticmethod
-    def is_same(snpdata0, snpdata1): #!!! should this be an equality _eq_ operator on snpdata?
-        if not (np.array_equal(snpdata0.iid,snpdata1.iid) and 
-                  np.array_equal(snpdata0.sid, snpdata1.sid) and 
-                  np.array_equal(snpdata0.pos, snpdata1.pos)):
-            return False
-
-        try:
-            np.testing.assert_equal(snpdata0.val, snpdata1.val)
-        except:
-            return False
-        return True
-
     def gen_and_compare(self, output_file, **kwargs):
+        from pysnptools.snpreader import Bed
+
         gen_snpdata = snp_gen(**kwargs)
         #pstutil.create_directory_if_necessary(self.currentFolder + "/tempdir/" + output_file,isfile=True)
         #Bed.write(gen_snpdata, self.currentFolder + "/tempdir/" + output_file)  #comment out
-        ref_snpdata = Bed(self.currentFolder + "/../../tests/datasets/generate/" + output_file).read()
-        assert TestSnpGen.is_same(gen_snpdata, ref_snpdata), "Failure on "+output_file
+        ref_snpdata = Bed(self.currentFolder + "/../../tests/datasets/generate/" + output_file,count_A1=False).read()
+        assert gen_snpdata == ref_snpdata, "Failure on "+output_file
         return gen_snpdata
         #!!! Ped doesn't seem to round trip well
         #!!! Hdf5 doesn't seem to round trip well
@@ -232,9 +226,10 @@ class TestSnpGen(unittest.TestCase):
         """
         Test that different seed produces different result
         """
+        from pysnptools.snpreader import Bed
         gen_snpdata = self.gen_and_compare("gen2b", fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=6)
-        ref_snpdata = Bed(self.currentFolder + "/../../tests/datasets/generate/gen2").read()
-        assert not TestSnpGen.is_same(gen_snpdata, ref_snpdata), "Expect different seeds to produce different results"
+        ref_snpdata = Bed(self.currentFolder + "/../../tests/datasets/generate/gen2",count_A1=False).read()
+        assert gen_snpdata != ref_snpdata, "Expect different seeds to produce different results"
 
     def test_gen3(self):
         self.gen_and_compare("gen3", fst=.1,dfr=0,iid_count=200,sid_count=20,maf_low=.05,seed=5)
@@ -243,24 +238,37 @@ class TestSnpGen(unittest.TestCase):
         self.gen_and_compare("gen4", fst=.1,dfr=.01,iid_count=200,sid_count=20,maf_low=.1,seed=5)
 
     def test_gen5(self):
+        from pysnptools.snpreader import Bed
         gen_snpdata = self.gen_and_compare("gen5", fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,maf_high=.4, seed=5)
-        ref_snpdata = Bed(self.currentFolder + "/../../tests/datasets/generate/gen2").read()
-        assert not TestSnpGen.is_same(gen_snpdata, ref_snpdata), "Expect different seeds to produce different results"
+        ref_snpdata = Bed(self.currentFolder + "/../../tests/datasets/generate/gen2",count_A1=False).read()
+        assert gen_snpdata != ref_snpdata, "Expect different seeds to produce different results"
 
     def test_gen6(self):
+        from pysnptools.snpreader import Bed
         gen_snpdata = self.gen_and_compare("gen6", fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=5,sibs_per_family=5)
-        ref_snpdata = Bed(self.currentFolder + "/../../tests/datasets/generate/gen2").read()
-        assert not TestSnpGen.is_same(gen_snpdata, ref_snpdata), "Expect different seeds to produce different results"
+        ref_snpdata = Bed(self.currentFolder + "/../../tests/datasets/generate/gen2",count_A1=False).read()
+        assert gen_snpdata != ref_snpdata, "Expect different seeds to produce different results"
 
     def test_gen7(self):
+        from pysnptools.snpreader import Bed
         gen_snpdata = self.gen_and_compare("gen7", fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=5,freq_pop_0=.75)
-        ref_snpdata = Bed(self.currentFolder + "/../../tests/datasets/generate/gen2").read()
-        assert not TestSnpGen.is_same(gen_snpdata, ref_snpdata), "Expect different seeds to produce different results"
+        ref_snpdata = Bed(self.currentFolder + "/../../tests/datasets/generate/gen2",count_A1=False).read()
+        assert gen_snpdata != ref_snpdata
+
 
     def test_gen8(self):
         self.gen_and_compare("gen8a", fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=5,chr_count=3)
         self.gen_and_compare("gen8b", fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=5,chr_count=4)
         self.gen_and_compare("gen8c", fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=5,chr_count=6)
+
+    def test_pheno1(self):
+        from pysnptools.snpreader import Bed, SnpData, SnpNpz
+        some_snp_data = Bed(self.currentFolder + "/../../tests/datasets/generate/gen2",count_A1=False).read()
+        gen_snpdata = SnpData(iid=some_snp_data.iid,sid=["pheno"],val=_generate_phenotype(some_snp_data, 10, genetic_var=.5, noise_var=.5, seed=5).reshape(-1,1))
+        #SnpNpz.write(r'c:\deldir\pheno1.snp.npz',gen_snpdata)
+        ref_snpdata = SnpNpz(self.currentFolder + "/../../tests/datasets/generate/pheno1.snp.npz").read()
+        assert gen_snpdata == ref_snpdata
+
 
     def test_gensmall(self):
         #Just checking that doesn't generate errors
@@ -281,11 +289,10 @@ class TestSnpGen(unittest.TestCase):
         import sys
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__))+"/..")
-        result = doctest.testmod(sys.modules['GWAS_benchmark.snp_gen'])
+        result = doctest.testmod()
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    #!!!cmk need a test for pheno gen
 
 def getTestSuite():
     """
@@ -293,7 +300,7 @@ def getTestSuite():
     """
     
     test_suite = unittest.TestSuite([])
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestSnpGen))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestGenerate))
     return test_suite
 
 

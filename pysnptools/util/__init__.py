@@ -13,7 +13,6 @@ import datetime
 from pysnptools.util.intrangeset import IntRangeSet
 
 
-
 def _testtest(data, iididx):
     return (data[0][iididx],data[1][iididx])
 
@@ -570,6 +569,7 @@ def _datestamp(appendrandom=False):
         s += "_" + str(random.random())[2:]
     return s
 
+from pysnptools.util.generate import snp_gen
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

@@ -433,6 +433,8 @@ PySnpTools: A library for reading and manipulating genetic data.
     :undoc-members:
 	:show-inheritance:
 
+.. autofunction:: pysnptools.util.snp_gen
+
 :class:`util.IntRangeSet`
 ++++++++++++++++++++++++++
 .. autoclass:: pysnptools.util.IntRangeSet

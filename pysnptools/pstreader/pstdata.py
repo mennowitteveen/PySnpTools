@@ -36,9 +36,10 @@ class PstData(PstReader):
 
     **Equality:**
 
-        Two PstData objects are equal if their five arrays (:attr:`.PstData.val`, :attr:`.PstReader.row`, :attr:`.PstReader.col`, :attr:`.PstReader.row_property`, and :attr:`.PstReader.col_property`) are 'array_equal'.
-        (Their 'name' does not need to be the same). If either :attr:`.PstData.val` contains NaN, the objects will not be equal. However, :meth:`.PstData.allclose` can be used to treat NaN as
-        regular values.
+        Two PstData objects are equal if their five arrays (:attr:`.PstData.val`, :attr:`.PstReader.row`, :attr:`.PstReader.col`, :attr:`.PstReader.row_property`, and :attr:`.PstReader.col_property`) arrays are equal.
+        (Their 'name' does not need to be the same).  
+        If either :attr:`.PstData.val` contains NaN, the objects will not be equal. However, :meth:`.PstData.allclose` can be used to treat NaN as regular values.
+        Any NaN's in the other four arrays are treated as regular values.
 
         :Example:
 
@@ -105,14 +106,21 @@ class PstData(PstReader):
 
         '''
         try:
-            return (np.array_equal(self.row,value.row) and
-                    np.array_equal(self.col,value.col) and
-                    np.array_equal(self.row_property,value.row_property) and
-                    np.array_equal(self.col_property,value.col_property) and
+            return (PstData._allclose(self.row,value.row,equal_nan=True) and
+                    PstData._allclose(self.col,value.col,equal_nan=True) and
+                    PstData._allclose(self.row_property,value.row_property,equal_nan=True) and
+                    PstData._allclose(self.col_property,value.col_property,equal_nan=True) and
                     np.allclose(self.val,value.val,equal_nan=equal_nan))
         except:
             return False
 
+    @staticmethod
+    def _allclose(a,b,equal_nan=True):
+        if not equal_nan:
+            return np.array_equal(a,b)
+        if a.dtype == 'float' and b.dtype == 'float':
+            return np.allclose(a,b,equal_nan=equal_nan)
+        return np.array_equal(a,b)
 
     @staticmethod
     def _fixup_input(input,count=None, empty_creator=_default_empty_creator,dtype=None):

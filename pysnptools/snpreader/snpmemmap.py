@@ -11,12 +11,12 @@ from pysnptools.snpreader import SnpReader, SnpData
 
 class SnpMemMap(PstMemMap,SnpData):
     '''
-    A :class:`.SnpData` that keeps its data in a memory-mapped file.
+    A :class:`.SnpData` that keeps its data in a memory-mapped file. This allows data large than fits in main memory.
 
     See :class:`.SnpData` for general examples of using SnpData.
 
     **Constructor:**
-        :Parameters: * **filename** (*string*) -- The *\*.snp.memmap* file to read.
+        :Parameters: **filename** (*string*) -- The *\*.snp.memmap* file to read.
         
         Also see :meth:`.SnpMemMap.empty` and :meth:`.SnpMemMap.write`.
 

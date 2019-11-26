@@ -38,7 +38,7 @@ PySnpTools: A library for reading and manipulating genetic data.
 
 * `Slides <https://1drv.ms/p/s!AkoPP4cC5J64jOc15JXgDsXmD9EEaw>`_
 * `Video <https://www.youtube.com/watch?v=KPI6479ctAQ>`_
-* `Notebook <https://nbviewer.jupyter.org/github/MicrosoftGenomics/PySnpTools/blob/master/doc/ipynb/tutorial.ipynb>`_
+* `Notebook <https://nbviewer.jupyter.org/github/fastlmm/PySnpTools/blob/master/doc/ipynb/tutorial.ipynb>`_
 * `Data file <https://1drv.ms/u/s!AkoPP4cC5J64qrkHOEE77OWHJm1W4g?e=FHiLzf>`_
 
 .. automodule:: pysnptools

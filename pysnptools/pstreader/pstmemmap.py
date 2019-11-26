@@ -8,12 +8,12 @@ from pysnptools.pstreader import PstReader, PstData
 
 class PstMemMap(PstData):
     '''
-    A :class:`.PstData` that keeps its data in a memory-mapped file.
+    A :class:`.PstData` that keeps its data in a memory-mapped file. This allows data large than fits in main memory.
 
     See :class:`.PstData` for general examples of using PstData.
 
     **Constructor:**
-        :Parameters: * **filename** (*string*) -- The *\*.pst.memmap* file to read.
+        :Parameters: **filename** (*string*) -- The *\*.pst.memmap* file to read.
         
         Also see :meth:`.PstMemMap.empty` and :meth:`.PstMemMap.write`.
 

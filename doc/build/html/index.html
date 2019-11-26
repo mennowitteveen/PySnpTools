@@ -103,7 +103,7 @@ union, intersection, and set difference.</p>
 <ul class="simple">
 <li><a class="reference external" href="https://1drv.ms/p/s!AkoPP4cC5J64jOc15JXgDsXmD9EEaw">Slides</a></li>
 <li><a class="reference external" href="https://www.youtube.com/watch?v=KPI6479ctAQ">Video</a></li>
-<li><a class="reference external" href="https://github.com/MicrosoftGenomics/PySnpTools/blob/master/doc/ipynb/tutorial.ipynb">Notebook</a></li>
+<li><a class="reference external" href="https://nbviewer.jupyter.org/github/MicrosoftGenomics/PySnpTools/blob/master/doc/ipynb/tutorial.ipynb">Notebook</a></li>
 <li><a class="reference external" href="https://1drv.ms/u/s!AkoPP4cC5J64qrkHOEE77OWHJm1W4g?e=FHiLzf">Data file</a></li>
 </ul>
 <span class="target" id="module-pysnptools"></span><div class="section" id="module-pysnptools.snpreader">
@@ -1498,7 +1498,7 @@ val, iid, sid, and pos information in NPZ format.</p>
 <dl class="class">
 <dt id="pysnptools.snpreader.SnpMemMap">
 <em class="property">class </em><code class="descclassname">pysnptools.snpreader.</code><code class="descname">SnpMemMap</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpMemMap" title="Permalink to this definition">¶</a></dt>
-<dd><p>A <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> that keeps its data in a memory-mapped file.</p>
+<dd><p>A <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> that keeps its data in a memory-mapped file. This allows data large than fits in main memory.</p>
 <p>See <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> for general examples of using SnpData.</p>
 <dl class="docutils">
 <dt><strong>Constructor:</strong></dt>
@@ -1506,10 +1506,7 @@ val, iid, sid, and pos information in NPZ format.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>filename</strong> (<em>string</em>) – The <em>*.snp.memmap</em> file to read.</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>string</em>) – The <em>*.snp.memmap</em> file to read.</td>
 </tr>
 </tbody>
 </table>
@@ -4077,7 +4074,7 @@ val, row, col, row_property, and col_property information in NPZ format.</p>
 <dl class="class">
 <dt id="pysnptools.pstreader.PstMemMap">
 <em class="property">class </em><code class="descclassname">pysnptools.pstreader.</code><code class="descname">PstMemMap</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.pstreader.PstMemMap" title="Permalink to this definition">¶</a></dt>
-<dd><p>A <a class="reference internal" href="#pysnptools.pstreader.PstData" title="pysnptools.pstreader.PstData"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstData</span></code></a> that keeps its data in a memory-mapped file.</p>
+<dd><p>A <a class="reference internal" href="#pysnptools.pstreader.PstData" title="pysnptools.pstreader.PstData"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstData</span></code></a> that keeps its data in a memory-mapped file. This allows data large than fits in main memory.</p>
 <p>See <a class="reference internal" href="#pysnptools.pstreader.PstData" title="pysnptools.pstreader.PstData"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstData</span></code></a> for general examples of using PstData.</p>
 <dl class="docutils">
 <dt><strong>Constructor:</strong></dt>
@@ -4085,10 +4082,7 @@ val, row, col, row_property, and col_property information in NPZ format.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>filename</strong> (<em>string</em>) – The <em>*.pst.memmap</em> file to read.</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>string</em>) – The <em>*.pst.memmap</em> file to read.</td>
 </tr>
 </tbody>
 </table>

@@ -104,9 +104,8 @@ setup(
     description='PySnpTools',
     long_description=readme(),
     keywords='gwas bioinformatics sets intervals ranges regions',
-    url="http://research.microsoft.com/en-us/um/redmond/projects/mscompbio/",
-    author='MSR',
-    author_email='fastlmm@microsoft.com',
+    url="https://fastlmm.github.io/",
+    author='FaST-LMM Team',
     license='Apache 2.0',
     packages=[  #basically everything with a __init__.py
         "pysnptools"

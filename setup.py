@@ -106,9 +106,10 @@ setup(
     keywords='gwas bioinformatics sets intervals ranges regions',
     url="https://fastlmm.github.io/",
     author='FaST-LMM Team',
+    author_email='fastlmm-dev@python.org',
     license='Apache 2.0',
     packages=[  #basically everything with a __init__.py
-        "pysnptools"
+        "pysnptools",
         "pysnptools/kernelreader",
         "pysnptools/kernelstandardizer",
         "pysnptools/pstreader",

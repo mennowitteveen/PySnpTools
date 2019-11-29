@@ -18,12 +18,12 @@ util.mapreduce1: Run loops on locally, on multiple processors, or on any cluster
 util.filecache:  Read and write files locally or from/to any remote storage.
 
 
-Find the PySnpTools documentation (including links to tutorial slides, notesbooks, and video):
-http://microsoftgenomics.github.io/PySnpTools/
+Find the PySnpTools documentation (including links to tutorial slides, notebooks, and video):
+http://fastlmm.github.io/PySnpTools/
 
 
 We originally created it for FaST-LMM, a program for performing genome-wide association studies (GWAS) on large data sets.
-http://research.microsoft.com/en-us/um/redmond/projects/MicrosoftGenomics/Fastlmm/
+See http://fastlmm.github.io/.
 
 
 

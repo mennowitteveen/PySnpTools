@@ -4,31 +4,50 @@
 
 PySnpTools: A library for reading and manipulating genetic data.
 
-:synopsis:
+:Synopsis:
 
 * :mod:`.snpreader`: Efficiently read genetic PLINK formats including \*.bed/bim/fam and phenotype files. Also, efficiently read *parts* of files and standardize data.
 
+	:new: :class:`.snpreader.SnpGen`: Generate synthetic SNP data on the fly.
+	:new: :class:`.snpreader.SnpMemMap`: Support larger in-memory data via on-disk memory mapping.
+	:new: :class:`.snpreader.DistributedBed`: Split :class:`.Bed`-like data into multiple files for more efficient cluster use.
+
 * :mod:`.kernelreader`: Efficiently create, read, and manipulate kernel data.
+
+* :mod:`.standardizer`: Specify standardizers for :mod:`.snpreader`.
+
+* :mod:`.kernelstandardizer`: Specify standardizers for :mod:`.kernelreader`.
+
+* :mod:`.pstreader`: Generalizes :mod:`.snpreader` and :mod:`.kernelreader` (provides the efficiency of numpy arrays with some of the flexibility of pandas)
 
 * :mod:`.util`: In one line, intersect and re-order IIDs from :mod:`.snpreader`, :mod:`.kernelreader` and other sources. Also, efficiently extract a submatrix from an ndarray.
 
 * :class:`.util.IntRangeSet`: Efficiently manipulate ranges of integers -- for example, genetic position -- with set operators including
   union, intersection, and set difference. 
 
-* :mod:`.pstreader`: Generalizes :mod:`.snpreader` and :mod:`.kernelreader` (provides the efficiency of numpy arrays with some of the flexibility of pandas)
+:new:
 
-* :mod:`.standardizer`: Specify standardizers for :mod:`.snpreader`.
+* :mod:`.util.mapreduce1`: Run loops in parallel on multiple processes, threads, or clusters.
 
-* :mod:`.kernelstandardizer`: Specify standardizers for :mod:`.kernelreader`.
+* :mod:`.util.filecache`: Automatically copy files to and from any remote storage.
+
 
 :Tutorial:
 
-*From PyData Conference, Seattle, 2015*
+*From PyData Conference, Seattle*
 
 * `Slides <https://1drv.ms/p/s!AkoPP4cC5J64jOc15JXgDsXmD9EEaw>`_
 * `Video <https://www.youtube.com/watch?v=KPI6479ctAQ>`_
-* `Notebook <https://github.com/MicrosoftGenomics/PySnpTools/blob/master/doc/ipynb/tutorial.ipynb>`_
-* `Data file <http://research.microsoft.com/en-us/um/redmond/projects/MSCompBio/PySnpTools/psttutorial.zip>`_
+* `Notebook <https://nbviewer.jupyter.org/github/fastlmm/PySnpTools/blob/master/doc/ipynb/tutorial.ipynb>`_
+* `Data file <https://1drv.ms/u/s!AkoPP4cC5J64qrkHOEE77OWHJm1W4g?e=FHiLzf>`_
+
+:Contact:
+
+* Project Home: https://fastlmm.github.io/
+* For discussion and announcements, join the user list. Send an email to `fastlmm-user-join@python.org <mailto:fastlmm-user-join@python.org?subject=Subscribe>`_.
+* Contact the developers at `fastlmm-dev@python.org <mailto:fastlmm-dev@python.org>`_.
+* `Open issues <https://github.com/fastlmm/PySnpTools/issues>`_ on GitHub.
+
 
 .. automodule:: pysnptools
     :members:
@@ -129,6 +148,35 @@ PySnpTools: A library for reading and manipulating genetic data.
 	:special-members:
     :exclude-members: copyinputs, col, col_property, row, row_property
 
+
+:class:`snpreader.SnpMemMap`
+++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.snpreader.SnpMemMap
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: copyinputs, col, col_property, row, row_property
+
+:class:`snpreader.SnpGen`
+++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.snpreader.SnpGen
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: copyinputs, col, col_property, row, row_property
+
+:class:`snpreader.DistributedBed`
+++++++++++++++++++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.snpreader.DistributedBed
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: copyinputs, col, col_property, row, row_property
+
+
 ****************************
 :mod:`kernelreader` Module
 ****************************
@@ -197,33 +245,7 @@ PySnpTools: A library for reading and manipulating genetic data.
     :exclude-members: copyinputs, col, col_property, row, row_property
 
 
-***********************
-:mod:`util` Module
-***********************
 
-:mod:`util`
-++++++++++++++++++++++++++
-.. automodule:: pysnptools.util
-    :members:
-    :undoc-members:
-	:show-inheritance:
-
-:class:`util.IntRangeSet`
-++++++++++++++++++++++++++
-.. autoclass:: pysnptools.util.IntRangeSet
-  :members:
-  :undoc-members:
-  :show-inheritance:
-  :special-members:
-  :exclude-members: __and__, __weakref__,__module__,__dict__, __add__
-
-:mod:`util.pheno`
-++++++++++++++++++++++++++
-.. automodule:: pysnptools.util.pheno
-    :members:
-    :undoc-members:
-	:show-inheritance:
-	:special-members:
 
 ***************************
 :mod:`standardizer` Module
@@ -303,6 +325,13 @@ PySnpTools: A library for reading and manipulating genetic data.
 ******************************************************
 :mod:`kernelstandardizer` Module
 ******************************************************
+
+.. automodule:: pysnptools.kernelstandardizer
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+
 
 :class:`kernelstandardizer.KernelStandardizer`
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -390,6 +419,145 @@ PySnpTools: A library for reading and manipulating genetic data.
 	:show-inheritance:
 	:special-members:
     :exclude-members: copyinputs, col, col_property, row, row_property
+
+:class:`pstreader.PstMemMap`
+++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.pstreader.PstMemMap
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: copyinputs, col, col_property, row, row_property
+
+
+***********************
+:mod:`util` Module
+***********************
+
+:mod:`util`
+++++++++++++++++++++++++++
+.. automodule:: pysnptools.util
+    :members:
+    :undoc-members:
+	:show-inheritance:
+
+.. autofunction:: pysnptools.util.snp_gen
+
+:class:`util.IntRangeSet`
+++++++++++++++++++++++++++
+.. autoclass:: pysnptools.util.IntRangeSet
+  :members:
+  :undoc-members:
+  :show-inheritance:
+  :special-members:
+  :exclude-members: __and__, __weakref__,__module__,__dict__, __add__
+
+
+:mod:`util.pheno`
++++++++++++++++++++++++++++++++++++++++++++++
+.. automodule:: pysnptools.util.pheno
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+
+*******************************************
+:mod:`util.mapreduce1` Module
+*******************************************
+.. automodule:: pysnptools.util.mapreduce1
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+
+
+:mod:`util.mapreduce1`
+++++++++++++++++++++++++++
+
+.. autofunction:: pysnptools.util.mapreduce1.map_reduce
+
+:class:`util.mapreduce1.runner.Runner`
+++++++++++++++++++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.util.mapreduce1.runner.Runner
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: run
+
+:class:`util.mapreduce1.runner.Local`
+++++++++++++++++++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.util.mapreduce1.runner.Local
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: run
+
+:class:`util.mapreduce1.runner.LocalMultiProc`
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.util.mapreduce1.runner.LocalMultiProc
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: run
+
+:class:`util.mapreduce1.runner.LocalMultiThread`
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.util.mapreduce1.runner.LocalMultiThread
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: run
+
+:class:`util.mapreduce1.runner.LocalInParts`
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.util.mapreduce1.runner.LocalInParts
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: run
+
+
+*******************************************
+:mod:`util.filecache` Module
+*******************************************
+.. automodule:: pysnptools.util.filecache
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+
+:class:`util.filecache.FileCache`
+++++++++++++++++++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.util.filecache.FileCache
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members:
+
+:class:`util.filecache.LocalCache`
+++++++++++++++++++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.util.filecache.LocalCache
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members:
+
+:class:`util.filecache.PeerToPeer`
+++++++++++++++++++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.util.filecache.PeerToPeer
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members:
+
 
 
 .. only:: html 

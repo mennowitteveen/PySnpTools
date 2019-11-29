@@ -41,6 +41,14 @@ PySnpTools: A library for reading and manipulating genetic data.
 * `Notebook <https://nbviewer.jupyter.org/github/fastlmm/PySnpTools/blob/master/doc/ipynb/tutorial.ipynb>`_
 * `Data file <https://1drv.ms/u/s!AkoPP4cC5J64qrkHOEE77OWHJm1W4g?e=FHiLzf>`_
 
+:Contact:
+
+* Project Home: https://fastlmm.github.io/
+* For discussion and announcements, join the user list. Send an email to `fastlmm-user-join@python.org <mailto:fastlmm-user-join@python.org?subject=Subscribe>`_.
+* Contact the developers at `fastlmm-dev@python.org <mailto:fastlmm-dev@python.org>`_.
+* `Open issues <https://github.com/fastlmm/PySnpTools/issues>`_ on GitHub.
+
+
 .. automodule:: pysnptools
     :members:
     :undoc-members:

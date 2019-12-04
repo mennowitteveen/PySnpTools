@@ -18,7 +18,7 @@ class LocalMultiProc(Runner):
     **Constructor:**
         :Parameters: * **taskcount** (*number*) -- The number of processes to run on.
         :Parameters: * **mkl_num_threads** (*number*) -- (default None) Limit on the number threads used by the NumPy MKL library.
-        :Parameters: * **just_one_process** (*bool*) -- (default False) Divide the work for multiple processes, but sequentially on one process. Can be useful for debugging.
+        :Parameters: * **just_one_process** (*bool*) -- (default False) Divide the work for multiple processes, but runs sequentially on one process. Can be useful for debugging.
         :Parameters: * **logging_handler** (*stream*) --  (default stdout) Where to output logging messages.
         
         :Example:

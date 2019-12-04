@@ -4,6 +4,8 @@
 
 PySnpTools: A library for reading and manipulating genetic data.
 
+See `PySnpTools's README.md <https://github.com/fastlmm/PySnpTools/blob/master/README.md>`_ for installation instructions, documentation, and code.
+
 :Synopsis:
 
 * :mod:`.snpreader`: Efficiently read genetic PLINK formats including \*.bed/bim/fam and phenotype files. Also, efficiently read *parts* of files and standardize data.
@@ -38,15 +40,22 @@ PySnpTools: A library for reading and manipulating genetic data.
 
 * `Slides <https://1drv.ms/p/s!AkoPP4cC5J64jOc15JXgDsXmD9EEaw>`_
 * `Video <https://www.youtube.com/watch?v=KPI6479ctAQ>`_
-* `Notebook <https://nbviewer.jupyter.org/github/fastlmm/PySnpTools/blob/master/doc/ipynb/tutorial.ipynb>`_
+* `IPython Notebook <https://nbviewer.jupyter.org/github/fastlmm/PySnpTools/blob/master/doc/ipynb/tutorial.ipynb>`_
 * `Data file <https://1drv.ms/u/s!AkoPP4cC5J64qrkHOEE77OWHJm1W4g?e=FHiLzf>`_
 
-:Contact:
+:Code:
 
-* Project Home: https://fastlmm.github.io/
-* For discussion and announcements, join the user list. Send an email to `fastlmm-user-join@python.org <mailto:fastlmm-user-join@python.org?subject=Subscribe>`_.
-* Contact the developers at `fastlmm-dev@python.org <mailto:fastlmm-dev@python.org>`_.
-* `Open issues <https://github.com/fastlmm/PySnpTools/issues>`_ on GitHub.
+* `PyPi <https://pypi.org/project/pynsptools/>`_
+* `GitHub <https://github.com/fastlmm/PySnpTools>`_
+
+:Contacts:
+
+* Email the developers at `fastlmm-dev@python.org <mailto:fastlmm-dev@python.org>`_.
+* `Join <mailto:fastlmm-user-join@python.org?subject=Subscribe>`_ the user discussion
+  and announcements list (or use `web sign up <https://mail.python.org/mailman3/lists/fastlmm-user.python.org>`_).
+* `Open an issue <https://github.com/fastlmm/PySnpTools/issues>`_ on GitHub.
+* `Project Home <https://fastlmm.github.io/>`_.
+
 
 
 .. automodule:: pysnptools

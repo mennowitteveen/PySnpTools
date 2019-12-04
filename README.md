@@ -5,26 +5,38 @@ PySnpTools is a library for reading and manipulating genetic data.
 
 Main Features:
 
-snpreader: Efficiently read genetic PLINK formats including \*.bed/bim/fam files.
-          Also, efficiently read parts of files and standardize data. 
+* [SnpReader](http://fastlmm.github.io/PySnpTools): Efficiently read genetic PLINK formats including \*.bed/bim/fam files.
+          Also, efficiently read parts of files, read kernel data, and standardize data. 
+          New features include on-the-fly SNP generation, larger in-memory data, and
+          cluster-ready BED data.
 
-util: In one line, intersect and re-order IIDs from snpreader and other sources.
+* [util](https://fastlmm.github.io/PySnpTools/#module-pysnptools.util
+): In one line, intersect and re-order IIDs from snpreader and other sources.
           Also, efficiently extract a submatrix from an ndarray. 
 
-util.IntRangeSet: Efficiently manipulate ranges of integers - for example, genetic position - with set operators including union, intersection, and set difference. 
+* [IntRangeSet](https://fastlmm.github.io/PySnpTools/#util-intrangeset): Efficiently manipulate ranges of integers - for example, genetic position - with set operators including union, intersection, and set difference. 
 
-util.mapreduce1: Run loops on locally, on multiple processors, or on any cluster. 
+* [mapreduce1](https://fastlmm.github.io/PySnpTools/#module-pysnptools.util.mapreduce1): Run loops locally, on multiple processors, or on any cluster. 
 
-util.filecache:  Read and write files locally or from/to any remote storage.
+* [filecache](https://fastlmm.github.io/PySnpTools/#module-pysnptools.util.filecache):  Read and write files locally or from/to any remote storage.
 
+Documentation
+=================================
 
-Find the PySnpTools documentation (including links to tutorial slides, notebooks, and video):
-http://fastlmm.github.io/PySnpTools/
+* [API Documentation](http://fastlmm.github.io/PySnpTools/) with examples. It includes links to tutorial slides, notebooks, and video.
+* [Project Home and Full Annotated Bibliography](https://fastlmm.github.io/)
 
+Code
+=================================
+* [PyPi](https://pypi.org/project/pynsptools/)
+* [GitHub](https://github.com/fastlmm/PySnpTools)
 
-We originally created it for FaST-LMM, a program for performing genome-wide association studies (GWAS) on large data sets.
-See http://fastlmm.github.io/.
+Contacts
+=================================
 
+* Email the developers at fastlmm-dev@python.org.
+* [Join](mailto:fastlmm-user-join@python.org?subject=Subscribe) the user discussion and announcement list (or use [web sign up](https://mail.python.org/mailman3/lists/fastlmm-user.python.org)).
+* [Open an issue](https://github.com/fastlmm/PySnpTools/issues) on GitHub.
 
 
 Quick install:
@@ -53,19 +65,17 @@ Packages:
 (1) Installation of dependent packages
 -----------------------------------------
 
-We highly recommend using a python distribution such as 
-Anaconda (https://store.continuum.io/cshop/anaconda/) 
-or Enthought (https://www.enthought.com/products/epd/free/).
-Both these distributions can be used on Linux and Windows, are free 
-for non-commercial use, and optionally include an MKL-compiled distribution
-for optimal speed. This is the easiest way to get all the required package
+We recommend using a Python distribution such as 
+[Anaconda](https://www.anaconda.com/distribution/).
+This distribution can be used on Linux and Windows and is free.
+It is the easiest way to get all the required package
 dependencies.
 
 
 (2) Installing from source
 -----------------------------------------
 
-Go to the directory where you copied the source code for fastlmm.
+Go to the directory where you copied the source code for pysnptools.
 
 On Linux:
 

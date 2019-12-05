@@ -10,8 +10,7 @@ Main Features:
           New features include on-the-fly SNP generation, larger in-memory data, and
           cluster-ready BED data.
 
-* [util](https://fastlmm.github.io/PySnpTools/#module-pysnptools.util
-): In one line, intersect and re-order IIDs from snpreader and other sources.
+* [util](https://fastlmm.github.io/PySnpTools/#module-pysnptools.util): In one line, intersect and re-order IIDs from snpreader and other sources.
           Also, efficiently extract a submatrix from an ndarray. 
 
 * [IntRangeSet](https://fastlmm.github.io/PySnpTools/#util-intrangeset): Efficiently manipulate ranges of integers - for example, genetic position - with set operators including union, intersection, and set difference. 

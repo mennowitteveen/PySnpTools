@@ -7,7 +7,7 @@ from distutils.command.clean import clean as Clean
 import numpy
 
 # Version number
-version = '0.4.1'
+version = '0.4.3'
 
 def readme():
     with open('README.md') as f:
@@ -103,6 +103,7 @@ setup(
     version=version,
     description='PySnpTools',
     long_description=readme(),
+    long_description_content_type = 'text/markdown',
     keywords='gwas bioinformatics sets intervals ranges regions',
     url="https://fastlmm.github.io/",
     author='FaST-LMM Team',

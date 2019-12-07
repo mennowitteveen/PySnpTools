@@ -174,7 +174,7 @@ class PstHdf5(PstReader):
                 col_index_list = col_index_list.tolist()
         else:
             col_index_count = self.col_count
-            col_index_list = range(self.col_count)
+            col_index_list = list(range(self.col_count))#!!!cmk look at the old code for all uses of 'range' that should become list(range())
         #Check if snps and iids indexes are in order and in range
         col_are_sorted = PstHdf5._is_sorted_without_repeats(col_index_list)
 

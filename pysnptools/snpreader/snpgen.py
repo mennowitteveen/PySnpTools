@@ -221,19 +221,6 @@ def getTestSuite():
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
-    #!!!cmk
-    from pysnptools.snpreader import SnpGen
-    #Prepare to generate data for 1000 individuals and 1,000,000 SNPs
-    snp_gen = SnpGen(seed=332,iid_count=1000,sid_count=1000*1000)
-    print(snp_gen.iid_count,snp_gen.sid_count)
-    #1000 1000000
-    snp_data = snp_gen[:,200*1000:201*1000].read() #Generate for all users and for SNPs 200K to 201K
-    print(snp_data.val[1,1], snp_data.iid_count, snp_data.sid_count)
-    #0.0 1000 1000
-
-
-
-
     suites = getTestSuite()
     r = unittest.TextTestRunner(failfast=True)
     r.run(suites)

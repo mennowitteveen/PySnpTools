@@ -96,8 +96,8 @@ class PstReader(object):
 
         Example:
 
+        >>> from __future__ import print_function
         >>> from pysnptools.pstreader import PstHdf5
-        >>> from __future__ import print_function#!!!cmk kill this an all similar
         >>> from pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3
         >>> on_disk = PstHdf5('../examples/toydata.iidmajor.snp.hdf5') # PstHdf5 can load .pst.hdf5, .snp.hdf5, and kernel.hdf5
         >>> print2(on_disk.row[:3]) # print the first three rows

@@ -351,12 +351,6 @@ class KernelReader(PstReader):
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
-    #!!!cmk
-    from pysnptools.kernelreader import KernelNpz
-    kernel_on_disk = KernelNpz('../examples/toydata.kernel.npz')
-    print(kernel_on_disk.iid_to_index([[b'per2',b'per2'],[b'per1',b'per1']])) #Find the indexes for two iids.
-
-
     import doctest
     doctest.testmod()
     # There is also a unit test case in 'pysnptools\test.py' that calls this doc test

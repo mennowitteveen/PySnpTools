@@ -328,8 +328,8 @@ class SnpReader(PstReader):
 
         :Example:
 
-        >>> from pysnptools.snpreader import Bed
         >>> from __future__ import print_function #!!!cmk explain this is a comment everywhere
+        >>> from pysnptools.snpreader import Bed
         >>> from pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3
         >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
         >>> print2(snp_on_disk.iid[:3]) # print the first three iids

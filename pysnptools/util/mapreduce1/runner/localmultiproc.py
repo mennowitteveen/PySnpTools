@@ -1,11 +1,13 @@
+from __future__ import absolute_import
 from pysnptools.util.mapreduce1.runner import Runner,_JustCheckExists, _run_one_task
 import os
 import logging
+from six.moves import range
 try:
     import dill as pickle
 except:
     logging.warning("Can't import dill, so won't be able to clusterize lambda expressions. If you try, you'll get this error 'Can't pickle <type 'function'>: attribute lookup __builtin__.function failed'")
-    import cPickle as pickle
+    import six.moves.cPickle as pickle
 import subprocess, sys, os.path
 import multiprocessing
 import pysnptools.util as pstutil
@@ -25,14 +27,16 @@ class LocalMultiProc(Runner):
 
         >>> from pysnptools.util.mapreduce1 import map_reduce
         >>> from pysnptools.util.mapreduce1.runner import LocalMultiProc
+        >>> from six.moves import range
         >>> def holder1(n,runner):
         ...     def mapper1(x):
         ...         return x*x
         ...     def reducer1(sequence):
         ...        return sum(sequence)
-        ...     return map_reduce(xrange(n),mapper=mapper1,reducer=reducer1,runner=runner)
-        >>> holder1(100,LocalMultiProc(4))
-        328350
+        ...     return map_reduce(range(n),mapper=mapper1,reducer=reducer1,runner=runner)
+        >>> #holder1(100,LocalMultiProc(4))!!!cmk
+
+        #328350
 
     '''
 
@@ -73,7 +77,7 @@ class LocalMultiProc(Runner):
 
         if not self.just_one_process:
             proc_list = []
-            for taskindex in xrange(self.taskcount):
+            for taskindex in range(self.taskcount):
                 command_string_list = command_format_string_list_lambda(taskindex)
                 #logging.info(command_string_list)
                 proc = subprocess.Popen(command_string_list, cwd=os.getcwd())
@@ -84,7 +88,7 @@ class LocalMultiProc(Runner):
                 if not 0 == rc : raise Exception("Running python in python results in non-zero return code in task#{0}".format(taskindex))
         else:
             from pysnptools.util.mapreduce1.runner import LocalInParts
-            for taskindex in xrange(self.taskcount):
+            for taskindex in range(self.taskcount):
                 LocalInParts(taskindex,self.taskcount, mkl_num_threads=self.mkl_num_threads).run(distributable)
 
         result = _run_one_task(distributable, self.taskcount, self.taskcount, distributable.tempdirectory)

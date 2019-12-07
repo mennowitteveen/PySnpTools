@@ -26,12 +26,13 @@ class LocalInParts(Runner):
 
         >>> from pysnptools.util.mapreduce1 import map_reduce
         >>> from pysnptools.util.mapreduce1.runner import LocalInParts
+        >>> from six.moves import range
         >>> def holder1(n,runner):
         ...     def mapper1(x):
         ...         return x*x
         ...     def reducer1(sequence):
         ...        return sum(sequence)
-        ...     return map_reduce(xrange(n),mapper=mapper1,reducer=reducer1,runner=runner)
+        ...     return map_reduce(range(n),mapper=mapper1,reducer=reducer1,runner=runner)
         >>> holder1(100,LocalInParts(0,4)) #Run part 0 of 4 and save partial results to disk as '0.4.p'.
         >>> holder1(100,LocalInParts(1,4)) #Run part 1 of 4 and save partial results to disk as '1.4.p'.
         >>> holder1(100,LocalInParts(2,4)) #Run part 2 of 4 and save partial results to disk as '2.4.p'.

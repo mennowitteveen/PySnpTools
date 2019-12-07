@@ -1,15 +1,17 @@
+from __future__ import absolute_import
 from pysnptools.util.mapreduce1.runner import Runner,_JustCheckExists, _run_all_in_memory, _shape_to_desired_workcount, _work_sequence_for_one_index
 import os
 import logging
+from six.moves import range
 try:
     import dill as pickle
 except:
     logging.warning("Can't import dill, so won't be able to clusterize lambda expressions. If you try, you'll get this error 'Can't pickle <type 'function'>: attribute lookup __builtin__.function failed'")
-    import cPickle as pickle
+    import six.moves.cPickle as pickle
 import subprocess, sys, os.path
 import threading
 import pysnptools.util as util
-from Queue import PriorityQueue
+from six.moves.queue import PriorityQueue
 
 class LocalMultiThread(Runner):
     '''
@@ -27,12 +29,13 @@ class LocalMultiThread(Runner):
 
         >>> from pysnptools.util.mapreduce1 import map_reduce
         >>> from pysnptools.util.mapreduce1.runner import LocalMultiThread
+        >>> from six.moves import range
         >>> def holder1(n,runner):
         ...     def mapper1(x):
         ...         return x*x
         ...     def reducer1(sequence):
         ...        return sum(sequence)
-        ...     return map_reduce(xrange(n),mapper=mapper1,reducer=reducer1,runner=runner)
+        ...     return map_reduce(range(n),mapper=mapper1,reducer=reducer1,runner=runner)
         >>> holder1(100,LocalMultiThread(4))
         328350
 
@@ -60,7 +63,7 @@ class LocalMultiThread(Runner):
         priority_queue = PriorityQueue()
         thread_list = []
         shaped_distributable = _shape_to_desired_workcount(distributable, self.taskcount)
-        for taskindex in xrange(self.taskcount):
+        for taskindex in range(self.taskcount):
             def _target(taskindex=taskindex):
                 result_list = []
                 for work in _work_sequence_for_one_index(shaped_distributable, self.taskcount, taskindex):

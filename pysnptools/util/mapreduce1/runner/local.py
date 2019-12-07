@@ -4,6 +4,8 @@ Runs a distributable job locally in one process. Returns the value of the job.
 See SamplePi.py for examples.
 '''
 
+from __future__ import absolute_import
+from __future__ import print_function
 from pysnptools.util.mapreduce1.runner import Runner, _run_all_in_memory
 import os, sys
 import logging
@@ -20,12 +22,13 @@ class Local(Runner):
 
         >>> from pysnptools.util.mapreduce1 import map_reduce
         >>> from pysnptools.util.mapreduce1.runner import Local
+        >>> from six.moves import range
         >>> def holder1(n,runner):
         ...     def mapper1(x):
         ...         return x*x
         ...     def reducer1(sequence):
         ...        return sum(sequence)
-        ...     return map_reduce(xrange(n),mapper=mapper1,reducer=reducer1,runner=runner)
+        ...     return map_reduce(range(n),mapper=mapper1,reducer=reducer1,runner=runner)
         >>> holder1(100,Local())
         328350
 
@@ -65,7 +68,7 @@ class _JustCheckExists(object): #Implements ICopier
         if isinstance(item, str):
             if not os.path.exists(item): raise Exception("Missing output file '{0}'".format(item))
             if self.doPrintOutputNames:
-                print item
+                print(item)
         elif hasattr(item,"copyoutputs"):
             item.copyoutputs(self)
         # else -- do nothing

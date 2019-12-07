@@ -157,7 +157,7 @@ class PeerToPeer(FileCache):
                     except:
                         logging.info("Copy time is {0}. Copy speed can't be calculated Mbps".format(format_delta(delta_sec)))
                     break
-                except Exception, e:
+                except Exception as e:
                     if os.path.exists(local_path):
                         logging.warning("If a local file was created, but something went wrong (e.g. the source disappeared part way through the copying), so we remove it")
                         os.remove(local_path)
@@ -192,7 +192,7 @@ class PeerToPeer(FileCache):
         main_path = dir_path.load("main.txt")
         try:
             self._net_use(main_path)
-        except Exception, e:
+        except Exception as e:
             logging.info("ignoring exception when doing net use on {0}, {1}".format(main_path,e.message))
         if os.path.exists(main_path):
             return main_path
@@ -203,7 +203,7 @@ class PeerToPeer(FileCache):
             copy_path = dir_path.load(copy_file)
             try:
                 self._net_use(copy_path)
-            except Exception, e:
+            except Exception as e:
                 logging.info("ignoring exception when doing net use on {0}, {1}".format(copy_path,e.message))
             if os.path.exists(copy_path):
                 logging.info("Doing a copy to main repair. Not sure if this is safe")

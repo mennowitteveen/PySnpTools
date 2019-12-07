@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import numpy as np
 import scipy as sp
 import unittest
@@ -5,6 +7,7 @@ import logging
 import sys
 import os
 import doctest
+from six.moves import range
 #from pysnptools.snpreader import SnpData, Bed, SnpNpz -- putting this here would cause a loop
 
 def snp_gen(fst, dfr, iid_count, sid_count, maf_low=.05, maf_high=.5, seed=0, sibs_per_family=10, freq_pop_0=.5, chr_count=None, label_with_pop=False):
@@ -46,8 +49,9 @@ def snp_gen(fst, dfr, iid_count, sid_count, maf_low=.05, maf_high=.5, seed=0, si
 
     :Example:
 
+    >>> from __future__ import print_function
     >>> snpdata = snp_gen(fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=6)
-    >>> print int(snpdata.iid_count), int(snpdata.sid_count) #because of rounding got 190 individuals
+    >>> print(int(snpdata.iid_count), int(snpdata.sid_count)) #because of rounding got 190 individuals
     190 20
 
     :Also See: :class:`.snpreader.SnpGen`
@@ -58,7 +62,7 @@ def snp_gen(fst, dfr, iid_count, sid_count, maf_low=.05, maf_high=.5, seed=0, si
     assert 0 <= freq_pop_0 and freq_pop_0 <=1.0,"assert 0 <= freq_pop_0 and freq_pop_0 <=1.0"
 
     if seed is not None:
-        np.random.seed(int(seed % sys.maxint))
+        np.random.seed(int(seed % sys.maxsize))
 
     iid_solo_count = iid_count-iid_count*dfr
     family_count = int(iid_count*dfr/(2 * sibs_per_family))
@@ -76,22 +80,22 @@ def snp_gen(fst, dfr, iid_count, sid_count, maf_low=.05, maf_high=.5, seed=0, si
     val = np.concatenate(snp_list)
 
     if not label_with_pop:
-        iid = np.array([["i_{0}".format(iid_index),"f_{0}".format(iid_index)] for iid_index in xrange(val.shape[0])],dtype=str).reshape(-1,2)
+        iid = np.array([["i_{0}".format(iid_index),"f_{0}".format(iid_index)] for iid_index in range(val.shape[0])],dtype=str).reshape(-1,2)
     else:
         assert len(snp_list) == 5, "real assert"
-        iid0 = [["0",str(iid_index)] for iid_index in xrange(len(snp_list[0])+len(snp_list[1]))] #parents and children of pop 0
-        iid1 = [["1",str(iid_index)] for iid_index in xrange(len(snp_list[2])+len(snp_list[3]))] #parents and children of pop 1
-        iid2 = [["2",str(iid_index)] for iid_index in xrange(len(snp_list[4]))]                  #children with parents in any pop
+        iid0 = [["0",str(iid_index)] for iid_index in range(len(snp_list[0])+len(snp_list[1]))] #parents and children of pop 0
+        iid1 = [["1",str(iid_index)] for iid_index in range(len(snp_list[2])+len(snp_list[3]))] #parents and children of pop 1
+        iid2 = [["2",str(iid_index)] for iid_index in range(len(snp_list[4]))]                  #children with parents in any pop
         iid = np.array(iid0+iid1+iid2,dtype=str).reshape(-1,2)
 
-    sid = np.array(["snp_{0}".format(sid_index) for sid_index in xrange(val.shape[1])],dtype=str)
+    sid = np.array(["snp_{0}".format(sid_index) for sid_index in range(val.shape[1])],dtype=str)
 
     if chr_count is None:
         chr_count = len(sid)
 
     assert len(sid) == 0 or chr_count > 0, "chr_count must be at least 1 (unless sid_count is 0)"
     sid_per_chrom = int(sp.ceil(float(len(sid))/max(1,chr_count)))
-    pos = np.array(list([1+sid_index//sid_per_chrom, 1+sid_index%sid_per_chrom, 1+sid_index%sid_per_chrom] for sid_index in xrange(len(sid))))
+    pos = np.array(list([1+sid_index//sid_per_chrom, 1+sid_index%sid_per_chrom, 1+sid_index%sid_per_chrom] for sid_index in range(len(sid))))
     if len(sid) == 0: #make it work when no sids are wanted
         pos = pos.reshape(len(sid),3)
 
@@ -107,7 +111,7 @@ def snp_gen(fst, dfr, iid_count, sid_count, maf_low=.05, maf_high=.5, seed=0, si
 
 def _beta_mode(a,f): #!!!
     alpha,beta = ((a*(1.0-f)/f,(1.0-a)*(1.0-f)/f))
-    print alpha,beta
+    print(alpha,beta)
     mean = alpha/(alpha+beta)
     var = alpha * beta / ((alpha+beta)**2 * (alpha+beta+1))
     return mean, var**.5
@@ -126,7 +130,7 @@ def _generate_snps(ancestral, fst, iid_count, sid_count):
 
     #generate from population frequencies    
     snps = np.zeros((iid_count,sid_count),dtype='int8') #.zeros not .empty because will be adding 1's to it
-    for i in xrange(2): #"2" for diploid
+    for i in range(2): #"2" for diploid
         #sample each allele
         rand = np.random.random((iid_count,sid_count))
         snps[rand<alpha]+=1
@@ -143,9 +147,9 @@ def _generate_kids(parent_snps, family_count, sibs_per_family): #!!! should it b
 
     parent_permutation = np.random.permutation(parent_count)
     snps = np.zeros((family_count*sibs_per_family,sid_count),dtype=np.float64)
-    for copy_index in xrange(2):#"2" for diploid
+    for copy_index in range(2):#"2" for diploid
         sample = parent_snps[parent_permutation[copy_index*family_count:(copy_index+1)*family_count],:]         #sample each allele
-        for kid_index in xrange(sibs_per_family):
+        for kid_index in range(sibs_per_family):
             rand = np.random.random((family_count,sid_count))
             snps[kid_index*family_count:(kid_index+1)*family_count][rand<0.5*sample]+=1
     return snps
@@ -170,7 +174,7 @@ def _generate_phenotype(snp_data, causals, genetic_var, noise_var, seed=None):
     """
 
     if seed is not None:
-        np.random.seed(int(seed % sys.maxint)) #!!!Better to use numpy.random.RandomState instead (look for other places in code, too)
+        np.random.seed(int(seed % sys.maxsize)) #!!!Better to use numpy.random.RandomState instead (look for other places in code, too)
     
     try:
         num_causal = len(causals)
@@ -316,5 +320,5 @@ if __name__ == "__main__":
     doctest.testmod()
 
 
-    print "done"
+    print("done")
 

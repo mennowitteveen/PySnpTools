@@ -8,10 +8,7 @@ import numpy as np
 from pysnptools.pstreader import PstReader
 from pysnptools.pstreader.pstdata import PstData
 import warnings
-try:
-    from builtins import range
-except:
-    pass
+from six.moves import range
 
 class PstHdf5(PstReader):
     '''

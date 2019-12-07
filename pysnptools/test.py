@@ -30,11 +30,7 @@ import unittest
 import os.path
 import time
 
-try:
-    from builtins import range
-except:
-    pass
-
+from six.moves import range
    
 class TestPySnpTools(unittest.TestCase):     
 

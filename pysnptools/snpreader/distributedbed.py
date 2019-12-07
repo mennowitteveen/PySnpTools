@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import os
 import numpy as np
 import logging
@@ -10,6 +11,8 @@ from pysnptools.snpreader import _snps_fixup
 from pysnptools.util import log_in_place
 from pysnptools.util.mapreduce1 import map_reduce
 from pysnptools.util.filecache import FileCache
+import six
+from six.moves import range
 
 class DistributedBed(SnpReader):
     '''
@@ -142,12 +145,12 @@ class DistributedBed(SnpReader):
                     _piece_name_list = ["chrom{0}.piece{1}of{2}.{3}".format(int(chrom),piece_per_chrom_index,piece_per_chrom_count,suffix) for suffix in ['bim','fam','bed']]
                     exist_list = [storage.file_exists(_piece_name) for _piece_name in _piece_name_list]
                     if sum(exist_list) < 3: #If all three of the BIM/FAM/BED files are already there, then skip the upload, otherwise do the upload
-                        for i in xrange(3): #If one or two of BIM/FAM/BED are there, remove them
+                        for i in range(3): #If one or two of BIM/FAM/BED are there, remove them
                             if exist_list[i]:
                                 storage.remove(_piece_name_list[i])
                         _Distributed1Bed.write(_piece_name_list[-1],storage,piece_reader.read(),count_A1=count_A1,updater=updater2)
                     return _piece_name_list[-1]
-                return map_reduce(xrange(piece_per_chrom_count),
+                return map_reduce(range(piece_per_chrom_count),
                     mapper=nested_closure,
                     )
             list_list_pair = map_reduce(chrom_set,
@@ -236,7 +239,7 @@ class _Distributed1Bed(SnpReader):
         self._file_dict["bed"] = local_bed
 
     def __del__(self):
-        for handle in self._file_dict.itervalues():
+        for handle in six.itervalues(self._file_dict):
             handle.__exit__(None,None,None)
         self._file_dict = {}
 

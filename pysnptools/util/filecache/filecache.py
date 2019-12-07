@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import os
 import shutil
 import logging
@@ -43,9 +44,10 @@ class FileCache(object):
 
         Copy back from remote storage (if needed) and then read SNP data from local file.
 
+        >>> from __future__ import print_function
         >>> with file_cache.open_read('r123.100x500.dense.txt') as local_filename:
         ...     dense2 = Dense(local_filename)
-        ...     print dense2[:3,:3].read().val #Read 1st 3 individuals and SNPs
+        ...     print(dense2[:3,:3].read().val) #Read 1st 3 individuals and SNPs
         [[ 0. nan nan]
          [ 0.  0. nan]
          [ 0.  0.  0.]]
@@ -234,7 +236,7 @@ class FileCache(object):
         >>> file_cache.rmtree()
         >>> with file_cache.open_write('file1.txt') as local_filename:
         ...     with open(local_filename,'w') as fp:
-        ...         fp.write('Hello')
+        ...         _= fp.write('Hello') #!!!cmk does this still work in Python 2? Is it readable in Python 3
         >>> file_cache.load('file1.txt')
         'Hello'
 
@@ -361,7 +363,7 @@ class FileCache(object):
         if head == ".":
             return None
         if os.name == 'nt':
-            assert os.path.splitunc(head)[0] == "", "Should not be UNC"
+            #assert os.path.splitunc(head)[0] == "", "Should not be UNC" !!!cmk put something like this back in
             assert os.path.splitdrive(head)[0] == "", "Should have a drive"
         assert head != ".." and not head.startswith("../"), "Should not leave parent"
         assert not head.startswith("/"), "Should not start with '/'"

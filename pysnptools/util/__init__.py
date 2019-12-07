@@ -1,17 +1,15 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import os
 import logging
 import numpy as np
 import scipy as sp
-try:
-    from builtins import range
-except:
-    pass
+from six.moves import range
 import sys
 from contextlib import contextmanager
 import time
 import datetime
 from pysnptools.util.intrangeset import IntRangeSet
-
 
 def _testtest(data, iididx):
     return (data[0][iididx],data[1][iididx])
@@ -54,6 +52,8 @@ def intersect_apply(data_list, sort_by_dataset=True, intersect_before_standardiz
     >>> from pysnptools.snpreader import Bed, Pheno
     >>> from pysnptools.kernelreader import SnpKernel
     >>> from pysnptools.standardizer import Unit
+    >>> from __future__ import print_function
+    >>> from pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3
     >>>
     >>> #Create five datasets in different formats
     >>> ignore_in = None
@@ -65,20 +65,20 @@ def intersect_apply(data_list, sort_by_dataset=True, intersect_before_standardiz
     >>> # Create five new datasets with consistent iids
     >>> ignore_out, kernel_out, pheno_out, cov_as_tuple_out = intersect_apply([ignore_in, kernel_in, pheno_in, cov_as_tuple_in])
     >>> # Print the first five iids from each dataset
-    >>> print ignore_out, kernel_out.iid[:5], pheno_out.iid[:5], cov_as_tuple_out[1][:5]
-    None [['POP1' '0']
-     ['POP1' '12']
-     ['POP1' '44']
-     ['POP1' '58']
-     ['POP1' '65']] [['POP1' '0']
-     ['POP1' '12']
-     ['POP1' '44']
-     ['POP1' '58']
-     ['POP1' '65']] [['POP1' '0']
-     ['POP1' '12']
-     ['POP1' '44']
-     ['POP1' '58']
-     ['POP1' '65']]
+    >>> print2((ignore_out, kernel_out.iid[:5], pheno_out.iid[:5], cov_as_tuple_out[1][:5]))
+    (None, array([['POP1', '0'],
+           ['POP1', '12'],
+           ['POP1', '44'],
+           ['POP1', '58'],
+           ['POP1', '65']], dtype='|S4'), array([['POP1', '0'],
+           ['POP1', '12'],
+           ['POP1', '44'],
+           ['POP1', '58'],
+           ['POP1', '65']], dtype='|S19'), array([['POP1', '0'],
+           ['POP1', '12'],
+           ['POP1', '44'],
+           ['POP1', '58'],
+           ['POP1', '65']], dtype='|S12'))
     """
 
     iid_list = []
@@ -254,11 +254,12 @@ def sub_matrix(val, row_index_list, col_index_list, order='A', dtype=sp.float64)
 
     >>> import numpy as np
     >>> import pysnptools.util as pstutil
+    >>> from __future__ import print_function
     >>> np.random.seed(0) # set seed so that results are deterministic
     >>> matrix = np.random.rand(12,7) # create a 12 x 7 ndarray
     >>> submatrix = pstutil.sub_matrix(matrix,[0,2,11],[6,5,4,3,2,1,0])
     >>> print(int(submatrix.shape[0]),int(submatrix.shape[1]))
-    (3, 7)
+    3 7
     >>> print(matrix[2,0] == submatrix[1,6]) #The row # 2 is now #1, the column #0 is now #6.
     True
 
@@ -375,18 +376,18 @@ def create_directory_if_necessary(name, isfile=True, robust=False):
         if not robust:
             try:
                 os.makedirs(directory_name)
-            except OSError, e:
+            except OSError as e:
                 if not os.path.isdir(directory_name):
                     raise Exception("not valid path: '{0}'. (Working directory is '{1}'".format(directory_name,os.getcwd()))
         else:
             is_ok = False
             time_to_sleep = 10.0
-            for i in xrange(25):
+            for i in range(25):
                 try:
                     os.makedirs(directory_name)
                     is_ok = True
                     break
-                except OSError, e:
+                except OSError as e:
                     if not os.path.isdir(directory_name):
                         time_to_sleep *= 1.1
                         warnings.warn("creating directory robust=True, try#{0},time={3} error: not valid path: '{1}'. (Working directory is '{2}'".format(i, directory_name,os.getcwd(),int(time_to_sleep)))
@@ -426,11 +427,12 @@ def weighted_simple_linear_regression(xs, ys, weights):
     :type weights: ndarray
     :rtype: slope, intercept, xmean, ymean
 
+    >>> from __future__ import print_function
     >>> xs = np.array([53.8329911,57.49486653,60.07392197,60.21081451])
     >>> ys = np.array([103.664086,89.80645161,83.86888046,90.54141176])
     >>> weights = np.array([2.340862423,4.982888433,0.17522245,0.098562628])
     >>> slope, intercept, xmean, ymean = weighted_simple_linear_regression(xs, ys, weights)
-    >>> print round(slope,5), round(intercept,5), round(xmean,5), round(ymean,5)
+    >>> print(round(slope,5), round(intercept,5), round(xmean,5), round(ymean,5))
     -3.52643 293.05586 56.46133 93.9487
 
     '''
@@ -466,8 +468,9 @@ def format_delta(delta_seconds):
     :type delta_seconds: number
     :rtype: string
 
+    >>> from __future__ import print_function
     >>> from pysnptools.util import format_delta
-    >>> print format_delta(86403.5)
+    >>> print(format_delta(86403.5))
     1 day, 0:00:03.500000
     '''
     return datetime.timedelta(seconds=delta_seconds)
@@ -495,12 +498,13 @@ def log_in_place(name, level, time_lambda=time.time, show_log_diffs=False):
         .. code-block:: python
 
             from pysnptools.util import log_in_place
+            from six.moves import range
             import logging
             import time
             logging.basicConfig(level=logging.INFO)
          
             with log_in_place("counting", logging.INFO) as updater:
-            for i in xrange(100):
+            for i in range(100):
                     updater(i)
                     time.sleep(.1) #typically, some work -- not a delay -- goes here
 

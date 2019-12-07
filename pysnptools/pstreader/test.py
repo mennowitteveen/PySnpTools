@@ -8,10 +8,7 @@ import time
 from pysnptools.pstreader import PstData, PstNpz, PstHdf5
 from pysnptools.util import create_directory_if_necessary
 from pysnptools.kernelreader.test import _fortesting_JustCheckExists
-try:
-    from builtins import range
-except:
-    pass
+from six.moves import range
 
 class TestPstReader(unittest.TestCase):     
 

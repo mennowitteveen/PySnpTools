@@ -5,10 +5,7 @@ from pysnptools.snpreader import SnpData
 import warnings
 from pysnptools.pstreader import PstData
 from pysnptools.pstreader import _OneShot
-try:
-    from builtins import range
-except:
-    pass
+from six.moves import range
 
 def zero_family(s):
     '''Given an input id from the file, returns 0 as the family id and that input id as the case id.

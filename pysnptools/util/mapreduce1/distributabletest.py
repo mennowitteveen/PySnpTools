@@ -18,7 +18,7 @@ class DistributableTest(object) : #implements IDistributable
             for sub in test_or_suite:
                 for subsub in DistributableTest.deep_iter(sub):
                     yield subsub
-        except TypeError, detail:
+        except TypeError as detail:
             yield test_or_suite
 
     def do_work(self, test):

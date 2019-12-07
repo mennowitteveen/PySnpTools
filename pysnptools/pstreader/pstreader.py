@@ -64,7 +64,8 @@ class PstReader(object):
         ================================== ================================== ====================== =====================
 
             A :class:`.SnpReader` and :class:`.KernelReader` are each a kind of :class:`.PstReader`. They have some restrictions summarized here:
-        
+        #!!!cmk are all these str's really ascii??? 
+        #!!!cmk need to warn that any unicode str in will be change to ascii string
             ================================== =============== ============ ============ ==================== ====================
             *Class*                            *val type*      *row type*   *col type*   *row_property type*  *col_property type*
             :class:`.PstReader`                float           any          any          any                  any  
@@ -96,6 +97,7 @@ class PstReader(object):
         Example:
 
         >>> from pysnptools.pstreader import PstHdf5
+        >>> from __future__ import print_function#!!!cmk kill this an all similar
         >>> from pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3
         >>> on_disk = PstHdf5('../examples/toydata.iidmajor.snp.hdf5') # PstHdf5 can load .pst.hdf5, .snp.hdf5, and kernel.hdf5
         >>> print2(on_disk.row[:3]) # print the first three rows
@@ -104,7 +106,7 @@ class PstReader(object):
          ['per2' 'per2']]
         >>> print2(on_disk.col[:7]) # print the first seven columns
         ['null_0' 'null_1' 'null_2' 'null_3' 'null_4' 'null_5' 'null_6']
-        >>> print(on_disk.row_to_index([[b'per2', b'per2'],[b'per1', b'per1']])) #Find the indexes for two rows.
+        >>> print2(on_disk.row_to_index([[b'per2', b'per2'],[b'per1', b'per1']])) #Find the indexes for two rows.
         [2 1]
         
     When Matrix Data is Read:
@@ -527,11 +529,12 @@ class PstReader(object):
             return str.encode(item) # return the ascii version
         if isinstance(item,(numbers.Integral,float)): #return quickly from known items
             return item
-        try:
-            hash(item)
-            return item
-        except:
-            pass
+        if not isinstance(item,(tuple,list,set,dict)):
+            try:
+                hash(item)
+                return item
+            except:
+                pass
 
         return tuple((PstReader._makekey(subitem) for subitem in item))
 

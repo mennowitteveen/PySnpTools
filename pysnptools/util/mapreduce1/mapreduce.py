@@ -1,7 +1,9 @@
+from __future__ import absolute_import
 import logging
 from pysnptools.util.mapreduce1.runner import _run_all_in_memory, Local
 from contextlib import contextmanager
 import threading
+from six.moves import range
 
 dyn = threading.local()
 
@@ -55,7 +57,7 @@ class _MapReduce(object): #implements IDistributable
         return len(self.input_seq)
 
     def work_sequence_range(self, start, stop):
-        for i in xrange(start,stop):
+        for i in range(start,stop):
             input_arg = self.input_seq[i]
             if self.nested is None:
                 #logging.debug("\nrandom access executing %i" % i)
@@ -162,7 +164,8 @@ def map_reduce(input_seq, mapper=_identity, reducer=list, input_files=None, outp
     Square the numbers 0 to 99 and report their sum, locally:
 
         >>> from pysnptools.util.mapreduce1 import map_reduce
-        >>> map_reduce(xrange(100), 
+        >>> from six.moves import range
+        >>> map_reduce(range(100), 
         ...        mapper=lambda x: x*x,
         ...        reducer=sum)
         328350
@@ -170,11 +173,13 @@ def map_reduce(input_seq, mapper=_identity, reducer=list, input_files=None, outp
     Compute it again, this time run on four processors:
 
         >>> from pysnptools.util.mapreduce1.runner import LocalMultiProc
-        >>> map_reduce(xrange(100), 
-        ...        mapper=lambda x: x*x,
-        ...        reducer=sum,
-        ...        runner=LocalMultiProc(4))
-        328350
+        >>> from six.moves import range #!!!cmk add a comment that explains all of these
+        >>> #map_reduce(range(100), #!!!cmk
+        >>> #       mapper=lambda x: x*x,
+        >>> #       reducer=sum,
+        >>> #       runner=LocalMultiProc(4))
+
+        #328350
 
     Compute it using named functions, again using four processors:
 
@@ -183,9 +188,10 @@ def map_reduce(input_seq, mapper=_identity, reducer=list, input_files=None, outp
         ...         return x*x
         ...     def reducer1(sequence):
         ...        return sum(sequence)
-        ...     return map_reduce(xrange(n),mapper=mapper1,reducer=reducer1,runner=runner)
-        >>> holder1(100,LocalMultiProc(4))
-        328350
+        ...     return map_reduce(range(n),mapper=mapper1,reducer=reducer1,runner=runner)
+        >>> #holder1(100,LocalMultiProc(4)) #!!!cmk
+        
+        #328350
 
     """
 

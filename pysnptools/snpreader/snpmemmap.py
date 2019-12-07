@@ -23,8 +23,9 @@ class SnpMemMap(PstMemMap,SnpData):
         :Example:
 
         >>> from pysnptools.snpreader import SnpMemMap
+        >>> from __future__ import print_function
         >>> snp_mem_map = SnpMemMap('../examples/tiny.snp.memmap')
-        >>> print snp_mem_map.val[0,1], snp_mem_map.iid_count, snp_mem_map.sid_count
+        >>> print(snp_mem_map.val[0,1], snp_mem_map.iid_count, snp_mem_map.sid_count)
         2.0 2 3
 
     **Methods inherited from** :class:`.SnpData`

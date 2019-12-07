@@ -1,9 +1,12 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import numpy as np
 import logging
 import os
 import unittest
 import doctest
 from pysnptools.snpreader import SnpReader
+from six.moves import range
 
 class SnpGen(SnpReader):
     '''
@@ -21,13 +24,14 @@ class SnpGen(SnpReader):
         
         :Example:
 
+        >>> from __future__ import print_function
         >>> from pysnptools.snpreader import SnpGen
         >>> #Prepare to generate data for 1000 individuals and 1,000,000 SNPs
         >>> snp_gen = SnpGen(seed=332,iid_count=1000,sid_count=1000*1000)
-        >>> print snp_gen.iid_count,snp_gen.sid_count
+        >>> print(snp_gen.iid_count,snp_gen.sid_count)
         1000 1000000
         >>> snp_data = snp_gen[:,200*1000:201*1000].read() #Generate for all users and for SNPs 200K to 201K
-        >>> print snp_data.val[1,1], snp_data.iid_count, snp_data.sid_count
+        >>> print(snp_data.val[1,1], snp_data.iid_count, snp_data.sid_count)
         0.0 1000 1000
 
 
@@ -81,21 +85,21 @@ class SnpGen(SnpReader):
         self._run_once()
         return self._col_property
 
-    _chrom_size = np.array([263,255,214,203,194,183,171,155,145,144,144,143,114,109,106,98,92,85,67,72,50,56],dtype=long)*int(1e6) #The approximate size of human chromosomes in base pairs
+    _chrom_size = np.array([263,255,214,203,194,183,171,155,145,144,144,143,114,109,106,98,92,85,67,72,50,56],dtype=np.int64)*int(1e6) #The approximate size of human chromosomes in base pairs
 
     def _run_once(self):
         if (self._ran_once):
             return
         self._ran_once = True
-        self._row = np.array([('0','iid_{0}'.format(i)) for i in xrange(self._iid_count)])
-        self._col = np.array(['sid_{0}'.format(i) for i in xrange(self._sid_count)])
+        self._row = np.array([('0','iid_{0}'.format(i)) for i in range(self._iid_count)])
+        self._col = np.array(['sid_{0}'.format(i) for i in range(self._sid_count)])
         self._col_property = np.zeros(((self._sid_count),3))
 
         chrom_total = SnpGen._chrom_size[:self._chrom_count].sum()
         step = chrom_total // self._sid_count
         start = 0
         chrom_size_so_far = 0
-        for chrom_index in xrange(self._chrom_count):
+        for chrom_index in range(self._chrom_count):
             chrom_size_so_before = chrom_size_so_far
             chrom_size_so_far += SnpGen._chrom_size[chrom_index]
             stop = chrom_size_so_far * self._sid_count // chrom_total
@@ -145,11 +149,9 @@ class SnpGen(SnpReader):
 
     @staticmethod
     def _get_sid(sid_start, sid_stop):
-        sid = ["sid_{0}".format(i) for i in xrange(sid_start,sid_stop)]
+        sid = ["sid_{0}".format(i) for i in range(sid_start,sid_stop)]
         return sid
 
-    _chrom_size = np.array([263,255,214,203,194,183,171,155,145,144,144,143,114,109,106,98,92,85,67,72,50,56],dtype=long)*(1000*1000) #The approximate size of human chromosomes in base pairs
-    
     def _get_val2(self, sid_start, sid_stop):
         x_sample, dist = self._get_dist() # The discrete distribution of minor allele frequencies (based on curve fitting to real data)
         val = SnpGen._get_val(x_sample,dist,self._iid_count,sid_start,sid_stop, self._seed)
@@ -218,6 +220,17 @@ def getTestSuite():
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
+
+    #!!!cmk
+    from pysnptools.snpreader import SnpGen
+    #Prepare to generate data for 1000 individuals and 1,000,000 SNPs
+    snp_gen = SnpGen(seed=332,iid_count=1000,sid_count=1000*1000)
+    print(snp_gen.iid_count,snp_gen.sid_count)
+    #1000 1000000
+    snp_data = snp_gen[:,200*1000:201*1000].read() #Generate for all users and for SNPs 200K to 201K
+    print(snp_data.val[1,1], snp_data.iid_count, snp_data.sid_count)
+    #0.0 1000 1000
+
 
 
 

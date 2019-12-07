@@ -8,10 +8,7 @@ from pysnptools.snpreader import SnpData
 import pysnptools.util.pheno as pstpheno
 import pysnptools.util as pstutil
 from pysnptools.pstreader import _OneShot
-try:
-    from builtins import range
-except:
-    pass
+from six.moves import range
 from pysnptools.util import to_ascii
 
 class Pheno(_OneShot, SnpReader):

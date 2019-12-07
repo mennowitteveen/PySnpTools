@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import logging
 import numpy as np
 import unittest
@@ -20,8 +22,9 @@ class PstMemMap(PstData):
         :Example:
 
         >>> from pysnptools.pstreader import PstMemMap
+        >>> from __future__ import print_function
         >>> pst_mem_map = PstMemMap('../examples/tiny.pst.memmap')
-        >>> print pst_mem_map.val[0,1], pst_mem_map.row_count, pst_mem_map.col_count
+        >>> print(pst_mem_map.val[0,1], pst_mem_map.row_count, pst_mem_map.col_count)
         2.0 3 2
 
     **Methods beyond** :class:`PstReader`
@@ -327,26 +330,26 @@ if __name__ == "__main__":
         from pysnptools.pstreader import PstMemMap
         fn = '../examples/tiny.pst.memmap'
         os.getcwd()
-        print(os.path.exists(fn))
+        print((os.path.exists(fn)))
         pst_mem_map = PstMemMap(fn)
-        print(pst_mem_map.val[0,1])
+        print((pst_mem_map.val[0,1]))
 
 
     if False:
         a=np.ndarray([2,3])
         pointer, read_only_flag = a.__array_interface__['data']
-        print pointer
+        print(pointer)
         a*=2
         pointer, read_only_flag = a.__array_interface__['data']
-        print pointer
+        print(pointer)
         a = PstMemMap.empty(row=['a','b','c'],col=['y','z'],filename=r'c:\deldir\a.memmap',row_property=['A','B','C'],order="F",dtype=np.float64)
         b = PstData(row=['a','b','c'],col=['y','z'],val=[[1,2],[3,4],[np.nan,6]],row_property=['A','B','C'])
         pointer, read_only_flag = a.val.__array_interface__['data']
-        print pointer
+        print(pointer)
         a.val+=1
         a.val+=b.val
         pointer, read_only_flag = a.val.__array_interface__['data']
-        print pointer
+        print(pointer)
 
 
     suites = getTestSuite()

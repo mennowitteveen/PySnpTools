@@ -9,10 +9,7 @@ import pysnptools.util as pstutil
 from pysnptools.pstreader import PstReader
 import warnings
 import pysnptools.standardizer as stdizer
-try:
-    from builtins import range
-except:
-    pass
+from six.moves import range
 
 #!!why do the examples use ../tests/datasets instead of "examples"?
 class SnpReader(PstReader):
@@ -84,6 +81,7 @@ class SnpReader(PstReader):
         >>> # read from Pheno, write to Bed
         >>> from pysnptools.snpreader import Pheno, Bed
         >>> import pysnptools.util as pstutil
+        >>> from __future__ import print_function
         >>> from pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3
         >>> snpdata = Pheno('../examples/toydata.phe').read() # Read data from Pheno format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata.bed")
@@ -331,6 +329,7 @@ class SnpReader(PstReader):
         :Example:
 
         >>> from pysnptools.snpreader import Bed
+        >>> from __future__ import print_function #!!!cmk explain this is a comment everywhere
         >>> from pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3
         >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
         >>> print2(snp_on_disk.iid[:3]) # print the first three iids
@@ -361,7 +360,7 @@ class SnpReader(PstReader):
         :Example:
 
         >>> from pysnptools.snpreader import Bed
-        >>> from pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3 
+        >>> from pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3
         >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
         >>> print2(snp_on_disk.sid[:9]) # print the first nine sids
         ['1_12' '1_34' '1_10' '1_35' '1_28' '1_25' '1_36' '1_39' '1_4']
@@ -664,7 +663,10 @@ class SnpReader(PstReader):
         famfile = SnpReader._name_of_other_file(basefilename, remove_suffix, "fam")
 
         logging.info("Loading fam file {0}".format(famfile))
-        iid = np.loadtxt(famfile, dtype = 'S',usecols=(0,1),comments=None)
+        if os.path.getsize(famfile)>0:
+            iid = np.loadtxt(famfile, dtype = 'S',usecols=(0,1),comments=None)
+        else:
+            iid = np.empty((0,2), dtype = 'S')
         if len(iid.shape) == 1: #When empty or just one item, make sure the result is (x,2)
             iid = iid.reshape((len(iid)//2,2))
         return iid

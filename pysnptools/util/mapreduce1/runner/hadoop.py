@@ -507,7 +507,7 @@ class HadoopCopier(object): #Implements ICopier
             winfileOrDirectory = os.path.normpath(directory + os.path.sep + tarName)
             try:
                 member = tgzFile.getmember(tarName)
-            except Exception, e:
+            except Exception as e:
                 logging.info("'{0}' not up to date because of exception {1}. ({2})".format(tarName, e, howToIgnoreString))
                 return False;
             else:

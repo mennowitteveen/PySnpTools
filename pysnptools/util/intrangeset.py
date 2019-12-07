@@ -1,13 +1,12 @@
+from __future__ import absolute_import
 import re
 from bisect import bisect_left
 import logging
 import numpy as np
 import unittest
 import doctest
-try:
-    from builtins import range
-except:
-    pass
+import six
+from six.moves import range
 import numbers
 
 class IntRangeSet(object):
@@ -600,10 +599,10 @@ class IntRangeSet(object):
         assert str(IntRangeSet(7)) == "IntRangeSet('7')"
         assert str(IntRangeSet((7,8))) == "IntRangeSet('7')"
         assert str(IntRangeSet((7,11))) == "IntRangeSet('7:11')"
-        assert str(IntRangeSet(range(7,11))) == "IntRangeSet('7:11')"
+        assert str(IntRangeSet(list(range(7,11)))) == "IntRangeSet('7:11')"
         assert str(IntRangeSet(np.s_[7:11])) == "IntRangeSet('7:11')"
         assert str(IntRangeSet(np.s_[7:11:2])) == "IntRangeSet('7,9')"
-        assert str(IntRangeSet(range(7,11,2))) == "IntRangeSet('7,9')"
+        assert str(IntRangeSet(list(range(7,11,2)))) == "IntRangeSet('7,9')"
         assert str(IntRangeSet(None)) == "IntRangeSet('')"
         assert str(IntRangeSet()) == "IntRangeSet('')"
         assert [e for e in IntRangeSet("-10:-4,-3")] == [-10,-9,-8,-7,-6,-5,-3]
@@ -640,8 +639,8 @@ class IntRangeSet(object):
         assert IntRangeSet("-10:-4,-3,100") not in int_range_set5
         assert [-11] not in int_range_set5
         assert [-10] in int_range_set5
-        assert range(-10,-6) in int_range_set5
-        assert range(-10,-3) not in int_range_set5
+        assert list(range(-10,-6)) in int_range_set5
+        assert list(range(-10,-3)) not in int_range_set5
         assert [-10,-9,-8,-7,-3] in int_range_set5
         assert [-10,-9,-8,-7,-3,-100] not in int_range_set5
 
@@ -1636,7 +1635,7 @@ class IntRangeSet(object):
             if isinstance(iterable, numbers.Integral):
                 yield iterable,iterable+1
             elif isinstance(iterable,tuple):
-                assert len(iterable)==2 and isinstance(iterable[0], numbers.Integral) and isinstance(iterable[1],(int,long)), "Tuples must contain exactly two int elements that represent the start (inclusive) and stop (exclusive) elements of a range."
+                assert len(iterable)==2 and isinstance(iterable[0], numbers.Integral) and isinstance(iterable[1],six.integer_types), "Tuples must contain exactly two int elements that represent the start (inclusive) and stop (exclusive) elements of a range."
                 yield iterable[0],iterable[1]
             elif isinstance(iterable,slice):
                 start = iterable.start

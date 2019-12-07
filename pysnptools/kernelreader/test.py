@@ -11,10 +11,7 @@ from pysnptools.util import create_directory_if_necessary
 from pysnptools.pstreader import PstReader
 from pysnptools.snpreader import SnpData
 import pysnptools.standardizer as stdizer
-try:
-    from builtins import range
-except:
-    pass
+from six.moves import range
 
 class _fortesting_JustCheckExists(object): #Implements ICopier
 

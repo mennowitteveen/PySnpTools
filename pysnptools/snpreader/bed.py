@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import numpy as np
 import subprocess, sys, os.path
 from itertools import *
@@ -8,10 +10,7 @@ from pysnptools.snpreader import SnpData
 import math
 import warnings
 from pysnptools.pstreader import PstData
-try:
-    from builtins import range
-except:
-    pass
+from six.moves import range
 
 class Bed(SnpReader):
     '''
@@ -232,14 +231,14 @@ class Bed(SnpReader):
             iid_index_out = iid_index_or_none
         else:
             iid_count_out = iid_count_in
-            iid_index_out = range(iid_count_in)
+            iid_index_out = list(range(iid_count_in))
 
         if sid_index_or_none is not None:
             sid_count_out = len(sid_index_or_none)
             sid_index_out = sid_index_or_none
         else:
             sid_count_out = sid_count_in
-            sid_index_out = range(sid_count_in)
+            sid_index_out = list(range(sid_count_in))
 
         if not force_python_only:
             from pysnptools.snpreader import wrap_plink_parser
@@ -319,7 +318,7 @@ if __name__ == "__main__":
     from pysnptools.snpreader import Pheno, Bed
     import pysnptools.util as pstutil
     import os
-    print os.getcwd()
+    print(os.getcwd())
     snpdata = Pheno('../examples/toydata.phe').read()         # Read data from Pheno format
     pstutil.create_directory_if_necessary("tempdir/toydata.bed")
     Bed.write("tempdir/toydata.bed",snpdata,count_A1=False)   # Write data in Bed format

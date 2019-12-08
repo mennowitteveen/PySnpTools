@@ -1,7 +1,7 @@
 from pysnptools.util.mapreduce1.runner import *
 import logging
 import unittest
-import cStringIO
+import io
 
 class DistributableTest(object) : #implements IDistributable
     '''
@@ -49,7 +49,7 @@ class DistributableTest(object) : #implements IDistributable
             yield lambda test=test : self.do_work(test)  # the 'test=test' is need to get around a strangeness in Python
 
     def reduce(self, result_sequence):
-        fp = cStringIO.StringIO()
+        fp = io.StringIO()
         error_count = 0
         failure_count = 0
         test_result_list = []

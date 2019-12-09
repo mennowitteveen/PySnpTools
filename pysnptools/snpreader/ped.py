@@ -47,7 +47,7 @@ class Ped(_OneShot,SnpReader):
     def __init__(self, filename, missing = '0'):
         '''
             filename    : string of the filename of the ped file
-            missing         : string indicating a missing genotype (default b'0')
+            missing         : string indicating a missing genotype (default '0')
         '''
         super(Ped, self).__init__()
         self.filename = SnpReader._name_of_other_file(filename,remove_suffix="ped", add_suffix="ped")
@@ -55,7 +55,7 @@ class Ped(_OneShot,SnpReader):
 
     def _read_pstdata(self):
         col, col_property = SnpReader._read_map_or_bim(self.filename,remove_suffix="ped", add_suffix="map")
-        ped = np.loadtxt(self.filename, dtype='S', comments=None)
+        ped = np.loadtxt(self.filename, dtype='str', comments=None)
         row = ped[:,0:2]
         snpsstr = ped[:,6::]
         inan=snpsstr==self.missing
@@ -108,23 +108,23 @@ class Ped(_OneShot,SnpReader):
         # Phenotype
 
         pedfile = SnpReader._name_of_other_file(filename, remove_suffix="ped", add_suffix="ped")
-        with open(pedfile,"wb") as ped_filepointer:
+        with open(pedfile,"w") as ped_filepointer:
             for iid_index, iid_row in enumerate(snpdata.iid):
-                ped_filepointer.write(b"%s %s 0 0 0 0"%(iid_row[0],iid_row[1])) #Must use % formating because Python3 doesn't support .format on bytes
+                ped_filepointer.write("{0} {1} 0 0 0 0".format(iid_row[0],iid_row[1])) #!!!cmkMust use % formating because Python3 doesn't support .format on bytes
                 row = snpdata.val[iid_index,:]
                 for sid_index, val in enumerate(row):
                     if val == 0:
-                        s = b"A A"
+                        s = "A A"
                     elif val == 1:
-                        s = b"A G"
+                        s = "A G"
                     elif val == 2:
-                        s = b"G G"
+                        s = "G G"
                     elif np.isnan(val):
-                        s = b"0 0"
+                        s = "0 0"
                     else:
                         raise Exception("Expect values for ped file to be 0,1,2, or NAN. Instead, saw '{0}'".format(val))
-                    ped_filepointer.write(b"\t"+s)
-                ped_filepointer.write(b"\n")
+                    ped_filepointer.write("\t"+s)
+                ped_filepointer.write("\n")
         return Ped(filename)
 
 if __name__ == "__main__":

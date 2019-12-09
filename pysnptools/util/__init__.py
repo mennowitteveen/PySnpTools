@@ -443,14 +443,14 @@ def weighted_simple_linear_regression(xs, ys, weights):
     intercept = ymean - xmean * slope
     return slope, intercept, xmean, ymean
 
-def print2(arg):
+def cmkprint2(arg):
     '''
     Make printing under Python3 look the same as under Python2.
     '''
     s = str(arg).replace("b'","'")
     print(s)
 
-def to_ascii(s):
+def cmkto_ascii(s):
     '''
     This is for Python2/3 compatibility
     '''

@@ -50,7 +50,7 @@ class TestPstReader(unittest.TestCase):
         def _twotwod_int(c):
             return [[i,i] for i in range(c)]
         def _twotwod_str(c):
-            return [[str(i).encode('ascii'),b"hello"] for i in range(c)]
+            return [[str(i).encode('ascii'),b"hello"] for i in range(c)]#!!!cmk what's going on here?
         def _none(c):
             return None
         def _zero(c):

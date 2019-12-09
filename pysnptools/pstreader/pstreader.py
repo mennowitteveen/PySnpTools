@@ -96,15 +96,15 @@ class PstReader(object):
         Example:
 
         >>> from pysnptools.pstreader import PstHdf5
-        >>> from pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3
+        >>> #!!!cmkfrom pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3
         >>> on_disk = PstHdf5('../examples/toydata.iidmajor.snp.hdf5') # PstHdf5 can load .pst.hdf5, .snp.hdf5, and kernel.hdf5
-        >>> print2(on_disk.row[:3]) # print the first three rows
+        >>> print(on_disk.row[:3]) # print the first three rows
         [['per0' 'per0']
          ['per1' 'per1']
          ['per2' 'per2']]
-        >>> print2(on_disk.col[:7]) # print the first seven columns
+        >>> print(on_disk.col[:7]) # print the first seven columns
         ['null_0' 'null_1' 'null_2' 'null_3' 'null_4' 'null_5' 'null_6']
-        >>> print(on_disk.row_to_index([[b'per2', b'per2'],[b'per1', b'per1']])) #Find the indexes for two rows.
+        >>> print(on_disk.row_to_index([['per2', 'per2'],['per1', 'per1']])) #Find the indexes for two rows.
         [2 1]
         
     When Matrix Data is Read:
@@ -124,9 +124,9 @@ class PstReader(object):
           not value data. Moreover, the row and col data is read from file only once. Consider these commands:
 
             >>> on_disk = PstHdf5('../examples/toydata.iidmajor.snp.hdf5') # Construct a PstHdf5 PstReader. No data is read.
-            >>> print2(on_disk.col[:7]) # without reading any values data from disk, read the row and col data from disk, cache it, and then print the first seven cols.
+            >>> print(on_disk.col[:7]) # without reading any values data from disk, read the row and col data from disk, cache it, and then print the first seven cols.
             ['null_0' 'null_1' 'null_2' 'null_3' 'null_4' 'null_5' 'null_6']
-            >>> print(on_disk.col_to_index([b'null_7',b'null_2'])) #use the cached col information to find the indexes of 'null_7' and 'null_2'. (No data is read from disk.)
+            >>> print(on_disk.col_to_index(['null_7','null_2'])) #use the cached col information to find the indexes of 'null_7' and 'null_2'. (No data is read from disk.)
             [7 2]
 
         * The only method that reads values from file (to the degree practical) is :meth:`read`. For example:
@@ -223,7 +223,7 @@ class PstReader(object):
             >>> subset_reader_2 = on_disk[:,:0:-2] #index with a slice
             >>> print((subset_reader_2.row_count, subset_reader_2.col_count))
             (300, 507)
-            >>> boolindexes = [s.startswith(b'23_') for s in on_disk.col] # create a Boolean index of cols that start '23_'
+            >>> boolindexes = [s.startswith('23_') for s in on_disk.col] # create a Boolean index of cols that start '23_'
             >>> subset_reader_3 = on_disk[:,boolindexes] #index with array of Booleans
             >>> print((subset_reader_3.row_count, subset_reader_3.col_count))
             (300, 24)
@@ -249,11 +249,11 @@ class PstReader(object):
 
             >>> on_disk = PstNpz('../../tests/datasets/all_chr.maf0.001.N300.pst.npz') # Specify some data on disk in PstNpz format
             >>> data1 = on_disk.read() # read all matrix values into memory
-            >>> print2(data1.col[:9]) # print the first 9 cols
+            >>> print(data1.col[:9]) # print the first 9 cols
             ['1_12' '1_34' '1_10' '1_35' '1_28' '1_25' '1_36' '1_39' '1_4']
 
             >>> data_subset = data1[:,::2].read(view_ok=True,order='A') # create a copy or view with every other col
-            >>> print2(data_subset.col[:9]) # print the first 9 cols in the subset
+            >>> print(data_subset.col[:9]) # print the first 9 cols in the subset
             ['1_12' '1_10' '1_28' '1_36' '1_4' '1_11' '1_32' '1_9' '1_17']
 
 
@@ -472,7 +472,7 @@ class PstReader(object):
 
         >>> from pysnptools.pstreader import PstNpz
         >>> on_disk = PstNpz('../../tests/datasets/all_chr.maf0.001.N300.pst.npz') # Specify matrix data on disk
-        >>> print(on_disk.row_to_index([[b'POP1',b'44'],[b'POP1',b'12']])) #Find the indexes for two rows.
+        >>> print(on_disk.row_to_index([['POP1','44'],['POP1','12']])) #Find the indexes for two rows.
         [2 1]
         """
         if not hasattr(self, "_row_to_index"):
@@ -499,7 +499,7 @@ class PstReader(object):
 
         >>> from pysnptools.pstreader import PstNpz
         >>> on_disk = PstNpz('../../tests/datasets/all_chr.maf0.001.N300.pst.npz') # Specify matrix data on disk
-        >>> print(on_disk.col_to_index([b'1_10',b'1_13'])) #Find the indexes for two cols.
+        >>> print(on_disk.col_to_index(['1_10','1_13'])) #Find the indexes for two cols.
         [2 9]
         """
         if not hasattr(self, "_col_to_index"):
@@ -524,7 +524,7 @@ class PstReader(object):
     @staticmethod
     def _makekey(item):
         if isinstance(item,str):
-            return str.encode(item) # return the ascii version
+            return item
         if isinstance(item,(numbers.Integral,float)): #return quickly from known items
             return item
         try:

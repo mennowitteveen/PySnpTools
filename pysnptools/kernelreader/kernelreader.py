@@ -94,7 +94,7 @@ class KernelReader(PstReader):
         >>> from pysnptools.snpreader import Bed
         >>> from pysnptools.standardizer import Unit
         >>> import pysnptools.util as pstutil
-        >>> from pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3 
+        >>> #!!!cmkfrom pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3 
         >>> kerneldata = Bed('../examples/toydata.bed',count_A1=False).read_kernel(Unit())     # Create a kernel from the data in the Bed file
         >>> pstutil.create_directory_if_necessary("tempdir/toydata.kernel.npz")
         >>> KernelNpz.write("tempdir/toydata.kernel.npz",kerneldata)      # Write data in KernelNpz format
@@ -105,11 +105,11 @@ class KernelReader(PstReader):
         Individual are identified with an iid, which is a ndarray of two strings: a family ID and a case ID. For example:
 
         >>> kernel_on_disk = KernelNpz('../examples/toydata.kernel.npz')
-        >>> print2(kernel_on_disk.iid[:3]) # print the first three iids
+        >>> print(kernel_on_disk.iid[:3]) # print the first three iids
         [['per0' 'per0']
          ['per1' 'per1']
          ['per2' 'per2']]
-        >>> print(kernel_on_disk.iid_to_index([[b'per2',b'per2'],[b'per1',b'per1']])) #Find the indexes for two iids.
+        >>> print(kernel_on_disk.iid_to_index([['per2','per2'],['per1','per1']])) #Find the indexes for two iids.
         [2 1]
 
     :class:`.KernelReader` is a kind of :class:`.PstReader`. See the documentation for :class:`.PstReader` to learn about:
@@ -158,9 +158,9 @@ class KernelReader(PstReader):
         :Example:
 
         >>> from pysnptools.kernelreader import KernelNpz
-        >>> from pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3 
+        >>> #!!!cmkfrom pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3 
         >>> kernel_on_disk = KernelNpz('../examples/toydata.kernel.npz')
-        >>> print2(kernel_on_disk.iid[:3]) # print the first three iids
+        >>> print(kernel_on_disk.iid[:3]) # print the first three iids
         [['per0' 'per0']
          ['per1' 'per1']
          ['per2' 'per2']]
@@ -299,7 +299,7 @@ class KernelReader(PstReader):
 
         >>> from pysnptools.kernelreader import KernelNpz
         >>> kernel_on_disk = KernelNpz('../examples/toydata.kernel.npz')
-        >>> print(kernel_on_disk.iid_to_index([[b'per2',b'per2'],[b'per1',b'per1']])) #Find the indexes for two iids.
+        >>> print(kernel_on_disk.iid_to_index([['per2','per2'],['per1','per1']])) #Find the indexes for two iids.
         [2 1]
         """
         assert self.iid0 is self.iid1, "When 'iid_to_index' is used, iid0 must be the same as iid1"
@@ -312,7 +312,7 @@ class KernelReader(PstReader):
 
     @staticmethod
     def _makekey(item):
-        return tuple(i.encode('ascii') for i in item)
+        return tuple(str(i) for i in item)
 
 
     def iid1_to_index(self, list):

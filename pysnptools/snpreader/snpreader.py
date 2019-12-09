@@ -84,7 +84,7 @@ class SnpReader(PstReader):
         >>> # read from Pheno, write to Bed
         >>> from pysnptools.snpreader import Pheno, Bed
         >>> import pysnptools.util as pstutil
-        >>> from pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3
+        >>> #!!!cmk from pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3
         >>> snpdata = Pheno('../examples/toydata.phe').read() # Read data from Pheno format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata.bed")
         >>> Bed.write("tempdir/toydata.bed",snpdata,count_A1=False)   # Write data in Bed format
@@ -97,13 +97,13 @@ class SnpReader(PstReader):
         SNP locations are identified with an sid string in a ndarray. For example:
 
         >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
-        >>> print2(snp_on_disk.iid[:3]) # print the first three iids
+        >>> print(snp_on_disk.iid[:3]) # print the first three iids
         [['POP1' '0']
          ['POP1' '12']
          ['POP1' '44']]
-        >>> print2(snp_on_disk.sid[:9]) # print the first nine sids
+        >>> print(snp_on_disk.sid[:9]) # print the first nine sids
         ['1_12' '1_34' '1_10' '1_35' '1_28' '1_25' '1_36' '1_39' '1_4']
-        >>> print(snp_on_disk.iid_to_index([[b'POP1',b'44'],[b'POP1',b'12']])) #Find the indexes for two iids.
+        >>> print(snp_on_disk.iid_to_index([['POP1','44'],['POP1','12']])) #Find the indexes for two iids.
         [2 1]
         
     When Data is Read:
@@ -123,9 +123,9 @@ class SnpReader(PstReader):
           not SNP value data. Moreover, the iid and sid data is read from file only once. Consider these commands:
 
             >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Construct a Bed SnpReader. No data is read.
-            >>> print2(snp_on_disk.sid[:9]) # without reading any SNP values data from disk, read the sid and iid data from disk, cache it, and then print the first nine sids.
+            >>> print(snp_on_disk.sid[:9]) # without reading any SNP values data from disk, read the sid and iid data from disk, cache it, and then print the first nine sids.
             ['1_12' '1_34' '1_10' '1_35' '1_28' '1_25' '1_36' '1_39' '1_4']
-            >>> print(snp_on_disk.sid_to_index([b'1_10',b'1_13'])) #use the cached sid information to find the indexes of '1_10' and '1_13'. (No data is read from disk.)
+            >>> print(snp_on_disk.sid_to_index(['1_10','1_13'])) #use the cached sid information to find the indexes of '1_10' and '1_13'. (No data is read from disk.)
             [2 9]
 
         * The only methods that read SNP values from file are :meth:`read` and :meth:`read_kernel` (to the degree practical). For example:
@@ -223,7 +223,7 @@ class SnpReader(PstReader):
             >>> subset_snpreader_2 = snp_on_disk[:,:0:-2] #index with a slice
             >>> print((subset_snpreader_2.iid_count, subset_snpreader_2.sid_count))
             (300, 507)
-            >>> boolindexes = [s.startswith(b'23_') for s in snp_on_disk.sid] # create a Boolean index of sids that start '23_'
+            >>> boolindexes = [s.startswith('23_') for s in snp_on_disk.sid] # create a Boolean index of sids that start '23_'
             >>> subset_snpreader_3 = snp_on_disk[:,boolindexes] #index with array of Booleans
             >>> print((subset_snpreader_3.iid_count, subset_snpreader_3.sid_count))
             (300, 24)
@@ -249,10 +249,10 @@ class SnpReader(PstReader):
 
             >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
             >>> snpdata1 = snp_on_disk.read() # read all SNP values into memory
-            >>> print2(snpdata1.sid[:9]) # print the first 9 sids
+            >>> print(snpdata1.sid[:9]) # print the first 9 sids
             ['1_12' '1_34' '1_10' '1_35' '1_28' '1_25' '1_36' '1_39' '1_4']
             >>> snpdata_subset = snpdata1[:,::2].read(view_ok=True,order='A') # create a copy or view with every other sid
-            >>> print2(snpdata_subset.sid[:9])# print the first 9 sids in the subset
+            >>> print(snpdata_subset.sid[:9])# print the first 9 sids in the subset
             ['1_12' '1_10' '1_28' '1_36' '1_4' '1_11' '1_32' '1_9' '1_17']
 
 
@@ -331,9 +331,9 @@ class SnpReader(PstReader):
         :Example:
 
         >>> from pysnptools.snpreader import Bed
-        >>> from pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3
+        >>> #!!!cmkfrom pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3
         >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
-        >>> print2(snp_on_disk.iid[:3]) # print the first three iids
+        >>> print(snp_on_disk.iid[:3]) # print the first three iids
         [['POP1' '0']
          ['POP1' '12']
          ['POP1' '44']]
@@ -361,9 +361,9 @@ class SnpReader(PstReader):
         :Example:
 
         >>> from pysnptools.snpreader import Bed
-        >>> from pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3 
+        >>> #!!!cmkfrom pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3 
         >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
-        >>> print2(snp_on_disk.sid[:9]) # print the first nine sids
+        >>> print(snp_on_disk.sid[:9]) # print the first nine sids
         ['1_12' '1_34' '1_10' '1_35' '1_28' '1_25' '1_36' '1_39' '1_4']
 
         """
@@ -479,7 +479,7 @@ class SnpReader(PstReader):
 
         >>> from pysnptools.snpreader import Bed
         >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify SNP data on disk
-        >>> print(snp_on_disk.iid_to_index([[b'POP1',b'44'],[b'POP1',b'12']])) #Find the indexes for two iids.
+        >>> print(snp_on_disk.iid_to_index([['POP1','44'],['POP1','12']])) #Find the indexes for two iids.
         [2 1]
         """
         return self.row_to_index(list)
@@ -498,7 +498,7 @@ class SnpReader(PstReader):
 
         >>> from pysnptools.snpreader import Bed
         >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify SNP data on disk
-        >>> print(snp_on_disk.sid_to_index([b'1_10',b'1_13'])) #Find the indexes for two sids.
+        >>> print(snp_on_disk.sid_to_index(['1_10','1_13'])) #Find the indexes for two sids.
         [2 9]
         """
         return self.col_to_index(list)
@@ -644,19 +644,19 @@ class SnpReader(PstReader):
     def _write_fam(snpdata, basefilename, remove_suffix):
         famfile = SnpReader._name_of_other_file(basefilename, remove_suffix, "fam")
 
-        with open(famfile,"wb") as fam_filepointer:
+        with open(famfile,"w") as fam_filepointer:
             for iid_row in snpdata.iid:
-                fam_filepointer.write(b"%s %s 0 0 0 0\n" % (iid_row[0],iid_row[1])) #Must use % formating because Python3 doesn't support .format on bytes
+                fam_filepointer.write("{0} {1} 0 0 0 0\n".format(iid_row[0],iid_row[1])) #cmkMust use % formating because Python3 doesn't support .format on bytes
 
 
     @staticmethod
     def _write_map_or_bim(snpdata, basefilename, remove_suffix, add_suffix):
         mapfile = SnpReader._name_of_other_file(basefilename, remove_suffix, add_suffix)
 
-        with open(mapfile,"wb") as map_filepointer:
+        with open(mapfile,"w") as map_filepointer:
             for sid_index, sid in enumerate(snpdata.sid):
                 posrow = snpdata.pos[sid_index]
-                map_filepointer.write(b"%r\t%s\t%r\t%r\tA\tC\n" % (posrow[0], sid, posrow[1], posrow[2])) #Must use % formating because Python3 doesn't support .format on bytes
+                map_filepointer.write("%r\t%s\t%r\t%r\tA\tC\n" % (posrow[0], sid, posrow[1], posrow[2])) #cmkMust use % formating because Python3 doesn't support .format on bytes
 
 
     @staticmethod
@@ -676,12 +676,12 @@ class SnpReader(PstReader):
 
         logging.info("Loading {0} file {1}".format(add_suffix, mapfile))
         if os.path.getsize(mapfile) == 0: #If the map/bim file is empty, return empty arrays
-            sid = np.array([],dtype='S')
+            sid = np.array([],dtype='str')
             pos = np.array([[]],dtype=int).reshape(0,3)
             return sid,pos
         else:
             fields = pd.read_csv(mapfile,delimiter = '\t',usecols = (0,1,2,3),header=None,index_col=False,comment=None)
-            sid = np.array(fields[1].tolist(),dtype='S')
+            sid = np.array(fields[1].tolist(),dtype='str')
             pos = fields[[0,2,3]].values
             return sid,pos
 

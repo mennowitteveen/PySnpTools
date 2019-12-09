@@ -77,13 +77,13 @@ class KernelData(KernelReader,PstData):
             warnings.warn("'parent_string' is deprecated. Use 'name'", DeprecationWarning)
 
         if iid is not None:
-            self._row = PstData._fixup_input(iid,empty_creator=lambda ignore:np.empty([0,2],dtype='S'),dtype='S')
+            self._row = PstData._fixup_input(iid,empty_creator=lambda ignore:np.empty([0,2],dtype='str'),dtype='str')
             self._col = self._row
         else:
-            self._row = PstData._fixup_input(iid0,empty_creator=lambda ignore:np.empty([0,2],dtype='S'),dtype='S')
-            self._col = PstData._fixup_input(iid1,empty_creator=lambda ignore:np.empty([0,2],dtype='S'),dtype='S')
-        self._row_property = PstData._fixup_input(None,count=len(self._row),empty_creator=lambda count:np.empty([count,0],dtype='S'),dtype='S')
-        self._col_property = PstData._fixup_input(None,count=len(self._col),empty_creator=lambda count:np.empty([count,0],dtype='S'),dtype='S')
+            self._row = PstData._fixup_input(iid0,empty_creator=lambda ignore:np.empty([0,2],dtype='str'),dtype='str')
+            self._col = PstData._fixup_input(iid1,empty_creator=lambda ignore:np.empty([0,2],dtype='str'),dtype='str')
+        self._row_property = PstData._fixup_input(None,count=len(self._row),empty_creator=lambda count:np.empty([count,0],dtype='str'),dtype='str')
+        self._col_property = PstData._fixup_input(None,count=len(self._col),empty_creator=lambda count:np.empty([count,0],dtype='str'),dtype='str')
         self._val = PstData._fixup_input_val(val,row_count=len(self._row),col_count=len(self._col),empty_creator=lambda row_count,col_count:np.empty([row_count,col_count],dtype=np.float64))
 
         self._assert_iid0_iid1() 

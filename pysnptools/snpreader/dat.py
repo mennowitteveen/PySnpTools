@@ -49,7 +49,7 @@ class Dat(_OneShot,SnpReader):
         if len(row)==0 or len(col)==0:
             return SnpData(iid=row,sid=col,pos=col_property,val=np.empty([len(row),len(col)]))
         datfields = pd.read_csv(self.filename,delimiter = '\t',header=None,index_col=False)
-        if not np.array_equal(np.array([x.encode('ascii') for x in datfields[0]]), col) : raise Exception("Expect snp list in map file to exactly match snp list in dat file")
+        if not np.array_equal(np.array(datfields[0], col) : raise Exception("Expect snp list in map file to exactly match snp list in dat file")
         del datfields[0]
         del datfields[1]
         del datfields[2]
@@ -91,13 +91,13 @@ class Dat(_OneShot,SnpReader):
         filename = SnpReader._name_of_other_file(filename,remove_suffix="dat", add_suffix="dat")
 
         snpsarray = snpdata.val
-        with open(filename,"wb") as dat_filepointer:
+        with open(filename,"w") as dat_filepointer:
             for sid_index, sid in enumerate(snpdata.sid):
                 if sid_index % 1000 == 0:
                     logging.info("Writing snp # {0} to file '{1}'".format(sid_index, filename))
-                dat_filepointer.write(b"%s\tj\tn\t"%sid) #use "j" and "n" as the major and minor allele
+                dat_filepointer.write("%s\tj\tn\t"%sid) #use "j" and "n" as the major and minor allele
                 row = snpsarray[:,sid_index]
-                dat_filepointer.write(b"\t".join((str(i).encode('ascii') for i in row)) + b"\n")
+                dat_filepointer.write("\t".join((str(i) for i in row)) + "\n")
         logging.info("Done writing " + filename)
         return Dat(filename)
 

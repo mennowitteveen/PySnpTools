@@ -48,9 +48,9 @@ class Bed(SnpReader):
         self.count_A1 =count_A1
         self.skip_format_check = skip_format_check
         if iid is not None:
-            self._row = PstData._fixup_input(iid,empty_creator=lambda ignore:np.empty([0,2],dtype='S'),dtype='S')
+            self._row = PstData._fixup_input(iid,empty_creator=lambda ignore:np.empty([0,2],dtype='str'),dtype='str')
         if sid is not None:
-            self._col = PstData._fixup_input(sid,empty_creator=lambda ignore:np.empty([0],dtype='S'),dtype='S')
+            self._col = PstData._fixup_input(sid,empty_creator=lambda ignore:np.empty([0],dtype='str'),dtype='str')
         if pos is not None:
             self._col_property = PstData._fixup_input(pos,count=len(self._col),empty_creator=lambda count:np.array([[np.nan, np.nan, np.nan]]*count))
 

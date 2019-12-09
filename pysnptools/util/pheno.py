@@ -79,10 +79,10 @@ def loadPhen(filename, missing = '-9',famid='FID', sampid='ID'):
     missing = to_ascii(missing) # This is for Python2/3 compatibility
     famid = to_ascii(famid)
     sampid = to_ascii(sampid)
-    if missing == b'-9':
-        logging.warning("loadPhen is using default missing value of b'-9'.")
+    if missing == '-9':
+        logging.warning("loadPhen is using default missing value of '-9'.")
 
-    data = sp.loadtxt(filename, dtype='S', comments=None)
+    data = sp.loadtxt(filename, dtype='str', comments=None)
     if data[0,0] == sampid: #One column of ids - use the single id as both the family id and the iid
         header = data[0,1::].tolist()
         iid = data[1:,[0,0]]
@@ -98,7 +98,7 @@ def loadPhen(filename, missing = '-9',famid='FID', sampid='ID'):
 
     
     if missing is not None:
-        valsStr[valsStr==missing] = b"NaN"
+        valsStr[valsStr==missing] = "NaN"
     vals = sp.array(valsStr,dtype = 'float')
 
     ret = {

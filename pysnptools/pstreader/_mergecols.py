@@ -7,7 +7,7 @@ from six.moves import range
 
 
 #!!! would be be better to make a Transpose class that could term _mergerows into mergecols? Be sure special Bed code is still there.
-class _MergeCols(PstReader): #!!! move to PySnptools
+class _MergeCols(PstReader):
     def __init__(self,reader_list,cache_file=None,skip_check=False):
         super(_MergeCols, self).__init__()
         assert len(reader_list) > 0, "Expect at least one reader"
@@ -101,7 +101,7 @@ class _MergeCols(PstReader): #!!! move to PySnptools
     def _create_reader_and_sid_index_list(self,sid_index):
         result = []
         start = 0
-        for reader_index in range(len(self.reader_list)): #!!!cmk any xranges not caught by testing, require new tests
+        for reader_index in range(len(self.reader_list)):
             stop = start + self.sid_count_list[reader_index] #!!! shouldn't this be col_count (and check _mergerows, too)
             is_here = (sid_index >= start) * (sid_index < stop)
             if any(is_here):

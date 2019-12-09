@@ -10,6 +10,7 @@ class TestUtilTools(unittest.TestCase):
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
         import pysnptools.util.pheno
         import pysnptools.util.mapreduce1.examples
+        from pysnptools.util.mapreduce1 import map_reduce #Needed to work around thread local variable issue
         for mod in [
                     pysnptools.util.pheno,
                     pysnptools.util.mapreduce1.examples,

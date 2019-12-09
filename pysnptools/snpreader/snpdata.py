@@ -17,8 +17,8 @@ class SnpData(PstData,SnpReader):
     See :class:`.SnpReader` for details and examples.
 
     **Constructor:**
-        :Parameters: * **iid** (an array of strings) -- The :attr:`.SnpReader.iid` information
-                     * **sid** (an array of strings) -- The :attr:`.SnpReader.sid` information
+        :Parameters: * **iid** (an array of string pair) -- The :attr:`.SnpReader.iid` information. Will convert Unicode strings to bytes strings.
+                     * **sid** (an array of strings) -- The :attr:`.SnpReader.sid` information. Will convert Unicode strings to bytes strings.
                      * **val** (a 2-D array of floats) -- The SNP values
                      * **pos** (optional, an array of strings) -- The :attr:`.SnpReader.pos` information
                      * **name** (optional, string) -- Information to be display about the origin of this data

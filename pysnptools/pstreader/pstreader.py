@@ -63,15 +63,17 @@ class PstReader(object):
         various :class:`.KernelReader`     varies                             varies                 varies
         ================================== ================================== ====================== =====================
 
+        #!!!cmk read the new doc pages
+
             A :class:`.SnpReader` and :class:`.KernelReader` are each a kind of :class:`.PstReader`. They have some restrictions summarized here:
-        #!!!cmk are all these str's really ascii??? 
-        #!!!cmk need to warn that any unicode str in will be change to ascii string
             ================================== =============== ============ ============ ==================== ====================
             *Class*                            *val type*      *row type*   *col type*   *row_property type*  *col_property type*
-            :class:`.PstReader`                float           any          any          any                  any  
-            :class:`.SnpReader`                float           str,str      str          none                 float,float,float
-            :class:`.KernelReader`             float           str,str      str,str      none                 none
+            :class:`.PstReader`                float           any[*]       any[*]       any[*]               any[*]  
+            :class:`.SnpReader`                float           str,str[*]   str[*]       none                 float,float,float
+            :class:`.KernelReader`             float           str,str[*]   str,str[*]   none                 none
             ================================== =============== ============ ============ ==================== ====================
+            [*] Any Unicode strings are converted to bytes strings.
+
 
             For convenience, they allow additional ways to access rows and columns.
 
@@ -98,7 +100,7 @@ class PstReader(object):
 
         >>> from __future__ import print_function
         >>> from pysnptools.pstreader import PstHdf5
-        >>> from pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3
+        >>> from pysnptools.util import print2 # Makes bytes strings look the same under Python2/Python3
         >>> on_disk = PstHdf5('../examples/toydata.iidmajor.snp.hdf5') # PstHdf5 can load .pst.hdf5, .snp.hdf5, and kernel.hdf5
         >>> print2(on_disk.row[:3]) # print the first three rows
         [['per0' 'per0']
@@ -526,7 +528,7 @@ class PstReader(object):
     @staticmethod
     def _makekey(item):
         if isinstance(item,str):
-            return str.encode(item) # return the ascii version
+            return str.encode(item) # return the bytes string version
         if isinstance(item,(numbers.Integral,float)): #return quickly from known items
             return item
         if not isinstance(item,(tuple,list,set,dict)):

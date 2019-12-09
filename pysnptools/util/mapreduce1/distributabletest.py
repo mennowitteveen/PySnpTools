@@ -1,7 +1,9 @@
+from __future__ import absolute_import
+from __future__ import print_function
 from pysnptools.util.mapreduce1.runner import *
 import logging
 import unittest
-import cStringIO
+import io
 
 class DistributableTest(object) : #implements IDistributable
     '''
@@ -49,7 +51,7 @@ class DistributableTest(object) : #implements IDistributable
             yield lambda test=test : self.do_work(test)  # the 'test=test' is need to get around a strangeness in Python
 
     def reduce(self, result_sequence):
-        fp = cStringIO.StringIO()
+        fp = io.StringIO()
         error_count = 0
         failure_count = 0
         test_result_list = []
@@ -66,7 +68,7 @@ class DistributableTest(object) : #implements IDistributable
         s = fp.getvalue()
         fp.close()
 
-        print s
+        print(s) #!!!cmk this function needs a regression test
         return s
 
     @property

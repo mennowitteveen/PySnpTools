@@ -5,24 +5,13 @@ from contextlib import contextmanager
 import threading
 from six.moves import range
 
-dyn = threading.local()
-
-# from short example in http://stackoverflow.com/questions/2001138/how-to-create-dynamical-scoped-variables-in-python999
-@contextmanager
-def _dyn_vars(**new):
-    old = {}
-    for name, value in new.items():
-        old[name] = getattr(dyn, name, None)
-        setattr(dyn, name, value)
-    yield
-    for name, value in old.items():
-        setattr(dyn, name, value)
+def _identity(x):
+    return x
 
 class _MapReduce(object): #implements IDistributable
     """
     class to run distributed map using the idistributable back-end
     """
-
 
     def __init__(self, input_seq, mapper, nested, reducer, input_files=None, output_files=None, name=None):
 
@@ -61,11 +50,11 @@ class _MapReduce(object): #implements IDistributable
             input_arg = self.input_seq[i]
             if self.nested is None:
                 #logging.debug("\nrandom access executing %i" % i)
-                with _dyn_vars(is_in_nested=False):
+                with _MapReduce._dyn_vars(is_in_nested=False):
                     yield lambda i=i, input_arg=input_arg: self.dowork(i, input_arg)   # the 'i=i',etc is need to get around a strangeness in Python
             else:
                 assert self.nested is not None, "real assert"
-                with _dyn_vars(is_in_nested=True):
+                with _MapReduce._dyn_vars(is_in_nested=True):
                     dist = self.nested(input_arg)
                     yield dist
 
@@ -73,11 +62,11 @@ class _MapReduce(object): #implements IDistributable
         for i, input_arg in enumerate(self.input_seq):
             if self.nested is None:
                 #logging.debug("\nexecuting %i" % i)
-                with _dyn_vars(is_in_nested=False):
+                with _MapReduce._dyn_vars(is_in_nested=False):
                     yield lambda i=i, input_arg=input_arg: self.dowork(i, input_arg)  # the 'i=i',etc is need to get around a strangeness in Python
             else:
                 assert self.nested is not None, "real assert"
-                with _dyn_vars(is_in_nested=True):
+                with _MapReduce._dyn_vars(is_in_nested=True):
                     dist = self.nested(input_arg)
                     yield dist
 
@@ -119,11 +108,24 @@ class _MapReduce(object): #implements IDistributable
         for fn in self.output_files:
             copier.output(fn)
 
-def _identity(x):
-    return x
+
+    dyn = threading.local()
+
+    # from short example in http://stackoverflow.com/questions/2001138/how-to-create-dynamical-scoped-variables-in-python999
+    @staticmethod
+    @contextmanager
+    def _dyn_vars(**new):
+        old = {}
+        for name, value in new.items():
+            old[name] = getattr(_MapReduce.dyn, name, None)
+            setattr(_MapReduce.dyn, name, value)
+        yield
+        for name, value in old.items():
+            setattr(_MapReduce.dyn, name, value)
+
 
 def _is_in_nested():
-    return hasattr(dyn,"is_in_nested") and dyn.is_in_nested
+    return hasattr(_MapReduce.dyn,"is_in_nested") and _MapReduce.dyn.is_in_nested
     
 def map_reduce(input_seq, mapper=_identity, reducer=list, input_files=None, output_files=None, name=None, runner=None, nested=None):
     """
@@ -174,12 +176,11 @@ def map_reduce(input_seq, mapper=_identity, reducer=list, input_files=None, outp
 
         >>> from pysnptools.util.mapreduce1.runner import LocalMultiProc
         >>> from six.moves import range #!!!cmk add a comment that explains all of these
-        >>> #map_reduce(range(100), #!!!cmk
-        >>> #       mapper=lambda x: x*x,
-        >>> #       reducer=sum,
-        >>> #       runner=LocalMultiProc(4))
-
-        #328350
+        >>> map_reduce(range(100),
+        ...        mapper=lambda x: x*x,
+        ...        reducer=sum,
+        ...        runner=LocalMultiProc(4))
+        328350
 
     Compute it using named functions, again using four processors:
 
@@ -189,9 +190,8 @@ def map_reduce(input_seq, mapper=_identity, reducer=list, input_files=None, outp
         ...     def reducer1(sequence):
         ...        return sum(sequence)
         ...     return map_reduce(range(n),mapper=mapper1,reducer=reducer1,runner=runner)
-        >>> #holder1(100,LocalMultiProc(4)) #!!!cmk
-        
-        #328350
+        >>> holder1(100,LocalMultiProc(4))
+        328350
 
     """
 
@@ -208,5 +208,6 @@ def map_reduce(input_seq, mapper=_identity, reducer=list, input_files=None, outp
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
+    from pysnptools.util.mapreduce1 import map_reduce #Needed to work around thread local variable issue
     import doctest
     doctest.testmod()

@@ -192,7 +192,7 @@ class Standardizer(object):
             # avoid div by 0 when standardizing
             import scipy.stats as st
             maf_beta = st.beta.pdf(maf, betaA, betaB)
-            #print "BetaPdf[{0},{1},{2}]={3}".format(maf,betaA,betaB,maf_beta)
+            #print("BetaPdf[{0},{1},{2}]={3}".format(maf,betaA,betaB,maf_beta))
             snps -= snp_mean
             snps*=maf_beta
             snps[imissX] = 0.0

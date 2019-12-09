@@ -1,3 +1,5 @@
+#!!! Has not been tested
+
 import logging
 import os
 import numpy as np
@@ -81,7 +83,7 @@ class _MergeRows(PstReader): #!!!why does this start with _
     def _create_reader_and_iid_index_list(self,iid_index):
         result = []
         start = 0
-        for reader_index in xrange(len(self.reader_list)):
+        for reader_index in range(len(self.reader_list)): #!!!this needs test coverage
             stop = start + self._row_count_list[reader_index]
             is_here = (iid_index >= start) * (iid_index < stop)
             if any(is_here):

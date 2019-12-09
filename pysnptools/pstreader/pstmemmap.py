@@ -109,10 +109,10 @@ class PstMemMap(PstData):
         :type filename: string
 
         :param row_property: optional -- The additional :attr:`.PstReader.row_property` information associated with each row. Default: None
-        :type row_property: an array of anything
+        :type row_property: an array of anything, but Unicode strings are converted to bytes strings
 
         :param col_property: optional -- The additional :attr:`.PstReader.col_property` information associated with each col. Default: None
-        :type col_property: an array of anything
+        :type col_property: an array of anything, but Unicode strings are converted to bytes strings
 
         :param order: {'F' (default), 'C'}, optional -- Specify the order of the ndarray.
         :type order: string or None

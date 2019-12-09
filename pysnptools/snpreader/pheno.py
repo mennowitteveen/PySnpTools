@@ -66,7 +66,7 @@ class Pheno(_OneShot, SnpReader):
         elif self.filename is None:
             assert self._iid_if_none is not None, "If input is None then iid_if_none be given"
             pheno_input = {
-            'header':np.empty((0),dtype='str'),
+            'header':np.empty((0),dtype='S'),
             'vals': np.empty((len(self._iid_if_none), 0)),
             'iid': self._iid_if_none
             }
@@ -87,7 +87,7 @@ class Pheno(_OneShot, SnpReader):
             pheno_input['header'] = ["pheno{0}".format(i) for i in range(pheno_input['vals'].shape[1])]
 
         row = pheno_input['iid']
-        col = np.array(pheno_input['header'],dtype='str')
+        col = np.array(pheno_input['header'],dtype='S')
         col_property = np.empty((len(col),3))
         col_property.fill(np.nan)
         val = pheno_input['vals']

@@ -91,8 +91,8 @@ class SnpReader(PstReader):
 
     iids and sids:
 
-        Individuals are identified with an iid, which is a ndarray of two strings: a family ID and a case ID.
-        SNP locations are identified with an sid string in a ndarray. For example:
+        Individuals are identified with an iid, which is a ndarray of two bytes strings: a family ID and a case ID.
+        SNP locations are identified with an sid bytes string in a ndarray. For example:
 
         >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
         >>> print2(snp_on_disk.iid[:3]) # print the first three iids
@@ -320,15 +320,15 @@ class SnpReader(PstReader):
 
     @property
     def iid(self):
-        """A ndarray of the iids. Each iid is a ndarray of two strings (a family ID and a case ID) that identifies an individual.
+        """A ndarray of the iids. Each iid is a ndarray of two bytes strings (a family ID and a case ID) that identifies an individual.
 
-        :rtype: ndarray of strings with shape [:attr:`.iid_count`,2]
+        :rtype: ndarray of bytes strings with shape [:attr:`.iid_count`,2]
 
         This property (to the degree practical) reads only iid and sid data from the disk, not SNP value data. Moreover, the iid and sid data is read from file only once.
 
         :Example:
 
-        >>> from __future__ import print_function #!!!cmk explain this is a comment everywhere
+        >>> from __future__ import print_function
         >>> from pysnptools.snpreader import Bed
         >>> from pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3
         >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
@@ -351,9 +351,9 @@ class SnpReader(PstReader):
 
     @property
     def sid(self):
-        """A ndarray of the sids. Each sid is a string that identifies a SNP.
+        """A ndarray of the sids. Each sid is a bytes string that identifies a SNP.
 
-        :rtype: ndarray (length :attr:`.sid_count`) of strings
+        :rtype: ndarray (length :attr:`.sid_count`) of bytes strings
 
         This property (to the degree practical) reads only iid and sid data from the disk, not SNP value data. Moreover, the iid and sid data is read from file only once.
 
@@ -457,7 +457,7 @@ class SnpReader(PstReader):
         2.0
         >>> subsub_snpdata = subset_snpdata[:10,:].read(order='A',view_ok=True) # Create an in-memory subset of the subset with SNP values for the first ten iids. Share memory if practical.
         >>> import numpy as np
-        >>> # print np.may_share_memory(subset_snpdata.val, subsub_snpdata.val) # Do the two ndarray's share memory? They could. Currently they won't.       
+        >>> # print(np.may_share_memory(subset_snpdata.val, subsub_snpdata.val)) # Do the two ndarray's share memory? They could. Currently they won't.       
         """
         val = self._read(None, None, order, dtype, force_python_only, view_ok)
         from pysnptools.snpreader import SnpData
@@ -468,7 +468,7 @@ class SnpReader(PstReader):
         """Takes a list of iids and returns a list of index numbers
 
         :param list: list of iids
-        :type order: list of list of strings
+        :type order: list of list of strings (will be converted to bytes strings)
 
         :rtype: ndarray of int
         
@@ -487,7 +487,7 @@ class SnpReader(PstReader):
         """Takes a list of sids and returns a list of index numbers
 
         :param list: list of sids
-        :type list: list of strings
+        :type list: list of strings (will be converted to bytes strings)
 
         :rtype: ndarray of int
         

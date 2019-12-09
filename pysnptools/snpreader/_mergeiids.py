@@ -1,3 +1,5 @@
+#!! Has not been tested
+
 from pysnptools.snpreader import SnpReader
 from pysnptools.pstreader import _MergeRows
 

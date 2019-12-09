@@ -34,9 +34,8 @@ class LocalMultiProc(Runner):
         ...     def reducer1(sequence):
         ...        return sum(sequence)
         ...     return map_reduce(range(n),mapper=mapper1,reducer=reducer1,runner=runner)
-        >>> #holder1(100,LocalMultiProc(4))!!!cmk
-
-        #328350
+        >>> holder1(100,LocalMultiProc(4))
+        328350
 
     '''
 
@@ -100,6 +99,7 @@ class LocalMultiProc(Runner):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
+    from pysnptools.util.mapreduce1 import map_reduce #Needed to work around thread local variable issue
 
     import doctest
     doctest.testmod()

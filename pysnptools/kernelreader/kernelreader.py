@@ -152,10 +152,10 @@ class KernelReader(PstReader):
 
     @property
     def iid(self):
-        """A ndarray of the iids. Each iid is a ndarray of two strings (a family ID and a case ID) that identifies an individual.
+        """A ndarray of the iids. Each iid is a ndarray of two bytes strings (a family ID and a case ID) that identifies an individual.
         Assumes the kernel is square, so will throw an exception if the row iids are different from the column iids.
 
-        :rtype: ndarray (length :attr:`.iid_count`) of ndarray (length 2) of strings
+        :rtype: ndarray (length :attr:`.iid_count`) of ndarray (length 2) of bytes strings
 
         This property (to the degree practical) reads only iid and sid data from the disk, not kernel value data. Moreover, the iid data is read from file only once.
 
@@ -294,7 +294,7 @@ class KernelReader(PstReader):
         Assumes the kernel is square, so will throw an exception if the row iids are different from the column iids.
 
         :param list: list of iids
-        :type order: list of list of strings
+        :type order: list of list of strings (will convert to bytes strings)
 
         :rtype: ndarray of int
         

@@ -24,8 +24,8 @@ class PstData(PstReader):
         :Parameters: * **row** (an array of anything) -- The :attr:`.PstReader.row` information
                      * **col** (an array of anything) -- The :attr:`.PstReader.col` information
                      * **val** (a 2-D array of floats) -- The values
-                     * **row_property** (optional, an array of anything) -- Additional information associated with each row.
-                     * **col_property** (optional, an array of anything) -- Additional information associated with each col.
+                     * **row_property** (optional, an array of anything, but Unicode strings are converted to bytes strings) -- Additional information associated with each row.
+                     * **col_property** (optional, an array of anything, but Unicode strings are converted to bytes strings) -- Additional information associated with each col.
                      * **name** (optional, string) -- Information to be display about the origin of this data
                      * **copyinputs_function** (optional, function) -- *Used internally by optional clustering code*
 

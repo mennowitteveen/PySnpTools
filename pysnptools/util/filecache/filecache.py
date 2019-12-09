@@ -236,7 +236,7 @@ class FileCache(object):
         >>> file_cache.rmtree()
         >>> with file_cache.open_write('file1.txt') as local_filename:
         ...     with open(local_filename,'w') as fp:
-        ...         _= fp.write('Hello') #!!!cmk does this still work in Python 2? Is it readable in Python 3
+        ...         _= fp.write('Hello')
         >>> file_cache.load('file1.txt')
         'Hello'
 

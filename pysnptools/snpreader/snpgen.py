@@ -105,7 +105,7 @@ class SnpGen(SnpReader):
             stop = chrom_size_so_far * self._sid_count // chrom_total
             self._col_property[start:stop,0] = chrom_index+1
             self._col_property[start:stop,2] = np.arange(0,stop-start)*step+chrom_size_so_before+1
-            #print chrom_index+1,start,stop,self._sid_count#
+            #print(chrom_index+1,start,stop,self._sid_count)
             start = stop
 
     def copyinputs(self, copier):

@@ -10,7 +10,7 @@ def _snps_fixup(snp_input, iid_if_none=None,count_A1=None):
 
     if snp_input is None:
         assert iid_if_none is not None, "snp_input cannot be None here"
-        return SnpData(iid_if_none, sid=np.empty((0),dtype='str'), val=np.empty((len(iid_if_none),0)),pos=np.empty((0,3)),name="") #todo: make a static factory method on SnpData
+        return SnpData(iid_if_none, sid=np.empty((0),dtype='S'), val=np.empty((len(iid_if_none),0)),pos=np.empty((0,3)),name="") #todo: make a static factory method on SnpData
 
     return snp_input
 

@@ -75,7 +75,7 @@ class Dense(_OneShot,SnpReader):
         with open(self.filename,"rb") as fp:
             header = fp.readline()
             iid_string_list = header.strip().split()[1:]
-            iid = np.array([self.extract_iid_function(iid_string) for iid_string in iid_string_list],dtype="S")
+            iid = np.array([self.extract_iid_function(iid_string) for iid_string in iid_string_list],dtype='S')
             val_list = []
             zerofloat = float(b'0'[0]) #We do it this way for Python2/3 compatibility
             missing_char = b"?"[0] #We do it this way for Python2/3 compatibility
@@ -88,7 +88,7 @@ class Dense(_OneShot,SnpReader):
                 val_list = np.array([float(val)-zerofloat if val!=missing_char else np.NaN for val in rest])
                 val_list_list.append(val_list)
 
-        col = np.array([bim[1] for bim in bim_list],dtype='str')
+        col = np.array([bim[1] for bim in bim_list],dtype='S')
         col_property = np.array([[bim[0],bim[2],bim[3]] for bim in bim_list],dtype=np.float64)
 
         val = np.zeros((len(iid),len(col)))

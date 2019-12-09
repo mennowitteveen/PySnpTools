@@ -22,7 +22,7 @@
     <InterpreterArguments />
     <IsWindowsApplication>False</IsWindowsApplication>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
-    <InterpreterId>Global|ContinuumAnalytics|Anaconda27-64</InterpreterId>
+    <InterpreterId>CondaEnv|CondaEnv|py3</InterpreterId>
     <TestFramework>unittest</TestFramework>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

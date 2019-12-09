@@ -60,7 +60,7 @@ class IntRangeSet(object):
     Create the desired output by iterating through each contiguous range of integers
 
     >>> for start, stop in int_range_set.ranges():
-    ...    print "{0}\t{1}\t{2}".format(chr, start, stop-1)
+    ...    print "{0}\t{1}\t{2}".format(chr, start, stop-1) #!!!cmk this docstring isn't in the regression tests
     chr15   30818     32357
     chr15   32562     36714
 
@@ -296,7 +296,7 @@ class IntRangeSet(object):
         :Example:
 
         >>> for start,stop in IntRangeSet('0:10,100:200').ranges():
-        ...       print "start is {0}, stop is {1}".format(start,stop)
+        ...       print "start is {0}, stop is {1}".format(start,stop) #!!!cmk this docstring isn't in the regression tests
         start is 0, stop is 10
         start is 100, stop is 200
 
@@ -312,7 +312,7 @@ class IntRangeSet(object):
         :Example:
 
         >>> for i in IntRangeSet('1:4,10'):
-        ...    print i
+        ...    print i #!!!cmk this docstring isn't in the regression tests
         1
         2
         3
@@ -1594,7 +1594,7 @@ class IntRangeSet(object):
         :Example:
         
         >>> for i in reversed(IntRangeSet('1:4,10')):
-        ...     print i
+        ...     print i #!!!cmk this docstring isn't in the regression tests
         10
         3
         2

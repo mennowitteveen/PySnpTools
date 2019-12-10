@@ -82,7 +82,7 @@ class Bed(SnpReader):
 
     def _open_bed(self):
         bedfile = SnpReader._name_of_other_file(self.filename,"bed","bed")
-        self._filepointer = open(bedfile, "rb")
+        self._filepointer = open(bedfile, 'rb')
         mode = self._filepointer.read(2)
         if mode != b'l\x1b': raise Exception('No valid binary BED file')
         mode = self._filepointer.read(1) #\x01 = SNP major \x00 = individual major

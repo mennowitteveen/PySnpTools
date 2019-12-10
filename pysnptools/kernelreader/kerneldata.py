@@ -17,9 +17,9 @@ class KernelData(KernelReader,PstData):
     See :class:`.KernelReader` for details and examples.
 
     **Constructor:**
-        :Parameters: * **iid** (an array of string pairs) -- The :attr:`KernelReader.iid` information. Will convert Unicode strings to bytes strings.
-                     * **iid0** (an array of string pairs) -- The :attr:`KernelReader.iid0` information. Will convert Unicode strings to bytes strings.
-                     * **iid1** (an array of strings pairs) -- The :attr:`KernelReader.iid1` information. Will convert Unicode strings to bytes strings.
+        :Parameters: * **iid** (an array of string pairs) -- The :attr:`KernelReader.iid` information.
+                     * **iid0** (an array of string pairs) -- The :attr:`KernelReader.iid0` information.
+                     * **iid1** (an array of strings pairs) -- The :attr:`KernelReader.iid1` information.
                      * **val** (a 2-D array of floats) -- The SNP values
                      * **name** (optional, string) -- Information to be display about the origin of this data
 

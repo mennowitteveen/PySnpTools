@@ -72,13 +72,13 @@ class Dense(_OneShot,SnpReader):
     def _read_pstdata(self):
         bim_list = []
         val_list_list = []
-        with open(self.filename,"rb") as fp:
+        with open(self.filename,"r") as fp:
             header = fp.readline()
             iid_string_list = header.strip().split()[1:]
-            iid = np.array([self.extract_iid_function(iid_string) for iid_string in iid_string_list],dtype='S')
+            iid = np.array([self.extract_iid_function(iid_string) for iid_string in iid_string_list],dtype='str')
             val_list = []
-            zerofloat = float('0'[0]) #!!cmkWe do it this way for Python2/3 compatibility
-            missing_char = "?"[0] #!!!cmkWe do it this way for Python2/3 compatibility
+            zerofloat = float('0'[0])
+            missing_char = "?"[0]
             for line_index,line in enumerate(fp):
                 if line_index % 1000 == 0:
                     logging.info("reading sid and iid info from line {0} of file '{1}'".format(line_index, self.filename))
@@ -88,7 +88,7 @@ class Dense(_OneShot,SnpReader):
                 val_list = np.array([float(val)-zerofloat if val!=missing_char else np.NaN for val in rest])
                 val_list_list.append(val_list)
 
-        col = np.array([bim[1] for bim in bim_list],dtype='S')
+        col = np.array([bim[1] for bim in bim_list],dtype='str')
         col_property = np.array([[bim[0],bim[2],bim[3]] for bim in bim_list],dtype=np.float64)
 
         val = np.zeros((len(iid),len(col)))
@@ -134,7 +134,7 @@ class Dense(_OneShot,SnpReader):
                 pos = snpdata.pos[sid_index]
                 if sid_index % 1000 == 0:
                     logging.info("Writing snp # {0} to file '{1}'".format(sid_index, filename))
-                filepointer.write("%s\t" % join_sid_pos_function(sid,pos)) #Must use % formating because Python3 doesn't support .format on bytes
+                filepointer.write("%s\t" % join_sid_pos_function(sid,pos))
                 row = snpsarray[:,sid_index]
                 filepointer.write("".join((str(int(i)) if i==i else "?" for i in row)) + "\n")
         logging.info("Done writing " + filename)

@@ -29,6 +29,22 @@ class SnpHdf5(PstHdf5,SnpReader):
     def __init__(self, *args, **kwargs):
         super(SnpHdf5, self).__init__(*args, **kwargs)
 
+
+    @property
+    def row(self):
+        self._run_once()
+        if self._row.dtype.type is not np.str:
+            self._row = np.array(self._row,dtype='str')
+        return self._row
+
+    @property
+    def col(self):
+        self._run_once()
+        if self._col.dtype.type is not np.str:
+            self._col = np.array(self._col,dtype='str')
+        return self._col
+
+
     @staticmethod
     def write(filename, snpdata, hdf5_dtype=None, sid_major=True):
         """Writes a :class:`SnpData` to SnpHdf5 format and return a the :class:`.SnpHdf5`.

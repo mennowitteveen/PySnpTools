@@ -88,7 +88,7 @@ def snp_gen(fst, dfr, iid_count, sid_count, maf_low=.05, maf_high=.5, seed=0, si
         iid2 = [["2",str(iid_index)] for iid_index in range(len(snp_list[4]))]                  #children with parents in any pop
         iid = np.array(iid0+iid1+iid2,dtype=str).reshape(-1,2)
 
-    sid = np.array(["snp_{0}".format(sid_index) for sid_index in range(val.shape[1])],dtype='S')
+    sid = np.array(["snp_{0}".format(sid_index) for sid_index in range(val.shape[1])],dtype='str')
 
     if chr_count is None:
         chr_count = len(sid)

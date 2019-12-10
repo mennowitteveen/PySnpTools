@@ -5,7 +5,6 @@
 
 import logging
 import sys
-from pysnptools.util import to_ascii
 import scipy as sp
 
 def loadOnePhen(filename,  i_pheno = 0, missing = '-9', vectorize = False):
@@ -32,7 +31,7 @@ def loadOnePhen(filename,  i_pheno = 0, missing = '-9', vectorize = False):
     * 'vals'   : [N*1] array of phenotype-data,
     * 'iid'    : [N*2] array of family IDs and case IDs
     '''
-    missing = to_ascii(missing)
+    missing = missing
     allColumns = loadPhen(filename, missing)
     i_present=allColumns['vals'][:,i_pheno]==allColumns['vals'][:,i_pheno]
     valsvector = allColumns['vals'][i_present,i_pheno]
@@ -76,9 +75,6 @@ def loadPhen(filename, missing = '-9',famid='FID', sampid='ID'):
     * 'vals'   : [N*1] array of phenotype-data,
     * 'iid'    : [N*2] array of family IDs and case IDs
     '''
-    missing = to_ascii(missing) # This is for Python2/3 compatibility
-    famid = to_ascii(famid)
-    sampid = to_ascii(sampid)
     if missing == '-9':
         logging.warning("loadPhen is using default missing value of '-9'.")
 

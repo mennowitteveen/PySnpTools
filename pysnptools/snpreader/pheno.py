@@ -9,7 +9,6 @@ import pysnptools.util.pheno as pstpheno
 import pysnptools.util as pstutil
 from pysnptools.pstreader import _OneShot
 from six.moves import range
-from pysnptools.util import to_ascii
 
 class Pheno(_OneShot, SnpReader):
     '''
@@ -57,7 +56,7 @@ class Pheno(_OneShot, SnpReader):
 
         self.filename = input
         self._iid_if_none = iid_if_none
-        self.missing = to_ascii(missing) # This is for Python2/3 compatibility
+        self.missing = missing
 
     def _read_pstdata(self):
         #LATER switch it, so the main code is here rather than in loadPhen
@@ -66,7 +65,7 @@ class Pheno(_OneShot, SnpReader):
         elif self.filename is None:
             assert self._iid_if_none is not None, "If input is None then iid_if_none be given"
             pheno_input = {
-            'header':np.empty((0),dtype='S'),
+            'header':np.empty((0),dtype='str'),
             'vals': np.empty((len(self._iid_if_none), 0)),
             'iid': self._iid_if_none
             }
@@ -87,7 +86,7 @@ class Pheno(_OneShot, SnpReader):
             pheno_input['header'] = ["pheno{0}".format(i) for i in range(pheno_input['vals'].shape[1])]
 
         row = pheno_input['iid']
-        col = np.array(pheno_input['header'],dtype='S')
+        col = np.array(pheno_input['header'],dtype='str')
         col_property = np.empty((len(col),3))
         col_property.fill(np.nan)
         val = pheno_input['vals']
@@ -115,8 +114,6 @@ class Pheno(_OneShot, SnpReader):
         >>> Pheno.write("tempdir/toydata10.txt",snpdata)       # Write data in Pheno format
         Pheno('tempdir/toydata10.txt')
         """
-        #!!!cmk missing = to_ascii(missing) # This is for Python2/3 compatibility
-        #!!!cmk sep = to_ascii(sep)
         with open(filename, 'w') as f:
             for i in range(snpdata.iid_count):
                 tmpstr = snpdata.iid[i,0] + sep + snpdata.iid[i,1]
@@ -125,7 +122,7 @@ class Pheno(_OneShot, SnpReader):
                     if np.isnan(v):
                         vs = missing
                     else:
-                        vs = str(v)#!!!cmk.encode('ascii')
+                        vs = str(v)
                     tmpstr += sep + vs
                 tmpstr += "\n"
                 f.write(tmpstr)

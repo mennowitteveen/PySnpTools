@@ -8,6 +8,7 @@ import doctest
 import six
 from six.moves import range
 import numbers
+import io
 
 class IntRangeSet(object):
     '''
@@ -525,11 +526,7 @@ class IntRangeSet(object):
         if self.isempty:
             return ""
 
-        try:
-            from cStringIO import StringIO
-        except:
-            from io import StringIO
-        fp = StringIO()
+        fp = io.StringIO()
 
         for index, (start, stop) in enumerate(self.ranges()):
             if index > 0:

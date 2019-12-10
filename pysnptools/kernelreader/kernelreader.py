@@ -98,7 +98,7 @@ class KernelReader(PstReader):
         >>> from pysnptools.standardizer import Unit
         >>> import pysnptools.util as pstutil
         >>> from __future__ import print_function
-        >>> from pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3
+        
         >>> kerneldata = Bed('../examples/toydata.bed',count_A1=False).read_kernel(Unit())     # Create a kernel from the data in the Bed file
         >>> pstutil.create_directory_if_necessary("tempdir/toydata.kernel.npz")
         >>> KernelNpz.write("tempdir/toydata.kernel.npz",kerneldata)      # Write data in KernelNpz format
@@ -109,11 +109,11 @@ class KernelReader(PstReader):
         Individual are identified with an iid, which is a ndarray of two strings: a family ID and a case ID. For example:
 
         >>> kernel_on_disk = KernelNpz('../examples/toydata.kernel.npz')
-        >>> print2(kernel_on_disk.iid[:3]) # print the first three iids
+        >>> print(kernel_on_disk.iid[:3]) # print the first three iids
         [['per0' 'per0']
          ['per1' 'per1']
          ['per2' 'per2']]
-        >>> print2(kernel_on_disk.iid_to_index([[b'per2',b'per2'],[b'per1',b'per1']])) #Find the indexes for two iids.
+        >>> print(kernel_on_disk.iid_to_index([['per2','per2'],['per1','per1']])) #Find the indexes for two iids.
         [2 1]
 
     :class:`.KernelReader` is a kind of :class:`.PstReader`. See the documentation for :class:`.PstReader` to learn about:
@@ -152,10 +152,10 @@ class KernelReader(PstReader):
 
     @property
     def iid(self):
-        """A ndarray of the iids. Each iid is a ndarray of two bytes strings (a family ID and a case ID) that identifies an individual.
+        """A ndarray of the iids. Each iid is a ndarray of two strings (a family ID and a case ID) that identifies an individual.
         Assumes the kernel is square, so will throw an exception if the row iids are different from the column iids.
 
-        :rtype: ndarray (length :attr:`.iid_count`) of ndarray (length 2) of bytes strings
+        :rtype: ndarray (length :attr:`.iid_count`) of ndarray (length 2) of strings
 
         This property (to the degree practical) reads only iid and sid data from the disk, not kernel value data. Moreover, the iid data is read from file only once.
 
@@ -163,9 +163,8 @@ class KernelReader(PstReader):
 
         >>> from pysnptools.kernelreader import KernelNpz
         >>> from __future__ import print_function
-        >>> from pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3
         >>> kernel_on_disk = KernelNpz('../examples/toydata.kernel.npz')
-        >>> print2(kernel_on_disk.iid[:3]) # print the first three iids
+        >>> print(kernel_on_disk.iid[:3]) # print the first three iids
         [['per0' 'per0']
          ['per1' 'per1']
          ['per2' 'per2']]
@@ -294,7 +293,7 @@ class KernelReader(PstReader):
         Assumes the kernel is square, so will throw an exception if the row iids are different from the column iids.
 
         :param list: list of iids
-        :type order: list of list of strings (will convert to bytes strings)
+        :type order: list of list of strings
 
         :rtype: ndarray of int
         
@@ -304,7 +303,7 @@ class KernelReader(PstReader):
 
         >>> from pysnptools.kernelreader import KernelNpz
         >>> kernel_on_disk = KernelNpz('../examples/toydata.kernel.npz')
-        >>> print(kernel_on_disk.iid_to_index([[b'per2',b'per2'],[b'per1',b'per1']])) #Find the indexes for two iids.
+        >>> print(kernel_on_disk.iid_to_index([['per2','per2'],['per1','per1']])) #Find the indexes for two iids.
         [2 1]
         """
         assert self.iid0 is self.iid1, "When 'iid_to_index' is used, iid0 must be the same as iid1"
@@ -317,7 +316,8 @@ class KernelReader(PstReader):
 
     @staticmethod
     def _makekey(item):
-        return tuple(to_ascii(i) for i in item) #!!!is adding decode() right?
+        return tuple(str(i) for i in item)
+
 
     def iid1_to_index(self, list):
         """Takes a list of column iids and returns a list of index numbers. See :attr:`iid_to_index`

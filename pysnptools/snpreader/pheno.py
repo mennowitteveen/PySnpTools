@@ -115,9 +115,9 @@ class Pheno(_OneShot, SnpReader):
         >>> Pheno.write("tempdir/toydata10.txt",snpdata)       # Write data in Pheno format
         Pheno('tempdir/toydata10.txt')
         """
-        missing = to_ascii(missing) # This is for Python2/3 compatibility
-        sep = to_ascii(sep)
-        with open(filename, 'wb') as f:
+        #!!!cmk missing = to_ascii(missing) # This is for Python2/3 compatibility
+        #!!!cmk sep = to_ascii(sep)
+        with open(filename, 'w') as f:
             for i in range(snpdata.iid_count):
                 tmpstr = snpdata.iid[i,0] + sep + snpdata.iid[i,1]
                 for m in range(snpdata.sid_count):
@@ -125,9 +125,9 @@ class Pheno(_OneShot, SnpReader):
                     if np.isnan(v):
                         vs = missing
                     else:
-                        vs = str(v).encode('ascii')
+                        vs = str(v)#!!!cmk.encode('ascii')
                     tmpstr += sep + vs
-                tmpstr += b"\n"
+                tmpstr += "\n"
                 f.write(tmpstr)
         return Pheno(filename,missing=missing)
 

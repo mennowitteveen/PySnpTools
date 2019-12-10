@@ -51,7 +51,7 @@ class Identity(KernelReader):
         else:
             self._row1 = self._empty
 
-    _empty = np.empty([0,2],dtype='S')
+    _empty = np.empty([0,2],dtype='str')
 
     def __repr__(self): 
         return "{0}({1}x{2})".format(self.__class__.__name__, self.row_count, self.col_count)

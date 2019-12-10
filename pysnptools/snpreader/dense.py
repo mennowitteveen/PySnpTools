@@ -77,8 +77,8 @@ class Dense(_OneShot,SnpReader):
             iid_string_list = header.strip().split()[1:]
             iid = np.array([self.extract_iid_function(iid_string) for iid_string in iid_string_list],dtype='S')
             val_list = []
-            zerofloat = float(b'0'[0]) #We do it this way for Python2/3 compatibility
-            missing_char = b"?"[0] #We do it this way for Python2/3 compatibility
+            zerofloat = float('0'[0]) #!!cmkWe do it this way for Python2/3 compatibility
+            missing_char = "?"[0] #!!!cmkWe do it this way for Python2/3 compatibility
             for line_index,line in enumerate(fp):
                 if line_index % 1000 == 0:
                     logging.info("reading sid and iid info from line {0} of file '{1}'".format(line_index, self.filename))
@@ -126,17 +126,17 @@ class Dense(_OneShot,SnpReader):
             filename, snpdata = snpdata, filename 
 
         snpsarray = snpdata.val
-        with open(filename,"wb") as filepointer:
-            filepointer.write(b"var\t")
-            filepointer.write(b"\t".join((join_iid_function(iid_pair) for iid_pair in snpdata.iid)) + b"\n")
+        with open(filename,"w") as filepointer:
+            filepointer.write("var\t")
+            filepointer.write("\t".join((join_iid_function(iid_pair) for iid_pair in snpdata.iid)) + "\n")
 
             for sid_index, sid in enumerate(snpdata.sid):
                 pos = snpdata.pos[sid_index]
                 if sid_index % 1000 == 0:
                     logging.info("Writing snp # {0} to file '{1}'".format(sid_index, filename))
-                filepointer.write(b"%s\t" % join_sid_pos_function(sid,pos)) #Must use % formating because Python3 doesn't support .format on bytes
+                filepointer.write("%s\t" % join_sid_pos_function(sid,pos)) #Must use % formating because Python3 doesn't support .format on bytes
                 row = snpsarray[:,sid_index]
-                filepointer.write(b"".join((str(int(i)).encode('ascii') if i==i else b"?" for i in row)) + b"\n")
+                filepointer.write("".join((str(int(i)) if i==i else "?" for i in row)) + "\n")
         logging.info("Done writing " + filename)
         return Dense(filename)
 

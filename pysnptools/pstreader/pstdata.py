@@ -9,10 +9,10 @@ from pysnptools.pstreader import PstReader
 
 
 def _default_empty_creator(count):
-    return np.empty([count or 0, 0],dtype='S')
+    return np.empty([count or 0, 0],dtype='str')
 
 def _default_empty_creator_val(row_count,col_count):
-    return np.empty([row_count,col_count],dtype='S')
+    return np.empty([row_count,col_count],dtype='str')
 
 class PstData(PstReader):
     '''A :class:`.PstReader` for holding values in-memory, along with related row and col information.
@@ -132,7 +132,7 @@ class PstData(PstReader):
         elif not isinstance(input,np.ndarray):
             input = np.array(input,dtype=dtype)
         elif input.dtype.char == 'U': #This avoids a Future warning from using np.issubtype
-            input = np.array(input,dtype='S')
+            input = np.array(input,dtype='str') #!!!cmk 
 
         assert count is None or len(input) == count, "Expect length of {0} for input {1}".format(count,input)
 

@@ -10,7 +10,6 @@ import time
 import pysnptools.util as pstutil
 from pysnptools.pstreader import PstReader
 from pysnptools.kernelstandardizer import DiagKtoN
-from pysnptools.util import to_ascii
 
 class KernelReader(PstReader):
     """A KernelReader is one of three things:
@@ -335,8 +334,8 @@ class KernelReader(PstReader):
         return _KernelSubset(self, iid0_indexer, iid1_indexer)
 
     def _assert_iid0_iid1(self):
-        assert self._row.dtype.type is np.string_ and len(self._row.shape)==2 and self._row.shape[1]==2, "iid0 should be dtype S, have two dimensions, and the second dimension should be size 2"
-        assert self._col.dtype.type is np.string_ and len(self._col.shape)==2 and self._col.shape[1]==2, "iid1 should be dtype S, have two dimensions, and the second dimension should be size 2"
+        assert self._row.dtype.type is np.str_ and len(self._row.shape)==2 and self._row.shape[1]==2, "iid0 should be dtype str, have two dimensions, and the second dimension should be size 2"
+        assert self._col.dtype.type is np.str_ and len(self._col.shape)==2 and self._col.shape[1]==2, "iid1 should be dtype str have two dimensions, and the second dimension should be size 2"
 
     def _read_with_standardizing(self, to_kerneldata, snp_standardizer=None, kernel_standardizer=DiagKtoN(), return_trained=False):
         assert to_kerneldata, "When working with non-SnpKernels, to_kerneldata must be 'True'"

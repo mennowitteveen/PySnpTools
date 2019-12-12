@@ -68,7 +68,7 @@ class DistributableTest(object) : #implements IDistributable
         s = fp.getvalue()
         fp.close()
 
-        print(s) #!!!cmk this function needs a regression test
+        print(s)
         return s
 
     @property

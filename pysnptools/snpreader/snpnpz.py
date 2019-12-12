@@ -30,6 +30,21 @@ class SnpNpz(PstNpz,SnpReader):
     def __init__(self, *args, **kwargs):
         super(SnpNpz, self).__init__(*args, **kwargs)
 
+    @property
+    def row(self):
+        self._run_once()
+        if self._row.dtype.type is not np.str_:
+            self._row = np.array(self._row,dtype='str')
+        return self._row
+
+    @property
+    def col(self):
+        self._run_once()
+        if self._col.dtype.type is not np.str_:
+            self._col = np.array(self._col,dtype='str')
+        return self._col
+
+
     @staticmethod
     def write(filename, snpdata):
         """Writes a :class:`SnpData` to SnpNpz format and returns the :class:`.SnpNpz`
@@ -47,7 +62,10 @@ class SnpNpz(PstNpz,SnpReader):
         >>> SnpNpz.write("tempdir/toydata10.snp.npz",snpdata)          # Write data in SnpNpz format
         SnpNpz('tempdir/toydata10.snp.npz')
         """
-        PstNpz.write(filename,snpdata)
+        row_ascii = np.array(snpdata.row,dtype='S') #!!! would be nice to avoid this copy when not needed.
+        col_ascii = np.array(snpdata.col,dtype='S') #!!! would be nice to avoid this copy when not needed.
+        np.savez(filename, row=row_ascii, col=col_ascii, row_property=snpdata.row_property, col_property=snpdata.col_property,val=snpdata.val)
+        logging.debug("Done writing " + filename) #!!!cmk is this function tested?
         return SnpNpz(filename)
 
 if __name__ == "__main__":

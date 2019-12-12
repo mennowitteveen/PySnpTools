@@ -53,8 +53,6 @@ def intersect_apply(data_list, sort_by_dataset=True, intersect_before_standardiz
     >>> from pysnptools.kernelreader import SnpKernel
     >>> from pysnptools.standardizer import Unit
     >>> from __future__ import print_function
-    >>> from pysnptools.util import print2 # Makes ascii strings look the same under Python2/Python3
-    >>>
     >>> #Create five datasets in different formats
     >>> ignore_in = None
     >>> kernel_in = SnpKernel(Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False),Unit()) # Create a kernel from a Bed file
@@ -65,20 +63,20 @@ def intersect_apply(data_list, sort_by_dataset=True, intersect_before_standardiz
     >>> # Create five new datasets with consistent iids
     >>> ignore_out, kernel_out, pheno_out, cov_as_tuple_out = intersect_apply([ignore_in, kernel_in, pheno_in, cov_as_tuple_in])
     >>> # Print the first five iids from each dataset
-    >>> print2((ignore_out, kernel_out.iid[:5], pheno_out.iid[:5], cov_as_tuple_out[1][:5]))
-    (None, array([['POP1', '0'],
-           ['POP1', '12'],
-           ['POP1', '44'],
-           ['POP1', '58'],
-           ['POP1', '65']], dtype='|S4'), array([['POP1', '0'],
-           ['POP1', '12'],
-           ['POP1', '44'],
-           ['POP1', '58'],
-           ['POP1', '65']], dtype='|S19'), array([['POP1', '0'],
-           ['POP1', '12'],
-           ['POP1', '44'],
-           ['POP1', '58'],
-           ['POP1', '65']], dtype='|S12'))
+    >>> print(ignore_out, kernel_out.iid[:5], pheno_out.iid[:5], cov_as_tuple_out[1][:5])
+    None [['POP1' '0']
+     ['POP1' '12']
+     ['POP1' '44']
+     ['POP1' '58']
+     ['POP1' '65']] [['POP1' '0']
+     ['POP1' '12']
+     ['POP1' '44']
+     ['POP1' '58']
+     ['POP1' '65']] [['POP1' '0']
+     ['POP1' '12']
+     ['POP1' '44']
+     ['POP1' '58']
+     ['POP1' '65']]
     """
 
     iid_list = []
@@ -445,7 +443,7 @@ def weighted_simple_linear_regression(xs, ys, weights):
     intercept = ymean - xmean * slope
     return slope, intercept, xmean, ymean
 
-def cmkprint2(arg):
+def print2(arg):
     '''
     Make printing under Python3 look the same as under Python2.
     '''

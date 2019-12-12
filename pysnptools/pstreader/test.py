@@ -5,7 +5,7 @@ import doctest
 import unittest
 import os.path
 import time
-from pysnptools.pstreader import PstData, PstNpz, PstHdf5
+from pysnptools.pstreader import PstData, PstNpz, PstHdf5, PstMemMap
 from pysnptools.util import create_directory_if_necessary
 from pysnptools.kernelreader.test import _fortesting_JustCheckExists
 from six.moves import range
@@ -47,11 +47,13 @@ class TestPstReader(unittest.TestCase):
         def _twotwod_int(c):
             return [[i,i] for i in range(c)]
         def _twotwod_str(c):
-            return [[str(i).encode('ascii'),b"hello"] for i in range(c)]#!!!cmk what's going on here?
+            return [[str(i).encode('ascii'),b"hello"] for i in range(c)]
+        #def _twotwod_U(c):
+        #    return [[str(i).encode('UTF-8'),u"hello"] for i in range(c)]
         def _none(c):
             return None
         def _zero(c):
-            return np.empty([c,0])
+            return np.empty([c,0],dtype='S')
         #===================================
         #    Staring main function
         #===================================
@@ -63,14 +65,14 @@ class TestPstReader(unittest.TestCase):
         for row_count in [5,2,1,0]:
             for col_count in [4,2,1,0]:
                 val = np.random.normal(.5,2,size=(row_count,col_count))
-                for row_or_col_gen in [_oned_int,_oned_str,_twooned_int,_twooned_str,_twotwod_int,_twotwod_str]:
+                for row_or_col_gen in [_oned_int,_oned_str,_twooned_int,_twooned_str,_twotwod_int,_twotwod_str]:#!!!,_twotwod_U can't roundtrop Unicode in hdf5
                     row = row_or_col_gen(row_count)
                     col = row_or_col_gen(col_count)
-                    for prop_gen in [_oned_int,_oned_str,_twooned_int,_twooned_str,_twotwod_int,_twotwod_str,_none,_zero]:
+                    for prop_gen in [_none,_oned_str,_oned_int,_twooned_int,_twooned_str,_twotwod_int,_twotwod_str,_zero]: #!!!_twotwod_U can't round trip Unicode because Hdf5 doesn't like it.
                         row_prop = prop_gen(row_count)
                         col_prop = prop_gen(col_count)
                         pstdata = PstData(row,col,val,row_prop,col_prop,str(i))
-                        for the_class,suffix in [(PstNpz,"npz"),(PstHdf5,"hdf5")]:
+                        for the_class,suffix in [(PstHdf5,"hdf5"),(PstNpz,"npz"),(PstMemMap,"memmap")]:
                             filename = output_template.format(i,suffix)
                             logging.info(filename)
                             i += 1

@@ -44,7 +44,6 @@ class SnpHdf5(PstHdf5,SnpReader):
             self._col = np.array(self._col,dtype='str')
         return self._col
 
-
     @staticmethod
     def write(filename, snpdata, hdf5_dtype=None, sid_major=True):
         """Writes a :class:`SnpData` to SnpHdf5 format and return a the :class:`.SnpHdf5`.

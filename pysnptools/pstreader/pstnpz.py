@@ -124,10 +124,6 @@ class PstNpz(PstReader):
         >>> PstNpz.write("tempdir/tiny.pst.npz",data1)          # Write data in PstNz format
         PstNpz('tempdir/tiny.pst.npz')
         """
-        if isinstance(filename,PstData) and isinstance(pstdata,str): #For backwards compatibility, reverse inputs if necessary
-            warnings.warn("write statement should have filename before data to write", DeprecationWarning)
-            filename, pstdata = pstdata, filename 
-
         np.savez(filename, row=pstdata.row, col=pstdata.col, row_property=pstdata.row_property, col_property=pstdata.col_property,val=pstdata.val)
         logging.debug("Done writing " + filename)
         return PstNpz(filename)

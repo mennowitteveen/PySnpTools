@@ -252,10 +252,6 @@ class PstHdf5(PstReader):
         PstHdf5('tempdir/tiny.pst.hdf5')
         """
 
-        if isinstance(filename,PstData) and isinstance(pstdata,str): #For backwards compatibility, reverse inputs if necessary
-            warnings.warn("write statement should have filename before data to write", DeprecationWarning)
-            filename, pstdata = pstdata, filename 
-
         assert hdf5_dtype is None or (isinstance(hdf5_dtype, str) and len(hdf5_dtype) == 2 and  hdf5_dtype[0] == 'f'), "Expect hdf5_dtype to be None or to start with 'f', e.g. 'f4' for single, 'f8' for double"
 
         val = (pstdata.val.T) if col_major else pstdata.val

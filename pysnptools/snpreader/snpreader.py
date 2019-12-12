@@ -627,8 +627,8 @@ class SnpReader(PstReader):
         raise NotImplementedError
 
     def _assert_iid_sid_pos(self):
-        assert self._row.dtype.type is np.string_ and len(self._row.shape)==2 and self._row.shape[1]==2, "iid should be dtype S, have two dimensions, and the second dimension should be size 2"
-        assert self._col.dtype.type is np.string_ and len(self._col.shape)==1, "sid should be of dtype of S and one dimensional"
+        assert self._row.dtype.type is np.str_ and len(self._row.shape)==2 and self._row.shape[1]==2, "iid should be dtype str, have two dimensions, and the second dimension should be size 2"
+        assert self._col.dtype.type is np.str_ and len(self._col.shape)==1, "sid should be of dtype of str and one dimensional"
 
     @staticmethod
     def _name_of_other_file(filename,remove_suffix,add_suffix):
@@ -642,7 +642,7 @@ class SnpReader(PstReader):
 
         with open(famfile,"w") as fam_filepointer:
             for iid_row in snpdata.iid:
-                fam_filepointer.write("{0} {1} 0 0 0 0\n".format(iid_row[0],iid_row[1])) #cmkMust use % formating because Python3 doesn't support .format on bytes
+                fam_filepointer.write("{0} {1} 0 0 0 0\n".format(iid_row[0],iid_row[1]))
 
 
     @staticmethod
@@ -652,7 +652,7 @@ class SnpReader(PstReader):
         with open(mapfile,"w") as map_filepointer:
             for sid_index, sid in enumerate(snpdata.sid):
                 posrow = snpdata.pos[sid_index]
-                map_filepointer.write("%r\t%s\t%r\t%r\tA\tC\n" % (posrow[0], sid, posrow[1], posrow[2])) #cmkMust use % formating because Python3 doesn't support .format on bytes
+                map_filepointer.write("%r\t%s\t%r\t%r\tA\tC\n" % (posrow[0], sid, posrow[1], posrow[2]))
 
 
     @staticmethod

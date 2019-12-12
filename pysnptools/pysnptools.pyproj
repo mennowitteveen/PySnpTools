@@ -110,8 +110,8 @@
     </Compile>
     <Compile Include="standardizer\unit.py" />
     <Compile Include="standardizer\__init__.py" />
-    <Compile Include=",,.py" />
     <Compile Include="snpreader\distributedbed.py" />
+    <Compile Include="test.py" />
     <Compile Include="util\filecache\filecache.py" />
     <Compile Include="util\filecache\localcache.py" />
     <Compile Include="util\filecache\peertopeer.py" />

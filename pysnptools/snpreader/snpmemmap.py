@@ -141,7 +141,14 @@ class SnpMemMap(PstMemMap,SnpData):
         >>> SnpMemMap.write("tempdir/tiny.snp.memmap",data1)      # Write data1 in SnpMemMap format
         SnpMemMap('tempdir/tiny.snp.memmap')
         """
-        PstMemMap.write(filename,snpdata)
+
+        #We write iid and sid in ascii for compatibility between Python 2 and Python 3 formats.
+        row_ascii = np.array(snpdata.row,dtype='S') #!!!avoid this copy when not needed
+        col_ascii = np.array(snpdata.col,dtype='S') #!!!avoid this copy when not needed
+        self = PstMemMap.empty(row_ascii, col_ascii, filename, row_property=snpdata.row_property, col_property=snpdata.col_property,order=PstMemMap._order(snpdata),dtype=snpdata.val.dtype)
+        self.val[:,:] = snpdata.val
+        self.flush()
+        logging.debug("Done writing " + filename)
         return SnpMemMap(filename)
 
 
@@ -149,7 +156,10 @@ class SnpMemMap(PstMemMap,SnpData):
     def _run_once(self):
             if (self._ran_once):
                 return
-            row,col,val,row_property,col_property = self._run_once_inner()
+            row_ascii,col_ascii,val,row_property,col_property = self._run_once_inner()
+            row = np.array(row_ascii,dtype='str') #!!!avoid this copy when not needed
+            col = np.array(col_ascii,dtype='str') #!!!avoid this copy when not needed
+
             SnpData.__init__(self,iid=row,sid=col,val=val,pos=col_property,name="np.memmap('{0}')".format(self._filename))
 
 class TestSnpMemMap(unittest.TestCase):     

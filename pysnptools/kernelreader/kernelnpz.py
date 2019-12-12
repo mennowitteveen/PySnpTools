@@ -1,3 +1,4 @@
+import numpy as np
 from pysnptools.pstreader import PstNpz
 from pysnptools.kernelreader import KernelReader
 import logging
@@ -28,6 +29,29 @@ class KernelNpz(KernelReader,PstNpz):
 
     def __init__(self,*args, **kwargs):
         super(KernelNpz, self).__init__(*args, **kwargs)
+
+    @property
+    def row(self):
+        self._run_once()
+        if self._row.dtype.type is not np.str_:
+            if self._row is not self._col:
+                self._row = np.array(self._row,dtype='str')
+            else:
+                self._row = np.array(self._row,dtype='str')
+                self._col = self._row
+        return self._row
+
+    @property
+    def col(self):
+        self._run_once()
+        if self._col.dtype.type is not np.str_:
+            if self._row is not self._col:
+                self._col = np.array(self._col,dtype='str')
+            else:
+                self._row = np.array(self._row,dtype='str')
+                self._col = self._row
+        return self._col
+
 
     @staticmethod
     def write(filename, kerneldata):

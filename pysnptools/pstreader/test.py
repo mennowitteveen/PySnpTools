@@ -86,8 +86,8 @@ class TestPstReader(unittest.TestCase):
                                 assert np.array_equal(readdata.val,expected.val)
                                 assert np.array_equal(readdata.row,expected.row)
                                 assert np.array_equal(readdata.col,expected.col)
-                                assert np.array_equal(readdata.row_property,expected.row_property)
-                                assert np.array_equal(readdata.col_property,expected.col_property)
+                                assert np.array_equal(readdata.row_property,expected.row_property) or (readdata.row_property.shape[1]==0 and expected.row_property.shape[1]==0)
+                                assert np.array_equal(readdata.col_property,expected.col_property) or (readdata.col_property.shape[1]==0 and expected.col_property.shape[1]==0)
                             try:
                                 os.remove(filename)
                             except:

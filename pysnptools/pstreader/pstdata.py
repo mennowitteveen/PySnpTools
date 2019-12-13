@@ -31,7 +31,7 @@ class PstData(PstReader):
 
         :Example:
 
-        >>> from __future__ import print_function
+        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.pstreader import PstData
         >>> pstdata = PstData(row=[['fam0','iid0'],['fam0','iid1']], col=['snp334','snp349','snp921'], val=[[0.,2.,0.],[0.,1.,2.]])
         >>> print(pstdata.val[0,1], pstdata.row_count, pstdata.col_count)
@@ -127,7 +127,7 @@ class PstData(PstReader):
 
     @staticmethod
     def _fixup_input(input,count=None, empty_creator=_default_empty_creator,dtype=None):
-        if input is None:
+        if input is None or len(input)==0:
             input = empty_creator(count)
         elif not isinstance(input,np.ndarray):
             input = np.array(input,dtype=dtype)

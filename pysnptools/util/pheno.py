@@ -79,6 +79,7 @@ def loadPhen(filename, missing = '-9',famid='FID', sampid='ID'):
         logging.warning("loadPhen is using default missing value of '-9'.")
 
     data = sp.loadtxt(filename, dtype='str', comments=None)
+    data = data.reshape(-1,data.shape[-1]) #Turns 1-d row into 2-d
     if data[0,0] == sampid: #One column of ids - use the single id as both the family id and the iid
         header = data[0,1::].tolist()
         iid = data[1:,[0,0]]

@@ -49,10 +49,10 @@ def intersect_apply(data_list, sort_by_dataset=True, intersect_before_standardiz
 
     :Example:
 
+    >>> from __future__ import print_function #Python 2 & 3 compatibility
     >>> from pysnptools.snpreader import Bed, Pheno
     >>> from pysnptools.kernelreader import SnpKernel
     >>> from pysnptools.standardizer import Unit
-    >>> from __future__ import print_function
     >>> #Create five datasets in different formats
     >>> ignore_in = None
     >>> kernel_in = SnpKernel(Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False),Unit()) # Create a kernel from a Bed file
@@ -250,9 +250,9 @@ def sub_matrix(val, row_index_list, col_index_list, order='A', dtype=sp.float64)
 
     :rtype: ndarray
 
+    >>> from __future__ import print_function #Python 2 & 3 compatibility
     >>> import numpy as np
     >>> import pysnptools.util as pstutil
-    >>> from __future__ import print_function
     >>> np.random.seed(0) # set seed so that results are deterministic
     >>> matrix = np.random.rand(12,7) # create a 12 x 7 ndarray
     >>> submatrix = pstutil.sub_matrix(matrix,[0,2,11],[6,5,4,3,2,1,0])
@@ -425,7 +425,7 @@ def weighted_simple_linear_regression(xs, ys, weights):
     :type weights: ndarray
     :rtype: slope, intercept, xmean, ymean
 
-    >>> from __future__ import print_function
+    >>> from __future__ import print_function #Python 2 & 3 compatibility
     >>> xs = np.array([53.8329911,57.49486653,60.07392197,60.21081451])
     >>> ys = np.array([103.664086,89.80645161,83.86888046,90.54141176])
     >>> weights = np.array([2.340862423,4.982888433,0.17522245,0.098562628])
@@ -450,14 +450,6 @@ def print2(arg):
     s = str(arg).replace("b'","'")
     print(s)
 
-def cmkto_ascii(s):
-    '''
-    This is for Python2/3 compatibility
-    '''
-    if s is None or sys.version_info < (3,0,0) or isinstance(s,bytes):
-        return s
-    return s.encode('ascii') 
-
 def format_delta(delta_seconds):
     '''
     Format a time delta nicely.
@@ -466,7 +458,7 @@ def format_delta(delta_seconds):
     :type delta_seconds: number
     :rtype: string
 
-    >>> from __future__ import print_function
+    >>> from __future__ import print_function #Python 2 & 3 compatibility
     >>> from pysnptools.util import format_delta
     >>> print(format_delta(86403.5))
     1 day, 0:00:03.500000

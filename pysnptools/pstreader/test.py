@@ -55,7 +55,7 @@ class TestPstReader(unittest.TestCase):
         def _zero(c):
             return np.empty([c,0],dtype='S')
         #===================================
-        #    Staring main function
+        #    Starting main function
         #===================================
         logging.info("starting 'test_writes'")
         np.random.seed(0)

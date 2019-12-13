@@ -24,7 +24,7 @@ class SnpGen(SnpReader):
         
         :Example:
 
-        >>> from __future__ import print_function
+        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.snpreader import SnpGen
         >>> #Prepare to generate data for 1000 individuals and 1,000,000 SNPs
         >>> snp_gen = SnpGen(seed=332,iid_count=1000,sid_count=1000*1000)

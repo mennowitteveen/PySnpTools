@@ -22,7 +22,7 @@ class Local(Runner):
 
         >>> from pysnptools.util.mapreduce1 import map_reduce
         >>> from pysnptools.util.mapreduce1.runner import Local
-        >>> from six.moves import range
+        >>> from six.moves import range #Python 2 & 3 compatibility
         >>> def holder1(n,runner):
         ...     def mapper1(x):
         ...         return x*x

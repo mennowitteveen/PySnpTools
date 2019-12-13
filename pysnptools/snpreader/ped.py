@@ -52,6 +52,7 @@ class Ped(_OneShot,SnpReader):
     def _read_pstdata(self):
         col, col_property = SnpReader._read_map_or_bim(self.filename,remove_suffix="ped", add_suffix="map")
         ped = np.loadtxt(self.filename, dtype='str', comments=None)
+        ped = ped.reshape(-1,ped.shape[-1]) #Turns 1-d row into 2-d
         row = ped[:,0:2]
         snpsstr = ped[:,6::]
         inan=snpsstr==self.missing
@@ -59,7 +60,8 @@ class Ped(_OneShot,SnpReader):
         for i in range(snpsstr.shape[1]//2):
             snps[inan[:,2*i],i]=np.nan
             vals=snpsstr[~inan[:,2*i],2*i:2*(i+1)]
-            snps[~inan[:,2*i],i]+=(vals==vals[0,0]).sum(1)
+            if vals.shape[0] > 0:
+                snps[~inan[:,2*i],i]+=(vals==vals[0,0]).sum(1)
         snpdata = SnpData(iid=row,sid=col,pos=col_property,val=snps)
         return snpdata
 

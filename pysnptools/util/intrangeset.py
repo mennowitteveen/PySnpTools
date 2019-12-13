@@ -53,15 +53,15 @@ class IntRangeSet(object):
     Zip together the two lists to create an iterable of exon_start,exon_stop tuples. Then
     'set subtract' all these ranges from int_range_set
 
-    >>> from itertools import izip
-    >>> int_range_set -= izip(exon_starts,exon_stops)
+    >>> from __future__ import absolute_import #Python 2 & 3 compatibility
+    >>> int_range_set -= zip(exon_starts,exon_stops)
     >>> print(int_range_set) # See what it looks like
     IntRangeSet('30818:32358,32562:36715')
 
     Create the desired output by iterating through each contiguous range of integers
 
     >>> for start, stop in int_range_set.ranges():
-    ...    print "{0}\t{1}\t{2}".format(chr, start, stop-1) #!!!cmk this docstring isn't in the regression tests
+    ...    print("{0}\t{1}\t{2}".format(chr, start, stop-1))
     chr15   30818     32357
     chr15   32562     36714
 
@@ -297,7 +297,7 @@ class IntRangeSet(object):
         :Example:
 
         >>> for start,stop in IntRangeSet('0:10,100:200').ranges():
-        ...       print "start is {0}, stop is {1}".format(start,stop) #!!!cmk this docstring isn't in the regression tests
+        ...       print("start is {0}, stop is {1}".format(start,stop))
         start is 0, stop is 10
         start is 100, stop is 200
 
@@ -313,7 +313,7 @@ class IntRangeSet(object):
         :Example:
 
         >>> for i in IntRangeSet('1:4,10'):
-        ...    print i #!!!cmk this docstring isn't in the regression tests
+        ...    print(i)
         1
         2
         3
@@ -1591,7 +1591,7 @@ class IntRangeSet(object):
         :Example:
         
         >>> for i in reversed(IntRangeSet('1:4,10')):
-        ...     print i #!!!cmk this docstring isn't in the regression tests
+        ...     print(i)
         10
         3
         2
@@ -1810,7 +1810,8 @@ class TestIntRangeSet(unittest.TestCase):
         IntRangeSet._test()
 
     def test_doc(self):
-        doctest.testmod()
+        import pysnptools.util.intrangeset
+        doctest.testmod(pysnptools.util.intrangeset)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

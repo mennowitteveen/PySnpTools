@@ -82,7 +82,9 @@ class Dense(_OneShot,SnpReader):
             for line_index,line in enumerate(fp):
                 if line_index % 1000 == 0:
                     logging.info("reading sid and iid info from line {0} of file '{1}'".format(line_index, self.filename))
-                sid_string, rest = line.strip().split()
+                sid_string_rest = line.strip().split()
+                sid_string = sid_string_rest[0]
+                rest = [] if len(sid_string_rest)==1 else sid_string_rest[1]
                 assert len(rest) == len(iid)
                 bim_list.append(self.extract_sid_pos_function(sid_string))
                 val_list = np.array([float(val)-zerofloat if val!=missing_char else np.NaN for val in rest])

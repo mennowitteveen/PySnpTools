@@ -93,10 +93,10 @@ class KernelReader(PstReader):
         Some of the classes, such as :class:`.KernelNpz`, also provide a static :meth:`KernelNpz.write` method for writing :class:`.KernelData`.
 
         >>> # create a kernel from a Bed file and write to KernelNpz format
+        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.snpreader import Bed
         >>> from pysnptools.standardizer import Unit
         >>> import pysnptools.util as pstutil
-        >>> from __future__ import print_function
         
         >>> kerneldata = Bed('../examples/toydata.bed',count_A1=False).read_kernel(Unit())     # Create a kernel from the data in the Bed file
         >>> pstutil.create_directory_if_necessary("tempdir/toydata.kernel.npz")
@@ -161,7 +161,7 @@ class KernelReader(PstReader):
         :Example:
 
         >>> from pysnptools.kernelreader import KernelNpz
-        >>> from __future__ import print_function
+        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> kernel_on_disk = KernelNpz('../examples/toydata.kernel.npz')
         >>> print(kernel_on_disk.iid[:3]) # print the first three iids
         [['per0' 'per0']

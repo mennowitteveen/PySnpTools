@@ -65,7 +65,7 @@ class SnpNpz(PstNpz,SnpReader):
         row_ascii = np.array(snpdata.row,dtype='S') #!!! would be nice to avoid this copy when not needed.
         col_ascii = np.array(snpdata.col,dtype='S') #!!! would be nice to avoid this copy when not needed.
         np.savez(filename, row=row_ascii, col=col_ascii, row_property=snpdata.row_property, col_property=snpdata.col_property,val=snpdata.val)
-        logging.debug("Done writing " + filename) #!!!cmk is this function tested?
+        logging.debug("Done writing " + filename)
         return SnpNpz(filename)
 
 if __name__ == "__main__":

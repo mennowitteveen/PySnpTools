@@ -6,7 +6,7 @@ import logging
 import doctest
 
 from pysnptools.snpreader import Bed
-from pysnptools.snpreader import SnpHdf5
+from pysnptools.snpreader import SnpHdf5, SnpNpz
 from pysnptools.snpreader import Dat
 from pysnptools.snpreader import Dense
 from pysnptools.snpreader import Pheno
@@ -134,6 +134,44 @@ class TestPySnpTools(unittest.TestCase):
         snpreader1 = SnpHdf5(self.currentFolder + "/examples/toydata.snpmajor.snp.hdf5")[::2,:]
         snpreader2 = Bed(self.currentFolder + "/examples/toydata",count_A1=False)[::2,:]
         self.assertTrue(np.allclose(snpreader1.read().val, snpreader2.read().val, rtol=1e-05, atol=1e-05))
+
+    def test_standardize_hdf5(self):
+        snpreader = SnpHdf5(self.currentFolder + "/examples/toydata.iidmajor.snp.hdf5")
+        self.standardize(snpreader)
+
+
+    def test_c_reader_npz(self):
+        snpreader = SnpNpz(self.currentFolder + "/examples/toydata10.snp.npz")
+        snpdata = snpreader.read(order='F',force_python_only=False)
+        snp_c = snpdata.val
+        
+        self.assertEqual(np.float64, snp_c.dtype)
+        self.assertTrue(np.allclose(self.snps[:,:10], snp_c, rtol=1e-05, atol=1e-05))
+
+        snpreader1 = SnpNpz(self.currentFolder + "/examples/toydata10.snp.npz")
+        snpreader2 = Bed(self.currentFolder + "/examples/toydata",count_A1=False)[:,:10]
+        self.assertTrue(np.allclose(snpreader1.read().val, snpreader2.read().val, rtol=1e-05, atol=1e-05))
+
+
+        snpdata.val[1,2] = np.NaN # Inject a missing value to test writing and reading missing values
+        output = "tempdir/snpreader/toydata10.snp.npz"
+        create_directory_if_necessary(output)
+        SnpNpz.write(output,snpdata)
+        snpdata2 = SnpNpz(output).read()
+        np.testing.assert_array_almost_equal(snpdata.val, snpdata2.val, decimal=10)
+
+        snpdata3 = snpdata[:,0:0].read() #create snpdata with no sids
+        output = "tempdir/snpreader/toydata0.snp.npz"
+        SnpNpz.write(output,snpdata3)
+        snpdata4 = SnpNpz(output).read()
+        assert snpdata3 == snpdata4
+
+
+
+    def test_standardize_npz(self):
+        snpreader = SnpNpz(self.currentFolder + "/examples/toydata10.snp.npz")
+        self.standardize(snpreader)
+
 
     def test_c_reader_dat(self):
         snpreader = Dat(self.currentFolder + "/examples/toydata.dat")[:,::100]
@@ -288,10 +326,6 @@ class TestPySnpTools(unittest.TestCase):
 
     def test_standardize_bed(self):
         snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
-        self.standardize(snpreader)
-
-    def test_standardize_hdf5(self):
-        snpreader = SnpHdf5(self.currentFolder + "/examples/toydata.iidmajor.snp.hdf5")
         self.standardize(snpreader)
 
     def test_standardize_dat(self):
@@ -528,6 +562,79 @@ class TestPySnpTools(unittest.TestCase):
             SNPs_floatCx = snpreader3[:,snp_index_list].read(order="C", dtype=dtype, force_python_only=False).val
             GCx = Unit().standardize(SNPs_floatCx)
             self.assertTrue(np.allclose(GFx, G2x, rtol=1e-05, atol=1e-05))
+
+
+    def test_writes(self):
+        from pysnptools.snpreader import SnpData, SnpHdf5, SnpNpz, SnpMemMap
+
+        the_class_and_suffix_list = [(Dense,"dense"),(Bed,"bed"),(Dat,"dat"),(Ped,"ped"),(Pheno,"pheno"),
+                                    (SnpHdf5,"hdf5"),(SnpNpz,"npz"),(SnpMemMap,"memmap")]
+        cant_do_col_prop_none_set = {"dense"}
+        cant_do_row_count_zero_set = {'dense','ped','pheno'}
+        can_swap_0_2_set = {'ped'}
+        can_change_col_names_set = {'pheno'}
+        ignore_fam_id_set = {'dense'}
+        ignore_pos_set = {'dense'}
+
+        
+        #===================================
+        #    Starting main function
+        #===================================
+        logging.info("starting 'test_writes'")
+        np.random.seed(0)
+        output_template = "tempdir/snpreader/writes.{0}.{1}"
+        create_directory_if_necessary(output_template.format(0,"npz"))
+        i = 0
+        for row_count in [0,5,2,1]:
+            for col_count in [4,2,1,0]:
+                val = np.random.random_integers(low=0,high=3,size=(row_count,col_count))*1.0
+                val[val==3]=np.NaN
+                row = [('0','0'),('1','1'),('2','2'),('3','3'),('4','4')][:row_count]
+                col = ['s0','s1','s2','s3','s4'][:col_count]
+                for is_none in [True,False]:
+                    row_prop = None
+                    col_prop = None if is_none else [(x,x,x) for x in range(5)][:col_count]
+                    snpdata = SnpData(row,col,val,row_prop,col_prop,str(i))
+                    for the_class,suffix in the_class_and_suffix_list:
+                        if col_prop is None and suffix in cant_do_col_prop_none_set:
+                            continue
+                        if row_count==0 and suffix in cant_do_row_count_zero_set:
+                            continue
+                        filename = output_template.format(i,suffix)
+                        logging.info(filename)
+                        i += 1
+                        the_class.write(filename,snpdata)
+                        for subsetter in [None, sp.s_[::2,::3]]:
+                            reader = the_class(filename)
+                            _fortesting_JustCheckExists().input(reader)
+                            subreader = reader if subsetter is None else reader[subsetter[0],subsetter[1]]
+                            readdata = subreader.read(order='C')
+                            expected = snpdata if subsetter is None else snpdata[subsetter[0],subsetter[1]].read()
+                            if not suffix in can_swap_0_2_set:
+                                assert np.allclose(readdata.val,expected.val,equal_nan=True)
+                            else:
+                                for col_index in range(readdata.col_count):
+                                    assert (np.allclose(readdata.val[:,col_index],expected.val[:,col_index],equal_nan=True) or
+                                            np.allclose(readdata.val[:,col_index]*-1+2,expected.val[:,col_index],equal_nan=True))
+                            if not suffix in ignore_fam_id_set:
+                                assert np.array_equal(readdata.row,expected.row)
+                            else:
+                                assert np.array_equal(readdata.row[:,1],expected.row[:,1])
+                            if not suffix in can_change_col_names_set:
+                                assert np.array_equal(readdata.col,expected.col)
+                            else:
+                                assert readdata.col_count==expected.col_count
+                            assert np.array_equal(readdata.row_property,expected.row_property) or (readdata.row_property.shape[1]==0 and expected.row_property.shape[1]==0)
+
+                            if not suffix in ignore_pos_set:
+                                assert np.allclose(readdata.col_property,expected.col_property,equal_nan=True) or (readdata.col_property.shape[1]==0 and expected.col_property.shape[1]==0)
+                            else:
+                                assert len(readdata.col_property)==len(expected.col_property)
+                        try:
+                            os.remove(filename)
+                        except:
+                            pass
+        logging.info("done with 'test_writes'")
 
 class NaNCNCTestCases(unittest.TestCase):
     def __init__(self, iid_index_list, snp_index_list, standardizer, snpreader, dtype, order, force_python_only, reference_snps, reference_dtype):

@@ -14,7 +14,9 @@ class TestUtilTools(unittest.TestCase):
         for mod in [
                     pysnptools.util.pheno,
                     pysnptools.util.mapreduce1.examples,
-                    pysnptools.util.mapreduce1.mapreduce
+                    pysnptools.util.mapreduce1.mapreduce,
+                    pysnptools.util.mapreduce1.runner.localmultiproc,
+                    pysnptools.util.mapreduce1.runner.localmultithread,
                     ]:
             result = doctest.testmod(mod,optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)
             assert result.failed == 0, "failed doc test: " + __file__

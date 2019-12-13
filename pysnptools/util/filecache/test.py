@@ -222,7 +222,7 @@ def getTestSuite():
     
     test_suite = unittest.TestSuite([])
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestFileCache))
-    #test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDocStrings))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDocStrings))
     return test_suite
 
 if __name__ == '__main__':

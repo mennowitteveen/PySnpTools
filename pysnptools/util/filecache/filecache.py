@@ -44,7 +44,7 @@ class FileCache(object):
 
         Copy back from remote storage (if needed) and then read SNP data from local file.
 
-        >>> from __future__ import print_function
+        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> with file_cache.open_read('r123.100x500.dense.txt') as local_filename:
         ...     dense2 = Dense(local_filename)
         ...     print(dense2[:3,:3].read().val) #Read 1st 3 individuals and SNPs
@@ -363,7 +363,7 @@ class FileCache(object):
         if head == ".":
             return None
         if os.name == 'nt':
-            #assert os.path.splitunc(head)[0] == "", "Should not be UNC" !!!cmk put something like this back in
+            assert len(head)<2 or not head.startswith(r'\\'), "Should not be UNC"
             assert os.path.splitdrive(head)[0] == "", "Should have a drive"
         assert head != ".." and not head.startswith("../"), "Should not leave parent"
         assert not head.startswith("/"), "Should not start with '/'"

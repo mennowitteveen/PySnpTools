@@ -63,17 +63,14 @@ class PstReader(object):
         various :class:`.KernelReader`     varies                             varies                 varies
         ================================== ================================== ====================== =====================
 
-        #!!!cmk read the new doc pages
-
+        
             A :class:`.SnpReader` and :class:`.KernelReader` are each a kind of :class:`.PstReader`. They have some restrictions summarized here:
             ================================== =============== ============ ============ ==================== ====================
             *Class*                            *val type*      *row type*   *col type*   *row_property type*  *col_property type*
-            :class:`.PstReader`                float           any[*]       any[*]       any[*]               any[*]  
-            :class:`.SnpReader`                float           str,str[*]   str[*]       none                 float,float,float
-            :class:`.KernelReader`             float           str,str[*]   str,str[*]   none                 none
+            :class:`.PstReader`                float           any          any          any                  any     
+            :class:`.SnpReader`                float           str,str      str          none                 float,float,float
+            :class:`.KernelReader`             float           str,str      str,str      none                 none
             ================================== =============== ============ ============ ==================== ====================
-            [*] Any Unicode strings are converted to bytes strings.
-
 
             For convenience, they allow additional ways to access rows and columns.
 
@@ -98,9 +95,9 @@ class PstReader(object):
 
         Example:
 
-        >>> from __future__ import print_function
+        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.pstreader import PstHdf5
-        >>> from pysnptools.util import print2
+        >>> from pysnptools.util import print2 #print bytes strings and Unicode strings the same
         >>> on_disk = PstHdf5('../examples/toydata.iidmajor.snp.hdf5') # PstHdf5 can load .pst.hdf5, .snp.hdf5, and kernel.hdf5
         >>> print2(on_disk.row[:3]) # print the first three rows
         [['per0' 'per0']

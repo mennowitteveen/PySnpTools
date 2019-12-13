@@ -10,6 +10,7 @@ import doctest
 from six.moves import range
 #from pysnptools.snpreader import SnpData, Bed, SnpNpz -- putting this here would cause a loop
 
+
 def snp_gen(fst, dfr, iid_count, sid_count, maf_low=.05, maf_high=.5, seed=0, sibs_per_family=10, freq_pop_0=.5, chr_count=None, label_with_pop=False):
     """Generates a random :class:`.SnpData`
 
@@ -49,7 +50,7 @@ def snp_gen(fst, dfr, iid_count, sid_count, maf_low=.05, maf_high=.5, seed=0, si
 
     :Example:
 
-    >>> from __future__ import print_function
+    >>> from __future__ import print_function #Python 2 & 3 compatibility
     >>> snpdata = snp_gen(fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=6)
     >>> print(int(snpdata.iid_count), int(snpdata.sid_count)) #because of rounding got 190 individuals
     190 20
@@ -291,9 +292,10 @@ class TestGenerate(unittest.TestCase):
 
     def test_doc_test(self):
         import sys
+        import pysnptools.util.generate
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__))+"/..")
-        result = doctest.testmod()
+        result = doctest.testmod(pysnptools.util.generate)
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
@@ -305,6 +307,7 @@ def getTestSuite():
     
     test_suite = unittest.TestSuite([])
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestGenerate))
+
     return test_suite
 
 

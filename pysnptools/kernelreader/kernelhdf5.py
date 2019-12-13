@@ -25,7 +25,6 @@ class KernelHdf5(PstHdf5,KernelReader):
     **Methods beyond** :class:`.KernelReader`
 
     '''
-    #!!!cmk kernel hdf5, npz and snp hdf5, npz and memmap should all use ascii on disk in even Python3
     def __init__(self,*args, **kwargs):
         super(KernelHdf5, self).__init__(*args, **kwargs)
 

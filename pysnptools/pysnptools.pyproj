@@ -22,7 +22,7 @@
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <IsWindowsApplication>False</IsWindowsApplication>
     <CommandLineArguments>sdist bdist_wininst upload</CommandLineArguments>
-    <InterpreterId>CondaEnv|CondaEnv|py3</InterpreterId>
+    <InterpreterId>Global|ContinuumAnalytics|Anaconda27-64</InterpreterId>
     <TestFramework>unittest</TestFramework>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />

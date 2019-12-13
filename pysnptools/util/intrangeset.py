@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+import sys
 import re
 from bisect import bisect_left
 import logging
@@ -526,7 +527,7 @@ class IntRangeSet(object):
         if self.isempty:
             return ""
 
-        fp = io.StringIO()
+        fp = io.StringIO() if sys.version_info >= (3,0) else io.BytesIO()
 
         for index, (start, stop) in enumerate(self.ranges()):
             if index > 0:

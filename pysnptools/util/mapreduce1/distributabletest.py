@@ -51,7 +51,7 @@ class DistributableTest(object) : #implements IDistributable
             yield lambda test=test : self.do_work(test)  # the 'test=test' is need to get around a strangeness in Python
 
     def reduce(self, result_sequence):
-        fp = io.StringIO()
+        fp = io.StringIO() if sys.version_info >= (3,0) else io.BytesIO()
         error_count = 0
         failure_count = 0
         test_result_list = []

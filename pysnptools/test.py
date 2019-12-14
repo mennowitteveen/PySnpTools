@@ -881,10 +881,9 @@ def getTestSuite():
 
     test_suite = unittest.TestSuite([])
 
-    #!!!cmk
-    #!!!cmkOK test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestFileCache))
-    #!!!cmkOK test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestUtilTools))
-    #!!!cmkOK test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestIntRangeSet))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestFileCache))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestUtilTools))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestIntRangeSet))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestSnpDocStrings))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPstDocStrings))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestKrDocStrings))
@@ -903,5 +902,5 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
     suites = getTestSuite()
-    r = unittest.TextTestRunner(failfast=True) #!!!cmk
+    r = unittest.TextTestRunner(failfast=False)
     r.run(suites)

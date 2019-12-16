@@ -373,13 +373,15 @@ class SubGen:
 
     def __iter__(self):
         return self
-        
-    def next(self):
+
+    def __next__(self):
         if self.count > 0:
             self.count -= 1
             return next(self.gen)
         else:
             raise StopIteration()
+
+    next = __next__ # for Python 2
 
 
 from pysnptools.util.mapreduce1.runner.runner import Runner

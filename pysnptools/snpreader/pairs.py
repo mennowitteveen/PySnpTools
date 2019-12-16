@@ -78,9 +78,9 @@ class _Pairs(SnpReader):
         n0 = self.snpreader0.col_count
         if self.snpreader1 is None:
             if self._include_single_times_single:
-                return (n0*n0+n0)/2
+                return (n0*n0+n0)//2
             else:
-                return (n0*n0-n0)/2
+                return (n0*n0-n0)//2
         else:
             return n0*self.snpreader1.col_count
 
@@ -213,7 +213,7 @@ if __name__ == "__main__":
     #runner=None
     runner = LocalMultiProc(1,just_one_process=False)
 
-    part_pair_count = (part_count*part_count+part_count)/2
+    part_pair_count = (part_count*part_count+part_count)//2
     part_pair_index = -1
     print("part_pair_count={0:,}".format(part_pair_count))
 

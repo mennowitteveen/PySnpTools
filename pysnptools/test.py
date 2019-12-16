@@ -64,7 +64,7 @@ class TestPySnpTools(unittest.TestCase):
         iid_index_list = sorted(range(N_original - 1,0,-2))
 
         snp_index_list = sorted(range(S - 1,0,-2))#!!
-        #snp_index_list = range(S/2)
+        #snp_index_list = range(S//2)
 
         snpreader_hdf5 = snpreader_hdf5[iid_index_list,:]
         snpDataHdf5 = snpreader_hdf5[:,snp_index_list].read()

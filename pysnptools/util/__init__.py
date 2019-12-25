@@ -227,6 +227,7 @@ def intersect_ids(idslist):
     inan = sp.isnan(indarr).any(1)                  #find any rows that contain at least one Nan
     indarr=indarr[~inan]                            #keep only rows that are not NaN
     indarr=sp.array(indarr,dtype='int')             #convert to int so can slice 
+    indarr = indarr[indarr[:,0].argsort()]          #make sure Py2 and Py3 return results in the same arbitrary order
     return indarr   
 
 
@@ -505,6 +506,7 @@ def log_in_place(name, level, time_lambda=time.time, show_log_diffs=False):
     last_len = [0] #We have to make this an array so that the value is by reference.
     last_message_hash = [None]
     line_end = '\r'
+    every_printed = [False] #Don't print the final newline if nothing is ever printed
 
     def writer(message):
         if logging.getLogger().level > level:
@@ -519,14 +521,15 @@ def log_in_place(name, level, time_lambda=time.time, show_log_diffs=False):
                 sys.stdout.write('\n')
             last_message_hash[0] = message_hash
         sys.stdout.write("{0}{1}\r".format(s," "*max(0,last_len[0]-len(s)))) #Pad with spaces to cover up previous message
+        every_printed[0] = True
         last_len[0] = len(s)
-        
 
     yield writer
 
     if logging.getLogger().level > level:
         return
-    sys.stdout.write("\n")                
+    if every_printed[0]:
+        sys.stdout.write("\n")                
 
 @contextmanager
 def _file_transfer_reporter(name,size=None,updater=None):

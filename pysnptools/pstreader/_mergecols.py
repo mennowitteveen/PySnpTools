@@ -20,8 +20,17 @@ class _MergeCols(PstReader):
             #!!!add warning if cache_file doesn't end with .npz
             if not os.path.exists(cache_file):
                 self._run_once()
-                np.savez(cache_file, _row=self._row, _row_property=self._row_property, _col=self._col, _col_property=self._col_property,sid_count_list=self.sid_count_list)
+                self._savez(cache_file)
             else:
+                self._load(cache_file)
+
+        def _savez(self, cache_file):
+            np.savez(cache_file,
+                     _row=self._row, _row_property=self._row_property,
+                     _col=self._col, _col_property=self._col_property,
+                     sid_count_list=self.sid_count_list)
+
+        def _load(self,cache_file):
                 with np.load(cache_file,allow_pickle=True) as data:
                     self._col = data['_col']
                     self._col_property = data['_col_property']
@@ -29,9 +38,6 @@ class _MergeCols(PstReader):
                     assert ('_row' in data) == ('_row_property' in data)
                     self._row = data['_row']
                     self._row_property = data['_row_property']
-                self._has_run_once = True
-
-
 
     def _run_once(self):
         if hasattr(self,'_has_run_once'):

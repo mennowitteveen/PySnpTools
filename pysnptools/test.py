@@ -22,6 +22,7 @@ from pysnptools.pstreader.test import TestPstDocStrings
 from pysnptools.pstreader.pstmemmap import TestPstMemMap
 from pysnptools.snpreader.snpmemmap import TestSnpMemMap
 from pysnptools.snpreader.snpgen import TestSnpGen
+from pysnptools.snpreader.snpgen import TestDistributedBed
 from pysnptools.util.generate import TestGenerate
 from pysnptools.kernelreader.test import _fortesting_JustCheckExists
 from pysnptools.util.intrangeset import TestIntRangeSet
@@ -567,7 +568,7 @@ class TestPySnpTools(unittest.TestCase):
     def test_writes(self):
         from pysnptools.snpreader import SnpData, SnpHdf5, SnpNpz, SnpMemMap
 
-        the_class_and_suffix_list = [(Dense,"dense"),(Bed,"bed"),(Dat,"dat"),(Ped,"ped"),(Pheno,"pheno"),
+        the_class_and_suffix_list = [(DistributedBed, "distributed_bed"),(Dense,"dense"),(Bed,"bed"),(Dat,"dat"),(Ped,"ped"),(Pheno,"pheno"),
                                     (SnpHdf5,"hdf5"),(SnpNpz,"npz"),(SnpMemMap,"memmap")]
         cant_do_col_prop_none_set = {"dense"}
         cant_do_row_count_zero_set = {'dense','ped','pheno'}
@@ -881,6 +882,7 @@ def getTestSuite():
 
     test_suite = unittest.TestSuite([])
 
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistributedBed))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestFileCache))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestUtilTools))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestIntRangeSet))

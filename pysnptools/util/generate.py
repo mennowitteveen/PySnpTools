@@ -63,7 +63,7 @@ def snp_gen(fst, dfr, iid_count, sid_count, maf_low=.05, maf_high=.5, seed=0, si
     assert 0 <= freq_pop_0 and freq_pop_0 <=1.0,"assert 0 <= freq_pop_0 and freq_pop_0 <=1.0"
 
     if seed is not None:
-        np.random.seed(int(seed % sys.maxsize))
+        np.random.seed(int(seed % 2147483647)) #old maxint
 
     iid_solo_count = iid_count-iid_count*dfr
     family_count = int(iid_count*dfr/(2 * sibs_per_family))
@@ -175,7 +175,7 @@ def _generate_phenotype(snp_data, causals, genetic_var, noise_var, seed=None):
     """
 
     if seed is not None:
-        np.random.seed(int(seed % sys.maxsize)) #!!!Better to use numpy.random.RandomState instead (look for other places in code, too)
+        np.random.seed(int(seed % 2147483647)) #!!!Better to use numpy.random.RandomState instead (look for other places in code, too) #old maxint
     
     try:
         num_causal = len(causals)

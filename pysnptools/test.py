@@ -22,7 +22,7 @@ from pysnptools.pstreader.test import TestPstDocStrings
 from pysnptools.pstreader.pstmemmap import TestPstMemMap
 from pysnptools.snpreader.snpmemmap import TestSnpMemMap
 from pysnptools.snpreader.snpgen import TestSnpGen
-from pysnptools.snpreader.snpgen import TestDistributedBed
+from pysnptools.snpreader.distributedbed import TestDistributedBed
 from pysnptools.util.generate import TestGenerate
 from pysnptools.kernelreader.test import _fortesting_JustCheckExists
 from pysnptools.util.intrangeset import TestIntRangeSet

@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{60f1cb4a-9da3-47c2-9b89-60ac1ce93347}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>snpreader\distributedbed.py</StartupFile>
+    <StartupFile>snpreader\snpreader.py</StartupFile>
     <SearchPath>..\</SearchPath>
     <WorkingDirectory>.\snpreader</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -22,7 +22,7 @@
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <IsWindowsApplication>False</IsWindowsApplication>
     <CommandLineArguments>sdist bdist_wininst upload</CommandLineArguments>
-    <InterpreterId>CondaEnv|CondaEnv|py3</InterpreterId>
+    <InterpreterId>Global|PythonCore|2.7</InterpreterId>
     <TestFramework>unittest</TestFramework>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
@@ -221,7 +221,6 @@
     <Content Include="snpreader\wrap_plink_parser.pyx" />
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="CondaEnv|CondaEnv|py3" />
     <InterpreterReference Include="Global|ContinuumAnalytics|Anaconda27-64" />
     <InterpreterReference Include="Global|PythonCore|2.7" />
   </ItemGroup>

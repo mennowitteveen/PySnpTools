@@ -22,6 +22,7 @@ class PstNpz(PstReader):
 
         :Example:
 
+        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.pstreader import PstNpz
         >>> data_on_disk = PstNpz('../../tests/datasets/little.pst.npz')
         >>> print(data_on_disk.row_count)

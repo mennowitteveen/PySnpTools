@@ -18,6 +18,7 @@ class SnpHdf5(PstHdf5,SnpReader):
 
         :Example:
 
+        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.snpreader import SnpHdf5
         >>> data_on_disk = SnpHdf5('../examples/toydata.snpmajor.snp.hdf5')
         >>> print((data_on_disk.iid_count, data_on_disk.sid_count))

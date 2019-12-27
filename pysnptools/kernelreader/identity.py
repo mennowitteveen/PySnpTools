@@ -18,6 +18,7 @@ class Identity(KernelReader):
 
         :Example:
 
+        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.kernelreader import Identity
         >>> identity = Identity(iid=[['fam0','iid0'],['fam0','iid1']])
         >>> print(identity.iid_count)

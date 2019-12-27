@@ -8,6 +8,7 @@ class Identity(Standardizer):
 
     See :class:`.Standardizer` for more information about standardization.
 
+    >>> from __future__ import print_function #Python 2 & 3 compatibility
     >>> from pysnptools.standardizer import Identity
     >>> from pysnptools.snpreader import Bed
     >>> snpdata1 = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False).read()

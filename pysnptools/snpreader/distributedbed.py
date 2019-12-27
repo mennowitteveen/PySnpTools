@@ -27,6 +27,7 @@ class DistributedBed(SnpReader):
 
         :Example:
 
+        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.snpreader import DistributedBed
         >>> data_on_disk = DistributedBed('../examples/toydataSkip10.distributedbed')
         >>> print((data_on_disk.iid_count, data_on_disk.sid_count))

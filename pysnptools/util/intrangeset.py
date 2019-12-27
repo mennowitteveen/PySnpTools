@@ -24,6 +24,7 @@ class IntRangeSet(object):
 
     .. image:: example1.png
 
+    >>> from __future__ import print_function #Python 2 & 3 compatibility
     >>> a = IntRangeSet("100:500,501:1000") # a is the set of integers from 100 to 500 (exclusive) and 501 to 1000 (exclusive)
     >>> b = IntRangeSet("-20,400:600")      # b is the set of integers -20 and the range 400 to 600 (exclusive)
     >>> c = a | b                           # c is the union of a and b, namely -20 and 100 to 1000 (exclusive)

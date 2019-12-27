@@ -53,7 +53,7 @@
     <Content Include="datasets\phenSynthFrom22.23.N300.randcidorder.txt" />
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="CondaEnv|CondaEnv|py3" />
+    <InterpreterReference Include="CondaEnv|CondaEnv|py37" />
     <InterpreterReference Include="Global|ContinuumAnalytics|Anaconda27-64" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />

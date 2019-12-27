@@ -9,6 +9,8 @@ class Standardizer(object):
 
     Read and standardize SNP data.
 
+    >>> from __future__ import print_function #Python 2 & 3 compatibility
+    >>> from six.moves import range #Python 2 & 3 compatibility
     >>> from pysnptools.standardizer import Unit
     >>> from pysnptools.snpreader import Bed
     >>> snpdata1 = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False).read().standardize(Unit())

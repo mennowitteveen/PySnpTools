@@ -12,6 +12,7 @@ class UnitTrained(Standardizer):
     **Constructor:**
         :Parameters: * **stats** (*ndarray of float*) -- The mean and stddev of each sid
 
+    >>> from __future__ import print_function #Python 2 & 3 compatibility
     >>> from pysnptools.standardizer import Unit
     >>> from pysnptools.snpreader import Bed
     >>> train = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)[1:,:].read() # read SNP values for all but the first iid

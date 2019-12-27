@@ -26,6 +26,7 @@ class SnpKernel(KernelReader):
 
         :Example:
 
+        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.snpreader import Bed
         >>> from pysnptools.standardizer import Unit
         >>> snp_on_disk = Bed('../examples/toydata.bed',count_A1=False)     # A Bed file is specified, but nothing is read from disk

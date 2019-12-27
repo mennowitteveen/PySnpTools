@@ -17,6 +17,7 @@ class SnpReader(PstReader):
 
     * A class such as :class:`.Bed` for you to specify data in a file. For example,
 
+        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.snpreader import Bed
         >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
         >>> print(snp_on_disk) # prints specification for reading from file

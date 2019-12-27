@@ -18,6 +18,7 @@ class KernelNpz(KernelReader,PstNpz):
 
         :Example:
 
+        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.kernelreader import KernelNpz
         >>> data_on_disk = KernelNpz('../examples/toydata.kernel.npz')
         >>> print(data_on_disk.iid_count)

@@ -7,7 +7,7 @@ from distutils.command.clean import clean as Clean
 import numpy
 
 # Version number
-version = '0.4.3'
+version = '0.4.5'
 
 def readme():
     with open('README.md') as f:
@@ -109,6 +109,11 @@ setup(
     author='FaST-LMM Team',
     author_email='fastlmm-dev@python.org',
     license='Apache 2.0',
+    classifiers = [
+            "Programming Language :: Python :: 2.7",
+            "Programming Language :: Python :: 3",
+            "Programming Language :: Python",
+            ],
     packages=[  #basically everything with a __init__.py
         "pysnptools",
         "pysnptools/kernelreader",

@@ -16,6 +16,7 @@ class KernelReader(PstReader):
 
     * A class such as :class:`KernelNpz` for you to specify data in a file. For example,
 
+        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.kernelreader import KernelNpz
         >>> 
         >>> kernel_on_disk = KernelNpz('../examples/toydata.kernel.npz')

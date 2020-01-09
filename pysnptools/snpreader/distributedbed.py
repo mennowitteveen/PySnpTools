@@ -153,8 +153,10 @@ class DistributedBed(SnpReader):
 
         storage = FileCache._fixup(storage)
 
+        chrom_set = sorted(set(snpreader.pos[:,0]))
+        for chrom in chrom_set:
+            assert chrom==chrom and chrom==int(chrom), "DistributedBed.write expects all chromosomes to be integers (not '{0}')".format(chrom)
         with _file_transfer_reporter("DistributedBed.write", size=0, updater=updater) as updater2:
-            chrom_set = list(set(snpreader.pos[:,0]))
             def mapper_closure(chrom):
                 chrom_reader = snpreader[:,snpreader.pos[:,0]==chrom]
                 def nested_closure(piece_per_chrom_index):

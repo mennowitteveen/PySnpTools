@@ -18,7 +18,7 @@ class Bed(SnpReader):
 
     See :class:`.SnpReader` for details and examples.
 
-    The format is described in http://pngu.mgh.harvard.edu/~purcell/plink/binary.shtml.
+    The format is described in http://zzz.bwh.harvard.edu/plink/binary.shtml.
 
     **Constructor:**
         :Parameters: * **filename** (*string*) -- The \*.bed file to read. The '.bed' suffix is optional. The related \*.bim and \*.fam files will also be read.
@@ -185,7 +185,7 @@ class Bed(SnpReader):
                 two_code = 0b00
 
             with open(bedfile,"wb") as bed_filepointer:
-                #see http://pngu.mgh.harvard.edu/~purcell/plink/binary.shtml
+                #see http://zzz.bwh.harvard.edu/plink/binary.shtml
                 bed_filepointer.write(bytes(bytearray([0b01101100]))) #magic numbers
                 bed_filepointer.write(bytes(bytearray([0b00011011]))) #magic numbers
                 bed_filepointer.write(bytes(bytearray([0b00000001]))) #snp major

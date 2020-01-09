@@ -4,6 +4,7 @@ import numpy as np
 import scipy as sp
 import logging
 import doctest
+import shutil
 
 from pysnptools.snpreader import Bed
 from pysnptools.snpreader import SnpHdf5, SnpNpz
@@ -570,12 +571,14 @@ class TestPySnpTools(unittest.TestCase):
 
         the_class_and_suffix_list = [(DistributedBed, "distributed_bed"),(Dense,"dense"),(Bed,"bed"),(Dat,"dat"),(Ped,"ped"),(Pheno,"pheno"),
                                     (SnpHdf5,"hdf5"),(SnpNpz,"npz"),(SnpMemMap,"memmap")]
-        cant_do_col_prop_none_set = {"dense"}
+        cant_do_col_prop_none_set = {"dense","distributed_bed"}
+        cant_do_col_len_0_set = {"distributed_bed"}
         cant_do_row_count_zero_set = {'dense','ped','pheno'}
         can_swap_0_2_set = {'ped'}
         can_change_col_names_set = {'pheno'}
         ignore_fam_id_set = {'dense'}
-        ignore_pos_set = {'dense'}
+        ignore_pos_set = {'dense','pheno'}
+        erase_any_write_dir = {'distributed_bed'}
 
         
         #===================================
@@ -595,8 +598,10 @@ class TestPySnpTools(unittest.TestCase):
                 for is_none in [True,False]:
                     row_prop = None
                     col_prop = None if is_none else [(x,x,x) for x in range(5)][:col_count]
-                    snpdata = SnpData(row,col,val,row_prop,col_prop,str(i))
+                    snpdata = SnpData(iid=row,sid=col,val=val,pos=col_prop,name=str(i))
                     for the_class,suffix in the_class_and_suffix_list:
+                        if col_count == 0 and suffix in cant_do_col_len_0_set:
+                            continue
                         if col_prop is None and suffix in cant_do_col_prop_none_set:
                             continue
                         if row_count==0 and suffix in cant_do_row_count_zero_set:
@@ -604,6 +609,8 @@ class TestPySnpTools(unittest.TestCase):
                         filename = output_template.format(i,suffix)
                         logging.info(filename)
                         i += 1
+                        if suffix in erase_any_write_dir and os.path.exists(filename):
+                            shutil.rmtree(filename)
                         the_class.write(filename,snpdata)
                         for subsetter in [None, sp.s_[::2,::3]]:
                             reader = the_class(filename)
@@ -882,6 +889,7 @@ def getTestSuite():
 
     test_suite = unittest.TestSuite([])
 
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPySnpTools))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistributedBed))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestFileCache))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestUtilTools))
@@ -896,7 +904,6 @@ def getTestSuite():
     test_suite.addTests(NaNCNCTestCases.factory_iterator())
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPstReader))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestKernelReader))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPySnpTools))
 
     return test_suite
 

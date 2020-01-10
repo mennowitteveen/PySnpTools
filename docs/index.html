@@ -145,7 +145,8 @@ and announcements list (or use <a class="reference external" href="https://mail.
 <dd><p>A SnpReader is one of three things:</p>
 <ul>
 <li><p class="first">A class such as <a class="reference internal" href="#pysnptools.snpreader.Bed" title="pysnptools.snpreader.Bed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bed</span></code></a> for you to specify data in a file. For example,</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snp_on_disk</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snp_on_disk</span><span class="p">)</span> <span class="c1"># prints specification for reading from file</span>
 <span class="go">Bed(&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;,count_A1=False)</span>
@@ -273,8 +274,9 @@ See below for details.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># read from Pheno, write to Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Pheno</span><span class="p">,</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pysnptools.util</span> <span class="k">as</span> <span class="nn">pstutil</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util</span> <span class="k">import</span> <span class="n">print2</span> <span class="c1"># Makes ascii strings look the same under Python2/Python3</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata</span> <span class="o">=</span> <span class="n">Pheno</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.phe&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="c1"># Read data from Pheno format</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata</span> <span class="o">=</span> <span class="n">Pheno</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.phe&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="c1"># Read data from Pheno format</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pstutil</span><span class="o">.</span><span class="n">create_directory_if_necessary</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata.bed&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">Bed</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata.bed&quot;</span><span class="p">,</span><span class="n">snpdata</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>   <span class="c1"># Write data in Bed format</span>
 <span class="go">Bed(&#39;tempdir/toydata.bed&#39;,count_A1=False)</span>
@@ -286,13 +288,13 @@ See below for details.</p>
 <div><p>Individuals are identified with an iid, which is a ndarray of two strings: a family ID and a case ID.
 SNP locations are identified with an sid string in a ndarray. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">snp_on_disk</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">print2</span><span class="p">(</span><span class="n">snp_on_disk</span><span class="o">.</span><span class="n">iid</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span> <span class="c1"># print the first three iids</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snp_on_disk</span><span class="o">.</span><span class="n">iid</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span> <span class="c1"># print the first three iids</span>
 <span class="go">[[&#39;POP1&#39; &#39;0&#39;]</span>
 <span class="go"> [&#39;POP1&#39; &#39;12&#39;]</span>
 <span class="go"> [&#39;POP1&#39; &#39;44&#39;]]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">print2</span><span class="p">(</span><span class="n">snp_on_disk</span><span class="o">.</span><span class="n">sid</span><span class="p">[:</span><span class="mi">9</span><span class="p">])</span> <span class="c1"># print the first nine sids</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snp_on_disk</span><span class="o">.</span><span class="n">sid</span><span class="p">[:</span><span class="mi">9</span><span class="p">])</span> <span class="c1"># print the first nine sids</span>
 <span class="go">[&#39;1_12&#39; &#39;1_34&#39; &#39;1_10&#39; &#39;1_35&#39; &#39;1_28&#39; &#39;1_25&#39; &#39;1_36&#39; &#39;1_39&#39; &#39;1_4&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snp_on_disk</span><span class="o">.</span><span class="n">iid_to_index</span><span class="p">([[</span><span class="sa">b</span><span class="s1">&#39;POP1&#39;</span><span class="p">,</span><span class="sa">b</span><span class="s1">&#39;44&#39;</span><span class="p">],[</span><span class="sa">b</span><span class="s1">&#39;POP1&#39;</span><span class="p">,</span><span class="sa">b</span><span class="s1">&#39;12&#39;</span><span class="p">]]))</span> <span class="c1">#Find the indexes for two iids.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snp_on_disk</span><span class="o">.</span><span class="n">iid_to_index</span><span class="p">([[</span><span class="s1">&#39;POP1&#39;</span><span class="p">,</span><span class="s1">&#39;44&#39;</span><span class="p">],[</span><span class="s1">&#39;POP1&#39;</span><span class="p">,</span><span class="s1">&#39;12&#39;</span><span class="p">]]))</span> <span class="c1">#Find the indexes for two iids.</span>
 <span class="go">[2 1]</span>
 </pre></div>
 </div>
@@ -314,9 +316,9 @@ SNP locations are identified with an sid string in a ndarray. For example:</p>
 <li><p class="first">Properties and methods related to the iids and sids (to the degree practical) read just some iid and sid data from the disk,
 not SNP value data. Moreover, the iid and sid data is read from file only once. Consider these commands:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">snp_on_disk</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1"># Construct a Bed SnpReader. No data is read.</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">print2</span><span class="p">(</span><span class="n">snp_on_disk</span><span class="o">.</span><span class="n">sid</span><span class="p">[:</span><span class="mi">9</span><span class="p">])</span> <span class="c1"># without reading any SNP values data from disk, read the sid and iid data from disk, cache it, and then print the first nine sids.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snp_on_disk</span><span class="o">.</span><span class="n">sid</span><span class="p">[:</span><span class="mi">9</span><span class="p">])</span> <span class="c1"># without reading any SNP values data from disk, read the sid and iid data from disk, cache it, and then print the first nine sids.</span>
 <span class="go">[&#39;1_12&#39; &#39;1_34&#39; &#39;1_10&#39; &#39;1_35&#39; &#39;1_28&#39; &#39;1_25&#39; &#39;1_36&#39; &#39;1_39&#39; &#39;1_4&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snp_on_disk</span><span class="o">.</span><span class="n">sid_to_index</span><span class="p">([</span><span class="sa">b</span><span class="s1">&#39;1_10&#39;</span><span class="p">,</span><span class="sa">b</span><span class="s1">&#39;1_13&#39;</span><span class="p">]))</span> <span class="c1">#use the cached sid information to find the indexes of &#39;1_10&#39; and &#39;1_13&#39;. (No data is read from disk.)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snp_on_disk</span><span class="o">.</span><span class="n">sid_to_index</span><span class="p">([</span><span class="s1">&#39;1_10&#39;</span><span class="p">,</span><span class="s1">&#39;1_13&#39;</span><span class="p">]))</span> <span class="c1">#use the cached sid information to find the indexes of &#39;1_10&#39; and &#39;1_13&#39;. (No data is read from disk.)</span>
 <span class="go">[2 9]</span>
 </pre></div>
 </div>
@@ -418,7 +420,7 @@ of indexes, with slicing, and with an array of Booleans.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">subset_snpreader_2</span> <span class="o">=</span> <span class="n">snp_on_disk</span><span class="p">[:,:</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="c1">#index with a slice</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">((</span><span class="n">subset_snpreader_2</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span> <span class="n">subset_snpreader_2</span><span class="o">.</span><span class="n">sid_count</span><span class="p">))</span>
 <span class="go">(300, 507)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">boolindexes</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;23_&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">snp_on_disk</span><span class="o">.</span><span class="n">sid</span><span class="p">]</span> <span class="c1"># create a Boolean index of sids that start &#39;23_&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">boolindexes</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;23_&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">snp_on_disk</span><span class="o">.</span><span class="n">sid</span><span class="p">]</span> <span class="c1"># create a Boolean index of sids that start &#39;23_&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">subset_snpreader_3</span> <span class="o">=</span> <span class="n">snp_on_disk</span><span class="p">[:,</span><span class="n">boolindexes</span><span class="p">]</span> <span class="c1">#index with array of Booleans</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">((</span><span class="n">subset_snpreader_3</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span> <span class="n">subset_snpreader_3</span><span class="o">.</span><span class="n">sid_count</span><span class="p">))</span>
 <span class="go">(300, 24)</span>
@@ -444,10 +446,10 @@ While you could instead index directly on the <cite>.SnpData.val</cite> ndarray,
 also get iid and cid information.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">snp_on_disk</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1"># Specify some data on disk in Bed format</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata1</span> <span class="o">=</span> <span class="n">snp_on_disk</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="c1"># read all SNP values into memory</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">print2</span><span class="p">(</span><span class="n">snpdata1</span><span class="o">.</span><span class="n">sid</span><span class="p">[:</span><span class="mi">9</span><span class="p">])</span> <span class="c1"># print the first 9 sids</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snpdata1</span><span class="o">.</span><span class="n">sid</span><span class="p">[:</span><span class="mi">9</span><span class="p">])</span> <span class="c1"># print the first 9 sids</span>
 <span class="go">[&#39;1_12&#39; &#39;1_34&#39; &#39;1_10&#39; &#39;1_35&#39; &#39;1_28&#39; &#39;1_25&#39; &#39;1_36&#39; &#39;1_39&#39; &#39;1_4&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata_subset</span> <span class="o">=</span> <span class="n">snpdata1</span><span class="p">[:,::</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">view_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="s1">&#39;A&#39;</span><span class="p">)</span> <span class="c1"># create a copy or view with every other sid</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">print2</span><span class="p">(</span><span class="n">snpdata_subset</span><span class="o">.</span><span class="n">sid</span><span class="p">[:</span><span class="mi">9</span><span class="p">])</span><span class="c1"># print the first 9 sids in the subset</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snpdata_subset</span><span class="o">.</span><span class="n">sid</span><span class="p">[:</span><span class="mi">9</span><span class="p">])</span><span class="c1"># print the first 9 sids in the subset</span>
 <span class="go">[&#39;1_12&#39; &#39;1_10&#39; &#39;1_28&#39; &#39;1_36&#39; &#39;1_4&#39; &#39;1_11&#39; &#39;1_32&#39; &#39;1_9&#39; &#39;1_17&#39;]</span>
 </pre></div>
 </div>
@@ -533,10 +535,10 @@ the method can save memory by reading (and standardizing) the data in blocks. Se
 </tr>
 </tbody>
 </table>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util</span> <span class="k">import</span> <span class="n">print2</span> <span class="c1"># Makes ascii strings look the same under Python2/Python3</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snp_on_disk</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">print2</span><span class="p">(</span><span class="n">snp_on_disk</span><span class="o">.</span><span class="n">iid</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span> <span class="c1"># print the first three iids</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snp_on_disk</span><span class="o">.</span><span class="n">iid</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span> <span class="c1"># print the first three iids</span>
 <span class="go">[[&#39;POP1&#39; &#39;0&#39;]</span>
 <span class="go"> [&#39;POP1&#39; &#39;12&#39;]</span>
 <span class="go"> [&#39;POP1&#39; &#39;44&#39;]]</span>
@@ -584,7 +586,7 @@ the method can save memory by reading (and standardizing) the data in blocks. Se
 </table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snp_on_disk</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1"># Specify SNP data on disk</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snp_on_disk</span><span class="o">.</span><span class="n">iid_to_index</span><span class="p">([[</span><span class="sa">b</span><span class="s1">&#39;POP1&#39;</span><span class="p">,</span><span class="sa">b</span><span class="s1">&#39;44&#39;</span><span class="p">],[</span><span class="sa">b</span><span class="s1">&#39;POP1&#39;</span><span class="p">,</span><span class="sa">b</span><span class="s1">&#39;12&#39;</span><span class="p">]]))</span> <span class="c1">#Find the indexes for two iids.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snp_on_disk</span><span class="o">.</span><span class="n">iid_to_index</span><span class="p">([[</span><span class="s1">&#39;POP1&#39;</span><span class="p">,</span><span class="s1">&#39;44&#39;</span><span class="p">],[</span><span class="s1">&#39;POP1&#39;</span><span class="p">,</span><span class="s1">&#39;12&#39;</span><span class="p">]]))</span> <span class="c1">#Find the indexes for two iids.</span>
 <span class="go">[2 1]</span>
 </pre></div>
 </div>
@@ -791,9 +793,8 @@ share memory and so it may ignore your suggestion and allocate a new ndarray any
 </tbody>
 </table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util</span> <span class="k">import</span> <span class="n">print2</span> <span class="c1"># Makes ascii strings look the same under Python2/Python3 </span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snp_on_disk</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">print2</span><span class="p">(</span><span class="n">snp_on_disk</span><span class="o">.</span><span class="n">sid</span><span class="p">[:</span><span class="mi">9</span><span class="p">])</span> <span class="c1"># print the first nine sids</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snp_on_disk</span><span class="o">.</span><span class="n">sid</span><span class="p">[:</span><span class="mi">9</span><span class="p">])</span> <span class="c1"># print the first nine sids</span>
 <span class="go">[&#39;1_12&#39; &#39;1_34&#39; &#39;1_10&#39; &#39;1_35&#39; &#39;1_28&#39; &#39;1_25&#39; &#39;1_36&#39; &#39;1_39&#39; &#39;1_4&#39;]</span>
 </pre></div>
 </div>
@@ -839,7 +840,7 @@ share memory and so it may ignore your suggestion and allocate a new ndarray any
 </table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snp_on_disk</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1"># Specify SNP data on disk</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snp_on_disk</span><span class="o">.</span><span class="n">sid_to_index</span><span class="p">([</span><span class="sa">b</span><span class="s1">&#39;1_10&#39;</span><span class="p">,</span><span class="sa">b</span><span class="s1">&#39;1_13&#39;</span><span class="p">]))</span> <span class="c1">#Find the indexes for two sids.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snp_on_disk</span><span class="o">.</span><span class="n">sid_to_index</span><span class="p">([</span><span class="s1">&#39;1_10&#39;</span><span class="p">,</span><span class="s1">&#39;1_13&#39;</span><span class="p">]))</span> <span class="c1">#Find the indexes for two sids.</span>
 <span class="go">[2 9]</span>
 </pre></div>
 </div>
@@ -855,7 +856,7 @@ share memory and so it may ignore your suggestion and allocate a new ndarray any
 <em class="property">class </em><code class="descclassname">pysnptools.snpreader.</code><code class="descname">Bed</code><span class="sig-paren">(</span><em>filename</em>, <em>count_A1=None</em>, <em>iid=None</em>, <em>sid=None</em>, <em>pos=None</em>, <em>skip_format_check=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.Bed" title="Permalink to this definition">¶</a></dt>
 <dd><p>A <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> for random-access reads of Bed/Bim/Fam files from disk.</p>
 <p>See <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> for details and examples.</p>
-<p>The format is described in <a class="reference external" href="http://pngu.mgh.harvard.edu/~purcell/plink/binary.shtml">http://pngu.mgh.harvard.edu/~purcell/plink/binary.shtml</a>.</p>
+<p>The format is described in <a class="reference external" href="http://zzz.bwh.harvard.edu/plink/binary.shtml">http://zzz.bwh.harvard.edu/plink/binary.shtml</a>.</p>
 <dl class="docutils">
 <dt><strong>Constructor:</strong></dt>
 <dd><table class="first last docutils field-list" frame="void" rules="none">
@@ -928,8 +929,8 @@ It is usually created by calling the <a class="reference internal" href="#pysnpt
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>iid</strong> (an array of strings) – The <a class="reference internal" href="#pysnptools.snpreader.SnpReader.iid" title="pysnptools.snpreader.SnpReader.iid"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpReader.iid</span></code></a> information</li>
-<li><strong>sid</strong> (an array of strings) – The <a class="reference internal" href="#pysnptools.snpreader.SnpReader.sid" title="pysnptools.snpreader.SnpReader.sid"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpReader.sid</span></code></a> information</li>
+<li><strong>iid</strong> (an array of string pair) – The <a class="reference internal" href="#pysnptools.snpreader.SnpReader.iid" title="pysnptools.snpreader.SnpReader.iid"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpReader.iid</span></code></a> information.</li>
+<li><strong>sid</strong> (an array of strings) – The <a class="reference internal" href="#pysnptools.snpreader.SnpReader.sid" title="pysnptools.snpreader.SnpReader.sid"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpReader.sid</span></code></a> information.</li>
 <li><strong>val</strong> (a 2-D array of floats) – The SNP values</li>
 <li><strong>pos</strong> (optional, an array of strings) – The <a class="reference internal" href="#pysnptools.snpreader.SnpReader.pos" title="pysnptools.snpreader.SnpReader.pos"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpReader.pos</span></code></a> information</li>
 <li><strong>name</strong> (optional, string) – Information to be display about the origin of this data</li>
@@ -941,7 +942,8 @@ It is usually created by calling the <a class="reference internal" href="#pysnpt
 </tr>
 </tbody>
 </table>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">SnpData</span>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">SnpData</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata</span> <span class="o">=</span> <span class="n">SnpData</span><span class="p">(</span><span class="n">iid</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">sid</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;snp334&#39;</span><span class="p">,</span><span class="s1">&#39;snp349&#39;</span><span class="p">,</span><span class="s1">&#39;snp921&#39;</span><span class="p">],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">((</span><span class="n">snpdata</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">snpdata</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span> <span class="n">snpdata</span><span class="o">.</span><span class="n">sid_count</span><span class="p">))</span>
 <span class="go">(2.0, 2, 3)</span>
@@ -1123,7 +1125,8 @@ standard deviation 1.0) and <a class="reference internal" href="#pysnptools.stan
 </tr>
 </tbody>
 </table>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Pheno</span><span class="p">,</span> <span class="n">Bed</span>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Pheno</span><span class="p">,</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data_on_disk</span> <span class="o">=</span> <span class="n">Pheno</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.phe&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">((</span><span class="n">data_on_disk</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span> <span class="n">data_on_disk</span><span class="o">.</span><span class="n">sid_count</span><span class="p">))</span>
 <span class="go">(500, 1)</span>
@@ -1195,7 +1198,8 @@ standard deviation 1.0) and <a class="reference internal" href="#pysnptools.stan
 </tr>
 </tbody>
 </table>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Ped</span>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Ped</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data_on_disk</span> <span class="o">=</span> <span class="n">Ped</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.ped&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">((</span><span class="n">data_on_disk</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span> <span class="n">data_on_disk</span><span class="o">.</span><span class="n">sid_count</span><span class="p">))</span>
 <span class="go">(500, 10000)</span>
@@ -1268,7 +1272,8 @@ Returns the <a class="reference internal" href="#pysnptools.snpreader.Ped" title
 </tr>
 </tbody>
 </table>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Dat</span>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Dat</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data_on_disk</span> <span class="o">=</span> <span class="n">Dat</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.dat&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">((</span><span class="n">data_on_disk</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span> <span class="n">data_on_disk</span><span class="o">.</span><span class="n">sid_count</span><span class="p">))</span>
 <span class="go">(500, 10000)</span>
@@ -1344,7 +1349,8 @@ Defaults to setting the <a class="reference internal" href="#pysnptools.snpreade
 </tr>
 </tbody>
 </table>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Dense</span>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Dense</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data_on_disk</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="s1">&#39;../examples/toydata100.dense.txt&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">((</span><span class="n">data_on_disk</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span> <span class="n">data_on_disk</span><span class="o">.</span><span class="n">sid_count</span><span class="p">))</span>
 <span class="go">(500, 100)</span>
@@ -1413,7 +1419,8 @@ val, iid, sid, and pos information in Hdf5 format.</p>
 </tr>
 </tbody>
 </table>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">SnpHdf5</span>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">SnpHdf5</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data_on_disk</span> <span class="o">=</span> <span class="n">SnpHdf5</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.snpmajor.snp.hdf5&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">((</span><span class="n">data_on_disk</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span> <span class="n">data_on_disk</span><span class="o">.</span><span class="n">sid_count</span><span class="p">))</span>
 <span class="go">(500, 10000)</span>
@@ -1480,7 +1487,8 @@ val, iid, sid, and pos information in NPZ format.</p>
 </tr>
 </tbody>
 </table>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">SnpNpz</span>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">SnpNpz</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data_on_disk</span> <span class="o">=</span> <span class="n">SnpNpz</span><span class="p">(</span><span class="s1">&#39;../examples/toydata10.snp.npz&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">((</span><span class="n">data_on_disk</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span> <span class="n">data_on_disk</span><span class="o">.</span><span class="n">sid_count</span><span class="p">))</span>
 <span class="go">(500, 10)</span>
@@ -1547,9 +1555,10 @@ val, iid, sid, and pos information in NPZ format.</p>
 </tr>
 </tbody>
 </table>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">SnpMemMap</span>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">SnpMemMap</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snp_mem_map</span> <span class="o">=</span> <span class="n">SnpMemMap</span><span class="p">(</span><span class="s1">&#39;../examples/tiny.snp.memmap&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">snp_mem_map</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">snp_mem_map</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span> <span class="n">snp_mem_map</span><span class="o">.</span><span class="n">sid_count</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snp_mem_map</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">snp_mem_map</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span> <span class="n">snp_mem_map</span><span class="o">.</span><span class="n">sid_count</span><span class="p">)</span>
 <span class="go">2.0 2 3</span>
 </pre></div>
 </div>
@@ -1713,13 +1722,14 @@ This property is useful when interfacing with, for example, external Fortran and
 </tr>
 </tbody>
 </table>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">SnpGen</span>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">SnpGen</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1">#Prepare to generate data for 1000 individuals and 1,000,000 SNPs</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snp_gen</span> <span class="o">=</span> <span class="n">SnpGen</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="mi">332</span><span class="p">,</span><span class="n">iid_count</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">sid_count</span><span class="o">=</span><span class="mi">1000</span><span class="o">*</span><span class="mi">1000</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">snp_gen</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span><span class="n">snp_gen</span><span class="o">.</span><span class="n">sid_count</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snp_gen</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span><span class="n">snp_gen</span><span class="o">.</span><span class="n">sid_count</span><span class="p">)</span>
 <span class="go">1000 1000000</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snp_data</span> <span class="o">=</span> <span class="n">snp_gen</span><span class="p">[:,</span><span class="mi">200</span><span class="o">*</span><span class="mi">1000</span><span class="p">:</span><span class="mi">201</span><span class="o">*</span><span class="mi">1000</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="c1">#Generate for all users and for SNPs 200K to 201K</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">snp_data</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">snp_data</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span> <span class="n">snp_data</span><span class="o">.</span><span class="n">sid_count</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snp_data</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">snp_data</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span> <span class="n">snp_data</span><span class="o">.</span><span class="n">sid_count</span><span class="p">)</span>
 <span class="go">0.0 1000 1000</span>
 </pre></div>
 </div>
@@ -1744,7 +1754,7 @@ This property is useful when interfacing with, for example, external Fortran and
 <dd><p>A class that implements the <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> interface. It stores <a class="reference internal" href="#pysnptools.snpreader.Bed" title="pysnptools.snpreader.Bed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bed</span></code></a>-like data in pieces on storage. When you request data, it retrieves only the needed pieces.</p>
 <dl class="docutils">
 <dt><strong>Constructor:</strong></dt>
-<dd><table class="first last docutils field-list" frame="void" rules="none">
+<dd><table class="first docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
@@ -1754,13 +1764,22 @@ A <a class="reference internal" href="#pysnptools.util.filecache.FileCache" titl
 </tr>
 <tr class="field-even field"><th class="field-name">type storage:</th><td class="field-body">string or <a class="reference internal" href="#pysnptools.util.filecache.FileCache" title="pysnptools.util.filecache.FileCache"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileCache</span></code></a></td>
 </tr>
+<tr class="field-odd field"><th class="field-name">Example:</th><td class="field-body"></td>
+</tr>
 </tbody>
 </table>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">DistributedBed</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data_on_disk</span> <span class="o">=</span> <span class="n">DistributedBed</span><span class="p">(</span><span class="s1">&#39;../examples/toydataSkip10.distributedbed&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">((</span><span class="n">data_on_disk</span><span class="o">.</span><span class="n">iid_count</span><span class="p">,</span> <span class="n">data_on_disk</span><span class="o">.</span><span class="n">sid_count</span><span class="p">))</span>
+<span class="go">(500, 1000)</span>
+</pre></div>
+</div>
 </dd>
 </dl>
 <dl class="staticmethod">
 <dt id="pysnptools.snpreader.DistributedBed.write">
-<em class="property">static </em><code class="descname">write</code><span class="sig-paren">(</span><em>storage</em>, <em>snpreader</em>, <em>piece_per_chrom_count</em>, <em>updater=None</em>, <em>runner=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.DistributedBed.write" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">write</code><span class="sig-paren">(</span><em>storage</em>, <em>snpreader</em>, <em>piece_per_chrom_count=1</em>, <em>updater=None</em>, <em>runner=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.DistributedBed.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Uploads from any <a class="reference internal" href="#pysnptools.snpreader.Bed" title="pysnptools.snpreader.Bed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bed</span></code></a>-like data to cluster storage for efficient retrieval later.
 If some of the contents already exists in storage, it skips uploading that part of the contents. (To avoid this behavior,
 clear the storage.)</p>
@@ -1792,6 +1811,16 @@ If not given, the function is run locally.</li>
 </tr>
 </tbody>
 </table>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">DistributedBed</span><span class="p">,</span> <span class="n">Bed</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">shutil</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">directory</span> <span class="o">=</span> <span class="s1">&#39;tempdir/toydataSkip10.distributedbed&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snpreader</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.bed&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)[:,::</span><span class="mi">10</span><span class="p">]</span>  <span class="c1"># Read every 10 snps from Bed format</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">DistributedBed</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span><span class="n">snpreader</span><span class="p">,</span><span class="n">piece_per_chrom_count</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># Write data in DistributedBed format</span>
+<span class="go">DistributedBed(LocalCache(&#39;tempdir/toydataSkip10.distributedbed&#39;))</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -1809,7 +1838,8 @@ If not given, the function is run locally.</li>
 <dd><p>A KernelReader is one of three things:</p>
 <ul>
 <li><p class="first">A class such as <a class="reference internal" href="#pysnptools.kernelreader.KernelNpz" title="pysnptools.kernelreader.KernelNpz"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelNpz</span></code></a> for you to specify data in a file. For example,</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelreader</span> <span class="k">import</span> <span class="n">KernelNpz</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelreader</span> <span class="k">import</span> <span class="n">KernelNpz</span>
 <span class="gp">&gt;&gt;&gt; </span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kernel_on_disk</span> <span class="o">=</span> <span class="n">KernelNpz</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.kernel.npz&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">kernel_on_disk</span><span class="p">)</span> <span class="c1"># prints specification for reading from file</span>
@@ -1922,11 +1952,13 @@ and these methods: <a class="reference internal" href="#pysnptools.kernelreader.
 See below for details.</p>
 <p>Some of the classes, such as <a class="reference internal" href="#pysnptools.kernelreader.KernelNpz" title="pysnptools.kernelreader.KernelNpz"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelNpz</span></code></a>, also provide a static <a class="reference internal" href="#pysnptools.kernelreader.KernelNpz.write" title="pysnptools.kernelreader.KernelNpz.write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">KernelNpz.write()</span></code></a> method for writing <a class="reference internal" href="#pysnptools.kernelreader.KernelData" title="pysnptools.kernelreader.KernelData"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code></a>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># create a kernel from a Bed file and write to KernelNpz format</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">Unit</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pysnptools.util</span> <span class="k">as</span> <span class="nn">pstutil</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util</span> <span class="k">import</span> <span class="n">print2</span> <span class="c1"># Makes ascii strings look the same under Python2/Python3 </span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.bed&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">read_kernel</span><span class="p">(</span><span class="n">Unit</span><span class="p">())</span>     <span class="c1"># Create a kernel from the data in the Bed file</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.bed&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">read_kernel</span><span class="p">(</span><span class="n">Unit</span><span class="p">())</span>     <span class="c1"># Create a kernel from the data in the Bed file</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pstutil</span><span class="o">.</span><span class="n">create_directory_if_necessary</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata.kernel.npz&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">KernelNpz</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata.kernel.npz&quot;</span><span class="p">,</span><span class="n">kerneldata</span><span class="p">)</span>      <span class="c1"># Write data in KernelNpz format</span>
 <span class="go">KernelNpz(&#39;tempdir/toydata.kernel.npz&#39;)</span>
@@ -1937,11 +1969,11 @@ See below for details.</p>
 <blockquote>
 <div><p>Individual are identified with an iid, which is a ndarray of two strings: a family ID and a case ID. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">kernel_on_disk</span> <span class="o">=</span> <span class="n">KernelNpz</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.kernel.npz&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">print2</span><span class="p">(</span><span class="n">kernel_on_disk</span><span class="o">.</span><span class="n">iid</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span> <span class="c1"># print the first three iids</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">kernel_on_disk</span><span class="o">.</span><span class="n">iid</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span> <span class="c1"># print the first three iids</span>
 <span class="go">[[&#39;per0&#39; &#39;per0&#39;]</span>
 <span class="go"> [&#39;per1&#39; &#39;per1&#39;]</span>
 <span class="go"> [&#39;per2&#39; &#39;per2&#39;]]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">kernel_on_disk</span><span class="o">.</span><span class="n">iid_to_index</span><span class="p">([[</span><span class="sa">b</span><span class="s1">&#39;per2&#39;</span><span class="p">,</span><span class="sa">b</span><span class="s1">&#39;per2&#39;</span><span class="p">],[</span><span class="sa">b</span><span class="s1">&#39;per1&#39;</span><span class="p">,</span><span class="sa">b</span><span class="s1">&#39;per1&#39;</span><span class="p">]]))</span> <span class="c1">#Find the indexes for two iids.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">kernel_on_disk</span><span class="o">.</span><span class="n">iid_to_index</span><span class="p">([[</span><span class="s1">&#39;per2&#39;</span><span class="p">,</span><span class="s1">&#39;per2&#39;</span><span class="p">],[</span><span class="s1">&#39;per1&#39;</span><span class="p">,</span><span class="s1">&#39;per1&#39;</span><span class="p">]]))</span> <span class="c1">#Find the indexes for two iids.</span>
 <span class="go">[2 1]</span>
 </pre></div>
 </div>
@@ -2003,9 +2035,9 @@ Assumes the kernel is square, so will throw an exception if the row iids are dif
 </tbody>
 </table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelreader</span> <span class="k">import</span> <span class="n">KernelNpz</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util</span> <span class="k">import</span> <span class="n">print2</span> <span class="c1"># Makes ascii strings look the same under Python2/Python3 </span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kernel_on_disk</span> <span class="o">=</span> <span class="n">KernelNpz</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.kernel.npz&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">print2</span><span class="p">(</span><span class="n">kernel_on_disk</span><span class="o">.</span><span class="n">iid</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span> <span class="c1"># print the first three iids</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">kernel_on_disk</span><span class="o">.</span><span class="n">iid</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span> <span class="c1"># print the first three iids</span>
 <span class="go">[[&#39;per0&#39; &#39;per0&#39;]</span>
 <span class="go"> [&#39;per1&#39; &#39;per1&#39;]</span>
 <span class="go"> [&#39;per2&#39; &#39;per2&#39;]]</span>
@@ -2107,7 +2139,7 @@ Assumes the kernel is square, so will throw an exception if the row iids are dif
 </table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelreader</span> <span class="k">import</span> <span class="n">KernelNpz</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kernel_on_disk</span> <span class="o">=</span> <span class="n">KernelNpz</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.kernel.npz&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">kernel_on_disk</span><span class="o">.</span><span class="n">iid_to_index</span><span class="p">([[</span><span class="sa">b</span><span class="s1">&#39;per2&#39;</span><span class="p">,</span><span class="sa">b</span><span class="s1">&#39;per2&#39;</span><span class="p">],[</span><span class="sa">b</span><span class="s1">&#39;per1&#39;</span><span class="p">,</span><span class="sa">b</span><span class="s1">&#39;per1&#39;</span><span class="p">]]))</span> <span class="c1">#Find the indexes for two iids.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">kernel_on_disk</span><span class="o">.</span><span class="n">iid_to_index</span><span class="p">([[</span><span class="s1">&#39;per2&#39;</span><span class="p">,</span><span class="s1">&#39;per2&#39;</span><span class="p">],[</span><span class="s1">&#39;per1&#39;</span><span class="p">,</span><span class="s1">&#39;per1&#39;</span><span class="p">]]))</span> <span class="c1">#Find the indexes for two iids.</span>
 <span class="go">[2 1]</span>
 </pre></div>
 </div>
@@ -2190,9 +2222,9 @@ It can also be constructed directly.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>iid</strong> (an array of strings) – The <a class="reference internal" href="#pysnptools.kernelreader.KernelReader.iid" title="pysnptools.kernelreader.KernelReader.iid"><code class="xref py py-attr docutils literal notranslate"><span class="pre">KernelReader.iid</span></code></a> information</li>
-<li><strong>iid0</strong> (an array of strings) – The <a class="reference internal" href="#pysnptools.kernelreader.KernelReader.iid0" title="pysnptools.kernelreader.KernelReader.iid0"><code class="xref py py-attr docutils literal notranslate"><span class="pre">KernelReader.iid0</span></code></a> information</li>
-<li><strong>iid1</strong> (an array of strings) – The <a class="reference internal" href="#pysnptools.kernelreader.KernelReader.iid1" title="pysnptools.kernelreader.KernelReader.iid1"><code class="xref py py-attr docutils literal notranslate"><span class="pre">KernelReader.iid1</span></code></a> information</li>
+<li><strong>iid</strong> (an array of string pairs) – The <a class="reference internal" href="#pysnptools.kernelreader.KernelReader.iid" title="pysnptools.kernelreader.KernelReader.iid"><code class="xref py py-attr docutils literal notranslate"><span class="pre">KernelReader.iid</span></code></a> information.</li>
+<li><strong>iid0</strong> (an array of string pairs) – The <a class="reference internal" href="#pysnptools.kernelreader.KernelReader.iid0" title="pysnptools.kernelreader.KernelReader.iid0"><code class="xref py py-attr docutils literal notranslate"><span class="pre">KernelReader.iid0</span></code></a> information.</li>
+<li><strong>iid1</strong> (an array of strings pairs) – The <a class="reference internal" href="#pysnptools.kernelreader.KernelReader.iid1" title="pysnptools.kernelreader.KernelReader.iid1"><code class="xref py py-attr docutils literal notranslate"><span class="pre">KernelReader.iid1</span></code></a> information.</li>
 <li><strong>val</strong> (a 2-D array of floats) – The SNP values</li>
 <li><strong>name</strong> (optional, string) – Information to be display about the origin of this data</li>
 </ul>
@@ -2209,7 +2241,8 @@ It can also be constructed directly.</p>
 </tr>
 </tbody>
 </table>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelreader</span> <span class="k">import</span> <span class="n">KernelData</span>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelreader</span> <span class="k">import</span> <span class="n">KernelData</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata</span> <span class="o">=</span> <span class="n">KernelData</span><span class="p">(</span><span class="n">iid</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">1.</span><span class="p">,</span><span class="o">.</span><span class="mi">5</span><span class="p">],[</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span><span class="mf">1.</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">((</span><span class="n">kerneldata</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">kerneldata</span><span class="o">.</span><span class="n">iid_count</span><span class="p">))</span>
 <span class="go">(0.5, 2)</span>
@@ -2349,7 +2382,8 @@ val, iid0, and iid1 information in NPZ format.</p>
 </tr>
 </tbody>
 </table>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelreader</span> <span class="k">import</span> <span class="n">KernelNpz</span>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelreader</span> <span class="k">import</span> <span class="n">KernelNpz</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data_on_disk</span> <span class="o">=</span> <span class="n">KernelNpz</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.kernel.npz&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">data_on_disk</span><span class="o">.</span><span class="n">iid_count</span><span class="p">)</span>
 <span class="go">500</span>
@@ -2415,7 +2449,8 @@ val, iid, sid, and pos information in Hdf5 format.</p>
 </tr>
 </tbody>
 </table>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelreader</span> <span class="k">import</span> <span class="n">KernelHdf5</span>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelreader</span> <span class="k">import</span> <span class="n">KernelHdf5</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data_on_disk</span> <span class="o">=</span> <span class="n">KernelHdf5</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.kernel.hdf5&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">data_on_disk</span><span class="o">.</span><span class="n">iid_count</span><span class="p">)</span>
 <span class="go">500</span>
@@ -2481,7 +2516,8 @@ val, iid, sid, and pos information in Hdf5 format.</p>
 </tr>
 </tbody>
 </table>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelreader</span> <span class="k">import</span> <span class="n">Identity</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelreader</span> <span class="k">import</span> <span class="n">Identity</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">identity</span> <span class="o">=</span> <span class="n">Identity</span><span class="p">(</span><span class="n">iid</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">identity</span><span class="o">.</span><span class="n">iid_count</span><span class="p">)</span>
 <span class="go">2</span>
@@ -2537,7 +2573,8 @@ at once.</p>
 </tr>
 </tbody>
 </table>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">Unit</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snp_on_disk</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.bed&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>     <span class="c1"># A Bed file is specified, but nothing is read from disk</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kernel_on_disk</span> <span class="o">=</span> <span class="n">SnpKernel</span><span class="p">(</span><span class="n">snp_on_disk</span><span class="p">,</span> <span class="n">Unit</span><span class="p">(),</span><span class="n">block_size</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>  <span class="c1"># A kernel is specified, but nothing is read from disk</span>
@@ -2625,7 +2662,9 @@ share memory and so it may ignore your suggestion and allocate a new ndarray any
 </tbody>
 </table>
 <p>Read and standardize SNP data.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">Unit</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">six.moves</span> <span class="k">import</span> <span class="nb">range</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">Unit</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata1</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">Unit</span><span class="p">())</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">snpdata1</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
@@ -2711,7 +2750,8 @@ be done without outside library code.</li>
 <dd><p>A <a class="reference internal" href="#pysnptools.standardizer.Standardizer" title="pysnptools.standardizer.Standardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></a> to unit standardize SNP data. For each sid, the mean of the values is zero with standard deviation 1.
 NaN values are then filled with zero, the mean (consequently, if there are NaN values, the final standard deviation will not be zero.</p>
 <p>See <a class="reference internal" href="#pysnptools.standardizer.Standardizer" title="pysnptools.standardizer.Standardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></a> for more information about standardization.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">Unit</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">Unit</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata1</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">Unit</span><span class="p">())</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">snpdata1</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
@@ -2744,7 +2784,8 @@ NaN values are then filled with zero, the mean (consequently, if there are NaN v
 </table>
 </dd>
 </dl>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">Beta</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">Beta</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata1</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">Beta</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">25</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:.6f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">snpdata1</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
@@ -2761,7 +2802,8 @@ NaN values are then filled with zero, the mean (consequently, if there are NaN v
 <em class="property">class </em><code class="descclassname">pysnptools.standardizer.</code><code class="descname">Identity</code><a class="headerlink" href="#pysnptools.standardizer.Identity" title="Permalink to this definition">¶</a></dt>
 <dd><p>A <a class="reference internal" href="#pysnptools.standardizer.Standardizer" title="pysnptools.standardizer.Standardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></a> that does nothing to SNP data.</p>
 <p>See <a class="reference internal" href="#pysnptools.standardizer.Standardizer" title="pysnptools.standardizer.Standardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></a> for more information about standardization.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">Identity</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">Identity</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata1</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snpdata1</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
@@ -2802,7 +2844,8 @@ will have a diagonal that sums to iid_count.</p>
 </dd>
 </dl>
 <p>Example of DiagKtoN to <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">DiagKtoN</span><span class="p">,</span> <span class="n">Unit</span><span class="p">,</span> <span class="n">Identity</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">DiagKtoN</span><span class="p">,</span> <span class="n">Unit</span><span class="p">,</span> <span class="n">Identity</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata1</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">Unit</span><span class="p">())</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">DiagKtoN</span><span class="p">())</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kernel1</span> <span class="o">=</span> <span class="n">snpdata1</span><span class="o">.</span><span class="n">read_kernel</span><span class="p">(</span><span class="n">Identity</span><span class="p">())</span>
@@ -2846,7 +2889,8 @@ NaN values are then filled with zero.</p>
 </table>
 </dd>
 </dl>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">Unit</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">Unit</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">train</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)[</span><span class="mi">1</span><span class="p">:,:]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="c1"># read SNP values for all but the first iid</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_</span><span class="p">,</span> <span class="n">unittrained</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">Unit</span><span class="p">(),</span><span class="n">return_trained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1">#Unit standardize and remember the mean and stddev of each sid</span>
@@ -2949,7 +2993,9 @@ It always works in-place <em>and</em> returns the <a class="reference internal" 
 </tbody>
 </table>
 <p>Read and standardize Kernel data.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelstandardizer</span> <span class="k">import</span> <span class="n">DiagKtoN</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">six.moves</span> <span class="k">import</span> <span class="nb">range</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelstandardizer</span> <span class="k">import</span> <span class="n">DiagKtoN</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelreader</span> <span class="k">import</span> <span class="n">KernelNpz</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata1</span> <span class="o">=</span> <span class="n">KernelNpz</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.kernel.npz&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">kerneldata1</span><span class="o">.</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
@@ -3014,7 +3060,9 @@ It always works in-place <em>and</em> returns the <a class="reference internal" 
 </tbody>
 </table>
 <p>Read and standardize Kernel data.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelstandardizer</span> <span class="k">import</span> <span class="n">DiagKtoN</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">six.moves</span> <span class="k">import</span> <span class="nb">range</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelstandardizer</span> <span class="k">import</span> <span class="n">DiagKtoN</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelreader</span> <span class="k">import</span> <span class="n">KernelNpz</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata1</span> <span class="o">=</span> <span class="n">KernelNpz</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.kernel.npz&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">kerneldata1</span><span class="o">.</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
@@ -3092,7 +3140,8 @@ will have a diagonal that sums to iid_count.</p>
 </dd>
 </dl>
 <p>Example of DiagKtoN to <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">DiagKtoN</span><span class="p">,</span> <span class="n">Unit</span><span class="p">,</span> <span class="n">Identity</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">DiagKtoN</span><span class="p">,</span> <span class="n">Unit</span><span class="p">,</span> <span class="n">Identity</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata1</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">Unit</span><span class="p">())</span><span class="o">.</span><span class="n">standardize</span><span class="p">(</span><span class="n">DiagKtoN</span><span class="p">())</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kernel1</span> <span class="o">=</span> <span class="n">snpdata1</span><span class="o">.</span><span class="n">read_kernel</span><span class="p">(</span><span class="n">Identity</span><span class="p">())</span>
@@ -3259,47 +3308,13 @@ will have a diagonal that sums to iid_count.</p>
 </tbody>
 </table>
 <blockquote>
-<div><p>A <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> and <a class="reference internal" href="#pysnptools.kernelreader.KernelReader" title="pysnptools.kernelreader.KernelReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelReader</span></code></a> are each a kind of <a class="reference internal" href="#pysnptools.pstreader.PstReader" title="pysnptools.pstreader.PstReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstReader</span></code></a>. They have some restrictions summarized here:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="30%" />
-<col width="13%" />
-<col width="11%" />
-<col width="11%" />
-<col width="18%" />
-<col width="18%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><em>Class</em></td>
-<td><em>val type</em></td>
-<td><em>row type</em></td>
-<td><em>col type</em></td>
-<td><em>row_property type</em></td>
-<td><em>col_property type</em></td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#pysnptools.pstreader.PstReader" title="pysnptools.pstreader.PstReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstReader</span></code></a></td>
-<td>float</td>
-<td>any</td>
-<td>any</td>
-<td>any</td>
-<td>any</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a></td>
-<td>float</td>
-<td>str,str</td>
-<td>str</td>
-<td>none</td>
-<td>float,float,float</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#pysnptools.kernelreader.KernelReader" title="pysnptools.kernelreader.KernelReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelReader</span></code></a></td>
-<td>float</td>
-<td>str,str</td>
-<td>str,str</td>
-<td>none</td>
-<td>none</td>
-</tr>
-</tbody>
-</table>
+<div><p>A <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> and <a class="reference internal" href="#pysnptools.kernelreader.KernelReader" title="pysnptools.kernelreader.KernelReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelReader</span></code></a> are each a kind of <a class="reference internal" href="#pysnptools.pstreader.PstReader" title="pysnptools.pstreader.PstReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstReader</span></code></a>. They have some restrictions summarized here:
+================================== =============== ============ ============ ==================== ====================
+<em>Class</em>                            <em>val type</em>      <em>row type</em>   <em>col type</em>   <em>row_property type</em>  <em>col_property type</em>
+<a class="reference internal" href="#pysnptools.pstreader.PstReader" title="pysnptools.pstreader.PstReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstReader</span></code></a>                float           any          any          any                  any     
+<a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a>                float           str,str      str          none                 float,float,float
+<a class="reference internal" href="#pysnptools.kernelreader.KernelReader" title="pysnptools.kernelreader.KernelReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelReader</span></code></a>             float           str,str      str,str      none                 none
+================================== =============== ============ ============ ==================== ====================</p>
 <p>For convenience, they allow additional ways to access rows and columns.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3361,8 +3376,9 @@ See below for details.</p>
 <p>Rows and Cols:</p>
 <blockquote>
 <div><p>Example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.pstreader</span> <span class="k">import</span> <span class="n">PstHdf5</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util</span> <span class="k">import</span> <span class="n">print2</span> <span class="c1"># Makes ascii strings look the same under Python2/Python3</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.pstreader</span> <span class="k">import</span> <span class="n">PstHdf5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util</span> <span class="k">import</span> <span class="n">print2</span> <span class="c1">#print bytes strings and Unicode strings the same</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">on_disk</span> <span class="o">=</span> <span class="n">PstHdf5</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.iidmajor.snp.hdf5&#39;</span><span class="p">)</span> <span class="c1"># PstHdf5 can load .pst.hdf5, .snp.hdf5, and kernel.hdf5</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">print2</span><span class="p">(</span><span class="n">on_disk</span><span class="o">.</span><span class="n">row</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span> <span class="c1"># print the first three rows</span>
 <span class="go">[[&#39;per0&#39; &#39;per0&#39;]</span>
@@ -3370,7 +3386,7 @@ See below for details.</p>
 <span class="go"> [&#39;per2&#39; &#39;per2&#39;]]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">print2</span><span class="p">(</span><span class="n">on_disk</span><span class="o">.</span><span class="n">col</span><span class="p">[:</span><span class="mi">7</span><span class="p">])</span> <span class="c1"># print the first seven columns</span>
 <span class="go">[&#39;null_0&#39; &#39;null_1&#39; &#39;null_2&#39; &#39;null_3&#39; &#39;null_4&#39; &#39;null_5&#39; &#39;null_6&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">on_disk</span><span class="o">.</span><span class="n">row_to_index</span><span class="p">([[</span><span class="sa">b</span><span class="s1">&#39;per2&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;per2&#39;</span><span class="p">],[</span><span class="sa">b</span><span class="s1">&#39;per1&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;per1&#39;</span><span class="p">]]))</span> <span class="c1">#Find the indexes for two rows.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">print2</span><span class="p">(</span><span class="n">on_disk</span><span class="o">.</span><span class="n">row_to_index</span><span class="p">([[</span><span class="sa">b</span><span class="s1">&#39;per2&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;per2&#39;</span><span class="p">],[</span><span class="sa">b</span><span class="s1">&#39;per1&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;per1&#39;</span><span class="p">]]))</span> <span class="c1">#Find the indexes for two rows.</span>
 <span class="go">[2 1]</span>
 </pre></div>
 </div>
@@ -3879,9 +3895,10 @@ It is usually created by calling the <a class="reference internal" href="#pysnpt
 </tr>
 </tbody>
 </table>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.pstreader</span> <span class="k">import</span> <span class="n">PstData</span>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.pstreader</span> <span class="k">import</span> <span class="n">PstData</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pstdata</span> <span class="o">=</span> <span class="n">PstData</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">col</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;snp334&#39;</span><span class="p">,</span><span class="s1">&#39;snp349&#39;</span><span class="p">,</span><span class="s1">&#39;snp921&#39;</span><span class="p">],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">pstdata</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">pstdata</span><span class="o">.</span><span class="n">row_count</span><span class="p">,</span> <span class="n">pstdata</span><span class="o">.</span><span class="n">col_count</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pstdata</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">pstdata</span><span class="o">.</span><span class="n">row_count</span><span class="p">,</span> <span class="n">pstdata</span><span class="o">.</span><span class="n">col_count</span><span class="p">)</span>
 <span class="go">2.0 2 3</span>
 </pre></div>
 </div>
@@ -3988,7 +4005,8 @@ val, row, col, row_property, and col_property information in Hdf5 format.</p>
 </tr>
 </tbody>
 </table>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.pstreader</span> <span class="k">import</span> <span class="n">PstHdf5</span>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.pstreader</span> <span class="k">import</span> <span class="n">PstHdf5</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">on_disk</span> <span class="o">=</span> <span class="n">PstHdf5</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.iidmajor.snp.hdf5&#39;</span><span class="p">)</span> <span class="c1"># PstHdf5 can load .pst.hdf5, .snp.hdf5, and kernel.hdf5</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">on_disk</span><span class="o">.</span><span class="n">row_count</span><span class="p">)</span>
 <span class="go">500</span>
@@ -4056,7 +4074,8 @@ val, row, col, row_property, and col_property information in NPZ format.</p>
 </tr>
 </tbody>
 </table>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.pstreader</span> <span class="k">import</span> <span class="n">PstNpz</span>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.pstreader</span> <span class="k">import</span> <span class="n">PstNpz</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data_on_disk</span> <span class="o">=</span> <span class="n">PstNpz</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/little.pst.npz&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">data_on_disk</span><span class="o">.</span><span class="n">row_count</span><span class="p">)</span>
 <span class="go">300</span>
@@ -4124,8 +4143,9 @@ val, row, col, row_property, and col_property information in NPZ format.</p>
 </tbody>
 </table>
 <div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.pstreader</span> <span class="k">import</span> <span class="n">PstMemMap</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pst_mem_map</span> <span class="o">=</span> <span class="n">PstMemMap</span><span class="p">(</span><span class="s1">&#39;../examples/tiny.pst.memmap&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">pst_mem_map</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">pst_mem_map</span><span class="o">.</span><span class="n">row_count</span><span class="p">,</span> <span class="n">pst_mem_map</span><span class="o">.</span><span class="n">col_count</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pst_mem_map</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">pst_mem_map</span><span class="o">.</span><span class="n">row_count</span><span class="p">,</span> <span class="n">pst_mem_map</span><span class="o">.</span><span class="n">col_count</span><span class="p">)</span>
 <span class="go">2.0 3 2</span>
 </pre></div>
 </div>
@@ -4276,8 +4296,9 @@ val, row, col, row_property, and col_property information in NPZ format.</p>
 </tr>
 </tbody>
 </table>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util</span> <span class="k">import</span> <span class="n">format_delta</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">format_delta</span><span class="p">(</span><span class="mf">86403.5</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util</span> <span class="k">import</span> <span class="n">format_delta</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">format_delta</span><span class="p">(</span><span class="mf">86403.5</span><span class="p">))</span>
 <span class="go">1 day, 0:00:03.500000</span>
 </pre></div>
 </div>
@@ -4346,10 +4367,10 @@ are already ok). Inputting a tuple returns a new tuple (unless its iids are alre
 </tr>
 </tbody>
 </table>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span><span class="p">,</span> <span class="n">Pheno</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span><span class="p">,</span> <span class="n">Pheno</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelreader</span> <span class="k">import</span> <span class="n">SnpKernel</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">Unit</span>
-<span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1">#Create five datasets in different formats</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ignore_in</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kernel_in</span> <span class="o">=</span> <span class="n">SnpKernel</span><span class="p">(</span><span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span><span class="n">Unit</span><span class="p">())</span> <span class="c1"># Create a kernel from a Bed file</span>
@@ -4360,7 +4381,7 @@ are already ok). Inputting a tuple returns a new tuple (unless its iids are alre
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create five new datasets with consistent iids</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ignore_out</span><span class="p">,</span> <span class="n">kernel_out</span><span class="p">,</span> <span class="n">pheno_out</span><span class="p">,</span> <span class="n">cov_as_tuple_out</span> <span class="o">=</span> <span class="n">intersect_apply</span><span class="p">([</span><span class="n">ignore_in</span><span class="p">,</span> <span class="n">kernel_in</span><span class="p">,</span> <span class="n">pheno_in</span><span class="p">,</span> <span class="n">cov_as_tuple_in</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Print the first five iids from each dataset</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">ignore_out</span><span class="p">,</span> <span class="n">kernel_out</span><span class="o">.</span><span class="n">iid</span><span class="p">[:</span><span class="mi">5</span><span class="p">],</span> <span class="n">pheno_out</span><span class="o">.</span><span class="n">iid</span><span class="p">[:</span><span class="mi">5</span><span class="p">],</span> <span class="n">cov_as_tuple_out</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">5</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ignore_out</span><span class="p">,</span> <span class="n">kernel_out</span><span class="o">.</span><span class="n">iid</span><span class="p">[:</span><span class="mi">5</span><span class="p">],</span> <span class="n">pheno_out</span><span class="o">.</span><span class="n">iid</span><span class="p">[:</span><span class="mi">5</span><span class="p">],</span> <span class="n">cov_as_tuple_out</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">5</span><span class="p">])</span>
 <span class="go">None [[&#39;POP1&#39; &#39;0&#39;]</span>
 <span class="go"> [&#39;POP1&#39; &#39;12&#39;]</span>
 <span class="go"> [&#39;POP1&#39; &#39;44&#39;]</span>
@@ -4415,12 +4436,13 @@ will include time.</p>
 </tbody>
 </table>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pysnptools.util</span> <span class="kn">import</span> <span class="n">log_in_place</span>
+<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="nb">range</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
 
 <span class="k">with</span> <span class="n">log_in_place</span><span class="p">(</span><span class="s2">&quot;counting&quot;</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span> <span class="k">as</span> <span class="n">updater</span><span class="p">:</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
         <span class="n">updater</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="p">)</span> <span class="c1">#typically, some work -- not a delay -- goes here</span>
 </pre></div>
@@ -4459,24 +4481,19 @@ If order is ‘A’, then sub-matrix may be in any order F or C.</li>
 </tr>
 </tbody>
 </table>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pysnptools.util</span> <span class="k">as</span> <span class="nn">pstutil</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># set seed so that results are deterministic</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">7</span><span class="p">)</span> <span class="c1"># create a 12 x 7 ndarray</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">submatrix</span> <span class="o">=</span> <span class="n">pstutil</span><span class="o">.</span><span class="n">sub_matrix</span><span class="p">(</span><span class="n">matrix</span><span class="p">,[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">11</span><span class="p">],[</span><span class="mi">6</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">submatrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="nb">int</span><span class="p">(</span><span class="n">submatrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-<span class="go">(3, 7)</span>
+<span class="go">3 7</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">matrix</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">submatrix</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">])</span> <span class="c1">#The row # 2 is now #1, the column #0 is now #6.</span>
 <span class="go">True</span>
 </pre></div>
 </div>
 <p>Note: Behind the scenes, for performance, this function selects and then calls one of 16 C++ helper functions.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="pysnptools.util.to_ascii">
-<code class="descclassname">pysnptools.util.</code><code class="descname">to_ascii</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.to_ascii" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is for Python2/3 compatibility</p>
 </dd></dl>
 
 <dl class="function">
@@ -4524,11 +4541,12 @@ If order is ‘A’, then sub-matrix may be in any order F or C.</li>
 </tr>
 </tbody>
 </table>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">53.8329911</span><span class="p">,</span><span class="mf">57.49486653</span><span class="p">,</span><span class="mf">60.07392197</span><span class="p">,</span><span class="mf">60.21081451</span><span class="p">])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">53.8329911</span><span class="p">,</span><span class="mf">57.49486653</span><span class="p">,</span><span class="mf">60.07392197</span><span class="p">,</span><span class="mf">60.21081451</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">103.664086</span><span class="p">,</span><span class="mf">89.80645161</span><span class="p">,</span><span class="mf">83.86888046</span><span class="p">,</span><span class="mf">90.54141176</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">2.340862423</span><span class="p">,</span><span class="mf">4.982888433</span><span class="p">,</span><span class="mf">0.17522245</span><span class="p">,</span><span class="mf">0.098562628</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span><span class="p">,</span> <span class="n">xmean</span><span class="p">,</span> <span class="n">ymean</span> <span class="o">=</span> <span class="n">weighted_simple_linear_regression</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="nb">round</span><span class="p">(</span><span class="n">slope</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">intercept</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">xmean</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">ymean</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">slope</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">intercept</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">xmean</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">ymean</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
 <span class="go">-3.52643 293.05586 56.46133 93.9487</span>
 </pre></div>
 </div>
@@ -4565,8 +4583,9 @@ integers starting with 1.</li>
 </tr>
 </tbody>
 </table>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata</span> <span class="o">=</span> <span class="n">snp_gen</span><span class="p">(</span><span class="n">fst</span><span class="o">=.</span><span class="mi">1</span><span class="p">,</span><span class="n">dfr</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span><span class="n">iid_count</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span><span class="n">sid_count</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span><span class="n">maf_low</span><span class="o">=.</span><span class="mi">05</span><span class="p">,</span><span class="n">seed</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="nb">int</span><span class="p">(</span><span class="n">snpdata</span><span class="o">.</span><span class="n">iid_count</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">snpdata</span><span class="o">.</span><span class="n">sid_count</span><span class="p">)</span> <span class="c1">#because of rounding got 190 individuals</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata</span> <span class="o">=</span> <span class="n">snp_gen</span><span class="p">(</span><span class="n">fst</span><span class="o">=.</span><span class="mi">1</span><span class="p">,</span><span class="n">dfr</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span><span class="n">iid_count</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span><span class="n">sid_count</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span><span class="n">maf_low</span><span class="o">=.</span><span class="mi">05</span><span class="p">,</span><span class="n">seed</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">snpdata</span><span class="o">.</span><span class="n">iid_count</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">snpdata</span><span class="o">.</span><span class="n">sid_count</span><span class="p">))</span> <span class="c1">#because of rounding got 190 individuals</span>
 <span class="go">190 20</span>
 </pre></div>
 </div>
@@ -4600,7 +4619,8 @@ It differs from other Python interval libraries (that we know of) by being speci
 </table>
 <p>Here we take the union (operator “|”) of two IntRangeSets:</p>
 <img alt="_images/example1.png" src="_images/example1.png" />
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">IntRangeSet</span><span class="p">(</span><span class="s2">&quot;100:500,501:1000&quot;</span><span class="p">)</span> <span class="c1"># a is the set of integers from 100 to 500 (exclusive) and 501 to 1000 (exclusive)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">IntRangeSet</span><span class="p">(</span><span class="s2">&quot;100:500,501:1000&quot;</span><span class="p">)</span> <span class="c1"># a is the set of integers from 100 to 500 (exclusive) and 501 to 1000 (exclusive)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">IntRangeSet</span><span class="p">(</span><span class="s2">&quot;-20,400:600&quot;</span><span class="p">)</span>      <span class="c1"># b is the set of integers -20 and the range 400 to 600 (exclusive)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">|</span> <span class="n">b</span>                           <span class="c1"># c is the union of a and b, namely -20 and 100 to 1000 (exclusive)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
@@ -4635,15 +4655,16 @@ It differs from other Python interval libraries (that we know of) by being speci
 </div>
 <p>Zip together the two lists to create an iterable of exon_start,exon_stop tuples. Then
 ‘set subtract’ all these ranges from int_range_set</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">itertools</span> <span class="k">import</span> <span class="n">izip</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">int_range_set</span> <span class="o">-=</span> <span class="n">izip</span><span class="p">(</span><span class="n">exon_starts</span><span class="p">,</span><span class="n">exon_stops</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">six.moves</span> <span class="k">import</span> <span class="nb">range</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">int_range_set</span> <span class="o">-=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">exon_starts</span><span class="p">,</span><span class="n">exon_stops</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">int_range_set</span><span class="p">)</span> <span class="c1"># See what it looks like</span>
 <span class="go">IntRangeSet(&#39;30818:32358,32562:36715&#39;)</span>
 </pre></div>
 </div>
 <p>Create the desired output by iterating through each contiguous range of integers</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span> <span class="ow">in</span> <span class="n">int_range_set</span><span class="o">.</span><span class="n">ranges</span><span class="p">():</span>
-<span class="gp">... </span>   <span class="nb">print</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">   </span><span class="si">{1}</span><span class="s2">     </span><span class="si">{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">chr</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">   </span><span class="si">{1}</span><span class="s2">     </span><span class="si">{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">chr</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
 <span class="go">chr15   30818     32357</span>
 <span class="go">chr15   32562     36714</span>
 </pre></div>
@@ -5216,7 +5237,7 @@ Because a is a set, the result will either be an empty IntRangeSet (n is 0 or le
 </tbody>
 </table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">IntRangeSet</span><span class="p">(</span><span class="s1">&#39;1:4,10&#39;</span><span class="p">):</span>
-<span class="gp">... </span>   <span class="nb">print</span> <span class="n">i</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
 <span class="go">1</span>
 <span class="go">2</span>
 <span class="go">3</span>
@@ -5389,7 +5410,7 @@ the original IntRangeSet.</p>
 </tbody>
 </table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">IntRangeSet</span><span class="p">(</span><span class="s1">&#39;1:4,10&#39;</span><span class="p">)):</span>
-<span class="gp">... </span>    <span class="nb">print</span> <span class="n">i</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
 <span class="go">10</span>
 <span class="go">3</span>
 <span class="go">2</span>
@@ -5815,7 +5836,7 @@ in constant time rather than in time linear to the number of integer elements.</
 </tbody>
 </table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">start</span><span class="p">,</span><span class="n">stop</span> <span class="ow">in</span> <span class="n">IntRangeSet</span><span class="p">(</span><span class="s1">&#39;0:10,100:200&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">ranges</span><span class="p">():</span>
-<span class="gp">... </span>      <span class="nb">print</span> <span class="s2">&quot;start is </span><span class="si">{0}</span><span class="s2">, stop is </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">start</span><span class="p">,</span><span class="n">stop</span><span class="p">)</span>
+<span class="gp">... </span>      <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;start is </span><span class="si">{0}</span><span class="s2">, stop is </span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">start</span><span class="p">,</span><span class="n">stop</span><span class="p">))</span>
 <span class="go">start is 0, stop is 10</span>
 <span class="go">start is 100, stop is 200</span>
 </pre></div>
@@ -6091,7 +6112,8 @@ If not given, the function is run locally.</li>
 </table>
 <p>Square the numbers 0 to 99 and report their sum, locally:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.mapreduce1</span> <span class="k">import</span> <span class="n">map_reduce</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">map_reduce</span><span class="p">(</span><span class="n">xrange</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">six.moves</span> <span class="k">import</span> <span class="nb">range</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">map_reduce</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> 
 <span class="gp">... </span>       <span class="n">mapper</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="p">,</span>
 <span class="gp">... </span>       <span class="n">reducer</span><span class="o">=</span><span class="nb">sum</span><span class="p">)</span>
 <span class="go">328350</span>
@@ -6099,7 +6121,8 @@ If not given, the function is run locally.</li>
 </div>
 <p>Compute it again, this time run on four processors:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.mapreduce1.runner</span> <span class="k">import</span> <span class="n">LocalMultiProc</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">map_reduce</span><span class="p">(</span><span class="n">xrange</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">six.moves</span> <span class="k">import</span> <span class="nb">range</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">map_reduce</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
 <span class="gp">... </span>       <span class="n">mapper</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="p">,</span>
 <span class="gp">... </span>       <span class="n">reducer</span><span class="o">=</span><span class="nb">sum</span><span class="p">,</span>
 <span class="gp">... </span>       <span class="n">runner</span><span class="o">=</span><span class="n">LocalMultiProc</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
@@ -6112,7 +6135,7 @@ If not given, the function is run locally.</li>
 <span class="gp">... </span>        <span class="k">return</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span>
 <span class="gp">... </span>    <span class="k">def</span> <span class="nf">reducer1</span><span class="p">(</span><span class="n">sequence</span><span class="p">):</span>
 <span class="gp">... </span>       <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
-<span class="gp">... </span>    <span class="k">return</span> <span class="n">map_reduce</span><span class="p">(</span><span class="n">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="n">mapper</span><span class="o">=</span><span class="n">mapper1</span><span class="p">,</span><span class="n">reducer</span><span class="o">=</span><span class="n">reducer1</span><span class="p">,</span><span class="n">runner</span><span class="o">=</span><span class="n">runner</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">map_reduce</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="n">mapper</span><span class="o">=</span><span class="n">mapper1</span><span class="p">,</span><span class="n">reducer</span><span class="o">=</span><span class="n">reducer1</span><span class="p">,</span><span class="n">runner</span><span class="o">=</span><span class="n">runner</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">holder1</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="n">LocalMultiProc</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
 <span class="go">328350</span>
 </pre></div>
@@ -6156,14 +6179,15 @@ If not given, the function is run locally.</li>
 </tr>
 </tbody>
 </table>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.mapreduce1</span> <span class="k">import</span> <span class="n">map_reduce</span>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">six.moves</span> <span class="k">import</span> <span class="nb">range</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.mapreduce1</span> <span class="k">import</span> <span class="n">map_reduce</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.mapreduce1.runner</span> <span class="k">import</span> <span class="n">Local</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">holder1</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">runner</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="k">def</span> <span class="nf">mapper1</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 <span class="gp">... </span>        <span class="k">return</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span>
 <span class="gp">... </span>    <span class="k">def</span> <span class="nf">reducer1</span><span class="p">(</span><span class="n">sequence</span><span class="p">):</span>
 <span class="gp">... </span>       <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
-<span class="gp">... </span>    <span class="k">return</span> <span class="n">map_reduce</span><span class="p">(</span><span class="n">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="n">mapper</span><span class="o">=</span><span class="n">mapper1</span><span class="p">,</span><span class="n">reducer</span><span class="o">=</span><span class="n">reducer1</span><span class="p">,</span><span class="n">runner</span><span class="o">=</span><span class="n">runner</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">map_reduce</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="n">mapper</span><span class="o">=</span><span class="n">mapper1</span><span class="p">,</span><span class="n">reducer</span><span class="o">=</span><span class="n">reducer1</span><span class="p">,</span><span class="n">runner</span><span class="o">=</span><span class="n">runner</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">holder1</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="n">Local</span><span class="p">())</span>
 <span class="go">328350</span>
 </pre></div>
@@ -6196,7 +6220,7 @@ If not given, the function is run locally.</li>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>just_one_process</strong> (<em>bool</em>) – (default False) Divide the work for multiple processes, but sequentially on one process. Can be useful for debugging.</li>
+<li><strong>just_one_process</strong> (<em>bool</em>) – (default False) Divide the work for multiple processes, but runs sequentially on one process. Can be useful for debugging.</li>
 </ul>
 </td>
 </tr>
@@ -6211,12 +6235,13 @@ If not given, the function is run locally.</li>
 </table>
 <div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.mapreduce1</span> <span class="k">import</span> <span class="n">map_reduce</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.mapreduce1.runner</span> <span class="k">import</span> <span class="n">LocalMultiProc</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">six.moves</span> <span class="k">import</span> <span class="nb">range</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">holder1</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">runner</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="k">def</span> <span class="nf">mapper1</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 <span class="gp">... </span>        <span class="k">return</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span>
 <span class="gp">... </span>    <span class="k">def</span> <span class="nf">reducer1</span><span class="p">(</span><span class="n">sequence</span><span class="p">):</span>
 <span class="gp">... </span>       <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
-<span class="gp">... </span>    <span class="k">return</span> <span class="n">map_reduce</span><span class="p">(</span><span class="n">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="n">mapper</span><span class="o">=</span><span class="n">mapper1</span><span class="p">,</span><span class="n">reducer</span><span class="o">=</span><span class="n">reducer1</span><span class="p">,</span><span class="n">runner</span><span class="o">=</span><span class="n">runner</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">map_reduce</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="n">mapper</span><span class="o">=</span><span class="n">mapper1</span><span class="p">,</span><span class="n">reducer</span><span class="o">=</span><span class="n">reducer1</span><span class="p">,</span><span class="n">runner</span><span class="o">=</span><span class="n">runner</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">holder1</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="n">LocalMultiProc</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
 <span class="go">328350</span>
 </pre></div>
@@ -6261,12 +6286,13 @@ If this <a class="reference internal" href="#pysnptools.util.mapreduce1.runner.R
 </table>
 <div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.mapreduce1</span> <span class="k">import</span> <span class="n">map_reduce</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.mapreduce1.runner</span> <span class="k">import</span> <span class="n">LocalMultiThread</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">six.moves</span> <span class="k">import</span> <span class="nb">range</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">holder1</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">runner</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="k">def</span> <span class="nf">mapper1</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 <span class="gp">... </span>        <span class="k">return</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span>
 <span class="gp">... </span>    <span class="k">def</span> <span class="nf">reducer1</span><span class="p">(</span><span class="n">sequence</span><span class="p">):</span>
 <span class="gp">... </span>       <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
-<span class="gp">... </span>    <span class="k">return</span> <span class="n">map_reduce</span><span class="p">(</span><span class="n">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="n">mapper</span><span class="o">=</span><span class="n">mapper1</span><span class="p">,</span><span class="n">reducer</span><span class="o">=</span><span class="n">reducer1</span><span class="p">,</span><span class="n">runner</span><span class="o">=</span><span class="n">runner</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">map_reduce</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="n">mapper</span><span class="o">=</span><span class="n">mapper1</span><span class="p">,</span><span class="n">reducer</span><span class="o">=</span><span class="n">reducer1</span><span class="p">,</span><span class="n">runner</span><span class="o">=</span><span class="n">runner</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">holder1</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="n">LocalMultiThread</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
 <span class="go">328350</span>
 </pre></div>
@@ -6306,12 +6332,13 @@ Clustering runners and <a class="reference internal" href="#pysnptools.util.mapr
 </table>
 <div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.mapreduce1</span> <span class="k">import</span> <span class="n">map_reduce</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util.mapreduce1.runner</span> <span class="k">import</span> <span class="n">LocalInParts</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">six.moves</span> <span class="k">import</span> <span class="nb">range</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">holder1</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">runner</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="k">def</span> <span class="nf">mapper1</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 <span class="gp">... </span>        <span class="k">return</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span>
 <span class="gp">... </span>    <span class="k">def</span> <span class="nf">reducer1</span><span class="p">(</span><span class="n">sequence</span><span class="p">):</span>
 <span class="gp">... </span>       <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span>
-<span class="gp">... </span>    <span class="k">return</span> <span class="n">map_reduce</span><span class="p">(</span><span class="n">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="n">mapper</span><span class="o">=</span><span class="n">mapper1</span><span class="p">,</span><span class="n">reducer</span><span class="o">=</span><span class="n">reducer1</span><span class="p">,</span><span class="n">runner</span><span class="o">=</span><span class="n">runner</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">map_reduce</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="n">mapper</span><span class="o">=</span><span class="n">mapper1</span><span class="p">,</span><span class="n">reducer</span><span class="o">=</span><span class="n">reducer1</span><span class="p">,</span><span class="n">runner</span><span class="o">=</span><span class="n">runner</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">holder1</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="n">LocalInParts</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span> <span class="c1">#Run part 0 of 4 and save partial results to disk as &#39;0.4.p&#39;.</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">holder1</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="n">LocalInParts</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span> <span class="c1">#Run part 1 of 4 and save partial results to disk as &#39;1.4.p&#39;.</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">holder1</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="n">LocalInParts</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span> <span class="c1">#Run part 2 of 4 and save partial results to disk as &#39;2.4.p&#39;.</span>
@@ -6387,9 +6414,10 @@ on machine 192.168.1.105 but readable other machines in the cluster
 </pre></div>
 </div>
 <p>Copy back from remote storage (if needed) and then read SNP data from local file.</p>
-<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">file_cache</span><span class="o">.</span><span class="n">open_read</span><span class="p">(</span><span class="s1">&#39;r123.100x500.dense.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">local_filename</span><span class="p">:</span>
+<div class="last highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">file_cache</span><span class="o">.</span><span class="n">open_read</span><span class="p">(</span><span class="s1">&#39;r123.100x500.dense.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">local_filename</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="n">dense2</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">local_filename</span><span class="p">)</span>
-<span class="gp">... </span>    <span class="nb">print</span> <span class="n">dense2</span><span class="p">[:</span><span class="mi">3</span><span class="p">,:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">val</span> <span class="c1">#Read 1st 3 individuals and SNPs</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">dense2</span><span class="p">[:</span><span class="mi">3</span><span class="p">,:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">val</span><span class="p">)</span> <span class="c1">#Read 1st 3 individuals and SNPs</span>
 <span class="go">[[ 0. nan nan]</span>
 <span class="go"> [ 0.  0. nan]</span>
 <span class="go"> [ 0.  0.  0.]]</span>
@@ -6608,7 +6636,7 @@ the function created by <a class="reference internal" href="#pysnptools.util.log
 <span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">rmtree</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">file_cache</span><span class="o">.</span><span class="n">open_write</span><span class="p">(</span><span class="s1">&#39;file1.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">local_filename</span><span class="p">:</span>
 <span class="gp">... </span>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">local_filename</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
-<span class="gp">... </span>        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="n">_</span><span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Hello&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">file_cache</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;file1.txt&#39;</span><span class="p">)</span>
 <span class="go">&#39;Hello&#39;</span>
 </pre></div>

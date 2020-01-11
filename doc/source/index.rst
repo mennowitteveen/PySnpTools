@@ -45,7 +45,7 @@ See `PySnpTools's README.md <https://github.com/fastlmm/PySnpTools/blob/master/R
 
 :Code:
 
-* `PyPi <https://pypi.org/project/pynsptools/>`_
+* `PyPi <https://pypi.org/project/pysnptools/>`_
 * `GitHub <https://github.com/fastlmm/PySnpTools>`_
 
 :Contacts:

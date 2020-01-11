@@ -27,7 +27,7 @@ Documentation
 
 Code
 =================================
-* [PyPi](https://pypi.org/project/pynsptools/)
+* [PyPi](https://pypi.org/project/pysnptools/)
 * [GitHub](https://github.com/fastlmm/PySnpTools)
 
 Contacts

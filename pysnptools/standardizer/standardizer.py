@@ -63,7 +63,7 @@ class Standardizer(object):
         :type block_size: None
 
         :param return_trained: If true, returns a second value containing a constant standardizer trained on this data.
-        :type return_trained: boolean
+        :type return_trained: bool
 
         :param force_python_only: optional -- If False (default), may use outside library code. If True, requests that the read
             be done without outside library code.

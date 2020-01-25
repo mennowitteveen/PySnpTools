@@ -36,6 +36,8 @@ See `PySnpTools's README.md <https://github.com/fastlmm/PySnpTools/blob/master/R
 
 :Tutorial:
 
+* `Short Overview Paper <https://www.biorxiv.org/search/PySnpTools>`_
+
 *From PyData Conference, Seattle*
 
 * `Slides <https://1drv.ms/p/s!AkoPP4cC5J64jOc15JXgDsXmD9EEaw>`_

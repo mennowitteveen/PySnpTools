@@ -165,7 +165,7 @@ class FileCache(object):
         :param file_name: The name of the file to look for
         :type file_name: string
 
-        :rtype: boolean
+        :rtype: bool
 
         :Example:
 

@@ -6,7 +6,6 @@ import logging
 from pysnptools.pstreader import PstReader
 from pysnptools.pstreader import PstData
 
-#!!Should handle negatives as index and arrays of index, but doesn't
 class _PstSubset(PstReader):
 
     def __init__(self, internal, row_indexer, col_indexer):
@@ -14,8 +13,8 @@ class _PstSubset(PstReader):
         an indexer can be:
              an integer i (same as [i])
              a slice
-             a list of integers
-             a list of booleans
+             a list of integers (including negatives)
+             a list of Booleans
         '''
         super(_PstSubset, self).__init__()
         self._ran_once = False

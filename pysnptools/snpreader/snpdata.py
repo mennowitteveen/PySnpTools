@@ -135,7 +135,7 @@ class SnpData(PstData,SnpReader):
         :type block_size: None
 
         :param return_trained: If true, returns a second value containing a constant :class:`.Standardizer` trained on this data.
-        :type return_trained: boolean
+        :type return_trained: bool
 
         :param force_python_only: optional -- If true, will use pure Python instead of faster C++ libraries.
         :type force_python_only: bool

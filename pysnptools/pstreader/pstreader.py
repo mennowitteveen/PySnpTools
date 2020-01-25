@@ -217,7 +217,7 @@ class PstReader(object):
         of indexes, with slicing, and with an array of Booleans.
 
             >>> on_disk = PstNpz('../../tests/datasets/all_chr.maf0.001.N300.pst.npz') # Specify some data on disk in PstNpz format
-            >>> subset_reader_1 = on_disk[[3,4],:] #index with an array of indexes
+            >>> subset_reader_1 = on_disk[[3,-1],:] #index with an array of indexes (negatives count from end)
             >>> print((subset_reader_1.row_count, subset_reader_1.col_count))
             (2, 1015)
             >>> data1 = subset_reader_1.read() # read just the two rows of interest from the disk
@@ -570,7 +570,7 @@ class PstReader(object):
 
     @staticmethod
     def _process_ndarray(indexer):
-        if len(indexer)==0: # If it's very length the type is unreliable and unneeded.
+        if len(indexer)==0: # If it's zero length, the type is unreliable and unneeded.
             return np.zeros((0),dtype=np.integer)
         if indexer.dtype == bool:
             return np.arange(len(indexer),dtype=np.integer)[indexer]
@@ -582,6 +582,8 @@ class PstReader(object):
     def _make_sparray_from_sparray_or_slice(count, indexer):
         if isinstance(indexer,slice):
             return np.arange(*indexer.indices(count))
+        if isinstance(indexer,np.ndarray) and np.issubdtype(indexer.dtype, np.integer) and np.any(indexer<0):
+            return np.arange(count)[indexer]
         return indexer
 
     @staticmethod

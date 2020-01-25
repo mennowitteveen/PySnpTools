@@ -104,6 +104,70 @@ class SnpReader(PstReader):
         >>> print(snp_on_disk.iid_to_index([['POP1','44'],['POP1','12']])) #Find the indexes for two iids.
         [2 1]
         
+    Selecting and Reordering Individuals and SNPs
+
+        You often don't want to read the SNP values for all iids and sids. You can use indexing to create a subsetting SnpReader that
+        will read only the SNP values of interest.
+
+        SnpReaders support the indexing formats supported by ndarray plus two generalizations. Here are examples of indexing with an array
+        of indexes, with slicing, and with an array of Booleans.
+
+            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
+            >>> subset_snpreader_1 = snp_on_disk[[3,-1],:] #index with an array of indexes. Negatives count from end.
+            >>> print((subset_snpreader_1.iid_count, subset_snpreader_1.sid_count))
+            (2, 1015)
+            >>> snpdata1 = subset_snpreader_1.read() # read just the two rows of interest from the disk
+            >>> subset_snpreader_2 = snp_on_disk[:,:0:-2] #index with a slice
+            >>> print((subset_snpreader_2.iid_count, subset_snpreader_2.sid_count))
+            (300, 507)
+            >>> boolindexes = [s.startswith('23_') for s in snp_on_disk.sid] # create a Boolean index of sids that start '23_'
+            >>> subset_snpreader_3 = snp_on_disk[:,boolindexes] #index with array of Booleans
+            >>> print((subset_snpreader_3.iid_count, subset_snpreader_3.sid_count))
+            (300, 24)
+
+        The first generalization over what ndarray offers is full indexing on both the iid dimension and the sid dimension, in other words,
+        full multidimensional indexing. For example,
+
+            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
+            >>> subset_snpreader_4 = snp_on_disk[[3,4],:0:-2] # index on two dimensions at once
+            >>> print((subset_snpreader_4.iid_count, subset_snpreader_4.sid_count))
+            (2, 507)
+
+        The second generalization is indexing on a single integer index.
+
+            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
+            >>> subset_snpreader_5 = snp_on_disk[5,:] #index with single integer
+            >>> print((subset_snpreader_5.iid_count, subset_snpreader_5.sid_count))
+            (1, 1015)
+
+        Indexing is also useful when you have SNP values in memory via a :class:`SnpData` index and want to copy a subset of those values.
+        While you could instead index directly on the `.SnpData.val` ndarray, by indexing on the :class:`SnpData` instance you
+        also get iid and cid information.
+
+            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
+            >>> snpdata1 = snp_on_disk.read() # read all SNP values into memory
+            >>> print(snpdata1.sid[:9]) # print the first 9 sids
+            ['1_12' '1_34' '1_10' '1_35' '1_28' '1_25' '1_36' '1_39' '1_4']
+            >>> snpdata_subset = snpdata1[:,::2].read(view_ok=True,order='A') # create a copy or view with every other sid
+            >>> print(snpdata_subset.sid[:9])# print the first 9 sids in the subset
+            ['1_12' '1_10' '1_28' '1_36' '1_4' '1_11' '1_32' '1_9' '1_17']
+
+
+        You can apply indexing on top of indexing to specify subsets of subsets of data to read. In this example, 
+        only the SNP values for every 16th sid is actually read from the disk.
+
+            >>> # These are just SnpReaders, nothing is read from disk yet
+            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
+            >>> half_snpreader = snp_on_disk[:,::2] # a reader for half the sids
+            >>> quarter_snpreader = half_snpreader[:,::2] # a reader for half of half the sids
+            >>> sixteenth_snpreader = quarter_snpreader[:,::2][:,::2] # a reader for half of half of half of half the sids
+            >>> print(sixteenth_snpreader) #Print the specification of this reader
+            Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)[:,::2][:,::2][:,::2][:,::2]
+            >>> # Now we read from disk. Only values for one sid in every 16 will be read.
+            >>> snpdata_sixteenth = sixteenth_snpreader.read()
+            >>> print(snpdata_sixteenth.val[0,3])
+            2.0
+        
     When Data is Read:
 
         SNP data can be enormous so we generally avoid reading it to the degree practical. Specifically,
@@ -204,70 +268,6 @@ class SnpReader(PstReader):
             >>> column201 = snpdata1[:,[2,0,1]].read(view_ok=True,order='A') #create SnpData with the data from three SNPs, permuted. Sharing memory is OK.
             >>> print(np.may_share_memory(snpdata1.val, column201.val)) # Do the two ndarray's share memory? No, ndarray decided that this indexing was too complex for sharing.
             False
-
-    Creating Subsetting SnpReaders with Indexing
-
-        You often don't want to read the SNP values for all iids and sids. You can use indexing to create a subsetting SnpReader that
-        will read only the SNP values of interest.
-
-        SnpReaders support the indexing formats supported by ndarray plus two generalizations. Here are examples of indexing with an array
-        of indexes, with slicing, and with an array of Booleans.
-
-            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
-            >>> subset_snpreader_1 = snp_on_disk[[3,4],:] #index with an array of indexes
-            >>> print((subset_snpreader_1.iid_count, subset_snpreader_1.sid_count))
-            (2, 1015)
-            >>> snpdata1 = subset_snpreader_1.read() # read just the two rows of interest from the disk
-            >>> subset_snpreader_2 = snp_on_disk[:,:0:-2] #index with a slice
-            >>> print((subset_snpreader_2.iid_count, subset_snpreader_2.sid_count))
-            (300, 507)
-            >>> boolindexes = [s.startswith('23_') for s in snp_on_disk.sid] # create a Boolean index of sids that start '23_'
-            >>> subset_snpreader_3 = snp_on_disk[:,boolindexes] #index with array of Booleans
-            >>> print((subset_snpreader_3.iid_count, subset_snpreader_3.sid_count))
-            (300, 24)
-
-        The first generalization over what ndarray offers is full indexing on both the iid dimension and the sid dimension, in other words,
-        full multidimensional indexing. For example,
-
-            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
-            >>> subset_snpreader_4 = snp_on_disk[[3,4],:0:-2] # index on two dimensions at once
-            >>> print((subset_snpreader_4.iid_count, subset_snpreader_4.sid_count))
-            (2, 507)
-
-        The second generalization is indexing on a single integer index.
-
-            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
-            >>> subset_snpreader_5 = snp_on_disk[5,:] #index with single integer
-            >>> print((subset_snpreader_5.iid_count, subset_snpreader_5.sid_count))
-            (1, 1015)
-
-        Indexing is also useful when you have SNP values in memory via a :class:`SnpData` index and want to copy a subset of those values.
-        While you could instead index directly on the `.SnpData.val` ndarray, by indexing on the :class:`SnpData` instance you
-        also get iid and cid information.
-
-            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
-            >>> snpdata1 = snp_on_disk.read() # read all SNP values into memory
-            >>> print(snpdata1.sid[:9]) # print the first 9 sids
-            ['1_12' '1_34' '1_10' '1_35' '1_28' '1_25' '1_36' '1_39' '1_4']
-            >>> snpdata_subset = snpdata1[:,::2].read(view_ok=True,order='A') # create a copy or view with every other sid
-            >>> print(snpdata_subset.sid[:9])# print the first 9 sids in the subset
-            ['1_12' '1_10' '1_28' '1_36' '1_4' '1_11' '1_32' '1_9' '1_17']
-
-
-        You can apply indexing on top of indexing to specify subsets of subsets of data to read. In this example, 
-        only the SNP values for every 16th sid is actually read from the disk.
-
-            >>> # These are just SnpReaders, nothing is read from disk yet
-            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
-            >>> half_snpreader = snp_on_disk[:,::2] # a reader for half the sids
-            >>> quarter_snpreader = half_snpreader[:,::2] # a reader for half of half the sids
-            >>> sixteenth_snpreader = quarter_snpreader[:,::2][:,::2] # a reader for half of half of half of half the sids
-            >>> print(sixteenth_snpreader) #Print the specification of this reader
-            Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)[:,::2][:,::2][:,::2][:,::2]
-            >>> # Now we read from disk. Only values for one sid in every 16 will be read.
-            >>> snpdata_sixteenth = sixteenth_snpreader.read()
-            >>> print(snpdata_sixteenth.val[0,3])
-            2.0
 
     The :meth:`read` Method
   

@@ -264,6 +264,28 @@ class TestPstDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
+    def test_subset(self):
+        np.random.seed(0)
+        row_property=np.array([[1.0,2,2.5],[3,4,4.5],[5,6,6.5]])
+        col_property=np.array([[1.0,2,2.5,1],[3,4,4.5,3]])
+        val = np.random.normal(.5,2,size=(3,2))
+        pstdata = PstData(row=np.array([[1.0,2],[3,4],[5,6]]),
+                          col=np.array([["A","a"],["B","b"]]),
+                          val = val,
+                          row_property=row_property,
+                          col_property=col_property,
+                          name="test_read")
+
+        assert np.array_equal(pstdata[-1:0:-1,:].read().val, val[-1:0:-1,:])
+        assert pstdata[-1,-1].read().val[0,0] == val[-1,-1]
+        assert np.array_equal(pstdata[[-1,0],[-1,0]].read().val,val[[-1,0],:][:,[-1,0]])
+        assert np.array_equal(pstdata[[True,False,True],[False,True]].read().val,val[[True,False,True],[False,True]].reshape(2,1))
+        assert pstdata[0,0].read().val[0,0] == val[0,0]
+        assert np.array_equal(pstdata[1::2,1::2].read().val,val[1::2,1::2])
+
+        logging.info("done with test")
+
+
 def getTestSuite():
     """
     set up composite test suite

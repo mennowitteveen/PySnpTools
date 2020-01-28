@@ -7,7 +7,7 @@ from distutils.command.clean import clean as Clean
 import numpy
 
 # Version number
-version = '0.4.9'
+version = '0.4.11'
 
 def readme():
     with open('README.md') as f:
@@ -137,7 +137,7 @@ setup(
         "tests/datasets/snpgen.fam",
         ]
                  },
-    install_requires = ['scipy>=1.1.0', 'numpy>=1.11.3', 'pandas>=0.19.0'],
+    install_requires = ['scipy>=1.1.0', 'numpy>=1.11.3', 'pandas>=0.19.0', 'psutil>=5.6.7', 'h5py>=2.10.0', 'dill>=0.2.9'],
 
     # extensions
     cmdclass = cmdclass,

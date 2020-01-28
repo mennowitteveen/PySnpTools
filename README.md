@@ -59,6 +59,9 @@ Packages:
 * scipy
 * pandas
 * cython
+* psutil
+* h5py
+* dill
 
 
 (1) Installation of dependent packages

@@ -272,3 +272,7 @@ ModelManifest.xml
 /pysnptools/,,.py
 /pysnptools/snpreader/tempdircmk/toydataSkip10.distributedbed
 /doc/ipynb/tutorial-Copy1.ipynb
+/pysnptools/snpreader/wrap_plink_parser.cpython-36m-x86_64-linux-gnu.so
+/pysnptools/snpreader/wrap_matrix_subset.cpython-36m-x86_64-linux-gnu.so
+/pysnptools/tempdir/kernelreader/toydata.kernel.npz
+/pysnptools/tempdir/pstreader

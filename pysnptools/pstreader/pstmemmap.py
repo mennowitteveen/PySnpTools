@@ -8,6 +8,8 @@ import doctest
 import pysnptools.util as pstutil
 from pysnptools.pstreader import PstReader, PstData
 
+_magic_number = 22891
+
 class PstMemMap(PstData):
     '''
     A :class:`.PstData` that keeps its data in a memory-mapped file. This allows data large than fits in main memory.
@@ -96,7 +98,7 @@ class PstMemMap(PstData):
 
     
     @staticmethod
-    def empty(row, col, filename, row_property=None, col_property=None,order="F",dtype=np.float64):
+    def empty(row, col, filename, row_property=None, col_property=None, order="F", dtype=np.float64, val_count=None): #!!!cmk2 document val_count
         '''Create an empty :class:`.PstMemMap` on disk.
 
         :param row: The :attr:`.PstReader.row` information
@@ -133,11 +135,11 @@ class PstMemMap(PstData):
         '''
 
         self = PstMemMap(filename)
-        self._empty_inner(row, col, filename, row_property, col_property,order,dtype)
+        self._empty_inner(row, col, filename, row_property, col_property,order,dtype,val_count)
         return self
 
 
-    def _empty_inner(self, row, col, filename, row_property, col_property,order,dtype):
+    def _empty_inner(self, row, col, filename, row_property, col_property, order, dtype, val_count):
         self._ran_once = True
         self._dtype = dtype
         self._order = order
@@ -148,16 +150,21 @@ class PstMemMap(PstData):
         col_property = PstData._fixup_input(col_property,count=len(col))
 
         with open(filename,'wb') as fp:
+            np.save(fp, np.array([_magic_number]))
+            np.save(fp, np.array(["pstmemmap"])) #name of file format
+            np.save(fp, np.array([2])) #file format version
             np.save(fp, row)
             np.save(fp, col)
             np.save(fp, row_property)
             np.save(fp, col_property)
             np.save(fp, np.array([self._dtype]))
             np.save(fp, np.array([self._order]))
+            np.save(fp, np.array([val_count])) #!!!cmk be sure this works with None
             self._offset = fp.tell()
 
         logging.info("About to start allocating memmap '{0}'".format(filename))
-        val = np.memmap(filename, offset=self._offset, dtype=dtype, mode="r+", order=order, shape=(len(row),len(col)))
+        shape = (len(row),len(col)) if val_count is None else (len(row),len(col),val_count)
+        val = np.memmap(filename, offset=self._offset, dtype=dtype, mode="r+", order=order, shape=shape)
         logging.info("Finished allocating memmap '{0}'. Size is {1}".format(filename,os.path.getsize(filename)))
         PstData.__init__(self,row,col,val,row_property,col_property,name="np.memmap('{0}')".format(filename))
 
@@ -173,14 +180,32 @@ class PstMemMap(PstData):
 
         logging.debug("np.load('{0}')".format(self._filename))
         with open(self._filename,'rb') as fp:
-            row = np.load(fp,allow_pickle=True)
-            col = np.load(fp,allow_pickle=True)
-            row_property = np.load(fp,allow_pickle=True)
-            col_property = np.load(fp,allow_pickle=True)
-            self._dtype = np.load(fp,allow_pickle=True)[0]
-            self._order = np.load(fp,allow_pickle=True)[0]
-            self._offset = fp.tell()
-        val = np.memmap(self._filename, offset=self._offset, dtype=self._dtype, mode='r', order=self._order, shape=(len(row),len(col)))
+            first = np.load(fp,allow_pickle=True)
+            if len(first)==1 and first[0]==_magic_number:
+                format = np.load(fp,allow_pickle=True)[0]
+                version = np.load(fp,allow_pickle=True)[0]
+                assert format=="pstmemmap", "Expect format of 'pstmemmap'"
+                assert version==2, "Expect version of 2"
+                row = np.load(fp,allow_pickle=True)
+                col = np.load(fp,allow_pickle=True)
+                row_property = np.load(fp,allow_pickle=True)
+                col_property = np.load(fp,allow_pickle=True)
+                self._dtype = np.load(fp,allow_pickle=True)[0]
+                self._order = np.load(fp,allow_pickle=True)[0]
+                val_count = np.load(fp,allow_pickle=True)[0]
+                self._offset = fp.tell()
+            else: #Try to load version one
+                row = first #!!!cmk2 check that this works with old files
+                col = np.load(fp,allow_pickle=True)
+                row_property = np.load(fp,allow_pickle=True)
+                col_property = np.load(fp,allow_pickle=True)
+                self._dtype = np.load(fp,allow_pickle=True)[0]
+                self._order = np.load(fp,allow_pickle=True)[0]
+                val_count = None
+                self._offset = fp.tell()
+
+        shape=(len(row),len(col)) if val_count is None else (len(row),len(col),val_count)
+        val = np.memmap(self._filename, offset=self._offset, dtype=self._dtype, mode='r', order=self._order, shape=shape)
         return row,col,val,row_property,col_property
 
         
@@ -243,8 +268,11 @@ class PstMemMap(PstData):
         PstMemMap('tempdir/tiny.pst.memmap')
         """
 
-        self = PstMemMap.empty(pstdata.row, pstdata.col, filename, row_property=pstdata.row_property, col_property=pstdata.col_property,order=PstMemMap._order(pstdata),dtype=pstdata.val.dtype)
-        self.val[:,:] = pstdata.val
+        self = PstMemMap.empty(pstdata.row, pstdata.col, filename, row_property=pstdata.row_property, col_property=pstdata.col_property,order=PstMemMap._order(pstdata),dtype=pstdata.val.dtype, val_count=pstdata.val_count)
+        if pstdata.val_count is None:
+            self.val[:,:] = pstdata.val
+        else:
+            self.val[:,:,:] = pstdata.val
         self.flush()
         logging.debug("Done writing " + filename)
 

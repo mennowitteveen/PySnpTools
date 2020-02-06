@@ -12,7 +12,7 @@ from six.moves import range
 
 class TestPstReader(unittest.TestCase):     
 
-    def test_big_npz(self):
+    def cmktest_big_npz(self):
         logging.info("in test_big_npz")
         n = 1000
         pstdata = PstData(row=range(n-1),col=range(n+1),val=np.zeros([n-1,n+1]))
@@ -25,6 +25,26 @@ class TestPstReader(unittest.TestCase):
         assert pstdata2.val.flags['C_CONTIGUOUS']
 
         pstdata = PstData(row=range(n-1),col=range(n+1),val=np.zeros([n-1,n+1],order='F'))
+        PstNpz.write(output,pstdata)
+        pstnpz = PstNpz(output)
+        pstdata2 = pstnpz.read(order='A')
+        pstdata2.val.flags['F_CONTIGUOUS']
+
+        print("done")
+
+    def cmktest_big_npz_3d(self): #!!!cmk2 test for python2, too
+        logging.info("in test_big_npz_3d")
+        n = 1000
+        pstdata = PstData(row=range(n-1),col=range(n+1),val=np.zeros([n-1,n+1,3]))
+        output = "tempdir/pstreader/big3d.npz"
+        create_directory_if_necessary(output)
+        PstNpz.write(output,pstdata)
+        pstnpz = PstNpz(output)
+        pstdata1 = pstnpz[::2,::4].read()
+        pstdata2 = pstnpz.read(order='A')
+        assert pstdata2.val.flags['C_CONTIGUOUS']
+
+        pstdata = PstData(row=range(n-1),col=range(n+1),val=np.zeros([n-1,n+1,3],order='F'))
         PstNpz.write(output,pstdata)
         pstnpz = PstNpz(output)
         pstdata2 = pstnpz.read(order='A')
@@ -59,42 +79,50 @@ class TestPstReader(unittest.TestCase):
         #===================================
         logging.info("starting 'test_writes'")
         np.random.seed(0)
-        output_template = "tempdir/pstreader/writes.{0}.{1}"
-        create_directory_if_necessary(output_template.format(0,"npz"))
+        import tempfile
+        temp_dir = tempfile.TemporaryDirectory("pstreader")
+        output_template = temp_dir.name + '/writes.{0}.{1}'
+        #!!!cmk0 remove create_directory_if_necessary(output_template.format(0,"npz"))
         i = 0
         for row_count in [5,2,1,0]:
             for col_count in [4,2,1,0]:
-                val = np.random.normal(.5,2,size=(row_count,col_count))
-                for row_or_col_gen in [_oned_int,_oned_str,_twooned_int,_twooned_str,_twotwod_int,_twotwod_str]:#!!!,_twotwod_U can't roundtrop Unicode in hdf5
-                    row = row_or_col_gen(row_count)
-                    col = row_or_col_gen(col_count)
-                    for prop_gen in [_none,_oned_str,_oned_int,_twooned_int,_twooned_str,_twotwod_int,_twotwod_str,_zero]: #!!!_twotwod_U can't round trip Unicode because Hdf5 doesn't like it.
-                        row_prop = prop_gen(row_count)
-                        col_prop = prop_gen(col_count)
-                        pstdata = PstData(row,col,val,row_prop,col_prop,str(i))
-                        for the_class,suffix in [(PstHdf5,"hdf5"),(PstNpz,"npz"),(PstMemMap,"memmap")]:
-                            filename = output_template.format(i,suffix)
-                            logging.info(filename)
-                            i += 1
-                            the_class.write(filename,pstdata)
-                            for subsetter in [None, sp.s_[::2,::3]]:
-                                reader = the_class(filename)
+                for val_count in [3,None,1]:
+                    val = np.random.normal(.5,2,size=(row_count,col_count)) if val_count is None else np.random.normal(.5,2,size=(row_count,col_count,val_count))
+                    for row_or_col_gen in [_oned_int,_oned_str,_twooned_int,_twooned_str,_twotwod_int,_twotwod_str]:#!!!,_twotwod_U can't roundtrop Unicode in hdf5
+                        row = row_or_col_gen(row_count)
+                        col = row_or_col_gen(col_count)
+                        for prop_gen in [_none,_oned_str,_oned_int,_twooned_int,_twooned_str,_twotwod_int,_twotwod_str,_zero]: #!!!_twotwod_U can't round trip Unicode because Hdf5 doesn't like it.
+                            row_prop = prop_gen(row_count)
+                            col_prop = prop_gen(col_count)
+                            pstdata = PstData(row,col,val,row_prop,col_prop,str(i))
+                            for the_class,suffix in [(PstMemMap,"memmap"),(PstHdf5,"hdf5"),(PstNpz,"npz")]:
+                                filename = output_template.format(i,suffix)
+                                logging.info(filename)
+                                i += 1
+                                the_class.write(filename,pstdata)
+                                reader = the_class(filename) if suffix!='hdf5' else the_class(filename,block_size=3)
                                 _fortesting_JustCheckExists().input(reader)
-                                subreader = reader if subsetter is None else reader[subsetter[0],subsetter[1]]
-                                readdata = subreader.read(order='C')
-                                expected = pstdata if subsetter is None else pstdata[subsetter[0],subsetter[1]].read()
-                                assert np.array_equal(readdata.val,expected.val)
-                                assert np.array_equal(readdata.row,expected.row)
-                                assert np.array_equal(readdata.col,expected.col)
-                                assert np.array_equal(readdata.row_property,expected.row_property) or (readdata.row_property.shape[1]==0 and expected.row_property.shape[1]==0)
-                                assert np.array_equal(readdata.col_property,expected.col_property) or (readdata.col_property.shape[1]==0 and expected.col_property.shape[1]==0)
-                            try:
+                                for subsetter in [None, sp.s_[::2,::3]]:
+                                    subreader = reader if subsetter is None else reader[subsetter[0],subsetter[1]]
+                                    expected = pstdata if subsetter is None else pstdata[subsetter[0],subsetter[1]].read()
+                                    for order in ['C','F','A']:
+                                        for force_python_only in [True,False]:
+                                            readdata = subreader.read(order=order,force_python_only=force_python_only)
+                                            if not np.array_equal(readdata.val,expected.val): #!!!cmk0
+                                                readdatax = subreader.read(order='C')
+                                                print("cmk0")
+                                            assert np.array_equal(readdata.val,expected.val)
+                                            assert np.array_equal(readdata.row,expected.row)
+                                            assert np.array_equal(readdata.col,expected.col)
+                                            assert np.array_equal(readdata.row_property,expected.row_property) or (readdata.row_property.shape[1]==0 and expected.row_property.shape[1]==0)
+                                            assert np.array_equal(readdata.col_property,expected.col_property) or (readdata.col_property.shape[1]==0 and expected.col_property.shape[1]==0)
+                                if suffix in {'memmap','hdf5'}:
+                                    reader.flush()
                                 os.remove(filename)
-                            except:
-                                pass
+        temp_dir.cleanup()
         logging.info("done with 'test_writes'")
 
-    def test_repr_test(self):
+    def cmktest_repr_test(self):
         np.random.seed(0)
         row_property=np.array([[1.0,2,2.5],[3,4,4.5],[5,6,6.5]])
         col_property=np.array([[1.0,2,2.5,1],[3,4,4.5,3]])
@@ -106,7 +134,7 @@ class TestPstReader(unittest.TestCase):
         assert pstdata.col_to_index([("B","b")])[0] == 1
         s = str(pstdata)
 
-    def test_read(self):
+    def cmktest_read(self):
         np.random.seed(0)
         row_property=np.array([[1.0,2,2.5],[3,4,4.5],[5,6,6.5]])
         col_property=np.array([[1.0,2,2.5,1],[3,4,4.5,3]])
@@ -153,7 +181,7 @@ class TestPstReader(unittest.TestCase):
         logging.info("done with test")
 
 
-    def test_inputs(self):
+    def cmktest_inputs(self):
         from pysnptools.pstreader import PstData
         np.random.seed(0)
         row_property=np.array([1.0,2,2.5])
@@ -172,7 +200,7 @@ class TestPstReader(unittest.TestCase):
         logging.info("done with test")
 
 
-    def test_inputs2(self):
+    def cmktest_inputs2(self):
         from pysnptools.pstreader import PstData
         np.random.seed(0)
         row_property=None
@@ -190,7 +218,7 @@ class TestPstReader(unittest.TestCase):
         assert np.array_equal(pstdata[1:,:2].col_property,pstdata.col_property[:2])
         logging.info("done with test")
 
-    def test_inputs3(self):
+    def cmktest_inputs3(self):
         from pysnptools.pstreader import PstData
         np.random.seed(0)
         row_property=None
@@ -207,7 +235,7 @@ class TestPstReader(unittest.TestCase):
         assert np.array_equal(pstdata[1:,:2].col_property,pstdata.col_property[:2])
         logging.info("done with test")
 
-    def test_inputs4(self):
+    def cmktest_inputs4(self):
         from pysnptools.pstreader import PstData
         pstdata = PstData(row=None,
                           col=None,
@@ -224,7 +252,7 @@ class TestPstReader(unittest.TestCase):
 class TestPstDocStrings(unittest.TestCase):
     pass
 
-    def test_pstdata(self):
+    def cmktest_pstdata(self):
         import pysnptools.pstreader.pstdata
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -232,7 +260,7 @@ class TestPstDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    def test_psthdf5(self):
+    def cmktest_psthdf5(self):
         import pysnptools.pstreader.psthdf5
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -240,7 +268,7 @@ class TestPstDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    def test_pstmemmap(self):
+    def cmktest_pstmemmap(self):
         import pysnptools.pstreader.pstmemmap
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -248,7 +276,7 @@ class TestPstDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    def test_pstnpz(self):
+    def cmktest_pstnpz(self):
         import pysnptools.pstreader.pstnpz
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -256,7 +284,7 @@ class TestPstDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    def test_pstreader(self):
+    def cmktest_pstreader(self):
         import pysnptools.pstreader.pstreader
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -264,7 +292,7 @@ class TestPstDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    def test_subset(self):
+    def cmktest_subset(self):
         np.random.seed(0)
         row_property=np.array([[1.0,2,2.5],[3,4,4.5],[5,6,6.5]])
         col_property=np.array([[1.0,2,2.5,1],[3,4,4.5,3]])

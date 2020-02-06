@@ -549,12 +549,12 @@ class PstReader(object):
     def _is_all_slice(index_or_none):
         if index_or_none is None:
             return True
-        return  isinstance(index_or_none,slice) and index_or_none == slice(None)
+        return  isinstance(index_or_none,slice) and index_or_none == slice(None) #!!!cmk2 switch to np.s_[:]
 
     @staticmethod
     def _make_sparray_or_slice(indexer):
         if indexer is None:
-            return slice(None)
+            return slice(None)#!!!cmk2 switch to np.s_[:]
 
         if isinstance(indexer,np.ndarray):
             return PstReader._process_ndarray(indexer)
@@ -611,7 +611,6 @@ class PstReader(object):
             sub_val = pstutil.sub_matrix(val, row_index, col_index, order=order, dtype=dtype)
             return sub_val, False
 
-
         if PstReader._is_all_slice(row_indexer) or PstReader._is_all_slice(col_indexer):
             sub_val = val[row_indexer, col_indexer] #!!is this faster than the C++?
         else: 
@@ -620,7 +619,7 @@ class PstReader(object):
             #See http://stackoverflow.com/questions/21349133/numpy-array-integer-indexing-in-more-than-one-dimension
             sub_val = val[row_index.reshape(-1,1), col_index]
 
-        assert len(sub_val.shape)==2, "Expect result of subsetting to be 2 dimensional"
+        assert len(sub_val.shape) in {2,3}, "Expect result of subsetting to be 2 or 3 dimensional"
 
         if not PstReader._array_properties_are_ok(sub_val, order, dtype):
             if order is None:

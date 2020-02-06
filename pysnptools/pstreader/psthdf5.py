@@ -33,10 +33,10 @@ class PstHdf5(PstReader):
     **Methods beyond** :class:`.PstReader`
     '''
 
-    def __init__(self, filename):
+    def __init__(self, filename, block_size=5000): #!!!cmk2 document block size
         super(PstHdf5, self).__init__() #We know PstReader doesn't want the file name
 
-        self._block_size = 5000
+        self._block_size = block_size
 
         self._ran_once = False
         self._h5 = None
@@ -107,10 +107,13 @@ class PstHdf5(PstReader):
         S_original = len(self._col)
         N_original = len(self._row)
         if self.is_col_major:
-            if not self.val_in_file.shape == (S_original, N_original) : raise Exception("In Hdf5, the val matrix dimensions don't match those of 'row' and 'col'")
+            if not self.val_in_file.shape[-2:] == (S_original, N_original):
+               raise Exception("In Hdf5, the val matrix dimensions don't match those of 'row' and 'col'")
+            self._val_count = None if len(self.val_in_file.shape)==2 else self.val_in_file.shape[0]
         else:
-            if not self.val_in_file.shape == (N_original, S_original) : raise Exception("In Hdf5, the val matrix dimensions don't match those of 'row' and 'col'")
-
+            if not self.val_in_file.shape[:2] == (N_original, S_original):
+               raise Exception("In Hdf5, the val matrix dimensions don't match those of 'row' and 'col'")
+            self._val_count = None if len(self.val_in_file.shape)==2 else self.val_in_file.shape[-1]
         self._ran_once = True
 
 
@@ -122,18 +125,44 @@ class PstHdf5(PstReader):
             if not list[i-1] < list[i]:
                 return False
         return True
-    
+
+    #!!!cmk2 add a test for flush that shows that it can be reopened    
+    def flush(self):#!!!cmk2 update this for hdf5
+        '''Flush :attr:`.PstMemMap.val` to disk and close the file. (If values or properties are accessed again, the file will be reopened.)
+
+        >>> import pysnptools.util as pstutil
+        >>> from pysnptools.pstreader import PstMemMap
+        >>> filename = "tempdir/tiny.pst.memmap"
+        >>> pstutil.create_directory_if_necessary(filename)
+        >>> pst_mem_map = PstMemMap.empty(row=['a','b','c'],col=['y','z'],filename=filename,row_property=['A','B','C'],order="F",dtype=np.float64)
+        >>> pst_mem_map.val[:,:] = [[1,2],[3,4],[np.nan,6]]
+        >>> pst_mem_map.flush()
+
+        '''
+        if self._ran_once:
+            self._h5.close()
+            del self._h5
+            self._h5 = None
+            self._ran_once = False
+
 
     def __del__(self):
         if self._h5 != None:  # we need to test this because Python doesn't guarantee that __init__ was fully run
             self._h5.close()
 
-    def _read_direct(self, val, val_order, selection=np.s_[:,:]):
+    def _read_direct(self, val, val_order, selection=None):
+        if selection is None:
+            selection = np.s_[:,:] if self._val_count is None else np.s_[:,:,:]
+
         if self.is_col_major:
             selection = tuple(reversed(selection))
 
         if val_order == "F":
-            self.val_in_file.read_direct(val.T,selection)
+            try:
+                self.val_in_file.read_direct(val.T,selection)
+            except:
+                print('!!!cmk0')
+                self.val_in_file.read_direct(val.T,selection)
         else:
             assert val_order == "C", "real assert"
             self.val_in_file.read_direct(val,selection)
@@ -142,9 +171,16 @@ class PstHdf5(PstReader):
         matches_order = self.is_col_major == (order =="F")
         opposite_order = "C" if order == "F" else "F"
         if matches_order:
-            return np.empty([len(self._row),block_size], dtype=dtype, order=order), order
+            if self._val_count is None:
+                return np.empty([len(self._row),block_size], dtype=dtype, order=order), order
+            else:
+                return np.empty([len(self._row),block_size,self._val_count], dtype=dtype, order=order), order
         else:
-            return np.empty([len(self._row),block_size], dtype=dtype, order=opposite_order), opposite_order
+            if self._val_count is None:
+                #!!!cmk2 should make own version np.empty with optional 3rd dimension and np.nan fill?
+                return np.empty([len(self._row),block_size], dtype=dtype, order=opposite_order), opposite_order
+            else:
+                return np.empty([len(self._row),block_size, self._val_count,], dtype=dtype, order=opposite_order), opposite_order
 
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
         self._run_once()
@@ -179,7 +215,12 @@ class PstHdf5(PstReader):
         #Check if snps and iids indexes are in order and in range
         col_are_sorted = PstHdf5._is_sorted_without_repeats(col_index_list)
 
-        val = np.empty([row_index_count, col_index_count], dtype=dtype, order=order)
+        if self._val_count is None:
+            val = np.empty([row_index_count, col_index_count], dtype=dtype, order=order)
+        else:
+            val = np.empty([row_index_count, col_index_count,self._val_count], dtype=dtype, order=order)
+        val.fill(np.nan) #!!!cmk2 Keep this?
+        #!!!cmk2 val_count may not be the right name. How about _val_shape for now?
 
         matches_order = self.is_col_major == (order=="F")
         is_simple = not force_python_only and row_is_sorted and col_are_sorted and matches_order #If 'is_simple' may be able to use a faster reader
@@ -194,11 +235,13 @@ class PstHdf5(PstReader):
 
         # case 2 - some cols and all rows
         elif is_simple and row_index_count == self.row_count:
-            self._read_direct(val, order, np.s_[:,col_index_list])
+            selection = np.s_[:,col_index_list] if self._val_count is None else np.s_[:,col_index_list,:]
+            self._read_direct(val, order, selection)
 
         # case 3 all cols and some row
         elif is_simple and col_index_count == self.col_count:
-            self._read_direct(val, order, np.s_[row_index_list,:])
+            selection = np.s_[row_index_list,:] if self._val_count is None else np.s_[row_index_list,:,:]
+            self._read_direct(val, order, selection)
 
         # case 4 some cols and some rows -- use blocks
         else:
@@ -219,12 +262,14 @@ class PstHdf5(PstReader):
                     block, block_order = self._create_block(stop-start, order, dtype)
                 col_index_list_forblock = col_index_list_sorted[start:stop]
                 col_index_index_list_forblock = col_index_index_list[start:stop]
-                self._read_direct(block, block_order, np.s_[:,col_index_list_forblock])
+                selection = np.s_[:,col_index_list_forblock] if self._val_count is None else np.s_[:,col_index_list_forblock,:]
+                self._read_direct(block, block_order, selection)
                 val[:,col_index_index_list_forblock] = block[row_index_list,:]
 
         #!!LATER does this test work when the size is 1 x 1 and order if F? iid_index_or_none=[0], sid_index_or_none=[1000] (based on test_blocking_hdf5)
         has_right_order = (order=="C" and val.flags["C_CONTIGUOUS"]) or (order=="F" and val.flags["F_CONTIGUOUS"])
-        assert val.shape == (row_index_count, col_index_count) and val.dtype == dtype and has_right_order
+        expected_shape = (row_index_count, col_index_count) if self._val_count is None else (row_index_count, col_index_count,self._val_count)
+        assert val.shape == expected_shape and val.dtype == dtype and has_right_order
         return val
 
 

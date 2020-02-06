@@ -103,7 +103,7 @@ class SnpMemMap(PstMemMap,SnpData):
         '''
 
         self = SnpMemMap(filename)
-        self._empty_inner(row=iid, col=sid, filename=filename, row_property=None, col_property=pos,order=order,dtype=dtype)
+        self._empty_inner(row=iid, col=sid, filename=filename, row_property=None, col_property=pos,order=order,dtype=dtype,val_count=None)
         return self
 
     def flush(self):

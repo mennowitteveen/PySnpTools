@@ -23,7 +23,7 @@ class PstData(PstReader):
     **Constructor:**
         :Parameters: * **row** (an array of anything) -- The :attr:`.PstReader.row` information
                      * **col** (an array of anything) -- The :attr:`.PstReader.col` information
-                     * **val** (a 2-D array of floats) -- The values
+                     * **val** (a 2-D array of floats or an array of floats) -- The values
                      * **row_property** (optional, an array of anything) -- Additional information associated with each row.
                      * **col_property** (optional, an array of anything) -- Additional information associated with each col.
                      * **name** (optional, string) -- Information to be display about the origin of this data
@@ -144,7 +144,7 @@ class PstData(PstReader):
         elif not isinstance(input,np.ndarray or (input.dtype not in [np.float32,np.float64])):
             input = np.array(input,dtype=np.float64)
 
-        assert len(input.shape)==2, "Expect val to be two dimensional."
+        assert len(input.shape) in {2,3}, "Expect val to be two or three dimensional."
         assert input.shape[0] == row_count, "Expect number of rows ({0}) in val to match the number of row names given ({1})".format(input.shape[0], row_count)
         assert input.shape[1] == col_count, "Expect number of columns ({0}) in val to match the number of column names given ({1})".format(input.shape[1], col_count)
 
@@ -180,11 +180,19 @@ class PstData(PstReader):
     def _get_val(self):
         return self._val
 
+    @property
+    def val_count(self):
+        if len(self._val.shape)==2:
+            return None
+        else:
+            return self._val.shape[2]
+
+
     def _set_val(self, new_value):
         self._val = new_value
 
     val = property(_get_val,_set_val)
-    """The 2D NumPy array of floats that represents the values.
+    """The 2D NumPy array of floats (or array of floats) that represents the values.
 
     >>> from pysnptools.pstreader import PstNpz
     >>> pstdata = PstNpz('../examples/toydata.pst.npz')[:5,:].read() #read data for first 5 rows

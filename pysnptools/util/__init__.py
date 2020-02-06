@@ -274,41 +274,48 @@ def sub_matrix(val, row_index_list, col_index_list, order='A', dtype=sp.float64)
     else:
         effective_order = order
 
-    sub_val = sp.empty((len(row_index_list), len(col_index_list)),dtype=dtype,order=effective_order)
+
+    original_dimensions = len(val.shape)
+    if original_dimensions==2:
+        iid_count, sid_count = val.shape
+        val_count = 1
+        val = val.reshape(iid_count,sid_count,1)
+    else:
+        assert original_dimensions==3, "Expect val dimensions of 2 or 3"
+        iid_count, sid_count, val_count = val.shape
+    sub_val = sp.empty((len(row_index_list), len(col_index_list),val_count),dtype=dtype,order=effective_order)
+    sub_val.fill(sp.nan) #!!!keep? Replace empty with zeros????
 
     logging.debug("About to call cython matrixSubset")
-
-    iid_count, sid_count = val.shape
-
     if val.flags['F_CONTIGUOUS']:
         if val.dtype ==  sp.float64:
             if dtype == sp.float64:
                 if effective_order=="F":
-                    wrap_matrix_subset.matrixSubsetDoubleFToDoubleFAAA(val, iid_count, sid_count, row_index_list, col_index_list, sub_val)
+                    wrap_matrix_subset.matrixSubsetDoubleFToDoubleFAAA(val, iid_count, sid_count, val_count, row_index_list, col_index_list, sub_val)
                 elif effective_order=="C":
-                    wrap_matrix_subset.matrixSubsetDoubleFToDoubleCAAA(val, iid_count, sid_count, row_index_list, col_index_list, sub_val)
+                    wrap_matrix_subset.matrixSubsetDoubleFToDoubleCAAA(val, iid_count, sid_count, val_count, row_index_list, col_index_list, sub_val)
                 else:
                     raise Exception("order '{0}' not known, only 'F' and 'C'".format(effective_order));
             elif dtype == sp.float32:
-                if effective_order=="F":
-                    wrap_matrix_subset.matrixSubsetDoubleFToSingleFAAA(val, iid_count, sid_count, row_index_list, col_index_list, sub_val)
+                if effective_order=="F":#!!!cmk1 need to cover every one of these calls in tests
+                    wrap_matrix_subset.matrixSubsetDoubleFToSingleFAAA(val, iid_count, sid_count, val_count, row_index_list, col_index_list, sub_val)
                 elif effective_order=="C":
-                    wrap_matrix_subset.matrixSubsetDoubleFToSingleCAAA(val, iid_count, sid_count, row_index_list, col_index_list, sub_val)
+                    wrap_matrix_subset.matrixSubsetDoubleFToSingleCAAA(val, iid_count, sid_count, val_count, row_index_list, col_index_list, sub_val)
                 else:
                     raise Exception("dtype '{0}' not known, only float64 and float32".format(dtype))
         elif val.dtype ==  sp.float32:
             if dtype == sp.float64:
                 if effective_order=="F":
-                    wrap_matrix_subset.matrixSubsetSingleFToDoubleFAAA(val, iid_count, sid_count, row_index_list, col_index_list, sub_val)
+                    wrap_matrix_subset.matrixSubsetSingleFToDoubleFAAA(val, iid_count, sid_count, val_count, row_index_list, col_index_list, sub_val)
                 elif effective_order=="C":
-                    wrap_matrix_subset.matrixSubsetSingleFToDoubleCAAA(val, iid_count, sid_count, row_index_list, col_index_list, sub_val)
+                    wrap_matrix_subset.matrixSubsetSingleFToDoubleCAAA(val, iid_count, sid_count, val_count, row_index_list, col_index_list, sub_val)
                 else:
                     raise Exception("order '{0}' not known, only 'F' and 'C'".format(effective_order));
             elif dtype == sp.float32:
                 if effective_order=="F":
-                    wrap_matrix_subset.matrixSubsetSingleFToSingleFAAA(val, iid_count, sid_count, row_index_list, col_index_list, sub_val)
+                    wrap_matrix_subset.matrixSubsetSingleFToSingleFAAA(val, iid_count, sid_count, val_count, row_index_list, col_index_list, sub_val)
                 elif effective_order=="C":
-                    wrap_matrix_subset.matrixSubsetSingleFToSingleCAAA(val, iid_count, sid_count, row_index_list, col_index_list, sub_val)
+                    wrap_matrix_subset.matrixSubsetSingleFToSingleCAAA(val, iid_count, sid_count, val_count, row_index_list, col_index_list, sub_val)
                 else:
                     raise Exception("dtype '{0}' not known, only float64 and float32".format(dtype))
         else:
@@ -317,31 +324,31 @@ def sub_matrix(val, row_index_list, col_index_list, order='A', dtype=sp.float64)
         if val.dtype ==  sp.float64:
             if dtype == sp.float64:
                 if effective_order=="F":
-                    wrap_matrix_subset.matrixSubsetDoubleCToDoubleFAAA(val, iid_count, sid_count, row_index_list, col_index_list, sub_val)
+                    wrap_matrix_subset.matrixSubsetDoubleCToDoubleFAAA(val, iid_count, sid_count, val_count, row_index_list, col_index_list, sub_val)
                 elif effective_order=="C":
-                    wrap_matrix_subset.matrixSubsetDoubleCToDoubleCAAA(val, iid_count, sid_count, row_index_list, col_index_list, sub_val)
+                    wrap_matrix_subset.matrixSubsetDoubleCToDoubleCAAA(val, iid_count, sid_count, val_count, row_index_list, col_index_list, sub_val)
                 else:
                     raise Exception("order '{0}' not known, only 'F' and 'C'".format(effective_order));
             elif dtype == sp.float32:
                 if effective_order=="F":
-                    wrap_matrix_subset.matrixSubsetDoubleCToSingleFAAA(val, iid_count, sid_count, row_index_list, col_index_list, sub_val)
+                    wrap_matrix_subset.matrixSubsetDoubleCToSingleFAAA(val, iid_count, sid_count, val_count, row_index_list, col_index_list, sub_val)
                 elif effective_order=="C":
-                    wrap_matrix_subset.matrixSubsetDoubleCToSingleCAAA(val, iid_count, sid_count, row_index_list, col_index_list, sub_val)
+                    wrap_matrix_subset.matrixSubsetDoubleCToSingleCAAA(val, iid_count, sid_count, val_count, row_index_list, col_index_list, sub_val)
                 else:
                     raise Exception("dtype '{0}' not known, only float64 and float32".format(dtype))
         elif val.dtype ==  sp.float32:
             if dtype == sp.float64:
                 if effective_order=="F":
-                    wrap_matrix_subset.matrixSubsetSingleCToDoubleFAAA(val, iid_count, sid_count, row_index_list, col_index_list, sub_val)
+                    wrap_matrix_subset.matrixSubsetSingleCToDoubleFAAA(val, iid_count, sid_count, val_count, row_index_list, col_index_list, sub_val)
                 elif effective_order=="C":
-                    wrap_matrix_subset.matrixSubsetSingleCToDoubleCAAA(val, iid_count, sid_count, row_index_list, col_index_list, sub_val)
+                    wrap_matrix_subset.matrixSubsetSingleCToDoubleCAAA(val, iid_count, sid_count, val_count, row_index_list, col_index_list, sub_val)
                 else:
                     raise Exception("order '{0}' not known, only 'F' and 'C'".format(effective_order));
             elif dtype == sp.float32:
                 if effective_order=="F":
-                    wrap_matrix_subset.matrixSubsetSingleCToSingleFAAA(val, iid_count, sid_count, row_index_list, col_index_list, sub_val)
+                    wrap_matrix_subset.matrixSubsetSingleCToSingleFAAA(val, iid_count, sid_count, val_count, row_index_list, col_index_list, sub_val)
                 elif effective_order=="C":
-                    wrap_matrix_subset.matrixSubsetSingleCToSingleCAAA(val, iid_count, sid_count, row_index_list, col_index_list, sub_val)
+                    wrap_matrix_subset.matrixSubsetSingleCToSingleCAAA(val, iid_count, sid_count, val_count, row_index_list, col_index_list, sub_val)
                 else:
                     raise Exception("dtype '{0}' not known, only float64 and float32".format(dtype))
         else:
@@ -349,7 +356,9 @@ def sub_matrix(val, row_index_list, col_index_list, order='A', dtype=sp.float64)
     else:
         raise Exception("input order must be 'F' or 'C'");
 
-
+    if original_dimensions==2:
+        assert sub_val.shape[2] == 1, "real assert"
+        sub_val = sub_val.reshape(sub_val.shape[0],sub_val.shape[1])
     logging.debug("Back from cython matrixSubset")
     return sub_val
 

@@ -195,7 +195,7 @@ class PstMemMap(PstData):
                 val_count = np.load(fp,allow_pickle=True)[0]
                 self._offset = fp.tell()
             else: #Try to load version one
-                row = first #!!!cmk2 check that this works with old files
+                row = first
                 col = np.load(fp,allow_pickle=True)
                 row_property = np.load(fp,allow_pickle=True)
                 col_property = np.load(fp,allow_pickle=True)

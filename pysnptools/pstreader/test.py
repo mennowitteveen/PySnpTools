@@ -52,7 +52,7 @@ class TestPstReader(unittest.TestCase):
 
         print("done")
 
-    def test_writes(self):
+    def cmktest_writes(self):
         #===================================
         #    Defining sub functions
         #===================================
@@ -109,7 +109,7 @@ class TestPstReader(unittest.TestCase):
                                         for force_python_only in [True,False]:
                                             readdata = subreader.read(order=order,force_python_only=force_python_only)
                                             if not np.array_equal(readdata.val,expected.val): #!!!cmk0
-                                                readdatax = subreader.read(order='C')
+                                                readdatax = subreader.read(order=order,force_python_only=force_python_only)
                                                 print("cmk0")
                                             assert np.array_equal(readdata.val,expected.val)
                                             assert np.array_equal(readdata.row,expected.row)
@@ -121,6 +121,25 @@ class TestPstReader(unittest.TestCase):
                                 os.remove(filename)
         temp_dir.cleanup()
         logging.info("done with 'test_writes'")
+
+    def test_every_read(self):
+        for order_from in ['F','C']:
+            for order_to in ['F','C']:
+                for dtype_from in [np.float32,np.float64]:
+                    for dtype_to in [np.float32,np.float64]:
+                        for val_count in [None,1,3]:
+                            for force_python_only in [True,False]:
+                                np.random.seed(0)
+                                val0 = np.random.normal(.5,2,size=(3,2)) if val_count is None else np.random.normal(.5,2,size=(3,2,val_count))
+                                val = np.array(val0,order=order_from,dtype=dtype_from)
+                                pstdata = PstData(val=val,row=list(range(3)),col=list(range(2)))
+                                expected = np.array(val[::-2,:][:,::-1],order=order_to,dtype=dtype_to)
+                                result = pstdata[::-2,::-1].read(order=order_to,dtype=dtype_to,force_python_only=force_python_only)
+                                assert result.val.dtype==dtype_to
+                                assert (order_to == 'F' and result.val.flags['F_CONTIGUOUS']) or (order_to == 'C' and result.val.flags['C_CONTIGUOUS'])
+                                if not np.array_equal(result.val,expected): #!!!cmk0
+                                    print('cmk!!!')
+                                assert np.array_equal(result.val,expected)
 
     def cmktest_repr_test(self):
         np.random.seed(0)

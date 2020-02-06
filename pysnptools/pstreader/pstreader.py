@@ -549,12 +549,12 @@ class PstReader(object):
     def _is_all_slice(index_or_none):
         if index_or_none is None:
             return True
-        return  isinstance(index_or_none,slice) and index_or_none == slice(None) #!!!cmk2 switch to np.s_[:]
+        return  isinstance(index_or_none,slice) and index_or_none == slice(None)
 
     @staticmethod
     def _make_sparray_or_slice(indexer):
         if indexer is None:
-            return slice(None)#!!!cmk2 switch to np.s_[:]
+            return slice(None)
 
         if isinstance(indexer,np.ndarray):
             return PstReader._process_ndarray(indexer)

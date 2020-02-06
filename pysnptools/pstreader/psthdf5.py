@@ -33,7 +33,7 @@ class PstHdf5(PstReader):
     **Methods beyond** :class:`.PstReader`
     '''
 
-    def __init__(self, filename, block_size=5000): #!!!cmk2 document block size
+    def __init__(self, filename, block_size=5000): #!!!cmk9 document block size
         super(PstHdf5, self).__init__() #We know PstReader doesn't want the file name
 
         self._block_size = block_size
@@ -127,7 +127,7 @@ class PstHdf5(PstReader):
         return True
 
     #!!!cmk2 add a test for flush that shows that it can be reopened    
-    def flush(self):#!!!cmk2 update this for hdf5
+    def flush(self):#!!!cmk9 update this for hdf5
         '''Flush :attr:`.PstMemMap.val` to disk and close the file. (If values or properties are accessed again, the file will be reopened.)
 
         >>> import pysnptools.util as pstutil

@@ -297,7 +297,7 @@ def sub_matrix(val, row_index_list, col_index_list, order='A', dtype=sp.float64)
                 else:
                     raise Exception("order '{0}' not known, only 'F' and 'C'".format(effective_order));
             elif dtype == sp.float32:
-                if effective_order=="F":#!!!cmk1 need to cover every one of these calls in tests
+                if effective_order=="F":
                     wrap_matrix_subset.matrixSubsetDoubleFToSingleFAAA(val, iid_count, sid_count, val_count, row_index_list, col_index_list, sub_val)
                 elif effective_order=="C":
                     wrap_matrix_subset.matrixSubsetDoubleFToSingleCAAA(val, iid_count, sid_count, val_count, row_index_list, col_index_list, sub_val)

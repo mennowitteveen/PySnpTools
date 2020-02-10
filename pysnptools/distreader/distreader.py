@@ -19,37 +19,37 @@ class DistReader(PstReader):
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.distreader import DistNpz
-        >>> dist_on_disk = DistNpz('../../tests/datasets/all_chr.maf0.001.N300') #!!!cmk make word
+        >>> dist_on_disk = DistNpz('../examples/toydata.dist.npz')
         >>> print(dist_on_disk) # prints specification for reading from file
-        DistNpz('../../tests/datasets/all_chr.maf0.001.N300')
+        DistNpz('../examples/toydata.dist.npz')
         >>> dist_on_disk.sid_count # prints the number of SNPS (but doesn't read any SNP values) #!!!cmk true?
-        1015
+        10000
 
     * A :class:`.DistData` class that holds SNP distribution data in memory, typically after reading it from disk:
 
-        >>> dist_on_disk = DistNpz('../../tests/datasets/all_chr.maf0.001.N300')
+        >>> dist_on_disk = DistNpz('../examples/toydata.dist.npz')
         >>> distdata1 = dist_on_disk.read() #reads the SNP distribution values
         >>> type(distdata1.val).__name__ # The val property is an 3-D ndarray of SNP distribution values
         'ndarray'
         >>> print(distdata1) # prints the specification of the in-memory SNP distribution information
-        DistData(DistNpz('../../tests/datasets/all_chr.maf0.001.N300'))
+        DistData(DistNpz('../examples/toydata.dist.npz'))
         >>> distdata1.iid_count #prints the number of iids (number of individuals) in this in-memory data
-        300
+        25
 
     * A subset of any DistReader, specified with "[ *iid_index* , *sid_index* ]", to read only some SNP distribution values. It can
       also be used to re-order the values.
 
-        >>> dist_on_disk = DistNpz('../../tests/datasets/all_chr.maf0.001.N300')
+        >>> dist_on_disk = DistNpz('../examples/toydata.dist.npz')
         >>> subset_on_disk = dist_on_disk[[3,4],::2] # specification for a subset of the data on disk. No SNP distriubtion values are read yet.
         >>> print(subset_on_disk.sid_count) # prints the number of sids in this subset (but still doesn't read any SNP distribution values)
-        508
+        5000
         >>> print(subset_on_disk) #prints a specification of 'subset_on_disk'
-        DistNpz('../../tests/datasets/all_chr.maf0.001.N300')[[3,4],::2]
+        DistNpz('../examples/toydata.dist.npz')[[3,4],::2]
         >>> distdata_subset = subset_on_disk.read() # efficiently reads the specified subset of values from the disk
         >>> print(distdata_subset) # prints the specification of the in-memory SNP distribution information
-        DistData(DistNpz('../../tests/datasets/all_chr.maf0.001.N300')[[3,4],::2])
+        DistData(DistNpz('../examples/toydata.dist.npz')[[3,4],::2])
         >>> print((int(distdata_subset.val.shape[0]), int(distdata_subset.val.shape[1]))) # The dimensions of the ndarray of SNP distriubtion values
-        (2, 508)
+        (2, 5000)
 
     #!!!cmk Need to be able to read any SnpReader as a DistReader and back. Will also point the expected value and normalization to 1
 
@@ -82,10 +82,10 @@ class DistReader(PstReader):
         >>> from pysnptools.distreader import DistHdf5, DistNpz
         >>> import pysnptools.util as pstutil
         
-        >>> DistData = DistHdf5('../examples/toydata.phe').read() # Read data from DistHdf5 format
-        >>> pstutil.create_directory_if_necessary("tempdir/toydata.DistNpz")
-        >>> DistNpz.write("tempdir/toydata.DistNpz",DistData)   # Write data in DistNpz format
-        DistNpz('tempdir/toydata.DistNpz')
+        >>> distdata = DistHdf5('../examples/toydata.iidmajor.dist.hdf5').read() # Read data from DistHdf5 format
+        >>> pstutil.create_directory_if_necessary("tempdir/toydata.dist.npz")
+        >>> DistNpz.write("tempdir/toydata.dist.npz",distdata)   # Write data in DistNpz format
+        DistNpz('tempdir/toydata.dist.npz')
 
 
     #!!!cmk tell that these all the same as with SnpReader
@@ -117,11 +117,11 @@ class DistReader(PstReader):
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.distreader import DistNpz
-        >>> dist_on_disk = DistNpz('../../tests/datasets/all_chr.maf0.001.N300')
+        >>> dist_on_disk = DistNpz('../examples/toydata.dist.npz')
         >>> print(dist_on_disk.iid[:3]) # print the first three iids
-        [['POP1' '0']
-         ['POP1' '12']
-         ['POP1' '44']]
+        [['per0' 'per0']
+         ['per1' 'per1']
+         ['per2' 'per2']]
         """
         return self.row
 
@@ -146,10 +146,10 @@ class DistReader(PstReader):
         :Example:
 
         >>> from pysnptools.distreader import DistNpz
-        >>> dist_on_disk = DistNpz('../../tests/datasets/all_chr.maf0.001.N300')
+        >>> dist_on_disk = DistNpz('../examples/toydata.dist.npz')
         >>> print(dist_on_disk.sid[:9]) # print the first nine sids
-        ['1_12' '1_34' '1_10' '1_35' '1_28' '1_25' '1_36' '1_39' '1_4']
-
+        ['null_0' 'null_1' 'null_2' 'null_3' 'null_4' 'null_5' 'null_6' 'null_7'
+         'null_8']
         """
         return self.col
 
@@ -177,11 +177,11 @@ class DistReader(PstReader):
         :Example:
 
         >>> from pysnptools.distreader import DistNpz
-        >>> dist_on_disk = DistNpz('../../tests/datasets/all_chr.maf0.001.N300')
+        >>> dist_on_disk = DistNpz('../examples/toydata.dist.npz')
         >>> print(dist_on_disk.pos[:3,]) # print position information for the first three sids: #The '...' is for possible space char
-        [[...1.          0.00800801  0.        ]
-         [...1.          0.023023    1.        ]
-         [...1.          0.0700701   4.        ]]
+        [[1 0 1]
+         [1 0 2]
+         [1 0 3]]
         """
         return self.col_property
 
@@ -233,16 +233,16 @@ class DistReader(PstReader):
         :Example:
 
         >>> from pysnptools.distreader import DistNpz
-        >>> dist_on_disk = DistNpz('../../tests/datasets/all_chr.maf0.001.N300.DistNpz') # Specify SNP data on disk
-        >>> distData1 = dist_on_disk.read() # Read all the SNP data returning a DistData instance
-        >>> print(type(distData1.val).__name__) # The DistData instance contains a ndarray of the data.
+        >>> dist_on_disk = DistNpz('../examples/toydata.dist.npz') # Specify SNP data on disk
+        >>> distdata1 = dist_on_disk.read() # Read all the SNP data returning a DistData instance
+        >>> print(type(distdata1.val).__name__) # The DistData instance contains a ndarray of the data.
         ndarray
-        >>> subset_distData = dist_on_disk[:,::2].read() # From the disk, read SNP values for every other sid
-        >>> print(subset_distData.val[0,0]) # Print the first SNP value in the subset
-        2.0
-        >>> subsub_distData = subset_distData[:10,:].read(order='A',view_ok=True) # Create an in-memory subset of the subset with SNP values for the first ten iids. Share memory if practical.
+        >>> subset_distdata = dist_on_disk[:,::2].read() # From the disk, read SNP values for every other sid
+        >>> print(subset_distdata.val[0,0]) # Print the first SNP value in the subset
+        [0.26984395 0.68350884 0.04664721]
+        >>> subsub_distdata = subset_distdata[:10,:].read(order='A',view_ok=True) # Create an in-memory subset of the subset with SNP values for the first ten iids. Share memory if practical.
         >>> import numpy as np
-        >>> # print np.may_share_memory(subset_distData.val, subsub_distData.val) # Do the two ndarray's share memory? They could. Currently they won't.       
+        >>> # print np.may_share_memory(subset_distdata.val, subsub_distdata.val) # Do the two ndarray's share memory? They could. Currently they won't.       
         """
         val = self._read(None, None, order, dtype, force_python_only, view_ok)
         from pysnptools.distreader import DistData
@@ -262,8 +262,8 @@ class DistReader(PstReader):
         :Example:
 
         >>> from pysnptools.distreader import DistNpz
-        >>> dist_on_disk = DistNpz('../../tests/datasets/all_chr.maf0.001.N300') # Specify SNP data on disk
-        >>> print(dist_on_disk.iid_to_index([['POP1','44'],['POP1','12']])) #Find the indexes for two iids.
+        >>> dist_on_disk = DistNpz('../examples/toydata.dist.npz') # Specify SNP data on disk
+        >>> print(dist_on_disk.iid_to_index([['per2','per2'],['per1','per1']])) #Find the indexes for two iids.
         [2 1]
         """
         return self.row_to_index(list)
@@ -281,8 +281,8 @@ class DistReader(PstReader):
         :Example:
 
         >>> from pysnptools.distreader import DistNpz
-        >>> dist_on_disk = DistNpz('../../tests/datasets/all_chr.maf0.001.N300') # Specify SNP data on disk
-        >>> print(dist_on_disk.sid_to_index(['1_10','1_13'])) #Find the indexes for two sids.
+        >>> dist_on_disk = DistNpz('../examples/toydata.dist.npz') # Specify SNP data on disk
+        >>> print(dist_on_disk.sid_to_index(['null_2','null_9'])) #Find the indexes for two sids.
         [2 9]
         """
         return self.col_to_index(list)
@@ -309,6 +309,7 @@ class DistReader(PstReader):
         raise NotImplementedError
 
     def _assert_iid_sid_pos(self):
+        assert len(self._val.shape)==3 and self._val.shape[-1]==3, "val should have 3 dimensions and the last dimension should have size 3"
         assert self._row.dtype.type is np.str_ and len(self._row.shape)==2 and self._row.shape[1]==2, "iid should be dtype str, have two dimensions, and the second dimension should be size 2"
         assert self._col.dtype.type is np.str_ and len(self._col.shape)==1, "sid should be of dtype of str and one dimensional"
 

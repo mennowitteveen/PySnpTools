@@ -97,13 +97,14 @@ class DistMemMap(PstMemMap,DistData):
         >>> filename = "tempdir/tiny.dist.memmap"
         >>> pstutil.create_directory_if_necessary(filename)
         >>> dist_mem_map = DistMemMap.empty(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'],filename=filename,order="F",dtype=np.float64)
-        >>> dist_mem_map.val[:,:] = [[0.,2.,0.],[0.,1.,2.]]
+        >>> dist_mem_map.val[:,:,:] = [[[.5,.5,0],[0,0,1],[.5,.5,0]],
+        ...                            [[0,1.,0],[0,.75,.25],[.5,.5,0]]]
         >>> dist_mem_map.flush()
 
         '''
 
         self = DistMemMap(filename)
-        self._empty_inner(row=iid, col=sid, filename=filename, row_property=None, col_property=pos,order=order,dtype=dtype,val_count=None)
+        self._empty_inner(row=iid, col=sid, filename=filename, row_property=None, col_property=pos,order=order,dtype=dtype,val_count=3)
         return self
 
     def flush(self):
@@ -114,7 +115,8 @@ class DistMemMap(PstMemMap,DistData):
         >>> filename = "tempdir/tiny.dist.memmap"
         >>> pstutil.create_directory_if_necessary(filename)
         >>> dist_mem_map = DistMemMap.empty(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'],filename=filename,order="F",dtype=np.float64)
-        >>> dist_mem_map.val[:,:] = [[0.,2.,0.],[0.,1.,2.]]
+        >>> dist_mem_map.val[:,:,:] = [[[.5,.5,0],[0,0,1],[.5,.5,0]],
+        ...                            [[0,1.,0],[0,.75,.25],[.5,.5,0]]]
         >>> dist_mem_map.flush()
 
         '''
@@ -174,20 +176,20 @@ class TestDistMemMap(unittest.TestCase):
         pstutil.create_directory_if_necessary(filename2)
         distreader2 = DistMemMap.empty(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'],filename=filename2,order="F",dtype=np.float64)
         assert isinstance(distreader2.val,np.memmap)
-        distreader2.val[:,:] = [[0.,2.,0.],[0.,1.,2.]]#!!!cmk make a distribution
-        assert np.array_equal(distreader2[[1],[1]].read(view_ok=True).val,np.array([[1.]]))
+        distreader2.val[:,:,:] = [[[.5,.5,0],[0,0,1],[.5,.5,0]],[[0,1.,0],[0,.75,.25],[.5,.5,0]]]
+        assert np.array_equal(distreader2[[1],[1]].read(view_ok=True).val,np.array([[[0,.75,.25]]]))
         distreader2.flush()
         assert isinstance(distreader2.val,np.memmap)
-        assert np.array_equal(distreader2[[1],[1]].read(view_ok=True).val,np.array([[1.]]))
+        assert np.array_equal(distreader2[[1],[1]].read(view_ok=True).val,np.array([[[0,.75,.25]]]))
         distreader2.flush()
 
         distreader3 = DistMemMap(filename2)
-        assert np.array_equal(distreader3[[1],[1]].read(view_ok=True).val,np.array([[1.]]))
+        assert np.array_equal(distreader3[[1],[1]].read(view_ok=True).val,np.array([[[0,.75,.25]]]))
         assert isinstance(distreader3.val,np.memmap)
 
         logging.info("in TestDistMemMap test1")
         distreader = DistMemMap('../examples/tiny.dist.memmap')
-        assert distreader.iid_count == 500
+        assert distreader.iid_count == 25
         assert distreader.sid_count == 10
         assert isinstance(distreader.val,np.memmap)
 

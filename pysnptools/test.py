@@ -606,7 +606,7 @@ class TestPySnpTools(unittest.TestCase):
         i = 0
         for row_count in [0,5,2,1]:
             for col_count in [4,2,1,0]:
-                val = np.random.random_integers(low=0,high=3,size=(row_count,col_count))*1.0
+                val = np.random.randint(0,4,size=(row_count,col_count))*1.0
                 val[val==3]=np.NaN
                 row = [('0','0'),('1','1'),('2','2'),('3','3'),('4','4')][:row_count]
                 col = ['s0','s1','s2','s3','s4'][:col_count]

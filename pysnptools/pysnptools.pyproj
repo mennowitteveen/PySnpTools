@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{60f1cb4a-9da3-47c2-9b89-60ac1ce93347}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>pstreader\test.py</StartupFile>
+    <StartupFile>distreader\test.py</StartupFile>
     <SearchPath>..\</SearchPath>
     <WorkingDirectory>.\snpreader</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -38,6 +38,14 @@
     <Compile Include="..\setup.py">
       <Link>setup\setup.py</Link>
     </Compile>
+    <Compile Include="distreader\distdata.py" />
+    <Compile Include="distreader\distreader.py" />
+    <Compile Include="distreader\disthdf5.py" />
+    <Compile Include="distreader\distmemmap.py" />
+    <Compile Include="distreader\distnpz.py" />
+    <Compile Include="distreader\test.py" />
+    <Compile Include="distreader\_subset.py" />
+    <Compile Include="distreader\__init__.py" />
     <Compile Include="kernelreader\identity.py" />
     <Compile Include="kernelreader\kerneldata.py" />
     <Compile Include="kernelreader\kernelreader.py" />
@@ -160,6 +168,7 @@
     <Folder Include="docsource\" />
     <Folder Include="kernelreader\" />
     <Folder Include="kernelstandardizer\" />
+    <Folder Include="distreader\" />
     <Folder Include="pstreader\" />
     <Folder Include="setup\" />
     <Folder Include="util\" />

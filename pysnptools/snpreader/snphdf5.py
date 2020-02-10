@@ -55,7 +55,7 @@ class SnpHdf5(PstHdf5,SnpReader):
         :type snpdata: :class:`SnpData`
         :param hdf5_dtype: None (use the .val's dtype) or a Hdf5 dtype, e.g. 'f8','f4',etc.
         :type hdf5_dtype: string
-        :param col_major: Tells if vals should be stored on disk in sid_major (default) or iid_major format.
+        :param sid_major: Tells if vals should be stored on disk in sid_major (default) or iid_major format.
         :type col_major: bool
         :rtype: :class:`.SnpHdf5`
 

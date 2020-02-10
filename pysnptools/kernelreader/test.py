@@ -296,7 +296,7 @@ class TestKrDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    def test_snphdf5(self):
+    def test_kernelhdf5(self):
         import pysnptools.kernelreader.kernelhdf5
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -304,7 +304,7 @@ class TestKrDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    def test_snpnpz(self):
+    def test_kernelnpz(self):
         import pysnptools.kernelreader.kernelnpz
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))

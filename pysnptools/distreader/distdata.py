@@ -44,7 +44,7 @@ class DistData(PstData,DistReader):
         :Example:
 
         >>> import numpy as np
-        >>> from pysnptools.distreader import DistData #!!!cmk need to fix up the val examples
+        >>> from pysnptools.distreader import DistData
         >>> snpdata1 = DistData(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'], 
         ...                     val=[[[.5,.5,0],[0,0,1],[.5,.5,0]],
         ...                          [[0,1.,0],[0,.75,.25],[.5,.5,0]]],
@@ -96,7 +96,7 @@ class DistData(PstData,DistReader):
         self._row_property = PstData._fixup_input(None,count=len(self._row),empty_creator=lambda count:np.empty([count,0],dtype='str'),dtype='str')
         self._col_property = PstData._fixup_input(pos,count=len(self._col),empty_creator=lambda count:np.full([count, 3], np.nan))
         self._val = PstData._fixup_input_val(val,row_count=len(self._row),col_count=len(self._col),empty_creator=lambda row_count,col_count:np.empty([row_count,col_count,3],dtype=np.float64))#!!!cmk Replace empty with my FillNA method?
-        self._assert_iid_sid_pos()
+        self._assert_iid_sid_pos(check_val=True)
         self._name = name or parent_string or ""
         self._std_string_list = []
 
@@ -116,7 +116,7 @@ class DistData(PstData,DistReader):
         :param equal_nan: (Default: True) Tells if NaN in :attr:`.DistData.val` should be treated as regular values when testing equality.
         :type equal_nan: bool
 
-        >>> import numpy as np #!!!cmk need to fix up val examples
+        >>> import numpy as np
         >>> snpdata5 = DistData(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'],
         ...                     val=[[[.5,.5,0],[0,0,1],[.5,.5,0]],
         ...                          [[0,1.,0],[0,.75,.25],[np.nan,np.nan,np.nan]]],

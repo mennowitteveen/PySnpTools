@@ -140,7 +140,7 @@ class DistMemMap(PstMemMap,DistData):
         >>> from pysnptools.distreader import DistData, DistMemMap
         >>> data1 = DistData(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'],
         ...                     val=[[[.5,.5,0],[0,0,1],[.5,.5,0]],
-        ...                          [[0,1.,0],[0,.75,.25],[.5,.5,0]]])#!!!cmk should raise exception as soon as dim is wrong in distdata and snpdata and kerneldata
+        ...                          [[0,1.,0],[0,.75,.25],[.5,.5,0]]])
         >>> pstutil.create_directory_if_necessary("tempdir/tiny.pst.memmap")
         >>> DistMemMap.write("tempdir/tiny.dist.memmap",data1)      # Write data1 in DistMemMap format
         DistMemMap('tempdir/tiny.dist.memmap')

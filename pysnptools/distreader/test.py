@@ -14,7 +14,7 @@ from pysnptools.distreader.distmemmap import TestDistMemMap
 from pysnptools.distreader import DistNpz, DistHdf5, DistMemMap
 from pysnptools.util import create_directory_if_necessary
 
-# TestDistMemMap #!!!cmk be sure includes docstring
+# TestDistMemMap #!!!cmk be sure includes docstrings
 
 
 class TestDistReaders(unittest.TestCase):     
@@ -37,7 +37,7 @@ class TestDistReaders(unittest.TestCase):
         val = np.random.random((row_count,col_count,val_count))
         distdata = DistData(val=val,iid=[['iid{0}'.format(i)]*2 for i in range(row_count)],sid=['sid{0}'.format(s) for s in range(col_count)]
                             )
-        print('cmk1')
+        
 
 
     def test_scalar_index(self):
@@ -269,7 +269,7 @@ class TestDistReaders(unittest.TestCase):
                             pass
         logging.info("done with 'test_writes'")
 
-class NaNCNCTestCases(unittest.TestCase): #!!!cmk be sure this is called
+class TestDistNaNCNC(unittest.TestCase):
     def __init__(self, iid_index_list, snp_index_list, distreader, dtype, order, force_python_only, reference_snps, reference_dtype):
         self.iid_index_list = iid_index_list
         self.snp_index_list = snp_index_list
@@ -301,7 +301,7 @@ class NaNCNCTestCases(unittest.TestCase): #!!!cmk be sure this is called
 
         for iid_index_list in [range(N_original), range(N_original//2), range(N_original - 1,0,-2)]:
             for snp_index_list in [range(snps_to_read_count), range(snps_to_read_count//2), range(snps_to_read_count - 1,0,-2)]:
-                reference_snps, reference_dtype = NaNCNCTestCases(iid_index_list, snp_index_list, snp_reader_factory_distnpz(), sp.float64, "C", "False", None, None).read_and_standardize()
+                reference_snps, reference_dtype = TestDistNaNCNC(iid_index_list, snp_index_list, snp_reader_factory_distnpz(), sp.float64, "C", "False", None, None).read_and_standardize()
                 for distreader_factory in [snp_reader_factory_distnpz, 
                                             snp_reader_factory_snpmajor_hdf5, snp_reader_factory_iidmajor_hdf5
                                             ]:
@@ -309,7 +309,7 @@ class NaNCNCTestCases(unittest.TestCase): #!!!cmk be sure this is called
                         for order in ["C", "F"]:
                             for force_python_only in [False, True]:
                                 distreader = distreader_factory()
-                                test_case = NaNCNCTestCases(iid_index_list, snp_index_list, distreader, dtype, order, force_python_only, reference_snps, reference_dtype)
+                                test_case = TestDistNaNCNC(iid_index_list, snp_index_list, distreader, dtype, order, force_python_only, reference_snps, reference_dtype)
                                 yield test_case
         os.chdir(previous_wd)
 
@@ -407,7 +407,7 @@ def getTestSuite():
     test_suite = unittest.TestSuite([])
 
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaders))
-    test_suite.addTests(NaNCNCTestCases.factory_iterator())
+    test_suite.addTests(TestDistNaNCNC.factory_iterator())
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistMemMap))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaderDocStrings))
     

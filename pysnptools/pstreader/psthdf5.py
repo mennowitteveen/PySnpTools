@@ -158,11 +158,7 @@ class PstHdf5(PstReader):
             selection = tuple(reversed(selection))
 
         if val_order == "F":
-            try:
-                self.val_in_file.read_direct(val.T,selection)
-            except:
-                print('!!!cmk0')
-                self.val_in_file.read_direct(val.T,selection)
+            self.val_in_file.read_direct(val.T,selection)
         else:
             assert val_order == "C", "real assert"
             self.val_in_file.read_direct(val,selection)

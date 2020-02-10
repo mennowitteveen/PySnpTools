@@ -102,7 +102,7 @@ class Bed(SnpReader):
 
         if not hasattr(self,"_col") or not hasattr(self,"_col_property"):
             self._col, self._col_property = SnpReader._read_map_or_bim(self.filename,remove_suffix="bed", add_suffix="bim")
-        self._assert_iid_sid_pos()
+        self._assert_iid_sid_pos(check_val=False)
 
         if not self.skip_format_check:
             self._open_bed()

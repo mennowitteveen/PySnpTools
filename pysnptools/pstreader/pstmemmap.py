@@ -159,7 +159,7 @@ class PstMemMap(PstData):
             np.save(fp, col_property)
             np.save(fp, np.array([self._dtype]))
             np.save(fp, np.array([self._order]))
-            np.save(fp, np.array([val_count])) #!!!cmk be sure this works with None
+            np.save(fp, np.array([val_count]))
             self._offset = fp.tell()
 
         logging.info("About to start allocating memmap '{0}'".format(filename))

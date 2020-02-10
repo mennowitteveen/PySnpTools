@@ -69,7 +69,7 @@ class DistReader(PstReader):
 
         Every DistReader, such as :class:`.DistNpz` and :class:`.DistData`, has these properties: :attr:`iid`, :attr:`iid_count`, :attr:`sid`, :attr:`sid_count`,
         :attr:`pos` and these methods: :meth:`read`, :meth:`iid_to_index`, :meth:`sid_to_index`, :meth:`read_kernel`. See below for details.
-        #!!!cmk really want read_kernal
+        #!!!cmk really want read_kernal????
 
         :class:`.DistData` is a DistReader so it supports the above properties and methods. In addition, it supports property :attr:`.DistData.val`, method :meth:`.DistData.standardize`, and equality testing.
         #!!!cmk really standardize?
@@ -308,8 +308,9 @@ class DistReader(PstReader):
     def copyinputs(self, copier):
         raise NotImplementedError
 
-    def _assert_iid_sid_pos(self):
-        assert len(self._val.shape)==3 and self._val.shape[-1]==3, "val should have 3 dimensions and the last dimension should have size 3"
+    def _assert_iid_sid_pos(self,check_val):
+        if check_val:
+            assert len(self._val.shape)==3 and self._val.shape[-1]==3, "val should have 3 dimensions and the last dimension should have size 3"
         assert self._row.dtype.type is np.str_ and len(self._row.shape)==2 and self._row.shape[1]==2, "iid should be dtype str, have two dimensions, and the second dimension should be size 2"
         assert self._col.dtype.type is np.str_ and len(self._col.shape)==1, "sid should be of dtype of str and one dimensional"
 

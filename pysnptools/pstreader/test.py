@@ -108,9 +108,6 @@ class TestPstReader(unittest.TestCase):
                                     for order in ['C','F','A']:
                                         for force_python_only in [True,False]:
                                             readdata = subreader.read(order=order,force_python_only=force_python_only)
-                                            if not np.array_equal(readdata.val,expected.val): #!!!cmk0
-                                                readdatax = subreader.read(order=order,force_python_only=force_python_only)
-                                                print("cmk0")
                                             assert np.array_equal(readdata.val,expected.val)
                                             assert np.array_equal(readdata.row,expected.row)
                                             assert np.array_equal(readdata.col,expected.col)
@@ -137,8 +134,6 @@ class TestPstReader(unittest.TestCase):
                                 result = pstdata[::-2,::-1].read(order=order_to,dtype=dtype_to,force_python_only=force_python_only)
                                 assert result.val.dtype==dtype_to
                                 assert (order_to == 'F' and result.val.flags['F_CONTIGUOUS']) or (order_to == 'C' and result.val.flags['C_CONTIGUOUS'])
-                                if not np.array_equal(result.val,expected): #!!!cmk0
-                                    print('cmk!!!')
                                 assert np.array_equal(result.val,expected)
 
     def test_repr_test(self):

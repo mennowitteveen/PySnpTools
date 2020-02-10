@@ -29,8 +29,10 @@ from pysnptools.kernelreader.test import _fortesting_JustCheckExists
 from pysnptools.util.intrangeset import TestIntRangeSet
 from pysnptools.util.test import TestUtilTools
 from pysnptools.util.filecache.test import TestFileCache
-from pysnptools.distreader.test import TestDistReader
+from pysnptools.distreader.test import TestDistReaders
 from pysnptools.distreader.test import TestDistReaderDocStrings
+from pysnptools.distreader.test import TestDistNaNCNC
+from pysnptools.distreader.distmemmap import TestDistMemMap
 
 import unittest
 import os.path
@@ -89,19 +91,6 @@ class TestPySnpTools(unittest.TestCase):
         self.pheno_fn = self.currentFolder + "/examples/toydata.phe"
         self.snpdata = snpreader.read(order='F',force_python_only=True)
         self.snps = self.snpdata.val
-
-    def test_3d(self):#!!!cmk1 this test should fail
-        from pysnptools.snpreader import SnpData
-        np.random.seed(0)
-        row_count = 4
-        col_count = 5
-        val_count = 3
-        val = np.random.random((row_count,col_count,val_count))
-        snpdata = SnpData(val=val,iid=[['iid{0}'.format(i)]*2 for i in range(row_count)],sid=['sid{0}'.format(s) for s in range(col_count)]
-                            )
-        print('cmk1')
-
-
 
     def test_diagKtoN(self):
         """
@@ -904,7 +893,10 @@ def getTestSuite():
 
     test_suite = unittest.TestSuite([])
 
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReader))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaders))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaderDocStrings))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistMemMap))
+    test_suite.addTests(TestDistNaNCNC.factory_iterator())
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPySnpTools))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistributedBed))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestFileCache))

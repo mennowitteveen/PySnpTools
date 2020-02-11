@@ -7,9 +7,11 @@ import logging
 import time
 import pysnptools.util as pstutil
 from pysnptools.pstreader import PstReader
+from pysnptools.snpreader import SnpData
 import warnings
 import pysnptools.standardizer as stdizer
 from six.moves import range
+from pysnptools.snpreader import DistSnp
 
 #!!why do the examples use ../tests/datasets instead of "examples"?
 class DistReader(PstReader):
@@ -249,6 +251,31 @@ class DistReader(PstReader):
         ret = DistData(self.iid,self.sid,val,pos=self.pos,name=str(self))
         return ret
 
+    def read_snp(self, max_weight=2.0, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False):
+        """Returns a :class:`SnpData` such that the :meth:`SnpData.val` property will be a ndarray of expected SNP values.
+
+        :param block_size: optional -- Default of None (meaning to load all). Suggested number of sids to read into memory at a time.
+        :type block_size: int or None
+        #!!!cmk list max_weight and dtype, etc (also check read_kernel and make sure they are there too
+
+        :rtype: class:`SnpData`
+
+        Calling the method again causes the distribution values to be re-read and allocates a new class:`SnpData`.
+
+        When applied to an read-from-disk SnpReader, such as :class:`.Dist.Npz`, the method can save memory by reading the data in blocks.#!!!cmk true?
+
+        :Example:
+
+        >>> from pysnptools.distreader import DistNpz
+        >>> dist_on_disk = DistNpz('../examples/toydata.dist.npz') # Specify distribution data on disk
+        >>> snpdata1 = dist_on_disk.read_snp(max_weight=1)
+        >>> print((int(snpdata1.iid_count), '{0:.6f}'.format(snpdata1.val[0,0])))
+        (25, '0.388402')
+        """
+        distsnp = DistSnp(self,max_weight=max_weight,block_size=block_size)
+        snpdata = distsnp.read(order, dtype, force_python_only, view_ok)
+        return snpdata
+
     def iid_to_index(self, list):
         """Takes a list of iids and returns a list of index numbers
 
@@ -295,7 +322,7 @@ class DistReader(PstReader):
 
 
     @staticmethod
-    def _as_distdata(distreader, standardizer, force_python_only, dtype):#!!!cmk standardizer???
+    def _as_distdata(distreader, standardizer, force_python_only, dtype):#!!!cmk22 test this method
         '''
         Like 'read' except (1) won't read if already a DistData and (2) returns the standardizer
         '''
@@ -304,6 +331,39 @@ class DistReader(PstReader):
             return distreader, stdizer.Identity()
         else:
             return distreader.read(order='A',dtype=dtype).standardize(standardizer,return_trained=True,force_python_only=force_python_only)
+
+    #!!!cmk22 test all paths
+    def _read_snp(self, max_weight=2.0, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False, return_trained=False):
+        weights = np.array([0,.5,1])*max_weight
+
+        #Do all-at-once (not in blocks) if 1. No block size is given or 2. The #ofSNPs < Min(block_size,iid_count)
+        if block_size is None or (self.sid_count <= block_size or self.sid_count <= self.iid_count):
+            distsnp = self.read(order=order,dtype=dtype,force_python_only=force_python_only,view_ok=True) # a view is always OK, because we'll allocate memory in the next step
+            val = (distsnp.val*weights).sum(axis=-1)
+            return val
+        else: #Do in blocks
+            #!!!cmk22 need to test this path
+            t0 = time.time()
+            if order=='A':
+                order = 'F'
+            val = np.zeros([self.iid_count,self.sid_count],dtype=dtype,order=order)#!!!cmk should use empty or fillnan
+
+            logging.info("reading {0} distribution data in blocks of {1} SNPs and finding expected values (for {2} individuals)".format(self.sid_count, block_size, self.iid_count))
+            ct = 0
+            ts = time.time()
+
+            for start in range(0, self.sid_count, block_size):
+                ct += block_size
+                distsnp = self[:,start:start+block_size].read(order=order,dtype=dtype,force_python_only=force_python_only,view_ok=True) # a view is always OK, because we'll allocate memory in the next step
+                val[:,start:start+block_size] = (distsnp.val*weights).sum(axis=-1)
+                if ct % block_size==0:
+                    diff = time.time()-ts
+                    if diff > 1: logging.info("read %s SNPs in %.2f seconds" % (ct, diff))
+
+            t1 = time.time()
+            logging.info("%.2f seconds elapsed" % (t1-t0))
+
+            return val
     
     def copyinputs(self, copier):
         raise NotImplementedError

@@ -12,7 +12,7 @@ from pysnptools.kernelstandardizer import DiagKtoN
 class SnpKernel(KernelReader):
     '''
     A :class:`.KernelReader` that creates a kernel from a :class:`.SnpReader`. No SNP data will be read until
-    the :meth:`SnpKernel.read` method is called. Use block_size to avoid ever reading all the SNP data into memory
+    the :meth:`SnpKernel.read` method is called. Use block_size to avoid ever reading all the SNP data into memory.
     at once.
 
     See :class:`.KernelReader` for general examples of using KernelReaders.

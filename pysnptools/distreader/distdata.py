@@ -147,6 +147,34 @@ class DistData(PstData,DistReader):
                 s = "{0}({1})".format(self.__class__.__name__,self._name)
         return s
 
+    #cmk delete
+    #def _read_snp(train, max_weight=2.0, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False, return_trained=False):
+    #    '''
+    #    The method creates a kernel for the in-memory SNP data. It handles these cases
+    #            * No standardization is needed & everything is in memory  OR uses the FROM-DISK method
+    #    '''
+    #    from pysnptools.pstreader import PstReader
+    #    print('!!!cmk22 need code')
+
+    #    #Just do a 'python' dot, if no standardization is needed and everything is the right type
+    #    if isinstance(standardizer,Identity) and train.val.dtype == dtype:
+    #        ts = time.time()
+    #        #is_worth_logging = train.val.shape[0] * train.val.shape[1] * test.val.shape[0] > 1e9
+    #        #if is_worth_logging: logging.info("  _read_kernel about to multiply train{0} x test{1}".format(train.val.shape,test.val.shape))
+    #        if order == 'F': #numpy's 'dot' always returns 'C' order
+    #            K = (train.val.dot(train.val.T)).T
+    #        else:
+    #            K = train.val.dot(train.val.T)
+    #        assert PstReader._array_properties_are_ok(K,order,dtype), "internal error: K is not of the expected order or dtype"
+    #        #if is_worth_logging: logging.info("  _read_kernel took %.2f seconds" % (time.time()-ts))
+    #        if return_trained:
+    #            return K, standardizer
+    #        else:
+    #            return K
+    #    else: #Do things the more general SnpReader way.
+    #        return SnpReader._read_kernel(train, standardizer, block_size=block_size, order=order, dtype=dtype, force_python_only=force_python_only,view_ok=view_ok, return_trained=return_trained)
+
+
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

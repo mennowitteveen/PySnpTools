@@ -83,6 +83,7 @@
     <Compile Include="pstreader\pstmemmap.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="snpreader\distsnp.py" />
     <Compile Include="snpreader\snpmemmap.py">
       <SubType>Code</SubType>
     </Compile>

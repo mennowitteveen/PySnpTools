@@ -11,8 +11,10 @@ import time
 from six.moves import range
 
 from pysnptools.distreader.distmemmap import TestDistMemMap
-from pysnptools.distreader import DistNpz, DistHdf5, DistMemMap
+from pysnptools.distreader import DistNpz, DistHdf5, DistMemMap, DistData
 from pysnptools.util import create_directory_if_necessary
+from pysnptools.snpreader import DistSnp, SnpNpz
+from pysnptools.kernelreader.test import _fortesting_JustCheckExists
 
 # TestDistMemMap #!!!cmk be sure includes docstrings
 
@@ -35,6 +37,7 @@ class TestDistReaders(unittest.TestCase):
         col_count = 5
         val_count = 3
         val = np.random.random((row_count,col_count,val_count))
+        val /= val.sum(axis=2,keepdims=True)  #make probabilities sum to 1 #!!!cmk make a method?
         distdata = DistData(val=val,iid=[['iid{0}'.format(i)]*2 for i in range(row_count)],sid=['sid{0}'.format(s) for s in range(col_count)]
                             )
         
@@ -128,7 +131,6 @@ class TestDistReaders(unittest.TestCase):
     def test_write_distnpz_f64cpp_5(self):
         distreader = DistNpz(self.currentFolder + "/../examples/toydata.dist.npz")
 
-        from pysnptools.kernelreader.test import _fortesting_JustCheckExists
         _fortesting_JustCheckExists().input(distreader)
 
         iid_index = 5
@@ -216,7 +218,9 @@ class TestDistReaders(unittest.TestCase):
         i = 0
         for row_count in [0,5,2,1]:
             for col_count in [4,2,1,0]:
-                val = np.random.randint(0,4,size=(row_count,col_count,3))*1.0
+                val=np.random.random(size=[row_count,col_count,3])
+                val /= val.sum(axis=2,keepdims=True)  #make probabilities sum to 1 #!!!cmk make a method?
+
                 val[val==3]=np.NaN
                 row = [('0','0'),('1','1'),('2','2'),('3','3'),('4','4')][:row_count]
                 col = ['s0','s1','s2','s3','s4'][:col_count]
@@ -268,6 +272,92 @@ class TestDistReaders(unittest.TestCase):
                         except:
                             pass
         logging.info("done with 'test_writes'")
+
+    def test_block_size(self):
+        np.random.seed(0)
+        snp_count = 20
+        val=np.array(np.random.random(size=[3,snp_count,3]),dtype=np.float64,order='F')
+        val /= val.sum(axis=2,keepdims=True)  #make probabilities sum to 1 #!!!cmk make a method?
+        distreader = DistData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(snp_count)],val=val)
+        snpdata0 = DistSnp(distreader,max_weight=100,block_size=1).read()
+        snpdata1 = DistSnp(distreader,max_weight=100,block_size=None).read()
+        np.testing.assert_array_almost_equal(snpdata0.val,snpdata1.val, decimal=10)
+
+    def test_intersection(self):#!!!cmk22 this should be run
+
+        from pysnptools.snpreader import DistSnp
+        from pysnptools.snpreader import Pheno
+        from pysnptools.distreader._subset import _DistSubset
+        from pysnptools.snpreader._subset import _SnpSubset
+        from pysnptools.util import intersect_apply
+
+        dist_all = DistNpz(self.currentFolder + "/../examples/toydata.dist.npz")
+        k = DistSnp(dist_all,max_weight=25)
+
+        pheno = Pheno(self.currentFolder + "/../examples/toydata.phe")
+        pheno = pheno[1:,:] # To test intersection we remove a iid from pheno
+
+        k1,pheno = intersect_apply([k,pheno]) 
+        assert isinstance(k1.distreader,_DistSubset) and not isinstance(k1,_SnpSubset)
+
+        #What happens with fancy selection?
+        k2 = k[::2,:]
+        assert isinstance(k2,DistSnp)
+
+        logging.info("Done with test_intersection")
+
+    def test_dist_snp2(self):
+        logging.info("in test_dist_snp2")
+        distreader = DistNpz(self.currentFolder + "/../examples/toydata.dist.npz")
+        distsnp = DistSnp(distreader,max_weight=33)
+        s  = str(distsnp)
+        _fortesting_JustCheckExists().input(distsnp)#!!!cmk22 what is expected here?
+
+    def test_subset(self):#!!!cmk22 this should be run
+        logging.info("in test_subset")
+        distreader = DistNpz(self.currentFolder + "/../examples/toydata.dist.npz")
+        distsnp = DistSnp(distreader,max_weight=10)
+        dssub = distsnp[::2,::2]
+        snpdata1 = dssub.read()
+        expected = distreader.read_snp(max_weight=10)[::2,::2].read()
+        np.testing.assert_array_almost_equal(snpdata1.val, expected.val, decimal=10)
+
+        logging.info("done with test")
+
+    def test_respect_inputs(self):
+        np.random.seed(0)
+        for dtype_start,decimal_start in [(np.float32,5),(np.float64,10)]:
+            for order_start in ['F','C','A']:
+                for snp_count in [20,2]:
+                    val=np.array(np.random.random(size=[3,snp_count,3]),dtype=dtype_start,order=order_start)
+                    val /= val.sum(axis=2,keepdims=True)  #make probabilities sum to 1 #!!!cmk make a method?
+                    distdataX = DistData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(snp_count)],val=val)
+                    for max_weight in [1.0,2.0]:
+                        weights = np.array([0,.5,1])*max_weight
+                        for distreader0 in [distdataX,distdataX[:,1:]]:
+                            distreader1 = distreader0[1:,:]
+                            refdata0 = distreader0.read()
+                            refval0 = (refdata0.val * weights).sum(axis=-1)
+                            refdata1 = distreader1.read()#!!!cmk why aren't these used?
+                            refval1 = (refdata1.val * weights).sum(axis=-1)#!!!cmk why aren't these used?
+                            for dtype_goal,decimal_goal in [(np.float32,5),(np.float64,10)]:
+                                for order_goal in ['F','C','A']:
+                                    k = distreader0.read_snp(max_weight=max_weight,block_size=1,order=order_goal,dtype=dtype_goal)
+                                    DistData._array_properties_are_ok(k.val,order_goal,dtype_goal)
+                                    np.testing.assert_array_almost_equal(refval0,k.val, decimal=min(decimal_start,decimal_goal))
+
+    def test_npz(self):#!!!cmk22 this should be run
+        logging.info("in test_npz")
+        distreader = DistNpz(self.currentFolder + "/../examples/toydata.dist.npz")
+        snpdata1 = distreader.read_snp(max_weight=1.0)
+        s = str(snpdata1)
+        output = "tempdir/distreader/toydata.snp.npz"
+        create_directory_if_necessary(output)
+        SnpNpz.write(output,snpdata1)
+        snpreader2 = SnpNpz(output)
+        snpdata2 = snpreader2.read()
+        np.testing.assert_array_almost_equal(snpdata1.val, snpdata2.val, decimal=10)
+        logging.info("done with test")
 
 class TestDistNaNCNC(unittest.TestCase):
     def __init__(self, iid_index_list, snp_index_list, distreader, dtype, order, force_python_only, reference_snps, reference_dtype):
@@ -426,7 +516,6 @@ if __name__ == '__main__':
             snpreader = Bed(currentFolder + "/../examples/toydata.bed",count_A1=True)[:25,:]
             np.random.seed(392)
             val = np.random.random((snpreader.iid_count,snpreader.sid_count,3))
-
             val /= val.sum(axis=2,keepdims=True)  #make probabilities sum to 1
             distdata = DistData(iid=snpreader.iid,sid=snpreader.sid,pos=snpreader.pos,val=val)
             DistNpz.write(currentFolder + "/../examples/toydata.dist.npz",distdata)

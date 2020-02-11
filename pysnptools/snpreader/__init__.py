@@ -30,3 +30,4 @@ from pysnptools.snpreader._mergesids import _MergeSIDs
 from pysnptools.snpreader._mergeiids import _MergeIIDs
 from pysnptools.snpreader.snpgen import SnpGen
 from pysnptools.snpreader.distributedbed import DistributedBed, _Distributed1Bed
+from pysnptools.snpreader.distsnp import DistSnp #!!!cmk22 where is snpkernel tested. This should be tested in similar places

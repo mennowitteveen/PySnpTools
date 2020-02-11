@@ -141,6 +141,7 @@ class SnpKernel(KernelReader):
         '''
         return self.snpreader.pos
 
+    #!!!cmk this needs a test
     def read_snps(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False):
         """Reads the SNP values, applies the standardizer, and returns a :class:`.SnpData`.
 

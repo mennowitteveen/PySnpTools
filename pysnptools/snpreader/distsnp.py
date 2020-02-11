@@ -9,7 +9,6 @@ from pysnptools.snpreader import SnpData
 
 class DistSnp(SnpReader):
     '''
-    #!!!cmk22 make this docstring run
     A :class:`.SnpReader` that creates expected SNP values from a :class:`.DistSnp`. No SNP distribution data will be read until
     the :meth:`DistSnp.read` method is called. Use block_size to avoid ever reading all the SNP data into memory.
     at once.
@@ -27,15 +26,17 @@ class DistSnp(SnpReader):
         :Example:
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
+        >>> from pysnptools.distreader import DistNpz
+        >>> from pysnptools.snpreader import DistSnp
         >>> dist_on_disk = DistNpz('../examples/toydata.dist.npz')        # A DistNpz file is specified, but nothing is read from disk
-        >>> snp_on_disk = DistSnp(snp_on_disk, block_size=50)  # A SnpReader is specified, but nothing is read from disk
-        >>> print(dist_on_disk) #Print the specification
-        DistSnp(DistNpz('../examples/toydata.dist.npz'),block_size=50)
+        >>> snp_on_disk = DistSnp(dist_on_disk, block_size=500)  # A SnpReader is specified, but nothing is read from disk
+        >>> print(snp_on_disk) #Print the specification
+        DistSnp(DistNpz('../examples/toydata.dist.npz'),block_size=500)
         >>> print(snp_on_disk.iid_count)                                  # iid information is read from disk, but not SNP data #!!!cmk true?
-        500
+        25
         >>> snpdata = snp_on_disk.read()                                  # Distribution data is read, 500 at a time, to create an expected SNP value
         >>> print('{0:.6f}'.format(snpdata.val[0,0]))
-        0.992307
+        0.776803
     '''
     def __init__(self, snpreader, max_weight=2.0, block_size=None):
         super(DistSnp, self).__init__()
@@ -67,12 +68,8 @@ class DistSnp(SnpReader):
         copier.input(self.distreader)
 
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
-        if row_index_or_none is not None or col_index_or_none is not None:
-            #!!!cmk22 test this code
-            sub = self.distreader[row_index_or_none,col_index_or_none]
-        else:
-            sub = self.distreader
-        return sub._read_snp(max_weight=self.max_weight,block_size=self.block_size, order=order, dtype=dtype, force_python_only=force_python_only, view_ok=view_ok)
+        assert row_index_or_none is None and col_index_or_none is None #real assert because indexing should already be pushed to the inner distreader
+        return self.distreader._read_snp(max_weight=self.max_weight,block_size=self.block_size, order=order, dtype=dtype, force_python_only=force_python_only, view_ok=view_ok)
 
     def __getitem__(self, iid_indexer_and_snp_indexer):
         row_index_or_none, col_index_or_none = iid_indexer_and_snp_indexer
@@ -97,40 +94,6 @@ class DistSnp(SnpReader):
         '''
         return self.distreader.pos
 
-    def read_snps(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False):
-        """Reads the distribution of values and returns a :class:`.SnpData`.
-
-        :param order: {'F' (default), 'C', 'A'}, optional -- Specify the order of the ndarray. If order is 'F' (default),
-            then the array will be in F-contiguous order (iid-index varies the fastest).
-            If order is 'C', then the returned array will be in C-contiguous order (sid-index varies the fastest).
-            If order is 'A', then the :attr:`.SnpData.val`
-            ndarray may be in any order (either C-, Fortran-contiguous).
-        :type order: string or None
-
-        :param dtype: {scipy.float64 (default), scipy.float32}, optional -- The data-type for the :attr:`.SnpData.val` ndarray.
-        :type dtype: data-type
-
-        :param force_python_only: optional -- If False (default), may use outside library code. If True, requests that the read
-            be done without outside library code.
-        :type force_python_only: bool
-
-        :param view_ok: optional -- If False (default), allocates new memory for the :attr:`.SnpData.val`'s ndarray. If True,
-            if practical and reading from a :class:`SnpData`, will return a new 
-            :class:`SnpData` with a ndarray shares memory with the original :class:`SnpData`.
-            Typically, you'll also wish to use "order='A'" to increase the chance that sharing will be possible.
-            Use these parameters with care because any change to either ndarray (for example, via :meth:`.SnpData.standardize`) will effect
-            the others. Also keep in mind that :meth:`read` relies on ndarray's mechanisms to decide whether to actually
-            share memory and so it may ignore your suggestion and allocate a new ndarray anyway.
-        :type view_ok: bool
-
-        :rtype: :class:`.SnpData`
-
-        """
-        #!!!where is max_weight?????
-        distdata = self.distreader.read(order=order, dtype=dtype, force_python_only=force_python_only, view_ok=view_ok)
-        #val /= val.sum(axis=2,keepdims=True)  #make probabilities sum to 1
-        print('!!!cmk22 need code')
-        return distdata
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

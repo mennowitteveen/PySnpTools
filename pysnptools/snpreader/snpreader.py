@@ -506,37 +506,37 @@ class SnpReader(PstReader):
         iid_indexer, snp_indexer = iid_indexer_and_snp_indexer
         return _SnpSubset(self, iid_indexer, snp_indexer)
 
-        def read_kernel(self, standardizer=None, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False):
-            """Returns a :class:`KernelData` such that the :meth:`KernelData.val` property will be a ndarray of the standardized SNP values multiplied with their transposed selves.
+    def read_kernel(self, standardizer=None, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False):
+        """Returns a :class:`KernelData` such that the :meth:`KernelData.val` property will be a ndarray of the standardized SNP values multiplied with their transposed selves.
 
-            :param standardizer: -- (required) Specify standardization to be applied before the matrix multiply. Any :class:`.Standardizer` may be used. Some choices include :class:`Standardizer.Identity` 
-                (do nothing), :class:`.Unit` (make values for each SNP have mean zero and standard deviation 1.0) and :class:`Beta`.
-            :type standardizer: :class:`.Standardizer`
+        :param standardizer: -- (required) Specify standardization to be applied before the matrix multiply. Any :class:`.Standardizer` may be used. Some choices include :class:`Standardizer.Identity` 
+            (do nothing), :class:`.Unit` (make values for each SNP have mean zero and standard deviation 1.0) and :class:`Beta`.
+        :type standardizer: :class:`.Standardizer`
 
-            :param block_size: optional -- Default of None (meaning to load all). Suggested number of sids to read into memory at a time.
-            :type block_size: int or None
+        :param block_size: optional -- Default of None (meaning to load all). Suggested number of sids to read into memory at a time.
+        :type block_size: int or None
 
-            :rtype: class:`KernelData`
+        :rtype: class:`KernelData`
 
-            Calling the method again causes the SNP values to be re-read and allocates a new class:`KernelData`.
+        Calling the method again causes the SNP values to be re-read and allocates a new class:`KernelData`.
 
-            When applied to an read-from-disk SnpReader, such as :class:`.Bed`, the method can save memory by reading (and standardizing) the data in blocks.
+        When applied to an read-from-disk SnpReader, such as :class:`.Bed`, the method can save memory by reading (and standardizing) the data in blocks.
 
-            :Example:
+        :Example:
 
-            >>> from pysnptools.snpreader import Bed
-            >>> from pysnptools.standardizer import Unit
-            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify SNP data on disk
-            >>> kerneldata1 = snp_on_disk.read_kernel(Unit())
-            >>> print((int(kerneldata1.iid_count), '{0:.6f}'.format(kerneldata1.val[0,0])))
-            (300, '901.421836')
-            """
-            assert standardizer is not None, "'standardizer' must be provided"
+        >>> from pysnptools.snpreader import Bed
+        >>> from pysnptools.standardizer import Unit
+        >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify SNP data on disk
+        >>> kerneldata1 = snp_on_disk.read_kernel(Unit())
+        >>> print((int(kerneldata1.iid_count), '{0:.6f}'.format(kerneldata1.val[0,0])))
+        (300, '901.421836')
+        """
+        assert standardizer is not None, "'standardizer' must be provided"
 
-            from pysnptools.kernelreader import SnpKernel
-            snpkernel = SnpKernel(self,standardizer=standardizer,block_size=block_size)
-            kerneldata = snpkernel.read(order, dtype, force_python_only, view_ok)
-            return kerneldata
+        from pysnptools.kernelreader import SnpKernel
+        snpkernel = SnpKernel(self,standardizer=standardizer,block_size=block_size)
+        kerneldata = snpkernel.read(order, dtype, force_python_only, view_ok)
+        return kerneldata
 
     def kernel(self, standardizer, allowlowrank=False, block_size=10000, blocksize=None):
         """ .. Warning:: Deprecated. Use :meth:`read_kernel` instead.

@@ -322,27 +322,27 @@ class DistReader(PstReader):
 
 
     @staticmethod
-    def _as_distdata(distreader, standardizer, force_python_only, dtype):#!!!cmk22 test this method
+    def _as_distdata(distreader, force_python_only, order, dtype):
         '''
-        Like 'read' except (1) won't read if already a DistData and (2) returns the standardizer
+        Like 'read' except won't read if already a DistData
         '''
-        from pysnptools.distreader import DistData
-        if isinstance(distreader,DistData) and distreader.val.dtype==dtype and isinstance(standardizer,stdizer.Identity):
-            return distreader, stdizer.Identity()
+        from pysnptools.distreader import DistData #must import here to avoid cycles
+        if isinstance(distreader,DistData) and distreader.val.dtype==dtype and (order=="A" or (order=="C" and distreader.val.flags["C_CONTIGUOUS"]) or (order=="F" and distreader.val.flags["F_CONTIGUOUS"])):
+            return distreader
         else:
-            return distreader.read(order='A',dtype=dtype).standardize(standardizer,return_trained=True,force_python_only=force_python_only)
+            return distreader.read(order=order,dtype=dtype,view_ok=True)
 
-    #!!!cmk22 test all paths
     def _read_snp(self, max_weight=2.0, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False, return_trained=False):
         weights = np.array([0,.5,1])*max_weight
 
         #Do all-at-once (not in blocks) if 1. No block size is given or 2. The #ofSNPs < Min(block_size,iid_count)
         if block_size is None or (self.sid_count <= block_size or self.sid_count <= self.iid_count):
-            distsnp = self.read(order=order,dtype=dtype,force_python_only=force_python_only,view_ok=True) # a view is always OK, because we'll allocate memory in the next step
+            distsnp = DistReader._as_distdata(self,dtype=dtype,order=order,force_python_only=force_python_only)
             val = (distsnp.val*weights).sum(axis=-1)
+            has_right_order = order="A" or (order=="C" and val.flags["C_CONTIGUOUS"]) or (order=="F" and val.flags["F_CONTIGUOUS"])
+            assert has_right_order, "!!!cmk expect this to be right"
             return val
         else: #Do in blocks
-            #!!!cmk22 need to test this path
             t0 = time.time()
             if order=='A':
                 order = 'F'

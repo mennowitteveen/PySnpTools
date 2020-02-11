@@ -839,6 +839,13 @@ class TestSnpDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
+    def test_distsnp(self):
+        import pysnptools.snpreader.distsnp
+        old_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
+        result = doctest.testmod(pysnptools.snpreader.distsnp)
+        os.chdir(old_dir)
+        assert result.failed == 0, "failed doc test: " + __file__
 
     def test_snpreader(self):
         old_dir = os.getcwd()

@@ -147,22 +147,7 @@ class TestDistReaders(unittest.TestCase):
         snpdata2 = DistNpz(output).read()
         np.testing.assert_array_almost_equal(distdata.val, snpdata2.val, decimal=10)
 
-    #!!!cmk delete
-    #def test_write_distnpz_f64cpp_5_python(self):
-    #    distreader = DistNpz(self.currentFolder + "/../examples/toydata.dist.npz")
-    #    iid_index = 5
-    #    logging.info("iid={0}".format(iid_index))
-    #    #if distreader.iid_count % 4 == 0: # divisible by 4 isn't a good test
-    #    #    distreader = distreader[0:-1,:]
-    #    #assert distreader.iid_count % 4 != 0
-    #    distdata = distreader[0:iid_index,:].read(order='F',dtype=np.float64)
-    #    if distdata.iid_count > 0:
-    #        distdata.val[-1,0] = float("NAN")
-    #    output = "tempdir/toydata.F64python.{0}.dist.npz".format(iid_index)
-    #    create_directory_if_necessary(output)
-    #    DistNpz.write(output,distdata, force_python_only=True)
-    #    snpdata2 = DistNpz(output).read()
-    #    np.testing.assert_array_almost_equal(distdata.val, snpdata2.val, decimal=10)
+
 
     def test_write_x_x_cpp(self):
         distreader = DistNpz(self.currentFolder + "/../examples/toydata.dist.npz")
@@ -283,8 +268,7 @@ class TestDistReaders(unittest.TestCase):
         snpdata1 = DistSnp(distreader,max_weight=100,block_size=None).read()
         np.testing.assert_array_almost_equal(snpdata0.val,snpdata1.val, decimal=10)
 
-    def test_intersection(self):#!!!cmk22 this should be run
-
+    def test_intersection(self):
         from pysnptools.snpreader import DistSnp
         from pysnptools.snpreader import Pheno
         from pysnptools.distreader._subset import _DistSubset
@@ -311,9 +295,9 @@ class TestDistReaders(unittest.TestCase):
         distreader = DistNpz(self.currentFolder + "/../examples/toydata.dist.npz")
         distsnp = DistSnp(distreader,max_weight=33)
         s  = str(distsnp)
-        _fortesting_JustCheckExists().input(distsnp)#!!!cmk22 what is expected here?
+        _fortesting_JustCheckExists().input(distsnp)
 
-    def test_subset(self):#!!!cmk22 this should be run
+    def test_subset(self):
         logging.info("in test_subset")
         distreader = DistNpz(self.currentFolder + "/../examples/toydata.dist.npz")
         distsnp = DistSnp(distreader,max_weight=10)
@@ -346,7 +330,7 @@ class TestDistReaders(unittest.TestCase):
                                     DistData._array_properties_are_ok(k.val,order_goal,dtype_goal)
                                     np.testing.assert_array_almost_equal(refval0,k.val, decimal=min(decimal_start,decimal_goal))
 
-    def test_npz(self):#!!!cmk22 this should be run
+    def test_npz(self):
         logging.info("in test_npz")
         distreader = DistNpz(self.currentFolder + "/../examples/toydata.dist.npz")
         snpdata1 = distreader.read_snp(max_weight=1.0)
@@ -507,12 +491,12 @@ def getTestSuite():
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
-    if False: #!!!cmk
+    if False:
         from pysnptools.snpreader import Bed
         from pysnptools.distreader import DistData, DistNpz
         # Create toydata.dist.npz
         currentFolder = os.path.dirname(os.path.realpath(__file__))
-        if True: #!!!cmk
+        if True:
             snpreader = Bed(currentFolder + "/../examples/toydata.bed",count_A1=True)[:25,:]
             np.random.seed(392)
             val = np.random.random((snpreader.iid_count,snpreader.sid_count,3))
@@ -529,7 +513,7 @@ if __name__ == '__main__':
         if True:
             distdata = DistNpz(currentFolder + "/../examples/toydata.dist.npz")[:,:10].read()
             DistMemMap.write(currentFolder + "/../examples/tiny.dist.memmap",distdata)
-        print('!!!cmk')
+        print('done')
 
     suites = getTestSuite()
     r = unittest.TextTestRunner(failfast=True) #!!!cmk change back to false

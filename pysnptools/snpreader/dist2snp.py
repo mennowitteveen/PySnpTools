@@ -7,10 +7,10 @@ from pysnptools.snpreader import SnpReader
 from pysnptools.snpreader import SnpData
 
 
-class DistSnp(SnpReader):
+class Dist2Snp(SnpReader):
     '''
-    A :class:`.SnpReader` that creates expected SNP values from a :class:`.DistSnp`. No SNP distribution data will be read until
-    the :meth:`DistSnp.read` method is called. Use block_size to avoid ever reading all the SNP data into memory.
+    A :class:`.SnpReader` that creates expected SNP values from a :class:`.Dist2Snp`. No SNP distribution data will be read until
+    the :meth:`Dist2Snp.read` method is called. Use block_size to avoid ever reading all the SNP data into memory.
     at once.
 
     See :class:`.SnpReader` for general examples of using SnpReaders.
@@ -27,11 +27,11 @@ class DistSnp(SnpReader):
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.distreader import DistNpz
-        >>> from pysnptools.snpreader import DistSnp
+        >>> from pysnptools.snpreader import Dist2Snp
         >>> dist_on_disk = DistNpz('../examples/toydata.dist.npz')        # A DistNpz file is specified, but nothing is read from disk
-        >>> snp_on_disk = DistSnp(dist_on_disk, block_size=500)  # A SnpReader is specified, but nothing is read from disk
+        >>> snp_on_disk = Dist2Snp(dist_on_disk, block_size=500)  # A SnpReader is specified, but nothing is read from disk
         >>> print(snp_on_disk) #Print the specification
-        DistSnp(DistNpz('../examples/toydata.dist.npz'),block_size=500)
+        Dist2Snp(DistNpz('../examples/toydata.dist.npz'),block_size=500)
         >>> print(snp_on_disk.iid_count)                                  # iid information is read from disk, but not SNP data #!!!cmk true?
         25
         >>> snpdata = snp_on_disk.read()                                  # Distribution data is read, 500 at a time, to create an expected SNP value
@@ -39,7 +39,7 @@ class DistSnp(SnpReader):
         0.776803
     '''
     def __init__(self, snpreader, max_weight=2.0, block_size=None):
-        super(DistSnp, self).__init__()
+        super(Dist2Snp, self).__init__()
 
         self.distreader = snpreader
         self.max_weight=max_weight
@@ -57,7 +57,7 @@ class DistSnp(SnpReader):
         return self._internal_repr()
 
     def _internal_repr(self): #!!! merge this with __repr__
-        s = "DistSnp({0}".format(self.distreader)
+        s = "Dist2Snp({0}".format(self.distreader)
         if self.block_size is not None:
             s += ",block_size={0}".format(self.block_size)
         s += ")"
@@ -73,7 +73,7 @@ class DistSnp(SnpReader):
 
     def __getitem__(self, iid_indexer_and_snp_indexer):
         row_index_or_none, col_index_or_none = iid_indexer_and_snp_indexer
-        return DistSnp(self.distreader[row_index_or_none,col_index_or_none],max_weight=self.max_weight,block_size=self.block_size)
+        return Dist2Snp(self.distreader[row_index_or_none,col_index_or_none],max_weight=self.max_weight,block_size=self.block_size)
 
 
     @property

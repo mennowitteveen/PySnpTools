@@ -11,7 +11,7 @@ from pysnptools.snpreader import SnpData
 import warnings
 import pysnptools.standardizer as stdizer
 from six.moves import range
-from pysnptools.snpreader import DistSnp
+from pysnptools.snpreader import Dist2Snp
 
 #!!why do the examples use ../tests/datasets instead of "examples"?
 class DistReader(PstReader):
@@ -272,8 +272,8 @@ class DistReader(PstReader):
         >>> print((int(snpdata1.iid_count), '{0:.6f}'.format(snpdata1.val[0,0])))
         (25, '0.388402')
         """
-        distsnp = DistSnp(self,max_weight=max_weight,block_size=block_size)
-        snpdata = distsnp.read(order, dtype, force_python_only, view_ok)
+        dist2snp = Dist2Snp(self,max_weight=max_weight,block_size=block_size)
+        snpdata = dist2snp.read(order, dtype, force_python_only, view_ok)
         return snpdata
 
     def iid_to_index(self, list):
@@ -322,7 +322,7 @@ class DistReader(PstReader):
 
 
     @staticmethod
-    def _as_distdata(distreader, force_python_only, order, dtype):
+    def _as_distdata(distreader, force_python_only, order, dtype): #!!!cmk should all these methods look for a .val property so they worked with memorymapped etc?
         '''
         Like 'read' except won't read if already a DistData
         '''
@@ -332,13 +332,13 @@ class DistReader(PstReader):
         else:
             return distreader.read(order=order,dtype=dtype,view_ok=True)
 
-    def _read_snp(self, max_weight=2.0, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False, return_trained=False):
+    def _read_snp(self, max_weight=2.0, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False):
         weights = np.array([0,.5,1])*max_weight
 
         #Do all-at-once (not in blocks) if 1. No block size is given or 2. The #ofSNPs < Min(block_size,iid_count)
         if block_size is None or (self.sid_count <= block_size or self.sid_count <= self.iid_count):
-            distsnp = DistReader._as_distdata(self,dtype=dtype,order=order,force_python_only=force_python_only)
-            val = (distsnp.val*weights).sum(axis=-1)
+            distdata = DistReader._as_distdata(self,dtype=dtype,order=order,force_python_only=force_python_only)
+            val = (distdata.val*weights).sum(axis=-1)
             has_right_order = order="A" or (order=="C" and val.flags["C_CONTIGUOUS"]) or (order=="F" and val.flags["F_CONTIGUOUS"])
             assert has_right_order, "!!!cmk expect this to be right"
             return val
@@ -354,8 +354,8 @@ class DistReader(PstReader):
 
             for start in range(0, self.sid_count, block_size):
                 ct += block_size
-                distsnp = self[:,start:start+block_size].read(order=order,dtype=dtype,force_python_only=force_python_only,view_ok=True) # a view is always OK, because we'll allocate memory in the next step
-                val[:,start:start+block_size] = (distsnp.val*weights).sum(axis=-1)
+                distdata = self[:,start:start+block_size].read(order=order,dtype=dtype,force_python_only=force_python_only,view_ok=True) # a view is always OK, because we'll allocate memory in the next step
+                val[:,start:start+block_size] = (distdata.val*weights).sum(axis=-1)
                 if ct % block_size==0:
                     diff = time.time()-ts
                     if diff > 1: logging.info("read %s SNPs in %.2f seconds" % (ct, diff))

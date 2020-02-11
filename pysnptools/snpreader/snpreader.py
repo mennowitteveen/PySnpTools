@@ -17,38 +17,38 @@ class SnpReader(PstReader):
 
     * A class such as :class:`.Bed` for you to specify data in a file. For example,
 
-        >>> from __future__ import print_function #Python 2 & 3 compatibility
-        >>> from pysnptools.snpreader import Bed
-        >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
-        >>> print(snp_on_disk) # prints specification for reading from file
+        from __future__ import print_function #Python 2 & 3 compatibility
+        from pysnptools.snpreader import Bed
+        snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
+        print(snp_on_disk) # prints specification for reading from file
         Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
-        >>> snp_on_disk.sid_count # prints the number of SNPS (but doesn't read any SNP values)
+        snp_on_disk.sid_count # prints the number of SNPS (but doesn't read any SNP values)
         1015
 
     * A :class:`.SnpData` class that holds SNP data in memory, typically after reading it from disk:
 
-        >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
-        >>> snpdata1 = snp_on_disk.read() #reads the SNP values
-        >>> type(snpdata1.val).__name__ # The val property is an ndarray of SNP values
+        snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
+        snpdata1 = snp_on_disk.read() #reads the SNP values
+        type(snpdata1.val).__name__ # The val property is an ndarray of SNP values
         'ndarray'
-        >>> print(snpdata1) # prints the specification of the in-memory SNP information
+        print(snpdata1) # prints the specification of the in-memory SNP information
         SnpData(Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False))
-        >>> snpdata1.iid_count #prints the number of iids (number of individuals) in this in-memory data
+        snpdata1.iid_count #prints the number of iids (number of individuals) in this in-memory data
         300
 
     * A subset of any SnpReader, specified with "[ *iid_index* , *sid_index* ]", to read only some SNP values. It can
       also be used to re-order the values.
 
-        >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
-        >>> subset_on_disk = snp_on_disk[[3,4],::2] # specification for a subset of the data on disk. No SNP values are read yet.
-        >>> print(subset_on_disk.sid_count) # prints the number of sids in this subset (but still doesn't read any SNP values)
+        snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
+        subset_on_disk = snp_on_disk[[3,4],::2] # specification for a subset of the data on disk. No SNP values are read yet.
+        print(subset_on_disk.sid_count) # prints the number of sids in this subset (but still doesn't read any SNP values)
         508
-        >>> print(subset_on_disk) #prints a specification of 'subset_on_disk'
+        print(subset_on_disk) #prints a specification of 'subset_on_disk'
         Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)[[3,4],::2]
-        >>> snpdata_subset = subset_on_disk.read() # efficiently reads the specified subset of values from the disk
-        >>> print(snpdata_subset) # prints the specification of the in-memory SNP information
+        snpdata_subset = subset_on_disk.read() # efficiently reads the specified subset of values from the disk
+        print(snpdata_subset) # prints the specification of the in-memory SNP information
         SnpData(Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)[[3,4],::2])
-        >>> print((int(snpdata_subset.val.shape[0]), int(snpdata_subset.val.shape[1]))) # The dimensions of the ndarray of SNP values
+        print((int(snpdata_subset.val.shape[0]), int(snpdata_subset.val.shape[1]))) # The dimensions of the ndarray of SNP values
         (2, 508)
 
 
@@ -79,13 +79,13 @@ class SnpReader(PstReader):
 
         Many of the classes, such as :class:`.Bed`, also provide a static :meth:`Bed.write` method for writing :class:`.SnpData` to disk.
 
-        >>> # read from Pheno, write to Bed
-        >>> from pysnptools.snpreader import Pheno, Bed
-        >>> import pysnptools.util as pstutil
+        # read from Pheno, write to Bed
+        from pysnptools.snpreader import Pheno, Bed
+        import pysnptools.util as pstutil
         
-        >>> snpdata = Pheno('../examples/toydata.phe').read() # Read data from Pheno format
-        >>> pstutil.create_directory_if_necessary("tempdir/toydata.bed")
-        >>> Bed.write("tempdir/toydata.bed",snpdata,count_A1=False)   # Write data in Bed format
+        snpdata = Pheno('../examples/toydata.phe').read() # Read data from Pheno format
+        pstutil.create_directory_if_necessary("tempdir/toydata.bed")
+        Bed.write("tempdir/toydata.bed",snpdata,count_A1=False)   # Write data in Bed format
         Bed('tempdir/toydata.bed',count_A1=False)
 
 
@@ -94,14 +94,14 @@ class SnpReader(PstReader):
         Individuals are identified with an iid, which is a ndarray of two strings: a family ID and a case ID.
         SNP locations are identified with an sid string in a ndarray. For example:
 
-        >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
-        >>> print(snp_on_disk.iid[:3]) # print the first three iids
+        snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
+        print(snp_on_disk.iid[:3]) # print the first three iids
         [['POP1' '0']
          ['POP1' '12']
          ['POP1' '44']]
-        >>> print(snp_on_disk.sid[:9]) # print the first nine sids
+        print(snp_on_disk.sid[:9]) # print the first nine sids
         ['1_12' '1_34' '1_10' '1_35' '1_28' '1_25' '1_36' '1_39' '1_4']
-        >>> print(snp_on_disk.iid_to_index([['POP1','44'],['POP1','12']])) #Find the indexes for two iids.
+        print(snp_on_disk.iid_to_index([['POP1','44'],['POP1','12']])) #Find the indexes for two iids.
         [2 1]
         
     Selecting and Reordering Individuals and SNPs
@@ -112,60 +112,60 @@ class SnpReader(PstReader):
         SnpReaders support the indexing formats supported by ndarray plus two generalizations. Here are examples of indexing with an array
         of indexes, with slicing, and with an array of Booleans.
 
-            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
-            >>> subset_snpreader_1 = snp_on_disk[[3,-1],:] #index with an array of indexes. Negatives count from end.
-            >>> print((subset_snpreader_1.iid_count, subset_snpreader_1.sid_count))
+            snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
+            subset_snpreader_1 = snp_on_disk[[3,-1],:] #index with an array of indexes. Negatives count from end.
+            print((subset_snpreader_1.iid_count, subset_snpreader_1.sid_count))
             (2, 1015)
-            >>> snpdata1 = subset_snpreader_1.read() # read just the two rows of interest from the disk
-            >>> subset_snpreader_2 = snp_on_disk[:,:0:-2] #index with a slice
-            >>> print((subset_snpreader_2.iid_count, subset_snpreader_2.sid_count))
+            snpdata1 = subset_snpreader_1.read() # read just the two rows of interest from the disk
+            subset_snpreader_2 = snp_on_disk[:,:0:-2] #index with a slice
+            print((subset_snpreader_2.iid_count, subset_snpreader_2.sid_count))
             (300, 507)
-            >>> boolindexes = [s.startswith('23_') for s in snp_on_disk.sid] # create a Boolean index of sids that start '23_'
-            >>> subset_snpreader_3 = snp_on_disk[:,boolindexes] #index with array of Booleans
-            >>> print((subset_snpreader_3.iid_count, subset_snpreader_3.sid_count))
+            boolindexes = [s.startswith('23_') for s in snp_on_disk.sid] # create a Boolean index of sids that start '23_'
+            subset_snpreader_3 = snp_on_disk[:,boolindexes] #index with array of Booleans
+            print((subset_snpreader_3.iid_count, subset_snpreader_3.sid_count))
             (300, 24)
 
         The first generalization over what ndarray offers is full indexing on both the iid dimension and the sid dimension, in other words,
         full multidimensional indexing. For example,
 
-            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
-            >>> subset_snpreader_4 = snp_on_disk[[3,4],:0:-2] # index on two dimensions at once
-            >>> print((subset_snpreader_4.iid_count, subset_snpreader_4.sid_count))
+            snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
+            subset_snpreader_4 = snp_on_disk[[3,4],:0:-2] # index on two dimensions at once
+            print((subset_snpreader_4.iid_count, subset_snpreader_4.sid_count))
             (2, 507)
 
         The second generalization is indexing on a single integer index.
 
-            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
-            >>> subset_snpreader_5 = snp_on_disk[5,:] #index with single integer
-            >>> print((subset_snpreader_5.iid_count, subset_snpreader_5.sid_count))
+            snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
+            subset_snpreader_5 = snp_on_disk[5,:] #index with single integer
+            print((subset_snpreader_5.iid_count, subset_snpreader_5.sid_count))
             (1, 1015)
 
         Indexing is also useful when you have SNP values in memory via a :class:`SnpData` index and want to copy a subset of those values.
         While you could instead index directly on the `.SnpData.val` ndarray, by indexing on the :class:`SnpData` instance you
         also get iid and cid information.
 
-            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
-            >>> snpdata1 = snp_on_disk.read() # read all SNP values into memory
-            >>> print(snpdata1.sid[:9]) # print the first 9 sids
+            snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
+            snpdata1 = snp_on_disk.read() # read all SNP values into memory
+            print(snpdata1.sid[:9]) # print the first 9 sids
             ['1_12' '1_34' '1_10' '1_35' '1_28' '1_25' '1_36' '1_39' '1_4']
-            >>> snpdata_subset = snpdata1[:,::2].read(view_ok=True,order='A') # create a copy or view with every other sid
-            >>> print(snpdata_subset.sid[:9])# print the first 9 sids in the subset
+            snpdata_subset = snpdata1[:,::2].read(view_ok=True,order='A') # create a copy or view with every other sid
+            print(snpdata_subset.sid[:9])# print the first 9 sids in the subset
             ['1_12' '1_10' '1_28' '1_36' '1_4' '1_11' '1_32' '1_9' '1_17']
 
 
         You can apply indexing on top of indexing to specify subsets of subsets of data to read. In this example, 
         only the SNP values for every 16th sid is actually read from the disk.
 
-            >>> # These are just SnpReaders, nothing is read from disk yet
-            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
-            >>> half_snpreader = snp_on_disk[:,::2] # a reader for half the sids
-            >>> quarter_snpreader = half_snpreader[:,::2] # a reader for half of half the sids
-            >>> sixteenth_snpreader = quarter_snpreader[:,::2][:,::2] # a reader for half of half of half of half the sids
-            >>> print(sixteenth_snpreader) #Print the specification of this reader
+            # These are just SnpReaders, nothing is read from disk yet
+            snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
+            half_snpreader = snp_on_disk[:,::2] # a reader for half the sids
+            quarter_snpreader = half_snpreader[:,::2] # a reader for half of half the sids
+            sixteenth_snpreader = quarter_snpreader[:,::2][:,::2] # a reader for half of half of half of half the sids
+            print(sixteenth_snpreader) #Print the specification of this reader
             Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)[:,::2][:,::2][:,::2][:,::2]
-            >>> # Now we read from disk. Only values for one sid in every 16 will be read.
-            >>> snpdata_sixteenth = sixteenth_snpreader.read()
-            >>> print(snpdata_sixteenth.val[0,3])
+            # Now we read from disk. Only values for one sid in every 16 will be read.
+            snpdata_sixteenth = sixteenth_snpreader.read()
+            print(snpdata_sixteenth.val[0,3])
             2.0
         
     When Data is Read:
@@ -174,35 +174,35 @@ class SnpReader(PstReader):
         
         * Constructing and printing a SnpReader causes no file reading. For example, these commands read no data:
 
-            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Construct a Bed SnpReader. No data is read.
-            >>> print(snp_on_disk) # Print the Bed SnpReader specification. No data is read.
+            snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Construct a Bed SnpReader. No data is read.
+            print(snp_on_disk) # Print the Bed SnpReader specification. No data is read.
             Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
-            >>> subset_on_disk = snp_on_disk[[3,4],::2] # Construct a subsetting SnpReader. No data is read.
-            >>> print(subset_on_disk) # print the subset SnpReader. No data is read.
+            subset_on_disk = snp_on_disk[[3,4],::2] # Construct a subsetting SnpReader. No data is read.
+            print(subset_on_disk) # print the subset SnpReader. No data is read.
             Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)[[3,4],::2]
 
         * Properties and methods related to the iids and sids (to the degree practical) read just some iid and sid data from the disk,
           not SNP value data. Moreover, the iid and sid data is read from file only once. Consider these commands:
 
-            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Construct a Bed SnpReader. No data is read.
-            >>> print(snp_on_disk.sid[:9]) # without reading any SNP values data from disk, read the sid and iid data from disk, cache it, and then print the first nine sids.
+            snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Construct a Bed SnpReader. No data is read.
+            print(snp_on_disk.sid[:9]) # without reading any SNP values data from disk, read the sid and iid data from disk, cache it, and then print the first nine sids.
             ['1_12' '1_34' '1_10' '1_35' '1_28' '1_25' '1_36' '1_39' '1_4']
-            >>> print(snp_on_disk.sid_to_index(['1_10','1_13'])) #use the cached sid information to find the indexes of '1_10' and '1_13'. (No data is read from disk.)
+            print(snp_on_disk.sid_to_index(['1_10','1_13'])) #use the cached sid information to find the indexes of '1_10' and '1_13'. (No data is read from disk.)
             [2 9]
 
         * The only methods that read SNP values from file are :meth:`read` and :meth:`read_kernel` (to the degree practical). For example:
 
-            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Construct a Bed SnpReader. No data is read.
-            >>> snpdata1 = snp_on_disk.read() #read all the SNP values from disk, creating a new SnpData instance that keeps these values in memory
-            >>> print(snpdata1.val[0,2])# print the SNP value for the iid with index 0 and the sid with index 2. (No data is read from disk.)
+            snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Construct a Bed SnpReader. No data is read.
+            snpdata1 = snp_on_disk.read() #read all the SNP values from disk, creating a new SnpData instance that keeps these values in memory
+            print(snpdata1.val[0,2])# print the SNP value for the iid with index 0 and the sid with index 2. (No data is read from disk.)
             1.0
 
         * If you request the values for only a subset of the iids or sids, (to the degree practical) only that subset will be read from disk.
           for example:
 
-            >>> subset_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)[[3,4],::2] # Construct a subsetting SnpReader. No data is read.
-            >>> snpdata_subset = subset_on_disk.read() # from disk, read the SNP values for the iids with index 3 and 4 AND sids with even numbered indexes.
-            >>> print(snpdata_subset.val[0,2]) # print the SNP value with subset iid index 0 and sid index 2 (corresponding to iid index 3 and sid index 4 in the full data). No data is read from disk.
+            subset_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)[[3,4],::2] # Construct a subsetting SnpReader. No data is read.
+            snpdata_subset = subset_on_disk.read() # from disk, read the SNP values for the iids with index 3 and 4 AND sids with even numbered indexes.
+            print(snpdata_subset.val[0,2]) # print the SNP value with subset iid index 0 and sid index 2 (corresponding to iid index 3 and sid index 4 in the full data). No data is read from disk.
             2.0
 
     When Data is Re-Read and Copied:
@@ -213,40 +213,40 @@ class SnpReader(PstReader):
 
         Here is an example of what not to do, because it causes all the SNP value data to be read twice.
 
-            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Construct a Bed SnpReader. No data is read.
-            >>> # The following is not recommended because it inefficiently reads all the SNP values twice.
-            >>> print(snp_on_disk.read().val[0,2]) # read all values into a new SnpData, print a SNP value
+            snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Construct a Bed SnpReader. No data is read.
+            # The following is not recommended because it inefficiently reads all the SNP values twice.
+            print(snp_on_disk.read().val[0,2]) # read all values into a new SnpData, print a SNP value
             1.0
-            >>> print(snp_on_disk.read().val[0,3]) # read all values (again) into a second new SnpData, print a SNP value
+            print(snp_on_disk.read().val[0,3]) # read all values (again) into a second new SnpData, print a SNP value
             2.0
 
         Here are two efficient alternatives. First, if all SNP values can all fit in memory, read them once into a :class:`SnpData` and then
         access that :class:`SnpData` multiple times.
 
-            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Construct a Bed SnpReader. No data is read.
-            >>> snpdata1 = snp_on_disk.read() # read all values into a new SnpData
-            >>> print(snpdata1.val[0,2]) # print a SNP value from snpdata1's in-memory ndarray
+            snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Construct a Bed SnpReader. No data is read.
+            snpdata1 = snp_on_disk.read() # read all values into a new SnpData
+            print(snpdata1.val[0,2]) # print a SNP value from snpdata1's in-memory ndarray
             1.0
-            >>> print(snpdata1.val[0,3]) # print another SNP value from snpdata1's in-memory ndarray.
+            print(snpdata1.val[0,3]) # print another SNP value from snpdata1's in-memory ndarray.
             2.0
 
         Second, if the SNP value data is too large to fit in memory, use subsetting to read only the SNP values of interest from disk.
        
-            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Construct a Bed SnpReader. No data is read.
-            >>> print(snp_on_disk[0,2].read().val[0,0]) #Define the subset of data and read only that subset from disk.
+            snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Construct a Bed SnpReader. No data is read.
+            print(snp_on_disk[0,2].read().val[0,0]) #Define the subset of data and read only that subset from disk.
             1.0
-            >>> print(snp_on_disk[0,3].read().val[0,0]) #Define a second subset of data and read only that subset from disk.
+            print(snp_on_disk[0,3].read().val[0,0]) #Define a second subset of data and read only that subset from disk.
             2.0
 
         Because the in-memory :class:`.SnpData` class is a kind of SnpReader, you may read from it, too.
         Doing so create a new :class:`.SnpData` instance containing a copy of the SNP values in a new ndarray.
 
-            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Construct a Bed SnpReader. No data is read.
-            >>> snpdata1 = snp_on_disk.read() # read all SNP values from disk into a new SnpData
-            >>> print(snpdata1.val is snpdata1.val) # Do the in-memory SNP values use the same memory as themselves? Yes
+            snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Construct a Bed SnpReader. No data is read.
+            snpdata1 = snp_on_disk.read() # read all SNP values from disk into a new SnpData
+            print(snpdata1.val is snpdata1.val) # Do the in-memory SNP values use the same memory as themselves? Yes
             True
-            >>> snpdata2 = snpdata1.read() # copy all the SNP values into a new ndarray in a new SnpData
-            >>> print(snpdata2.val is snpdata1.val) # Do the two ndarrays of in-memory SNP values use the same memory?
+            snpdata2 = snpdata1.read() # copy all the SNP values into a new ndarray in a new SnpData
+            print(snpdata2.val is snpdata1.val) # Do the two ndarrays of in-memory SNP values use the same memory?
             False
 
 
@@ -260,13 +260,13 @@ class SnpReader(PstReader):
         the others. Also keep in mind that :meth:`read` relies on ndarray's mechanisms to decide whether to actually
         share memory and so it may ignore your suggestion and allocate a new ndarray anyway.
 
-            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Construct a Bed SnpReader. No data is read.
-            >>> snpdata1 = snp_on_disk.read() # read all data from disk into a SnpData with a new ndarray
-            >>> column01 = snpdata1[:,0:1].read(view_ok=True,order='A') #create SnpData with the data from just the first two SNPs. Sharing memory is OK. The memory may be laid out in any order (that is sid-major and iid-major are both OK).
-            >>> import numpy as np
-            >>> #print np.may_share_memory(snpdata1.val, column01.val) # Do the two ndarray's share memory? They could (but currently they won't)
-            >>> column201 = snpdata1[:,[2,0,1]].read(view_ok=True,order='A') #create SnpData with the data from three SNPs, permuted. Sharing memory is OK.
-            >>> print(np.may_share_memory(snpdata1.val, column201.val)) # Do the two ndarray's share memory? No, ndarray decided that this indexing was too complex for sharing.
+            snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Construct a Bed SnpReader. No data is read.
+            snpdata1 = snp_on_disk.read() # read all data from disk into a SnpData with a new ndarray
+            column01 = snpdata1[:,0:1].read(view_ok=True,order='A') #create SnpData with the data from just the first two SNPs. Sharing memory is OK. The memory may be laid out in any order (that is sid-major and iid-major are both OK).
+            import numpy as np
+            #print np.may_share_memory(snpdata1.val, column01.val) # Do the two ndarray's share memory? They could (but currently they won't)
+            column201 = snpdata1[:,[2,0,1]].read(view_ok=True,order='A') #create SnpData with the data from three SNPs, permuted. Sharing memory is OK.
+            print(np.may_share_memory(snpdata1.val, column201.val)) # Do the two ndarray's share memory? No, ndarray decided that this indexing was too complex for sharing.
             False
 
     The :meth:`read` Method
@@ -281,18 +281,18 @@ class SnpReader(PstReader):
         Note that, for efficiently, this method works in-place, actually changing values in the ndarray. Although it works in place, for convenience
         it also returns itself. See :meth:`.SnpData.standardize` for options and details.
 
-            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
-            >>> snpdata1 = snp_on_disk.read() # read all SNP values into memory
-            >>> print(snpdata1) # Prints the specification for this SnpData
+            snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
+            snpdata1 = snp_on_disk.read() # read all SNP values into memory
+            print(snpdata1) # Prints the specification for this SnpData
             SnpData(Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False))
-            >>> print(snpdata1.val[0,0])
+            print(snpdata1.val[0,0])
             2.0
-            >>> snpdata1.standardize() # standardize changes the values in snpdata1.val and changes the specification.
+            snpdata1.standardize() # standardize changes the values in snpdata1.val and changes the specification.
             SnpData(Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False),Unit())
-            >>> print('{0:.6f}'.format(snpdata1.val[0,0]))
+            print('{0:.6f}'.format(snpdata1.val[0,0]))
             0.229416
-            >>> snpdata2 = snp_on_disk.read().standardize() # Read and standardize in one expression with only one ndarray allocated.
-            >>> print('{0:.6f}'.format(snpdata2.val[0,0]))
+            snpdata2 = snp_on_disk.read().standardize() # Read and standardize in one expression with only one ndarray allocated.
+            print('{0:.6f}'.format(snpdata2.val[0,0]))
             0.229416
    
     The :meth:`read_kernel` Method
@@ -302,13 +302,13 @@ class SnpReader(PstReader):
         the method can save memory by reading (and standardizing) the data in blocks. See :meth:`read_kernel` for details.
 
 
-            >>> from pysnptools.standardizer import Unit
-            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
-            >>> kerneldata1 = snp_on_disk.read_kernel(Unit()) #Create an in-memory kernel from the snp data on disk.
-            >>> print('{0:.6f}'.format(kerneldata1.val[0,0]))
+            from pysnptools.standardizer import Unit
+            snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
+            kerneldata1 = snp_on_disk.read_kernel(Unit()) #Create an in-memory kernel from the snp data on disk.
+            print('{0:.6f}'.format(kerneldata1.val[0,0]))
             901.421836
-            >>> kerneldata2 = snp_on_disk.read_kernel(Unit(),block_size=10) #Create an in-memory kernel from the snp data on disk, but only read 10 SNPS at a time from the disk.
-            >>> print('{0:.6f}'.format(kerneldata2.val[0,0]))
+            kerneldata2 = snp_on_disk.read_kernel(Unit(),block_size=10) #Create an in-memory kernel from the snp data on disk, but only read 10 SNPS at a time from the disk.
+            print('{0:.6f}'.format(kerneldata2.val[0,0]))
             901.421836
 
 
@@ -328,10 +328,10 @@ class SnpReader(PstReader):
 
         :Example:
 
-        >>> from __future__ import print_function #Python 2 & 3 compatibility
-        >>> from pysnptools.snpreader import Bed
-        >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
-        >>> print(snp_on_disk.iid[:3]) # print the first three iids
+        from __future__ import print_function #Python 2 & 3 compatibility
+        from pysnptools.snpreader import Bed
+        snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
+        print(snp_on_disk.iid[:3]) # print the first three iids
         [['POP1' '0']
          ['POP1' '12']
          ['POP1' '44']]
@@ -358,9 +358,9 @@ class SnpReader(PstReader):
 
         :Example:
 
-        >>> from pysnptools.snpreader import Bed
-        >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
-        >>> print(snp_on_disk.sid[:9]) # print the first nine sids
+        from pysnptools.snpreader import Bed
+        snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
+        print(snp_on_disk.sid[:9]) # print the first nine sids
         ['1_12' '1_34' '1_10' '1_35' '1_28' '1_25' '1_36' '1_39' '1_4']
 
         """
@@ -389,9 +389,9 @@ class SnpReader(PstReader):
 
         :Example:
 
-        >>> from pysnptools.snpreader import Bed
-        >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
-        >>> print(snp_on_disk.pos[:3,]) # print position information for the first three sids: #The '...' is for possible space char
+        from pysnptools.snpreader import Bed
+        snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
+        print(snp_on_disk.pos[:3,]) # print position information for the first three sids: #The '...' is for possible space char
         [[...1.          0.00800801  0.        ]
          [...1.          0.023023    1.        ]
          [...1.          0.0700701   4.        ]]
@@ -445,17 +445,17 @@ class SnpReader(PstReader):
 
         :Example:
 
-        >>> from pysnptools.snpreader import Bed
-        >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300.bed',count_A1=False) # Specify SNP data on disk
-        >>> snpdata1 = snp_on_disk.read() # Read all the SNP data returning a SnpData instance
-        >>> print(type(snpdata1.val).__name__) # The SnpData instance contains a ndarray of the data.
+        from pysnptools.snpreader import Bed
+        snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300.bed',count_A1=False) # Specify SNP data on disk
+        snpdata1 = snp_on_disk.read() # Read all the SNP data returning a SnpData instance
+        print(type(snpdata1.val).__name__) # The SnpData instance contains a ndarray of the data.
         ndarray
-        >>> subset_snpdata = snp_on_disk[:,::2].read() # From the disk, read SNP values for every other sid
-        >>> print(subset_snpdata.val[0,0]) # Print the first SNP value in the subset
+        subset_snpdata = snp_on_disk[:,::2].read() # From the disk, read SNP values for every other sid
+        print(subset_snpdata.val[0,0]) # Print the first SNP value in the subset
         2.0
-        >>> subsub_snpdata = subset_snpdata[:10,:].read(order='A',view_ok=True) # Create an in-memory subset of the subset with SNP values for the first ten iids. Share memory if practical.
-        >>> import numpy as np
-        >>> # print np.may_share_memory(subset_snpdata.val, subsub_snpdata.val) # Do the two ndarray's share memory? They could. Currently they won't.       
+        subsub_snpdata = subset_snpdata[:10,:].read(order='A',view_ok=True) # Create an in-memory subset of the subset with SNP values for the first ten iids. Share memory if practical.
+        import numpy as np
+        # print np.may_share_memory(subset_snpdata.val, subsub_snpdata.val) # Do the two ndarray's share memory? They could. Currently they won't.       
         """
         val = self._read(None, None, order, dtype, force_python_only, view_ok)
         from pysnptools.snpreader import SnpData
@@ -474,9 +474,9 @@ class SnpReader(PstReader):
 
         :Example:
 
-        >>> from pysnptools.snpreader import Bed
-        >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify SNP data on disk
-        >>> print(snp_on_disk.iid_to_index([['POP1','44'],['POP1','12']])) #Find the indexes for two iids.
+        from pysnptools.snpreader import Bed
+        snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify SNP data on disk
+        print(snp_on_disk.iid_to_index([['POP1','44'],['POP1','12']])) #Find the indexes for two iids.
         [2 1]
         """
         return self.row_to_index(list)
@@ -493,9 +493,9 @@ class SnpReader(PstReader):
 
         :Example:
 
-        >>> from pysnptools.snpreader import Bed
-        >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify SNP data on disk
-        >>> print(snp_on_disk.sid_to_index(['1_10','1_13'])) #Find the indexes for two sids.
+        from pysnptools.snpreader import Bed
+        snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify SNP data on disk
+        print(snp_on_disk.sid_to_index(['1_10','1_13'])) #Find the indexes for two sids.
         [2 9]
         """
         return self.col_to_index(list)
@@ -524,11 +524,11 @@ class SnpReader(PstReader):
 
         :Example:
 
-        >>> from pysnptools.snpreader import Bed
-        >>> from pysnptools.standardizer import Unit
-        >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify SNP data on disk
-        >>> kerneldata1 = snp_on_disk.read_kernel(Unit())
-        >>> print((int(kerneldata1.iid_count), '{0:.6f}'.format(kerneldata1.val[0,0])))
+        from pysnptools.snpreader import Bed
+        from pysnptools.standardizer import Unit
+        snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify SNP data on disk
+        kerneldata1 = snp_on_disk.read_kernel(Unit())
+        print((int(kerneldata1.iid_count), '{0:.6f}'.format(kerneldata1.val[0,0])))
         (300, '901.421836')
         """
         assert standardizer is not None, "'standardizer' must be provided"
@@ -560,11 +560,11 @@ class SnpReader(PstReader):
 
         :Example:
 
-        >>> from pysnptools.snpreader import Bed
-        >>> from pysnptools.standardizer import Unit
-        >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify SNP data on disk
-        >>> kernel = snp_on_disk.kernel(Unit())
-        >>> print(((int(kernel.shape[0]),int(kernel.shape[1])), '{0:.6f}'.format(kernel[0,0])))
+        from pysnptools.snpreader import Bed
+        from pysnptools.standardizer import Unit
+        snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify SNP data on disk
+        kernel = snp_on_disk.kernel(Unit())
+        print(((int(kernel.shape[0]),int(kernel.shape[1])), '{0:.6f}'.format(kernel[0,0])))
         ((300, 300), '901.421836')
         """        #print "entering kernel with {0},{1},{2}".format(self, standardizer, blocksize)
         warnings.warn(".kernel(...) is deprecated. Use '.read_kernel(...).val", DeprecationWarning)
@@ -623,6 +623,51 @@ class SnpReader(PstReader):
                 return K, standardizer._merge_trained(trained_standardizer_list) #turns this into a single standardizer
             else:
                 return K
+
+
+    def _read_dist(self, max_weight=2.0, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False):
+        def snpval_to_distval(snpval,max_weight):
+            distval = np.zeros([snpval.shape[0],snpval.shape[1],3],dtype=dtype,order=order)
+            distval = distval.reshape(-1,distval.shape[-1])
+            factor = 2.0/max_weight
+            for count in range(distval.shape[-1]):
+                bool_array = snpval.reshape(-1)*factor==count
+                distval[bool_array,count]=1
+            distval[distval.sum(axis=-1)!=1,:]=np.nan
+            distval = distval.reshape([snpval.shape[0],snpval.shape[1],distval.shape[-1]])#!!!cmk22 create a test where we turn it back
+            return distval
+
+        #Do all-at-once (not in blocks) if 1. No block size is given or 2. The #ofSNPs < Min(block_size,iid_count)
+        if block_size is None or (self.sid_count <= block_size or self.sid_count <= self.iid_count):
+            snpdata = SnpReader._as_snpdata(self,dtype=dtype,order=order,force_python_only=force_python_only)#!!!cmk22 test path
+            val = snpval_to_distval(snpdata.val,max_weight)
+
+            has_right_order = order="A" or (order=="C" and val.flags["C_CONTIGUOUS"]) or (order=="F" and val.flags["F_CONTIGUOUS"])
+            assert has_right_order, "!!!cmk expect this to be right"
+            return val
+        else: #Do in blocks
+            t0 = time.time()#!!!cmk22 test path
+            if order=='A':
+                order = 'F'
+            val = np.zeros([self.iid_count,self.sid_count,3],dtype=dtype,order=order)#!!!cmk should use empty or fillnan
+
+            logging.info("reading {0} value data in blocks of {1} SNPs and finding distribution (for {2} individuals)".format(self.sid_count, block_size, self.iid_count))
+            ct = 0
+            ts = time.time()
+
+            for start in range(0, self.sid_count, block_size):
+                ct += block_size
+                snpdata = self[:,start:start+block_size].read(order=order,dtype=dtype,force_python_only=force_python_only,view_ok=True) # a view is always OK, because we'll allocate memory in the next step
+                val[:,start:start+block_size] = snpval_to_distval(snpdata.val,max_weight)
+                if ct % block_size==0:
+                    diff = time.time()-ts
+                    if diff > 1: logging.info("read %s SNPs in %.2f seconds" % (ct, diff))
+
+            t1 = time.time()
+            logging.info("%.2f seconds elapsed" % (t1-t0))
+
+            return val
+
 
     def copyinputs(self, copier):
         raise NotImplementedError
@@ -690,6 +735,7 @@ class SnpReader(PstReader):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
+
 
     import doctest
     doctest.testmod(optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)

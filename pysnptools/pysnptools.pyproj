@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{60f1cb4a-9da3-47c2-9b89-60ac1ce93347}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>test.py</StartupFile>
+    <StartupFile>distreader\snp2dist.py</StartupFile>
     <SearchPath>..\</SearchPath>
     <WorkingDirectory>.\snpreader</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -38,6 +38,7 @@
     <Compile Include="..\setup.py">
       <Link>setup\setup.py</Link>
     </Compile>
+    <Compile Include="distreader\snp2dist.py" />
     <Compile Include="distreader\distdata.py" />
     <Compile Include="distreader\distreader.py" />
     <Compile Include="distreader\disthdf5.py" />
@@ -83,7 +84,7 @@
     <Compile Include="pstreader\pstmemmap.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="snpreader\distsnp.py" />
+    <Compile Include="snpreader\dist2snp.py" />
     <Compile Include="snpreader\snpmemmap.py">
       <SubType>Code</SubType>
     </Compile>

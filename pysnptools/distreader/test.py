@@ -13,7 +13,7 @@ from six.moves import range
 from pysnptools.distreader.distmemmap import TestDistMemMap
 from pysnptools.distreader import DistNpz, DistHdf5, DistMemMap, DistData
 from pysnptools.util import create_directory_if_necessary
-from pysnptools.snpreader import DistSnp, SnpNpz
+from pysnptools.snpreader import Dist2Snp, SnpNpz
 from pysnptools.kernelreader.test import _fortesting_JustCheckExists
 
 # TestDistMemMap #!!!cmk be sure includes docstrings
@@ -264,19 +264,19 @@ class TestDistReaders(unittest.TestCase):
         val=np.array(np.random.random(size=[3,snp_count,3]),dtype=np.float64,order='F')
         val /= val.sum(axis=2,keepdims=True)  #make probabilities sum to 1 #!!!cmk make a method?
         distreader = DistData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(snp_count)],val=val)
-        snpdata0 = DistSnp(distreader,max_weight=100,block_size=1).read()
-        snpdata1 = DistSnp(distreader,max_weight=100,block_size=None).read()
+        snpdata0 = Dist2Snp(distreader,max_weight=100,block_size=1).read()
+        snpdata1 = Dist2Snp(distreader,max_weight=100,block_size=None).read()
         np.testing.assert_array_almost_equal(snpdata0.val,snpdata1.val, decimal=10)
 
     def test_intersection(self):
-        from pysnptools.snpreader import DistSnp
+        from pysnptools.snpreader import Dist2Snp
         from pysnptools.snpreader import Pheno
         from pysnptools.distreader._subset import _DistSubset
         from pysnptools.snpreader._subset import _SnpSubset
         from pysnptools.util import intersect_apply
 
         dist_all = DistNpz(self.currentFolder + "/../examples/toydata.dist.npz")
-        k = DistSnp(dist_all,max_weight=25)
+        k = Dist2Snp(dist_all,max_weight=25)
 
         pheno = Pheno(self.currentFolder + "/../examples/toydata.phe")
         pheno = pheno[1:,:] # To test intersection we remove a iid from pheno
@@ -286,22 +286,22 @@ class TestDistReaders(unittest.TestCase):
 
         #What happens with fancy selection?
         k2 = k[::2,:]
-        assert isinstance(k2,DistSnp)
+        assert isinstance(k2,Dist2Snp)
 
         logging.info("Done with test_intersection")
 
     def test_dist_snp2(self):
         logging.info("in test_dist_snp2")
         distreader = DistNpz(self.currentFolder + "/../examples/toydata.dist.npz")
-        distsnp = DistSnp(distreader,max_weight=33)
-        s  = str(distsnp)
-        _fortesting_JustCheckExists().input(distsnp)
+        dist2snp = Dist2Snp(distreader,max_weight=33)
+        s  = str(dist2snp)
+        _fortesting_JustCheckExists().input(dist2snp)
 
     def test_subset(self):
         logging.info("in test_subset")
         distreader = DistNpz(self.currentFolder + "/../examples/toydata.dist.npz")
-        distsnp = DistSnp(distreader,max_weight=10)
-        dssub = distsnp[::2,::2]
+        dist2snp = Dist2Snp(distreader,max_weight=10)
+        dssub = dist2snp[::2,::2]
         snpdata1 = dssub.read()
         expected = distreader.read_snp(max_weight=10)[::2,::2].read()
         np.testing.assert_array_almost_equal(snpdata1.val, expected.val, decimal=10)

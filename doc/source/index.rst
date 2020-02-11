@@ -246,7 +246,7 @@ See `PySnpTools's README.md <https://github.com/fastlmm/PySnpTools/blob/master/R
 	:special-members:
     :exclude-members: copyinputs, col, col_property, row, row_property
 
-#!!!cmk add doc for distreader and distsnp
+#!!!cmk add doc for distreader and dist2snp
 :class:`kernelreader.SnpKernel`
 +++++++++++++++++++++++++++++++++++
 .. autoclass:: pysnptools.kernelreader.SnpKernel

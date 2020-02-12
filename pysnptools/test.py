@@ -739,6 +739,8 @@ class NaNCNCTestCases(unittest.TestCase):
         if self.reference_snps is not None:
             self.assertTrue(np.allclose(self.reference_snps, snps, rtol=1e-04 if dtype == sp.float32 or self.reference_dtype == sp.float32 else 1e-12))
 
+
+
 # We do it this way instead of using doctest.DocTestSuite because doctest.DocTestSuite requires modules to be pickled, which python doesn't allow.
 # We need tests to be pickleable so that they can be run on a cluster.
 class TestSnpDocStrings(unittest.TestCase):

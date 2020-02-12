@@ -574,20 +574,24 @@ class SnpReader(PstReader):
         return self._read_kernel(standardizer, block_size=block_size)
 
     @staticmethod
-    def _as_snpdata(snpreader, standardizer, force_python_only, dtype):
+    def _as_snpdata(snpreader, standardizer, force_python_only, order, dtype):
         '''
         Like 'read' except (1) won't read if already a snpdata and (2) returns the standardizer
         '''
         from pysnptools.snpreader import SnpData
-        if isinstance(snpreader,SnpData) and snpreader.val.dtype==dtype and isinstance(standardizer,stdizer.Identity):
+        if (isinstance(snpreader,SnpData) and
+            snpreader.val.dtype==dtype and 
+            isinstance(standardizer,stdizer.Identity) and
+            (order=="A" or (order=="C" and snpreader.val.flags["C_CONTIGUOUS"]) or (order=="F" and snpreader.val.flags["F_CONTIGUOUS"]))
+             ):
             return snpreader, stdizer.Identity()
         else:
-            return snpreader.read(order='A',dtype=dtype).standardize(standardizer,return_trained=True,force_python_only=force_python_only)
+            return snpreader.read(order=order,dtype=dtype).standardize(standardizer,return_trained=True,force_python_only=force_python_only)
     
     def _read_kernel(self, standardizer, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False, return_trained=False):
         #Do all-at-once (not in blocks) if 1. No block size is given or 2. The #ofSNPs < Min(block_size,iid_count)
         if block_size is None or (self.sid_count <= block_size or self.sid_count <= self.iid_count):
-            train_data,trained_standardizer  = SnpReader._as_snpdata(self,standardizer=standardizer,dtype=dtype,force_python_only=force_python_only)
+            train_data,trained_standardizer  = SnpReader._as_snpdata(self,standardizer=standardizer,dtype=dtype,order='A',force_python_only=force_python_only)
             kernel = train_data._read_kernel(stdizer.Identity(), order=order,dtype=dtype,force_python_only=force_python_only,view_ok=False)
             if return_trained:
                 return kernel, trained_standardizer
@@ -609,7 +613,7 @@ class SnpReader(PstReader):
 
             for start in range(0, self.sid_count, block_size):
                 ct += block_size
-                train_data,trained_standardizer = SnpReader._as_snpdata(self[:,start:start+block_size],standardizer=standardizer,dtype=dtype,force_python_only=force_python_only)
+                train_data,trained_standardizer = SnpReader._as_snpdata(self[:,start:start+block_size],standardizer=standardizer,dtype=dtype,order='A',force_python_only=force_python_only)
                 trained_standardizer_list.append(trained_standardizer)
                 K += train_data._read_kernel(stdizer.Identity(),block_size=None,order=order,dtype=dtype,force_python_only=force_python_only,view_ok=False)
                 if ct % block_size==0:
@@ -627,7 +631,11 @@ class SnpReader(PstReader):
 
     def _read_dist(self, max_weight=2.0, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False):
         def snpval_to_distval(snpval,max_weight):
-            distval = np.zeros([snpval.shape[0],snpval.shape[1],3],dtype=dtype,order=order)
+            if order=='A':
+                orderx='F'
+            else:
+                orderx = order
+            distval = np.zeros([snpval.shape[0],snpval.shape[1],3],dtype=dtype,order=orderx)
             distval = distval.reshape(-1,distval.shape[-1])
             factor = 2.0/max_weight
             for count in range(distval.shape[-1]):
@@ -639,7 +647,7 @@ class SnpReader(PstReader):
 
         #Do all-at-once (not in blocks) if 1. No block size is given or 2. The #ofSNPs < Min(block_size,iid_count)
         if block_size is None or (self.sid_count <= block_size or self.sid_count <= self.iid_count):
-            snpdata = SnpReader._as_snpdata(self,dtype=dtype,order=order,force_python_only=force_python_only)#!!!cmk22 test path
+            snpdata,_ = SnpReader._as_snpdata(self,dtype=dtype,order=order,force_python_only=force_python_only,standardizer=stdizer.Identity())#!!!cmk22 test path
             val = snpval_to_distval(snpdata.val,max_weight)
 
             has_right_order = order="A" or (order=="C" and val.flags["C_CONTIGUOUS"]) or (order=="F" and val.flags["F_CONTIGUOUS"])

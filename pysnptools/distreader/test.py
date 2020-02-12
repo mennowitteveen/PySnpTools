@@ -11,9 +11,9 @@ import time
 from six.moves import range
 
 from pysnptools.distreader.distmemmap import TestDistMemMap
-from pysnptools.distreader import DistNpz, DistHdf5, DistMemMap, DistData
+from pysnptools.distreader import DistNpz, DistHdf5, DistMemMap, DistData, Snp2Dist
 from pysnptools.util import create_directory_if_necessary
-from pysnptools.snpreader import Dist2Snp, SnpNpz
+from pysnptools.snpreader import Dist2Snp, SnpNpz, Bed
 from pysnptools.kernelreader.test import _fortesting_JustCheckExists
 
 # TestDistMemMap #!!!cmk be sure includes docstrings
@@ -258,7 +258,7 @@ class TestDistReaders(unittest.TestCase):
                             pass
         logging.info("done with 'test_writes'")
 
-    def test_block_size(self):
+    def test_block_size_DistData(self):
         np.random.seed(0)
         snp_count = 20
         val=np.array(np.random.random(size=[3,snp_count,3]),dtype=np.float64,order='F')
@@ -268,7 +268,18 @@ class TestDistReaders(unittest.TestCase):
         snpdata1 = Dist2Snp(distreader,max_weight=100,block_size=None).read()
         np.testing.assert_array_almost_equal(snpdata0.val,snpdata1.val, decimal=10)
 
-    def test_intersection(self):
+    def test_block_size_Snp2Dist(self):
+        from pysnptools.snpreader import SnpData
+        from pysnptools.distreader import Snp2Dist
+        np.random.seed(0)#!!!cmk22 run this
+        snp_count = 20
+        val=np.array(np.random.randint(0,3,size=[3,snp_count]),dtype=np.float64,order='F')
+        snpreader = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(snp_count)],val=val)
+        distdata0 = Snp2Dist(snpreader,max_weight=2,block_size=1).read()
+        distdata1 = Snp2Dist(snpreader,max_weight=2,block_size=None).read()
+        np.testing.assert_array_almost_equal(distdata0.val,distdata1.val, decimal=10)
+
+    def test_intersection_Dist2Snp(self):
         from pysnptools.snpreader import Dist2Snp
         from pysnptools.snpreader import Pheno
         from pysnptools.distreader._subset import _DistSubset
@@ -290,14 +301,43 @@ class TestDistReaders(unittest.TestCase):
 
         logging.info("Done with test_intersection")
 
+    def test_intersection_Snp2Dist(self):
+        from pysnptools.distreader import Snp2Dist
+        from pysnptools.snpreader import Pheno, Bed
+        from pysnptools.distreader._subset import _DistSubset
+        from pysnptools.snpreader._subset import _SnpSubset
+        from pysnptools.util import intersect_apply
+
+        snp_all = Bed(self.currentFolder + "/../examples/toydata.bed",count_A1=True)
+        k = Snp2Dist(snp_all,max_weight=2)
+
+        pheno = Pheno(self.currentFolder + "/../examples/toydata.phe")
+        pheno = pheno[1:,:] # To test intersection we remove a iid from pheno
+
+        k1,pheno = intersect_apply([k,pheno]) 
+        assert isinstance(k1.snpreader,_SnpSubset) and not isinstance(k1,_DistSubset)#!!!cmk22 run this
+
+        #What happens with fancy selection?
+        k2 = k[::2,:]
+        assert isinstance(k2,Snp2Dist)
+
+        logging.info("Done with test_intersection")
+
     def test_dist_snp2(self):
         logging.info("in test_dist_snp2")
         distreader = DistNpz(self.currentFolder + "/../examples/toydata.dist.npz")
         dist2snp = Dist2Snp(distreader,max_weight=33)
-        s  = str(dist2snp)
+        s = str(dist2snp)
         _fortesting_JustCheckExists().input(dist2snp)
 
-    def test_subset(self):
+    def test_snp_dist2(self):
+        logging.info("in test_snp_dist2")
+        snpreader = Bed(self.currentFolder + "/../examples/toydata.bed")
+        snp2dist = Snp2Dist(snpreader,max_weight=2)
+        s = str(snp2dist)
+        _fortesting_JustCheckExists().input(snp2dist)
+
+    def test_subset_Dist2Snp(self):
         logging.info("in test_subset")
         distreader = DistNpz(self.currentFolder + "/../examples/toydata.dist.npz")
         dist2snp = Dist2Snp(distreader,max_weight=10)
@@ -308,7 +348,19 @@ class TestDistReaders(unittest.TestCase):
 
         logging.info("done with test")
 
-    def test_respect_inputs(self):
+    def test_subset_Snp2Dist(self): #!!!move these to another test class
+        logging.info("in test_subset")
+        snpreader = Bed(self.currentFolder + "/../examples/toydata.bed")
+        snp2dist = Snp2Dist(snpreader,max_weight=2)
+        sub = snp2dist[::2,::2]
+        distdata1 = sub.read()
+        #cmk22 why is this "expected" a numpy array but one other is a _data?
+        expected = snpreader._read_dist(max_weight=2)[::2,::2]#!!!cmk22 why  does _read_dist start with _ but read_snp above doesnt?
+        np.testing.assert_array_almost_equal(distdata1.val, expected, decimal=10)
+
+        logging.info("done with test")
+
+    def test_respect_inputs_DistData(self):
         np.random.seed(0)
         for dtype_start,decimal_start in [(np.float32,5),(np.float64,10)]:
             for order_start in ['F','C','A']:
@@ -330,6 +382,24 @@ class TestDistReaders(unittest.TestCase):
                                     DistData._array_properties_are_ok(k.val,order_goal,dtype_goal)
                                     np.testing.assert_array_almost_equal(refval0,k.val, decimal=min(decimal_start,decimal_goal))
 
+    def cmk22test_respect_inputs_SnpData(self):#!!!cmk test this
+        np.random.seed(0)
+        for dtype_start,decimal_start in [(np.float32,5),(np.float64,10)]:
+            for order_start in ['F','C','A']:
+                for snp_count in [20,2]:
+                    val=np.array(np.random.ranint(0,3,size=[3,snp_count]),dtype=dtype_start,order=order_start)
+                    snpdataX = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(snp_count)],val=val)
+                    for snpreader0 in [snpdataX,snpdataX[:,1:]]:
+                        snpreader1 = snpreader0[1:,:]
+                        refdata0 = snpreader0.read()
+                        refval0 = (refdata0.val * weights).sum(axis=-1)#!!!cmk22 call that function (which should be moved out)
+                        refdata1 = snpreader1.read()#!!!cmk why aren't these used?
+                        refval1 = (refdata1.val * weights).sum(axis=-1)#!!!cmk why aren't these used?
+                        for dtype_goal,decimal_goal in [(np.float32,5),(np.float64,10)]:
+                            for order_goal in ['F','C','A']:
+                                k = snpreader0.read_snp(max_weight=max_weight,block_size=1,order=order_goal,dtype=dtype_goal)
+                                DistData._array_properties_are_ok(k.val,order_goal,dtype_goal)
+                                np.testing.assert_array_almost_equal(refval0,k.val, decimal=min(decimal_start,decimal_goal))
     def test_npz(self):
         logging.info("in test_npz")
         distreader = DistNpz(self.currentFolder + "/../examples/toydata.dist.npz")

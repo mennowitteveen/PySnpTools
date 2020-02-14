@@ -628,7 +628,7 @@ class SnpReader(PstReader):
             else:
                 return K
 
-
+    #!!!cmk22 why is this _ and kernel is not?
     def _read_dist(self, max_weight=2.0, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False):
         def snpval_to_distval(snpval,max_weight):
             if order=='A':
@@ -647,14 +647,14 @@ class SnpReader(PstReader):
 
         #Do all-at-once (not in blocks) if 1. No block size is given or 2. The #ofSNPs < Min(block_size,iid_count)
         if block_size is None or (self.sid_count <= block_size or self.sid_count <= self.iid_count):
-            snpdata,_ = SnpReader._as_snpdata(self,dtype=dtype,order=order,force_python_only=force_python_only,standardizer=stdizer.Identity())#!!!cmk22 test path
+            snpdata,_ = SnpReader._as_snpdata(self,dtype=dtype,order=order,force_python_only=force_python_only,standardizer=stdizer.Identity())
             val = snpval_to_distval(snpdata.val,max_weight)
 
             has_right_order = order="A" or (order=="C" and val.flags["C_CONTIGUOUS"]) or (order=="F" and val.flags["F_CONTIGUOUS"])
             assert has_right_order, "!!!cmk expect this to be right"
             return val
         else: #Do in blocks
-            t0 = time.time()#!!!cmk22 test path
+            t0 = time.time()
             if order=='A':
                 order = 'F'
             val = np.zeros([self.iid_count,self.sid_count,3],dtype=dtype,order=order)#!!!cmk should use empty or fillnan

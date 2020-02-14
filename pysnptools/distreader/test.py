@@ -271,7 +271,7 @@ class TestDistReaders(unittest.TestCase):
     def test_block_size_Snp2Dist(self):
         from pysnptools.snpreader import SnpData
         from pysnptools.distreader import Snp2Dist
-        np.random.seed(0)#!!!cmk22 run this
+        np.random.seed(0)
         snp_count = 20
         val=np.array(np.random.randint(0,3,size=[3,snp_count]),dtype=np.float64,order='F')
         snpreader = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(snp_count)],val=val)
@@ -315,7 +315,7 @@ class TestDistReaders(unittest.TestCase):
         pheno = pheno[1:,:] # To test intersection we remove a iid from pheno
 
         k1,pheno = intersect_apply([k,pheno]) 
-        assert isinstance(k1.snpreader,_SnpSubset) and not isinstance(k1,_DistSubset)#!!!cmk22 run this
+        assert isinstance(k1.snpreader,_SnpSubset) and not isinstance(k1,_DistSubset)
 
         #What happens with fancy selection?
         k2 = k[::2,:]

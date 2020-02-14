@@ -65,12 +65,10 @@ class Snp2Dist(DistReader):
         #Doesn't need run_once
         copier.input(self.snpreader)
 
-    #!!!cmk22 test
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
         assert row_index_or_none is None and col_index_or_none is None #real assert because indexing should already be pushed to the inner snpreader
         return self.snpreader._read_dist(max_weight=self.max_weight,block_size=self.block_size, order=order, dtype=dtype, force_python_only=force_python_only, view_ok=view_ok)
 
-    #!!!cmk22 test
     def __getitem__(self, iid_indexer_and_snp_indexer):
         row_index_or_none, col_index_or_none = iid_indexer_and_snp_indexer
         return Snp2Dist(self.snpreader[row_index_or_none,col_index_or_none],max_weight=self.max_weight,block_size=self.block_size)

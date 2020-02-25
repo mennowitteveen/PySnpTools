@@ -69,11 +69,6 @@ class DistHdf5(PstHdf5,DistReader):
         PstHdf5.write(filename,distdata,hdf5_dtype=hdf5_dtype,col_major=sid_major)
         return DistHdf5(filename)
 
-class Hdf5(DistHdf5):
-    #!! warnings.warn("class 'Hdf5' is deprecated. Use the standard class 'DistHdf5' instead", DeprecationWarning)
-    def __init__(self, *args, **kwargs):
-        super(Hdf5, self).__init__(*args, **kwargs)
-
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 

@@ -30,7 +30,7 @@ class Snp2Dist(DistReader):
         >>> dist_on_disk = Snp2Dist(snp_on_disk, block_size=500)           # A DistReader is specified, but nothing is read from disk
         >>> print(dist_on_disk) #Print the specification
         Snp2Dist(Bed('../examples/toydata.bed',count_A1=True),block_size=500)
-        >>> print(dist_on_disk.iid_count)                                  # iid information is read from disk, but not SNP data
+        >>> cmkprint(dist_on_disk.iid_count)                                  # iid information is read from disk, but not SNP data
         500
         >>> distdata = dist_on_disk.read()                                 # Snp data is read, 500 at a time, to create distribution values
         >>> print(distdata.val[0,0,:])

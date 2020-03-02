@@ -7,6 +7,9 @@ import unittest
 from bgen_reader import read_bgen
 from bgen_reader import example_files
 from bgen_reader import create_metafile
+from pysnptools.util import log_in_place
+from os import remove
+from shutil import move
 
 class Bgen(DistReader):
     '''
@@ -31,13 +34,23 @@ class Bgen(DistReader):
     **Methods beyond** :class:`.DistReader`
 
     '''
-    def __init__(self, filename, verbose=False, metadata=None):
+    def __init__(self, filename, verbose=False, metadata=None, metadata2=None, double_iid_function=None, sid_function='id'):
         super(Bgen, self).__init__()
         self._ran_once = False
         self.read_bgen = None
+
+        if double_iid_function is None:
+            double_iid_function = lambda single_iid: ('',single_iid)
+
+        if metadata2 is None: #!!!cmk in the case where it is not None, need to be sure it ends npz
+            metadata2 = filename + ".metadata.npz"
+
         self.filename = filename
         self._verbose = verbose
         self._metadata = metadata
+        self._metadata2 = metadata2
+        self._double_iid_function = double_iid_function
+        self._sid_function = sid_function
 
 
     @property
@@ -63,31 +76,33 @@ class Bgen(DistReader):
             return
         self._ran_once = True
 
-        if self._metadata is None or self._metadata is False:
-            metadata_file = None  #!!!cmk test this
+        self._read_bgen = read_bgen(self.filename,verbose=self._verbose,metafile_filepath=self._metadata)
+
+        if os.path.exists(self._metadata2):
+            d = np.load(self._metadata2)
+            self._row = d['row']
+            self._col = d['col']
+            self._col_property = d['col_property']
         else:
-            if self._metadata is True:
-                metadata_file = self.filename + ".metadata" #!!!cmk test this
+            logging.info("Reading and saving variant and sample metadata")
+
+
+            self._row = self._col = np.array([self._double_iid_function(sample) for sample in self._read_bgen['samples']],dtype='str')
+
+            if self._sid_function in {'id','rsid'}:
+                self._col = np.array(self._read_bgen['variants'][self._sid_function],dtype='str') #!!!cmk23 test this
             else:
-                metadata_file = self._metadata  #!!!cmk test this
-            if not os.path.exists(metadata_file):
-                create_metafile(self.filename, metadata_file, verbose=self._verbose)  #!!!cmk test this
+                id_list = self._read_bgen['variants']['id']
+                rsid_list = self._read_bgen['variants']['rsid']
+                self._col = np.array([self._sid_function(id,rsid) for id,rsid in zip(id_list,rsid_list)],dtype='str') #!!!cmk23 test this
 
-        self._read_bgen = read_bgen(self.filename,verbose=self._verbose,metafile_filepath=metadata_file)
+            if len(self._col)>0: #spot check
+                assert list(self._read_bgen['variants'].loc[0, "nalleles"])[0]==2, "Expect nalleles==2" #!!!cmk23 test that this is fast even with 1M sid_count
 
-        if not hasattr(self,"_row"):
-            #!!!cmk why no family id??? OK to to fill with blank??
-            self._row = self._col = np.array([('',sample) for sample in self._read_bgen['samples']],dtype='str')
-
-        if not hasattr(self,"_col") or not hasattr(self,"_col_property"):
-            self._col = np.array(self._read_bgen['variants']['id'],dtype='str')
             self._col_property = np.zeros((len(self._col),3),dtype='float')
-            self._col_property[:,0] = self._read_bgen['variants']['chrom'] #!!!cmk what if chrom not given? Is that possible? What about on write?
-            self._col_property[:,1] = self._read_bgen['variants']['pos']
-            #self._col_property[:,2] = bgen['variants']['chrom'] #!!!what is the 3rd value is 2nd right??? cmk
-            #!!!!cmk might users want rsid instead of id???
-            #!!!cmk should assert that nalleles==2 everywhere (is 1 OK?)
-            print('cmk')
+            self._col_property[:,0] = self._read_bgen['variants']['chrom']
+            self._col_property[:,2] = self._read_bgen['variants']['pos']
+            np.savez(self._metadata2,row=self._row,col=self._col,col_property=self._col_property)
 
         self._assert_iid_sid_pos(check_val=False)
 
@@ -119,43 +134,108 @@ class Bgen(DistReader):
 
         genotype = self._read_bgen["genotype"]
         for index_out,index_in in enumerate(sid_index_out):
-            probs = genotype[index_in].compute()['probs']
+            g = genotype[index_in].compute()
+            probs = g['probs']
+            assert not g["phased"], "Expect unphased data"
+            if probs.shape[0] > 0:
+                assert g["ploidy"][0]==2, "Expect ploidy==2"
+            assert probs.shape[-1]==3, "Expect exactly three probability values, e.g. from unphased, 2 alleles, diploid data"
             val[:,index_out,:] = (probs[iid_index_out,:] if iid_index_or_none is not None else probs)
         
         return val
 
+    def __repr__(self): 
+        return "{0}('{1}')".format(self.__class__.__name__,self.filename)
 
     def __del__(self):#!!!cmk
-        if hasattr(self,'_read_bgen') and self._read_bgen is not None:  # we need to test this because Python doesn't guarantee that __init__ was fully run
-            del self._read_bgen #!!!cmk is this needed? Meaningful?
-            self._read_bgen = None
+        self.flush()
+
+    #!!!cmk23 test it
+    def flush(self):
+        '''Flush :attr:`.DistMemMap.val` to disk and close the file. (If values or properties are accessed again, the file will be reopened.)#!!!cmk update doc
+
+        >>> import pysnptools.util as pstutil
+        >>> from pysnptools.distreader import DistMemMap
+        >>> filename = "tempdir/tiny.dist.memmap"
+        >>> pstutil.create_directory_if_necessary(filename)
+        >>> dist_mem_map = DistMemMap.empty(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'],filename=filename,order="F",dtype=np.float64)
+        >>> dist_mem_map.val[:,:,:] = [[[.5,.5,0],[0,0,1],[.5,.5,0]],
+        ...                            [[0,1.,0],[0,.75,.25],[.5,.5,0]]]
+        >>> dist_mem_map.flush()
+
+        '''
+        if self._ran_once:
+            if hasattr(self,'_read_bgen') and self._read_bgen is not None:  # we need to test this because Python doesn't guarantee that __init__ was fully run
+                del self._read_bgen #!!!cmk is this needed? Meaningful?
+                self._read_bgen = None
+            self._ran_once = False
 
 
+    #!!!cmk confirm that na na na 0,0,0 round trips
+    #!!!cmk write a test for this
     @staticmethod
-    def write(filename, distdata, hdf5_dtype=None, sid_major=True): #!!!cmk
-        """Writes a :class:`DistData` to DistHdf5 format and return a the :class:`.DistHdf5`.
+    def genwrite(filename, distreader, decimal_places=None, snpid_function=None, rsid_function=None, single_iid_function=None, sid_batch_size=100):
+        """Writes a :class:`DistReader` to Gen format and returns None #!!!cmk update docs
 
         :param filename: the name of the file to create
         :type filename: string
         :param distdata: The in-memory data that should be written to disk.
         :type distdata: :class:`DistData`
-        :param hdf5_dtype: None (use the .val's dtype) or a Hdf5 dtype, e.g. 'f8','f4',etc.
-        :type hdf5_dtype: string
-        :param sid_major: Tells if vals should be stored on disk in sid_major (default) or iid_major format.
-        :type col_major: bool
-        :rtype: :class:`.DistHdf5`
+        :rtype: :class:`.DistNpz`
 
-        >>> from pysnptools.distreader import DistHdf5, DistNpz
+        >>> from pysnptools.distreader import DistNpz, DistHdf5
         >>> import pysnptools.util as pstutil
-        >>> distdata = DistNpz('../examples/toydata.dist.npz')[:,:10].read()     # Read first 10 snps from DistNpz format
-        >>> pstutil.create_directory_if_necessary("tempdir/toydata10.dist.hdf5")
-        >>> DistHdf5.write("tempdir/toydata10.dist.hdf5",distdata)        # Write data in DistHdf5 format
-        DistHdf5('tempdir/toydata10.dist.hdf5')
+        >>> distdata = DistHdf5('../examples/toydata.iidmajor.dist.hdf5')[:,:10].read()     # Read first 10 snps from DistHdf5 format
+        >>> pstutil.create_directory_if_necessary("tempdir/toydata10.dist.npz")
+        >>> DistNpz.write("tempdir/toydata10.dist.npz",distdata)          # Write data in DistNpz format
+        DistNpz('tempdir/toydata10.dist.npz')
         """
-        PstHdf5.write(filename,distdata,hdf5_dtype=hdf5_dtype,col_major=sid_major)
-        return DistHdf5(filename)
+        #https://www.cog-genomics.org/plink2/formats#gen
+        #https://web.archive.org/web/20181010160322/http://www.stats.ox.ac.uk/~marchini/software/gwas/file_format.html
 
-class TestBgen(unittest.TestCase):    #!!!cmk be sure these are run
+        snpid_function = snpid_function or (lambda sid:sid)
+        rsid_function = rsid_function or (lambda sid:sid)
+        single_iid_function = single_iid_function or (lambda f,i:i)
+
+        if decimal_places is None:
+            format_function = lambda num:'{0}'.format(num)
+        else:
+            format_function = lambda num:('{0:.'+str(decimal_places)+'f}').format(num)
+
+        start = 0
+        row_ascii = np.array(distreader.row,dtype='S') #!!! would be nice to avoid this copy when not needed.
+        col_ascii = np.array(distreader.col,dtype='S') #!!! would be nice to avoid this copy when not needed.
+        updater_freq = max(distreader.row_count * distreader.col_count // 100,1)
+        with log_in_place("sid_index ", logging.INFO) as updater:
+            with open(filename+'.temp','w',newline='\n') as genfp:
+                while start < distreader.sid_count:
+                    distdata = distreader[:,start:start+sid_batch_size].read(view_ok=True)
+                    for sid_index in range(distdata.sid_count):
+                        if sid_index % updater_freq == 0: #!!!cmk23 test this
+                            updater('{0:,} of {1:,}'.format(start+sid_index,distreader.sid_count))#!!!cmk23 print commas in numbers test this
+                        genfp.write('{0} {1} {2} {3} A G'.format(int(distdata.pos[sid_index,0]),snpid_function(distdata.sid[sid_index]),rsid_function(distdata.sid[sid_index]),int(distdata.pos[sid_index,2])))
+                        for iid_index in range(distdata.iid_count):
+                            prob_dist = distdata.val[iid_index,sid_index,:]
+                            if not np.isnan(prob_dist).any():
+                                s = ' ' + ' '.join((format_function(num) for num in prob_dist))
+                                genfp.write(s)
+                            else:
+                                genfp.write(' 0 0 0')
+                        genfp.write('\n')
+                    start += distdata.sid_count
+        sample_filename = os.path.splitext(filename)[0]+'.sample'
+        #https://www.well.ox.ac.uk/~gav/qctool_v2/documentation/sample_file_formats.html
+        with open(sample_filename,'w',newline='\n') as samplefp:
+            samplefp.write('ID\n')
+            samplefp.write('0\n')
+            for f,i in distreader.iid:
+                samplefp.write('{0}\n'.format(single_iid_function(f,i)))
+
+        if os.path.exists(filename):
+            remove(filename)
+        move(filename+'.temp',filename)
+
+class TestBgen(unittest.TestCase):    #!!!cmk23 be sure these are run
 
     def test1(self):
         logging.info("in TestBgen test1")
@@ -196,26 +276,27 @@ class TestBgen(unittest.TestCase):    #!!!cmk be sure these are run
             read_bgen(filepaths[0], metafile_filepath=filepaths[1], verbose=False)
 
 
-    def cmktest_bgen_reader_phased_genotype(self): #!!!cmk think about support for phased
-        with example_files("haplotypes.bgen") as filepath:
-            bgen = Bgen(filepath, verbose=False)
-            assert(bgen.pos[0,0] == 1)
-            assert(bgen.sid[0] == "SNP1")
-            assert(bgen.pos[0,1]== 1)
+    #We don't support phased
+    #def test_bgen_reader_phased_genotype(self): #!!!cmk think about support for phased
+    #    with example_files("haplotypes.bgen") as filepath:
+    #        bgen = Bgen(filepath, verbose=False)
+    #        assert(bgen.pos[0,0] == 1)
+    #        assert(bgen.sid[0] == "SNP1")
+    #        assert(bgen.pos[0,2]== 1)
 
-            assert(bgen.pos[2,0] == 1)
-            assert(bgen.sid[2] == "SNP3")
-            assert(bgen.pos[2,1]== 3)
+    #        assert(bgen.pos[2,0] == 1)
+    #        assert(bgen.sid[2] == "SNP3")
+    #        assert(bgen.pos[2,2]== 3)
 
-            assert((bgen.iid[0] ==("","sample_0")).all())
-            assert((bgen.iid[2] ==("","sample_2")).all())
+    #        assert((bgen.iid[0] ==("","sample_0")).all())
+    #        assert((bgen.iid[2] ==("","sample_2")).all())
 
-            assert((bgen.iid[-1] ==("","sample_3")).all())
+    #        assert((bgen.iid[-1] ==("","sample_3")).all())
 
-            g = bgen[0,0].read()
-            assert_allclose(g.val, [[[1.0, 0.0, 1.0, 0.0]]]) #cmk code doesn't know about phased
-            g = bgen[-1,-1].read()
-            assert_allclose(g.val, [[[1.0, 0.0, 0.0, 1.0]]])
+    #        g = bgen[0,0].read()
+    #        assert_allclose(g.val, [[[1.0, 0.0, 1.0, 0.0]]]) #cmk code doesn't know about phased
+    #        g = bgen[-1,-1].read()
+    #        assert_allclose(g.val, [[[1.0, 0.0, 0.0, 1.0]]])
 
 
 
@@ -225,15 +306,15 @@ class TestBgen(unittest.TestCase):    #!!!cmk be sure these are run
 
             assert(bgen.pos[0,0]==1)
             assert(bgen.sid[0]=="SNPID_2")
-            assert(bgen.pos[0,1] == 2000)
+            assert(bgen.pos[0,2] == 2000)
 
             assert(bgen.pos[7,0]==1)
             assert(bgen.sid[7]=="SNPID_9")
-            assert(bgen.pos[7,1] == 9000)
+            assert(bgen.pos[7,2] == 9000)
 
             assert(bgen.pos[-1,0]==1)
             assert(bgen.sid[-1]=="SNPID_200")
-            assert(bgen.pos[-1,1] == 100001)
+            assert(bgen.pos[-1,2] == 100001)
 
             assert((bgen.iid[0] == ("", "sample_001")).all())
             assert((bgen.iid[7] == ("", "sample_008")).all())
@@ -315,7 +396,7 @@ class TestBgen(unittest.TestCase):    #!!!cmk be sure these are run
             assert got_error
 
 
-    def test_bgen_reader_with_nonexistent_metadata_file(self):
+    def cmktest_bgen_reader_with_nonexistent_metadata_file(self):
         with example_files("example.32bits.bgen") as filepath:
             folder = os.path.dirname(filepath)
             metafile_filepath = os.path.join(folder, "nonexistent.metadata")
@@ -341,7 +422,7 @@ class TestBgen(unittest.TestCase):    #!!!cmk be sure these are run
             metafile_filepath = os.path.join(folder, filepath + ".metadata")
             
             try:
-                bgen = Bgen(filepath,metadata=True)
+                bgen = Bgen(filepath)
                 bgen.iid
                 assert(os.path.exists(metafile_filepath))
             finally:
@@ -445,7 +526,6 @@ class TestBgen(unittest.TestCase):    #!!!cmk be sure these are run
             assert_allclose(phased, [0, 1, 1, 0, 1, 1, 1, 1, 0, 0])
 
 
-
 def getTestSuite():
     """
     set up composite test suite
@@ -460,12 +540,61 @@ def getTestSuite():
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
-    if True: #!!!cmk
-        pass
-        #from bgen_reader import read_bgen
-        #bgen = read_bgen('../examples/example.bgen')
-        #bgen['variants']
+    #!!!cmk
 
+    if False:
+        from pysnptools.distreader import Bgen
+        bgen = Bgen(r'M:\deldir\2500x100.bgen',verbose=True)
+        bgen.read()
+        print(bgen.shape)
+        print("cmk")
+
+    if False:
+        from pysnptools.distreader import Bgen
+        bgen = Bgen(r'M:\deldir\1x1000000.bgen',verbose=True)
+        print(bgen.shape)
+        print("cmk")
+
+
+    if False:
+        from pysnptools.distreader import Bgen
+        bgen2 = Bgen(r'M:\deldir\10x5000000.bgen',verbose=True)
+        print(bgen2.shape)
+
+    if False: 
+        #iid_count = 500*1000
+        #sid_count = 100
+        #sid_batch_size = 25
+        #iid_count = 1
+        #sid_count = 1*1000*1000
+        #sid_batch_size = sid_count//10000
+        iid_count = 2500
+        sid_count = 100
+        sid_batch_size = 10
+
+        from pysnptools.distreader import DistGen
+        from pysnptools.distreader import Bgen
+        distgen = DistGen(seed=332,iid_count=iid_count,sid_count=sid_count,sid_batch_size=sid_batch_size)
+        chrom_list = sorted(set(distgen.pos[:,0]))
+        len(chrom_list)
+
+        import logging
+        logging.basicConfig(level=logging.INFO)
+        #for chrom in chrom_list[::-1]:
+        #    chromgen = distgen[:,distgen.pos[:,0]==chrom]
+        chromgen = distgen
+
+        print(chromgen.sid_count)
+        name = '{0}x{1}'.format(iid_count,sid_count)
+        gen_file = r'm:\deldir\{0}.gen'.format(name)
+        sample_file2 = r'/mnt/m/deldir/{0}.sample'.format(name)
+        gen_file2 = r'/mnt/m/deldir/{0}.gen'.format(name)
+        print("about to read {0}x{1}".format(chromgen.iid_count,chromgen.sid_count))
+        Bgen.genwrite(gen_file,chromgen,decimal_places=5,sid_batch_size=sid_batch_size) #better in batches?
+        print("done")
+        bgen_file = r'm:\deldir\{0}.bgen'.format(name)
+        bgen_file2 = r'/mnt/m/deldir/{0}.bgen'.format(name)
+        print ('/mnt/m/qctool/build/release/qctool_v2.0.7 -g {0} -s {1} -og {2} -bgen-bits 8 -bgen-compression zlib'.format(gen_file2,sample_file2,bgen_file2))
 
     suites = getTestSuite()
     r = unittest.TextTestRunner(failfast=True)

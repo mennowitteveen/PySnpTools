@@ -101,8 +101,8 @@ class DistData(PstData,DistReader):
     val = property(PstData._get_val,PstData._set_val)
     """The 3D NumPy array of floats that represents the values of the SNPs.
 
-    >>> from pysnptools.distreader import DistNpz
-    >>> distdata = DistNpz('../examples/toydata.dist.npz')[:5,:].read() #read data for first 5 iids
+    >>> from pysnptools.distreader import Bgen
+    >>> distdata = Bgen('../examples/2500x100.bgen')[:5,:].read() #read data for first 5 iids
     >>> print(distdata.val[4,100]) #print one of the SNP values
     2.0
     """

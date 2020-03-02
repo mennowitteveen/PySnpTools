@@ -47,6 +47,7 @@
     <Compile Include="distreader\disthdf5.py" />
     <Compile Include="distreader\distmemmap.py" />
     <Compile Include="distreader\distnpz.py" />
+    <Compile Include="distreader\distgen.py" />
     <Compile Include="distreader\test.py" />
     <Compile Include="distreader\_subset.py" />
     <Compile Include="distreader\__init__.py" />

@@ -382,7 +382,7 @@ class TestDistReaders(unittest.TestCase):
                                     DistData._array_properties_are_ok(k.val,order_goal,dtype_goal)
                                     np.testing.assert_array_almost_equal(refval0,k.val, decimal=min(decimal_start,decimal_goal))
 
-    def cmk22test_respect_inputs_SnpData(self):#!!!cmk test this
+    def cmktest_respect_inputs_SnpData(self):#!!!cmk23 test this
         np.random.seed(0)
         for dtype_start,decimal_start in [(np.float32,5),(np.float64,10)]:
             for order_start in ['F','C','A']:
@@ -392,7 +392,7 @@ class TestDistReaders(unittest.TestCase):
                     for snpreader0 in [snpdataX,snpdataX[:,1:]]:
                         snpreader1 = snpreader0[1:,:]
                         refdata0 = snpreader0.read()
-                        refval0 = (refdata0.val * weights).sum(axis=-1)#!!!cmk22 call that function (which should be moved out)
+                        refval0 = (refdata0.val * weights).sum(axis=-1)#!!!cmk23 call that function (which should be moved out)
                         refdata1 = snpreader1.read()#!!!cmk why aren't these used?
                         refval1 = (refdata1.val * weights).sum(axis=-1)#!!!cmk why aren't these used?
                         for dtype_goal,decimal_goal in [(np.float32,5),(np.float64,10)]:
@@ -538,9 +538,12 @@ class TestDistReaderDocStrings(unittest.TestCase):
     def test_distmemmap(self):
         import pysnptools.distreader.distmemmap
         old_dir = os.getcwd()
+        old_level = logging.getLogger().level 
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
+        logging.getLogger().setLevel(logging.WARN)
         result = doctest.testmod(pysnptools.distreader.distmemmap)
         os.chdir(old_dir)
+        logging.getLogger().setLevel(old_level)
         assert result.failed == 0, "failed doc test: " + __file__
 
 def getTestSuite():

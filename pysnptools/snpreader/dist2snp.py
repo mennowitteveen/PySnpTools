@@ -26,12 +26,12 @@ class Dist2Snp(SnpReader):
         :Example:
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
-        >>> from pysnptools.distreader import DistNpz
+        >>> from pysnptools.distreader import Bgen
         >>> from pysnptools.snpreader import Dist2Snp
-        >>> dist_on_disk = DistNpz('../examples/toydata.dist.npz')        # A DistNpz file is specified, but nothing is read from disk
+        >>> dist_on_disk = Bgen('../examples/2500x100.bgen')        # A DistNpz file is specified, but nothing is read from disk
         >>> snp_on_disk = Dist2Snp(dist_on_disk, block_size=500)  # A SnpReader is specified, but nothing is read from disk
         >>> print(snp_on_disk) #Print the specification
-        Dist2Snp(DistNpz('../examples/toydata.dist.npz'),block_size=500)
+        Dist2Snp(Bgen('../examples/2500x100.bgen'),block_size=500)
         >>> print(snp_on_disk.iid_count)                                  # iid information is read from disk, but not SNP data #!!!cmk true?
         25
         >>> snpdata = snp_on_disk.read()                                  # Distribution data is read, 500 at a time, to create an expected SNP value

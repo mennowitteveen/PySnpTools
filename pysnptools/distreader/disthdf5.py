@@ -59,9 +59,9 @@ class DistHdf5(PstHdf5,DistReader):
         :type col_major: bool
         :rtype: :class:`.DistHdf5`
 
-        >>> from pysnptools.distreader import DistHdf5, DistNpz
+        >>> from pysnptools.distreader import DistHdf5, Bgen
         >>> import pysnptools.util as pstutil
-        >>> distdata = DistNpz('../examples/toydata.dist.npz')[:,:10].read()     # Read first 10 snps from DistNpz format
+        >>> distdata = Bgen('../examples/2500x100.bgen')[:,:10].read()     # Read first 10 snps from DistNpz format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata10.dist.hdf5")
         >>> DistHdf5.write("tempdir/toydata10.dist.hdf5",distdata)        # Write data in DistHdf5 format
         DistHdf5('tempdir/toydata10.dist.hdf5')

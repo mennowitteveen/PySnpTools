@@ -381,7 +381,7 @@ class SnpReader(PstReader):
     #!!Also what about telling the ref and alt allele? Also, what about tri and quad alleles, etc?
     @property
     def pos(self):
-        """A ndarray of the position information for each sid. Each element is a ndarray of three scipy.numbers's (chromosome, genetic distance, basepair distance).
+        """A ndarray of the position information for each sid. Each element is a ndarray of three scipy.numbers (chromosome, genetic distance, basepair distance).
 
         :rtype: ndarray of float64 with shape [:attr:`.sid_count`, 3]
 
@@ -642,7 +642,7 @@ class SnpReader(PstReader):
                 bool_array = snpval.reshape(-1)*factor==count
                 distval[bool_array,count]=1
             distval[distval.sum(axis=-1)!=1,:]=np.nan
-            distval = distval.reshape([snpval.shape[0],snpval.shape[1],distval.shape[-1]])#!!!cmk22 create a test where we turn it back
+            distval = distval.reshape([snpval.shape[0],snpval.shape[1],distval.shape[-1]])#!!!cmk23 create a test where we turn it back
             return distval
 
         #Do all-at-once (not in blocks) if 1. No block size is given or 2. The #ofSNPs < Min(block_size,iid_count)

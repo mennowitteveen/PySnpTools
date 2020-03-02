@@ -7,7 +7,8 @@ from pysnptools.distreader import DistReader
 
 
 class Snp2Dist(DistReader):
-    '''#!!!cmk22 test this doc string
+    '''#!!!cmk23 test this doc string 
+    cmk make this a method, not a class????
     A :class:`.DistReader` that creates a distribution from a :class:`.SnpReader`. No SNP data will be read until
     the :meth:`Snp2Dist.read` method is called. Use block_size to avoid ever reading all the SNP data into memory.
     at once.

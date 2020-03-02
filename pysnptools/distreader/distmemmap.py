@@ -9,7 +9,9 @@ import pysnptools.util as pstutil
 from pysnptools.pstreader import PstData
 from pysnptools.pstreader import PstMemMap
 from pysnptools.distreader import DistReader, DistData
-
+from pysnptools.util import log_in_place
+from os import remove
+from shutil import move
 
 class DistMemMap(PstMemMap,DistData):
     '''
@@ -127,8 +129,8 @@ class DistMemMap(PstMemMap,DistData):
 
 
     @staticmethod
-    def write(filename, distdata):
-        """Writes a :class:`DistData` to :class:`DistMemMap` format.
+    def write(filename, distreader, sid_batch_size=100, dtype=None, order='A'):
+        """Writes a :class:`DistData` to :class:`DistMemMap` format. #!!!cmk update for reader and fix up snpmemmap.write etc also
 
         :param filename: the name of the file to create
         :type filename: string
@@ -144,15 +146,37 @@ class DistMemMap(PstMemMap,DistData):
         >>> pstutil.create_directory_if_necessary("tempdir/tiny.pst.memmap")
         >>> DistMemMap.write("tempdir/tiny.dist.memmap",data1)      # Write data1 in DistMemMap format
         DistMemMap('tempdir/tiny.dist.memmap')
+
         """
 
         #We write iid and sid in ascii for compatibility between Python 2 and Python 3 formats.
-        row_ascii = np.array(distdata.row,dtype='S') #!!!avoid this copy when not needed
-        col_ascii = np.array(distdata.col,dtype='S') #!!!avoid this copy when not needed
-        self = PstMemMap.empty(row_ascii, col_ascii, filename, row_property=distdata.row_property, col_property=distdata.col_property,order=PstMemMap._order(distdata),dtype=distdata.val.dtype, val_count=3)
-        self.val[:,:,:] = distdata.val
+        row_ascii = np.array(distreader.row,dtype='S') #!!!avoid this copy when not needed
+        col_ascii = np.array(distreader.col,dtype='S') #!!!avoid this copy when not needed
+
+        if hasattr(distreader,'.val'):
+            order = PstMemMap._order(distreader) if order=='A' else order
+            dtype = dtype or distreader.val.dtype
+        else:
+            order = 'F' if order=='A' else order
+            dtype = dtype or np.float64
+
+        self = PstMemMap.empty(row_ascii, col_ascii, filename+'.temp', row_property=distreader.row_property, col_property=distreader.col_property,order=order,dtype=dtype, val_count=3)
+        if hasattr(distreader,'.val'):
+            self.val[:,:,:] = distreader.val
+        else:
+            start = 0
+            with log_in_place("sid_index ", logging.INFO) as updater:
+                while start < distreader.sid_count:
+                    updater('{0} of {1}'.format(start,distreader.sid_count))
+                    distdata = distreader[:,start:start+sid_batch_size].read(order=order,dtype=dtype)
+                    self.val[:,start:start+distdata.sid_count,:] = distdata.val
+                    start += distdata.sid_count
+
         self.flush()
-        logging.debug("Done writing " + filename)
+        if os.path.exists(filename):
+           remove(filename) 
+        move(filename+'.temp',filename)#!!!cmk23 do this in snpmemmap, dstmemmap too
+        logging.debug("Done writing " + filename) #!!!cmk23 test might be good to write to *.temp and then rename the (here and other place)
         return DistMemMap(filename)
 
 
@@ -209,11 +233,11 @@ def getTestSuite():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.WARN)
 
     suites = getTestSuite()
     r = unittest.TextTestRunner(failfast=True)
     r.run(suites)
 
-    result = doctest.testmod()
+    result = doctest.testmod(optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)
     assert result.failed == 0, "failed doc test: " + __file__

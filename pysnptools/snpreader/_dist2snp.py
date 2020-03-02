@@ -7,39 +7,9 @@ from pysnptools.snpreader import SnpReader
 from pysnptools.snpreader import SnpData
 
 
-class Dist2Snp(SnpReader):
-    '''
-    A :class:`.SnpReader` that creates expected SNP values from a :class:`.Dist2Snp`. No SNP distribution data will be read until
-    the :meth:`Dist2Snp.read` method is called. Use block_size to avoid ever reading all the SNP data into memory.
-    at once.
-
-    See :class:`.SnpReader` for general examples of using SnpReaders.
-
-    **Constructor:**
-        :Parameters: * **distreader** (:class:`DistReader`) -- The SNP distribution data
-                        max_weight=2.0,  #!!!cmk
-                     * **block_size** (optional, int) -- The number of SNPs to read at a time.
-                     #!!!cmk more
-
-        If **block_size** is not given, then all SNP data will be read at once.
-
-        :Example:
-
-        >>> from __future__ import print_function #Python 2 & 3 compatibility
-        >>> from pysnptools.distreader import Bgen
-        >>> from pysnptools.snpreader import Dist2Snp
-        >>> dist_on_disk = Bgen('../examples/2500x100.bgen')        # A DistNpz file is specified, but nothing is read from disk
-        >>> snp_on_disk = Dist2Snp(dist_on_disk, block_size=500)  # A SnpReader is specified, but nothing is read from disk
-        >>> print(snp_on_disk) #Print the specification
-        Dist2Snp(Bgen('../examples/2500x100.bgen'),block_size=500)
-        >>> print(snp_on_disk.iid_count)                                  # iid information is read from disk, but not SNP data #!!!cmk true?
-        25
-        >>> snpdata = snp_on_disk.read()                                  # Distribution data is read, 500 at a time, to create an expected SNP value
-        >>> print('{0:.6f}'.format(snpdata.val[0,0]))
-        0.776803
-    '''
+class _Dist2Snp(SnpReader):
     def __init__(self, snpreader, max_weight=2.0, block_size=None):
-        super(Dist2Snp, self).__init__()
+        super(_Dist2Snp, self).__init__()
 
         self.distreader = snpreader
         self.max_weight=max_weight
@@ -57,7 +27,7 @@ class Dist2Snp(SnpReader):
         return self._internal_repr()
 
     def _internal_repr(self): #!!! merge this with __repr__
-        s = "Dist2Snp({0}".format(self.distreader)
+        s = "{0}.as_snp(".format(self.distreader)
         if self.block_size is not None:
             s += ",block_size={0}".format(self.block_size)
         s += ")"
@@ -73,7 +43,7 @@ class Dist2Snp(SnpReader):
 
     def __getitem__(self, iid_indexer_and_snp_indexer):
         row_index_or_none, col_index_or_none = iid_indexer_and_snp_indexer
-        return Dist2Snp(self.distreader[row_index_or_none,col_index_or_none],max_weight=self.max_weight,block_size=self.block_size)
+        return _Dist2Snp(self.distreader[row_index_or_none,col_index_or_none],max_weight=self.max_weight,block_size=self.block_size)
 
 
     @property

@@ -573,6 +573,36 @@ class SnpReader(PstReader):
             block_size = blocksize
         return self._read_kernel(standardizer, block_size=block_size)
 
+    #!!!cmk22 test
+    def as_dist(self, max_weight=2.0, block_size=None):
+        """Returns a :class:`SnpData` such that the :meth:`SnpData.val` property will be a ndarray of expected SNP values.#!!!cmk23 fix up and be will appear in api docs
+
+        :param block_size: optional -- Default of None (meaning to load all). Suggested number of sids to read into memory at a time.
+        :type block_size: int or None
+        #!!!cmk list max_weight and dtype, etc (also check read_kernel and make sure they are there too
+
+        :rtype: class:`SnpData`
+
+        Calling the method again causes the distribution values to be re-read and allocates a new class:`SnpData`.
+
+        When applied to an read-from-disk SnpReader, such as :class:`.Dist.Npz`, the method can save memory by reading the data in blocks.#!!!cmk true?
+
+        :Example:
+
+        >>> from pysnptools.distreader import Bgen
+        >>> dist_on_disk = Bgen('../examples/2500x100.bgen') # Specify distribution data on disk
+        >>> snpreader1 = dist_on_disk.as_snp(max_weight=1)
+        >>> print(snpreader1.iid_count)
+        2500
+        >>> snpdata1 = snpreader1.read()
+        >>> print(round(snpdata1.val[0,0],6))
+        0.339216
+        """
+        from pysnptools.distreader._snp2dist import _Snp2Dist
+        snp2dist = _Snp2Dist(self,max_weight=max_weight,block_size=block_size)
+        return snp2dist
+
+
     @staticmethod
     def _as_snpdata(snpreader, standardizer, force_python_only, order, dtype):
         '''

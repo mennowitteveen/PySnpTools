@@ -11,7 +11,7 @@ from pysnptools.snpreader import SnpData
 import warnings
 import pysnptools.standardizer as stdizer
 from six.moves import range
-from pysnptools.snpreader import Dist2Snp
+from pysnptools.snpreader._dist2snp import _Dist2Snp
 
 #!!why do the examples use ../tests/datasets instead of "examples"?
 class DistReader(PstReader):
@@ -251,8 +251,9 @@ class DistReader(PstReader):
         ret = DistData(self.iid,self.sid,val,pos=self.pos,name=str(self))
         return ret
 
-    def read_snp(self, max_weight=2.0, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False):
-        """Returns a :class:`SnpData` such that the :meth:`SnpData.val` property will be a ndarray of expected SNP values.
+    #!!!cmk22 test
+    def as_snp(self, max_weight=2.0, block_size=None):
+        """Returns a :class:`SnpData` such that the :meth:`SnpData.val` property will be a ndarray of expected SNP values.#!!!cmk23 fix up and be will appear in api docs
 
         :param block_size: optional -- Default of None (meaning to load all). Suggested number of sids to read into memory at a time.
         :type block_size: int or None
@@ -268,13 +269,15 @@ class DistReader(PstReader):
 
         >>> from pysnptools.distreader import Bgen
         >>> dist_on_disk = Bgen('../examples/2500x100.bgen') # Specify distribution data on disk
-        >>> snpdata1 = dist_on_disk.read_snp(max_weight=1)
-        >>> print((int(snpdata1.iid_count), '{0:.6f}'.format(snpdata1.val[0,0])))
-        (2500, '0.339216')
+        >>> snpreader1 = dist_on_disk.as_snp(max_weight=1)
+        >>> print(snpreader1.iid_count)
+        2500
+        >>> snpdata1 = snpreader1.read()
+        >>> print(round(snpdata1.val[0,0],6))
+        0.339216
         """
-        dist2snp = Dist2Snp(self,max_weight=max_weight,block_size=block_size)
-        snpdata = dist2snp.read(order, dtype, force_python_only, view_ok)
-        return snpdata
+        dist2snp = _Dist2Snp(self,max_weight=max_weight,block_size=block_size)
+        return dist2snp
 
     def iid_to_index(self, list):
         """Takes a list of iids and returns a list of index numbers

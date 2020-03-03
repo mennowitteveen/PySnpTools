@@ -3,6 +3,7 @@ import subprocess, sys, os.path
 from itertools import *
 import pandas as pd
 import logging
+import time
 from pysnptools.snpreader import SnpReader
 from pysnptools.snpreader import SnpData
 
@@ -29,7 +30,7 @@ class _Dist2Snp(SnpReader):
     def _internal_repr(self): #!!! merge this with __repr__
         s = "{0}.as_snp(".format(self.distreader)
         if self.block_size is not None:
-            s += ",block_size={0}".format(self.block_size)
+            s += "block_size={0}".format(self.block_size)
         s += ")"
         return s
 
@@ -38,8 +39,41 @@ class _Dist2Snp(SnpReader):
         copier.input(self.distreader)
 
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
+        from pysnptools.distreader import DistReader
+
         assert row_index_or_none is None and col_index_or_none is None #real assert because indexing should already be pushed to the inner distreader
-        return self.distreader._read_snp(max_weight=self.max_weight,block_size=self.block_size, order=order, dtype=dtype, force_python_only=force_python_only, view_ok=view_ok)
+
+        weights = np.array([0,.5,1])*self.max_weight
+
+        #Do all-at-once (not in blocks) if 1. No block size is given or 2. The #ofSNPs < Min(block_size,iid_count)
+        if self.block_size is None or (self.sid_count <= self.block_size or self.sid_count <= self.iid_count):
+            distdata = DistReader._as_distdata(self.distreader,dtype=dtype,order=order,force_python_only=force_python_only)
+            val = (distdata.val*weights).sum(axis=-1)
+            has_right_order = order="A" or (order=="C" and val.flags["C_CONTIGUOUS"]) or (order=="F" and val.flags["F_CONTIGUOUS"])
+            assert has_right_order, "!!!cmk expect this to be right"
+            return val
+        else: #Do in blocks
+            t0 = time.time()
+            if order=='A':
+                order = 'F'
+            val = np.zeros([self.iid_count,self.sid_count],dtype=dtype,order=order)#!!!cmk should use empty or fillnan
+
+            logging.info("reading {0} distribution data in blocks of {1} SNPs and finding expected values (for {2} individuals)".format(self.sid_count, self.block_size, self.iid_count))
+            ct = 0
+            ts = time.time()
+
+            for start in range(0, self.sid_count, self.block_size):
+                ct += self.block_size
+                distdata = self.distreader[:,start:start+self.block_size].read(order=order,dtype=dtype,force_python_only=force_python_only,view_ok=True) # a view is always OK, because we'll allocate memory in the next step
+                val[:,start:start+self.block_size] = (distdata.val*weights).sum(axis=-1)
+                if ct % self.block_size==0:
+                    diff = time.time()-ts
+                    if diff > 1: logging.info("read %s SNPs in %.2f seconds" % (ct, diff))
+
+            t1 = time.time()
+            logging.info("%.2f seconds elapsed" % (t1-t0))
+
+            return val
 
     def __getitem__(self, iid_indexer_and_snp_indexer):
         row_index_or_none, col_index_or_none = iid_indexer_and_snp_indexer

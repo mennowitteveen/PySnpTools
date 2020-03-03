@@ -153,7 +153,7 @@ class DistMemMap(PstMemMap,DistData):
         row_ascii = np.array(distreader.row,dtype='S') #!!!avoid this copy when not needed
         col_ascii = np.array(distreader.col,dtype='S') #!!!avoid this copy when not needed
 
-        if hasattr(distreader,'.val'):
+        if hasattr(distreader,'val'):
             order = PstMemMap._order(distreader) if order=='A' else order
             dtype = dtype or distreader.val.dtype
         else:
@@ -161,7 +161,7 @@ class DistMemMap(PstMemMap,DistData):
             dtype = dtype or np.float64
 
         self = PstMemMap.empty(row_ascii, col_ascii, filename+'.temp', row_property=distreader.row_property, col_property=distreader.col_property,order=order,dtype=dtype, val_count=3)
-        if hasattr(distreader,'.val'):
+        if hasattr(distreader,'val'):
             self.val[:,:,:] = distreader.val
         else:
             start = 0

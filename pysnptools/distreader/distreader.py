@@ -1,5 +1,6 @@
 import numpy as np
 import subprocess, sys
+import os
 import os.path
 from itertools import *
 import pandas as pd
@@ -251,7 +252,6 @@ class DistReader(PstReader):
         ret = DistData(self.iid,self.sid,val,pos=self.pos,name=str(self))
         return ret
 
-    #!!!cmk22 test
     def as_snp(self, max_weight=2.0, block_size=None):
         """Returns a :class:`SnpData` such that the :meth:`SnpData.val` property will be a ndarray of expected SNP values.#!!!cmk23 fix up and be will appear in api docs
 
@@ -318,55 +318,21 @@ class DistReader(PstReader):
         return self.col_to_index(list)
 
     def __getitem__(self, iid_indexer_and_snp_indexer):
-        import os
         from pysnptools.distreader._subset import _DistSubset
         iid_indexer, snp_indexer = iid_indexer_and_snp_indexer
         return _DistSubset(self, iid_indexer, snp_indexer)
 
-
+    #!!!cmk22 change anything like isinstance(distreader,*Data) to instead look for val
     @staticmethod
     def _as_distdata(distreader, force_python_only, order, dtype): #!!!cmk should all these methods look for a .val property so they worked with memorymapped etc?
         '''
         Like 'read' except won't read if already a DistData
         '''
         from pysnptools.distreader import DistData #must import here to avoid cycles
-        if isinstance(distreader,DistData) and distreader.val.dtype==dtype and (order=="A" or (order=="C" and distreader.val.flags["C_CONTIGUOUS"]) or (order=="F" and distreader.val.flags["F_CONTIGUOUS"])):
+        if hasattr(distreader,'val') and distreader.val.dtype==dtype and (order=="A" or (order=="C" and distreader.val.flags["C_CONTIGUOUS"]) or (order=="F" and distreader.val.flags["F_CONTIGUOUS"])):
             return distreader
         else:
             return distreader.read(order=order,dtype=dtype,view_ok=True)
-
-    def _read_snp(self, max_weight=2.0, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False):
-        weights = np.array([0,.5,1])*max_weight
-
-        #Do all-at-once (not in blocks) if 1. No block size is given or 2. The #ofSNPs < Min(block_size,iid_count)
-        if block_size is None or (self.sid_count <= block_size or self.sid_count <= self.iid_count):
-            distdata = DistReader._as_distdata(self,dtype=dtype,order=order,force_python_only=force_python_only)
-            val = (distdata.val*weights).sum(axis=-1)
-            has_right_order = order="A" or (order=="C" and val.flags["C_CONTIGUOUS"]) or (order=="F" and val.flags["F_CONTIGUOUS"])
-            assert has_right_order, "!!!cmk expect this to be right"
-            return val
-        else: #Do in blocks
-            t0 = time.time()
-            if order=='A':
-                order = 'F'
-            val = np.zeros([self.iid_count,self.sid_count],dtype=dtype,order=order)#!!!cmk should use empty or fillnan
-
-            logging.info("reading {0} distribution data in blocks of {1} SNPs and finding expected values (for {2} individuals)".format(self.sid_count, block_size, self.iid_count))
-            ct = 0
-            ts = time.time()
-
-            for start in range(0, self.sid_count, block_size):
-                ct += block_size
-                distdata = self[:,start:start+block_size].read(order=order,dtype=dtype,force_python_only=force_python_only,view_ok=True) # a view is always OK, because we'll allocate memory in the next step
-                val[:,start:start+block_size] = (distdata.val*weights).sum(axis=-1)
-                if ct % block_size==0:
-                    diff = time.time()-ts
-                    if diff > 1: logging.info("read %s SNPs in %.2f seconds" % (ct, diff))
-
-            t1 = time.time()
-            logging.info("%.2f seconds elapsed" % (t1-t0))
-
-            return val
     
     def copyinputs(self, copier):
         raise NotImplementedError

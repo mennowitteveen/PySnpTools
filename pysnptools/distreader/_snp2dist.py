@@ -3,8 +3,10 @@ import subprocess, sys, os.path
 from itertools import *
 import pandas as pd
 import logging
+import time
 from pysnptools.distreader import DistReader
-
+from pysnptools.snpreader import SnpReader
+import pysnptools.standardizer as stdizer
 
 class _Snp2Dist(DistReader):
 
@@ -29,7 +31,7 @@ class _Snp2Dist(DistReader):
     def _internal_repr(self): #!!! merge this with __repr__
         s = "{0}.as_dist(".format(self.snpreader)
         if self.block_size is not None:
-            s += ",block_size={0}".format(self.block_size)
+            s += "block_size={0}".format(self.block_size)
         s += ")"
         return s
 
@@ -37,9 +39,55 @@ class _Snp2Dist(DistReader):
         #Doesn't need run_once
         copier.input(self.snpreader)
 
+    def _snpval_to_distval(self, snpval, order, dtype):
+        if order=='A':
+            orderx='F'
+        else:
+            orderx = order
+        distval = np.zeros([snpval.shape[0],snpval.shape[1],3],dtype=dtype,order=orderx)
+        distval = distval.reshape(-1,distval.shape[-1])
+        factor = 2.0/self.max_weight
+        for count in range(distval.shape[-1]):
+            bool_array = snpval.reshape(-1)*factor==count
+            distval[bool_array,count]=1
+        distval[distval.sum(axis=-1)!=1,:]=np.nan
+        distval = distval.reshape([snpval.shape[0],snpval.shape[1],distval.shape[-1]])#!!!cmk23 create a test where we turn it back
+        return distval
+
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
         assert row_index_or_none is None and col_index_or_none is None #real assert because indexing should already be pushed to the inner snpreader
-        return self.snpreader._read_dist(max_weight=self.max_weight,block_size=self.block_size, order=order, dtype=dtype, force_python_only=force_python_only, view_ok=view_ok)
+
+        #Do all-at-once (not in blocks) if 1. No block size is given or 2. The #ofSNPs < Min(block_size,iid_count)
+        if self.block_size is None or (self.sid_count <= self.block_size or self.sid_count <= self.iid_count):
+            snpdata,_ = SnpReader._as_snpdata(self.snpreader,dtype=dtype,order=order,force_python_only=force_python_only,standardizer=stdizer.Identity())
+            val = self._snpval_to_distval(snpdata.val,order,dtype)
+
+            has_right_order = order="A" or (order=="C" and val.flags["C_CONTIGUOUS"]) or (order=="F" and val.flags["F_CONTIGUOUS"])
+            assert has_right_order, "!!!cmk expect this to be right"
+            return val
+        else: #Do in blocks
+            t0 = time.time()
+            if order=='A':
+                order = 'F'
+            val = np.zeros([self.iid_count,self.sid_count,3],dtype=dtype,order=order)#!!!cmk should use empty or fillnan
+
+            logging.info("reading {0} value data in blocks of {1} SNPs and finding distribution (for {2} individuals)".format(self.sid_count, self.block_size, self.iid_count))
+            ct = 0
+            ts = time.time()
+
+            for start in range(0, self.sid_count, self.block_size):
+                ct += self.block_size
+                snpdata = self.snpreader[:,start:start+self.block_size].read(order=order,dtype=dtype,force_python_only=force_python_only,view_ok=True) # a view is always OK, because we'll allocate memory in the next step
+                val[:,start:start+self.block_size] = self._snpval_to_distval(snpdata.val,order,dtype)
+                if ct % self.block_size==0:
+                    diff = time.time()-ts
+                    if diff > 1: logging.info("read %s SNPs in %.2f seconds" % (ct, diff))
+
+            t1 = time.time()
+            logging.info("%.2f seconds elapsed" % (t1-t0))
+
+            return val
+
 
     def __getitem__(self, iid_indexer_and_snp_indexer):
         row_index_or_none, col_index_or_none = iid_indexer_and_snp_indexer

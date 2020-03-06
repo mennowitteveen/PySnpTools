@@ -103,7 +103,8 @@ class DistGen(DistReader):
             chrom_size_so_far += DistGen._chrom_size[chrom_index]
             stop = chrom_size_so_far * self._sid_count // chrom_total
             self._col_property[start:stop,0] = chrom_index+1
-            self._col_property[start:stop,2] = np.arange(0,stop-start)*step+1#!!!cmk23 fix up again and elsewhere
+            random_increment = np.random.RandomState(chrom_index ^ 2292).randint(step)
+            self._col_property[start:stop,2] = np.arange(0,stop-start)*step+random_increment+1
             #print(chrom_index+1,start,stop,self._sid_count)
             start = stop
 

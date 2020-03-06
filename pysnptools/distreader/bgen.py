@@ -14,18 +14,28 @@ import subprocess
 import pysnptools.util as pstutil
 from pysnptools.distreader import DistReader
 
-
-#iid_function
-def _fill_famid_with_0(sample):
+#!!!cmk document these
+def default_iid_function(sample):
     return ('0',sample)
 
-#sample_function
-def _ignore_famid(iid_value):
-    return iid_value[1]
+def default_sid_function(id,rsid):
+    if rsid=='0' or rsid=='':
+        return id
+    else:
+        return id+','+rsid
 
-#id_rsid_function
-def _sid_to_id_with_no_rsid(sid_value):
-    return (sid_value,'0')
+def default_sample_function(famid,indid):
+    if famid=='0' or famid=='':
+        return indid
+    else:
+        return famid+','+indid
+
+def default_id_rsid_function(sid):
+    fields = sid.split(',')
+    if len(fields)==2:
+        return fields[0],fields[1]
+    else:
+        return sid,'0'
 
 
 
@@ -52,11 +62,12 @@ class Bgen(DistReader):
     **Methods beyond** :class:`.DistReader`
 
     '''
-    def __init__(self, filename, verbose=False, iid_function=None, sid_function='id'):
+    warning_dictionary = {}
+    def __init__(self, filename, verbose=False, iid_function=default_iid_function, sid_function=default_sid_function):
+        #!!!cmk document that sid_function can be 'id' or 'rsid' and will be faster
         super(Bgen, self).__init__()
         self._ran_once = False
         self.read_bgen = None
-        iid_function = iid_function or _fill_famid_with_0
 
         self.filename = filename
         self._verbose = verbose
@@ -85,6 +96,14 @@ class Bgen(DistReader):
         if self._ran_once:
             return
         self._ran_once = True
+
+        #Warn about reopening files with new contents #!!!cmk remove when bug is fixed
+        new_file_date = os.stat(self.filename).st_ctime
+        old_file_date = Bgen.warning_dictionary.get(self.filename)
+        if old_file_date is not None and old_file_date != new_file_date:
+            logging.warning('Opening a file again, but its creation date has changed See https://github.com/limix/bgen-reader-py/issues/25. File "{0}"'.format(self.filename))
+        else:
+            Bgen.warning_dictionary[self.filename] = new_file_date
 
         self._read_bgen = read_bgen(self.filename,verbose=self._verbose)
 
@@ -128,7 +147,10 @@ class Bgen(DistReader):
 
         if col_property is None:
             col_property = np.zeros((len(self._col),3),dtype='float')
-            col_property[:,0] = self._read_bgen['variants']['chrom'] #!!!cmk if this doesn't parse as numbers, leave it a zeros
+            try:
+                col_property[:,0] = self._read_bgen['variants']['chrom'] #!!!cmk if this doesn't parse as numbers, leave it a zeros
+            except:
+                print('!!!cmk22')
             col_property[:,2] = self._read_bgen['variants']['pos']
             must_write_metadata2 = True
         self._col_property = col_property
@@ -215,13 +237,12 @@ class Bgen(DistReader):
     #!!!cmk22 name these snpid_function, etc
     #!!!cmk22 can we set all batch sizes on this file automatically better?
     @staticmethod
-    def write(filename, distreader, bits=None, compression=None, sample_function=None, id_rsid_function=None, iid_function=None, sid_function='id', sid_batch_size=100, qctool_path=None, cleanup_temp_files=True):
+    def write(filename, distreader, bits=None, compression=None, sample_function=default_sample_function, id_rsid_function=default_id_rsid_function, iid_function=default_iid_function, sid_function=default_sid_function, sid_batch_size=100, qctool_path=None, cleanup_temp_files=True):
         ""#!!!cmk doc WARN that 32 bits here, the max, corresponds to 10 decial places of precession and needs a dtype of float64 to capture.
          #!!!cmk a dtype of float32 correponds to 23 bgen bits (7 decimal places)
          #!!!cmk23 what happens if you try to write out something too big to be a probabliy, nor negative, or adds up to more than 1?
-         #compression can be blank or zlib or zstd 
-         #default bits seems to be 16
-        iid_function=iid_function or _fill_famid_with_0
+         #cmk doc that compression can be blank or zlib or zstd 
+         #cmk doc that default bits seems to be 16
 
         if qctool_path is None:
             key = 'QCTOOLPATH'
@@ -236,15 +257,17 @@ class Bgen(DistReader):
         else:
              #We need the +1 so that all three values will have enough precision to be very near 1
              #The max(3,..) is needed to even 1 bit will have enough precision in the gen file
-            decimal_places = max(3,math.ceil(math.log(2**bits,10))*2) #!!!cmk change +2 to +1
+            decimal_places = max(3,math.ceil(math.log(2**bits,10))+1)
         Bgen.genwrite(genfile,distreader,decimal_places,id_rsid_function,sample_function,sid_batch_size)
-        cmd = '{0} -g {1} -s {2} -og {3}{4}{5}'.format(qctool_path,genfile,samplefile,filename,
-                            ' -bgen-bits {0}'.format(bits) if bits is not None else '',
-                            ' -bgen-compression {0}'.format(compression) if compression is not None else '')
+        if os.path.exists(filename):
+            os.remove(filename)
         if os.path.exists(metadata):
             os.remove(metadata)
         if os.path.exists(metadatanpz):
             os.remove(metadatanpz)
+        cmd = '{0} -g {1} -s {2} -og {3}{4}{5}'.format(qctool_path,genfile,samplefile,filename,
+                            ' -bgen-bits {0}'.format(bits) if bits is not None else '',
+                            ' -bgen-compression {0}'.format(compression) if compression is not None else '')
         try:
             output = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
         except subprocess.CalledProcessError as exc:
@@ -253,14 +276,14 @@ class Bgen(DistReader):
         if cleanup_temp_files:
             os.remove(genfile)
             os.remove(samplefile)
-        return Bgen(filename,iid_function=iid_function, sid_function=sid_function)
+        return Bgen(filename, iid_function=iid_function, sid_function=sid_function)
         #!!!cmkreturn cmd
 
 
     #!!!cmk confirm that na na na 0,0,0 round trips
     #!!!cmk write a test for this
     @staticmethod
-    def genwrite(filename, distreader, decimal_places=None, id_rsid_function=None, sample_function=None, sid_batch_size=100):
+    def genwrite(filename, distreader, decimal_places=None, id_rsid_function=default_id_rsid_function, sample_function=default_sample_function, sid_batch_size=100):
         """Writes a :class:`DistReader` to Gen format and returns None #!!!cmk update docs
 
         :param filename: the name of the file to create
@@ -279,8 +302,6 @@ class Bgen(DistReader):
         #https://www.cog-genomics.org/plink2/formats#gen
         #https://web.archive.org/web/20181010160322/http://www.stats.ox.ac.uk/~marchini/software/gwas/file_format.html
 
-        id_rsid_function = id_rsid_function or _sid_to_id_with_no_rsid
-        sample_function = sample_function  or _ignore_famid
 
         if decimal_places is None:
             format_function = lambda num:'{0}'.format(num)
@@ -294,8 +315,8 @@ class Bgen(DistReader):
                 while start < distreader.sid_count:
                     distdata = distreader[:,start:start+sid_batch_size].read(view_ok=True)
                     for sid_index in range(distdata.sid_count):
-                        if (start+sid_index) % updater_freq == 0: #!!!cmk23 test this
-                            updater('{0:,} of {1:,}'.format(start+sid_index,distreader.sid_count))#!!!cmk23 print commas in numbers test this
+                        if updater_freq>1 and (start+sid_index) % updater_freq == 0:
+                            updater('{0:,} of {1:,}'.format(start+sid_index,distreader.sid_count))
                         id,rsid = id_rsid_function(distdata.sid[sid_index])
                         assert id.strip()!='','id cannot be whitespace'
                         assert rsid.strip()!='','rsid cannot be whitespace'
@@ -334,7 +355,7 @@ class TestBgen(unittest.TestCase):    #!!!cmk23 be sure these are run
         np.testing.assert_allclose(distdata0.val,distdata1.val,atol=atol,equal_nan=True,verbose=True)
 
 
-    def cmk22test1(self):
+    def test1(self):
         logging.info("in TestBgen test1")
         bgen = Bgen('../examples/example.bgen')
         #print(bgen.iid,bgen.sid,bgen.pos)
@@ -345,7 +366,7 @@ class TestBgen(unittest.TestCase):    #!!!cmk23 be sure these are run
         distdata2 = bgen2.read()
         #print(distdata2.val)
 
-    def cmk22test2(self):
+    def test2(self):
         logging.info("in TestBgen test2")
         bgen = Bgen('../examples/bits1.bgen')
         #print(bgen.iid,bgen.sid,bgen.pos)
@@ -356,30 +377,13 @@ class TestBgen(unittest.TestCase):    #!!!cmk23 be sure these are run
         distdata2 = bgen2.read()
         #print(distdata2.val)
 
-    #!!!cmk23 make these the default
-    @staticmethod
-    def iid_function(sample):
-        return ('0',sample)
-    @staticmethod
-    def sid_function(id,rsid):
-        if rsid=='0':
-            return id
-        else:
-            return id+','+rsid
-    @staticmethod
-    def id_rsid_function(sid):
-        fields = sid.split(',')
-        if len(fields)==2:
-            return fields[0],fields[1]
-        else:
-            return sid,'0'
-    def test_abs_error(self):
+    def cmkdeletethistesttest_abs_error(self):
         file0 = '../examples/example.bgen'
         example = Bgen(file0,iid_function=TestBgen.iid_function,sid_function=TestBgen.sid_function)
         bgen0 = example[:,20]
         distdata0 = bgen0.read()
-        file1 = 'temp/abs_error.bgen'
-        for bits in [32]+list(range(1,32)):#!!!cmk[None]+:
+        for bits in [None]+list(range(1,33)):
+            file1 = 'temp/abs_error{0}.bgen'.format(bits)
             bgen1 = Bgen.write(file1,bgen0,bits=bits,compression='zlib',
                         sample_function=lambda f,i:i,
                         id_rsid_function=TestBgen.id_rsid_function,
@@ -392,57 +396,30 @@ class TestBgen(unittest.TestCase):    #!!!cmk23 be sure these are run
             print((bits,abs_error))
 
 
-    def cmk22test_read_write_round_trip(self):
+    def test_read_write_round_trip(self):
         from pysnptools.distreader import DistGen
-        #!!!cmk23
-        #if os.name == 'nt':
-        #    logging.info('test_read_write_round_trip only runs on Linux')
-        assert 'QCTOOLPATH' in os.environ, "To run test_read_write_round_trip, QCTOOLPATH environment variable must be set"
+        assert 'QCTOOLPATH' in os.environ, "To run test_read_write_round_trip, QCTOOLPATH environment variable must be set. (On Windows, install QcTools in 'Ubuntu on Windows' and set to 'ubuntu run <qctoolLinuxPath>')."
 
         file0 = '../examples/example.bgen'
+        exampledata = Bgen(file0)[:,10].read()
+        iid_count = 50
+        sid_count = 5
+        distgen0data = DistGen(seed=332,iid_count=iid_count,sid_count=sid_count).read()
 
-
-        #!!!cmk why does write file when bits is set to 5?
-        example = Bgen(file0,iid_function=TestBgen.iid_function,sid_function=TestBgen.sid_function)
-        iid_count = 10
-        sid_count = 100
-        distgen0 = DistGen(seed=332,iid_count=iid_count,sid_count=sid_count)
-
-        file1 = 'temp/roundtrip1.bgen' #!!!cmk23 what if we write a new bgen file and there is an old metadata and or metadata.npz file. At least, need to remove them
-        for bgen0 in [example[:,20],distgen0]:#!!!cmk[example[:,20],distgen0]:#,example]:#!!!cmk why does [example[:,20],distgen0] fail with bit=18 or 5
-            distdata0 = bgen0.read()#!!!cmk24 move out of loop (carefully)
-            for bits in [20]:#!!!cmk[None]+list(range(1,32)): #!!!cmk22 why do we need to +2 instead of +1 to get error in tolerance
-                logging.info("bits={0}".format(bits))
-                distdata1 = Bgen.write(file1,bgen0,bits=bits,compression='zlib',
-                           sample_function=lambda f,i:i,
-                           id_rsid_function=TestBgen.id_rsid_function,
-                           iid_function=TestBgen.iid_function,
-                           sid_function=TestBgen.sid_function,
-                           cleanup_temp_files=False
-                           ).read()
-                distdata2 = Bgen(file1,iid_function=TestBgen.iid_function,sid_function=TestBgen.sid_function).read()
+        for i,distdata0 in enumerate([distgen0data,exampledata]):
+            for bits in [None]+list(range(1,33)):
+                logging.info("input#={0},bits={1}".format(i,bits))
+                file1 = 'temp/roundtrip1-{0}-{1}.bgen'.format(i,bits)
+                distdata1 = Bgen.write(file1,distdata0,bits=bits,compression='zlib',cleanup_temp_files=False).read()
+                distdata2 = Bgen(file1,).read()
                 assert distdata1.allclose(distdata2,equal_nan=True)
                 atol=1.0/(2**(bits or 16))
                 if (bits or 16) == 1:
-                    atol = 1.0 # because values must add up to 1, there is more rounding error
-                elif (bits or 16) == 1:
-                    atol = atol*1.3
-                else:
-                    atol = atol*1.3
+                    atol *= 1.4 # because values must add up to 1, there is more rounding error
                 TestBgen.assert_approx_equal(distdata0,distdata1,atol=atol)
 
 
-    #    for sid_function, anti_sid_function in [[None,None],
-    #                                            ['id',lambda sid:(sid,'')],
-    #                                            ['rsid',lambda sid:('',sid)],
-    #                                            [lambda s,r: s+','+r],lambda sid,','.split(sid)]
-    #                                            ]:
-                
-    #        bgen0 = Bgen('../examples/example.bgen',sid_function=sid_function)
-        
-
-
-    def cmk22test_read1(self): #!!!cmk22 make round trip (linux) read and write exercising all the _functions.
+    def test_read1(self): #!!!cmk22 make round trip (linux) read and write exercising all the _functions.
         file_from = '../examples/example.bgen'
         file_to = 'temp/example.bgen'
         pstutil.create_directory_if_necessary(file_to)
@@ -480,35 +457,35 @@ class TestBgen(unittest.TestCase):    #!!!cmk23 be sure these are run
 
 
         #This and many of the tests based on bgen-reader-py\bgen_reader\test
-    def cmk22test_bgen_samples_inside_bgen(self):
+    def test_bgen_samples_inside_bgen(self):
         with example_files("haplotypes.bgen") as filepath:
             data = Bgen(filepath)
             samples = [("0","sample_0"), ("0","sample_1"), ("0","sample_2"), ("0","sample_3")]
             assert (data.iid == samples).all()
 
 
-    def cmk22test_bgen_samples_not_present(self):
+    def test_bgen_samples_not_present(self):
         with example_files("complex.23bits.no.samples.bgen") as filepath:
             data = Bgen(filepath)
             samples = [("0","sample_0"), ("0","sample_1"), ("0","sample_2"), ("0","sample_3")]
             assert (data.iid == samples).all()
 
 
-    def cmktest_bgen_samples_specify_samples_file(self):
+    def test_bgen_samples_specify_samples_file(self):
         with example_files(["complex.23bits.bgen", "complex.sample"]) as filepaths: #!!!cmk what's going on with *.sample????
-            data = read_bgen(filepaths[0], samples_filepath=filepaths[1], verbose=False)
+            data = Bgen(filepaths[0], samples_filepath=filepaths[1], verbose=False)
             samples = ["sample_0", "sample_1", "sample_2", "sample_3"]
             samples = Series(samples, dtype=str, name="id")
             assert_(all(data["samples"] == samples))
 
-    def cmktest_metafile_provided(self):
+    def test_metafile_provided(self):
         filenames = ["haplotypes.bgen", "haplotypes.bgen.metadata.valid"]#!!!cmk what's going on with *.sample????
         with example_files(filenames) as filepaths:
             read_bgen(filepaths[0], metafile_filepath=filepaths[1], verbose=False)
 
 
     #We don't support phased
-    #def cmk22test_bgen_reader_phased_genotype(self): #!!!cmk think about support for phased
+    #def test_bgen_reader_phased_genotype(self): #!!!cmk think about support for phased
     #    with example_files("haplotypes.bgen") as filepath:
     #        bgen = Bgen(filepath, verbose=False)
     #        assert(bgen.pos[0,0] == 1)
@@ -531,9 +508,9 @@ class TestBgen(unittest.TestCase):    #!!!cmk23 be sure these are run
 
 
 
-    def cmk22test_bgen_reader_variants_info(self):
+    def test_bgen_reader_variants_info(self):
         with example_files("example.32bits.bgen") as filepath:
-            bgen = Bgen(filepath)
+            bgen = Bgen(filepath,sid_function='id')
 
             assert(bgen.pos[0,0]==1)
             assert(bgen.sid[0]=="SNPID_2")
@@ -605,39 +582,15 @@ class TestBgen(unittest.TestCase):    #!!!cmk23 be sure these are run
             assert_allclose(g[n - 1, :], a)
 
 
-    def cmktest_bgen_reader_without_metadata(self):
+    def test_bgen_reader_without_metadata(self):
         with example_files("example.32bits.bgen") as filepath:
-            bgen = read_bgen(filepath)
-            variants = bgen["variants"].compute()
-            samples = bgen["samples"]
-            assert_("genotype" in bgen)
-            assert_equal(variants.loc[7, "allele_ids"], "A,G")
-            n = samples.shape[0]
-            assert_equal(samples.loc[n - 1], "sample_500")
+            bgen = Bgen(filepath)
+            variants = bgen.read()
+            samples = bgen.iid
+            assert samples[-1,1]=="sample_500"
 
 
-    #def cmk22test_bgen_reader_with_wrong_metadata_file(self):
-    #    with example_files(["example.32bits.bgen", "wrong.metadata"]) as filepaths:
-    #        bgen = Bgen(filepaths[0], metadata=filepaths[1])
-    #        try:
-    #            bgen.iid # expect error
-    #            got_error = False
-    #        except Exception as e:
-    #            got_error = True
-    #        assert got_error
-
-
-    #def cmktest_bgen_reader_with_nonexistent_metadata_file(self):
-    #    with example_files("example.32bits.bgen") as filepath:
-    #        folder = os.path.dirname(filepath)
-    #        metafile_filepath = os.path.join(folder, "nonexistent.metadata")
-
-    #        bgen = Bgen(filepath,metadata=metafile_filepath)
-    #        bgen.iid
-    #        assert os.path.exists(metafile_filepath)
-
-
-    def cmk22test_bgen_reader_file_notfound(self):
+    def test_bgen_reader_file_notfound(self):
             bgen = Bgen("/1/2/3/example.32bits.bgen")
             try:
                 bgen.iid # expect error
@@ -647,7 +600,7 @@ class TestBgen(unittest.TestCase):    #!!!cmk23 be sure these are run
             assert got_error
 
 
-    def cmk22test_create_metadata_file(self):
+    def test_create_metadata_file(self):
         with example_files("example.32bits.bgen") as filepath:
             folder = os.path.dirname(filepath)
             metafile_filepath = os.path.join(folder, filepath + ".metadata")
@@ -661,100 +614,7 @@ class TestBgen(unittest.TestCase):    #!!!cmk23 be sure these are run
                     os.remove(metafile_filepath)
 
 
-    def cmktest_bgen_reader_complex(self):
-        with example_files("complex.23bits.bgen") as filepath:
-            bgen = read_bgen(filepath, verbose=False)
-            variants = bgen["variants"].compute()
-            samples = bgen["samples"]
-            assert_("genotype" in bgen)
-
-            assert_equal(variants.loc[0, "chrom"], "01")
-            assert_equal(variants.loc[0, "id"], "")
-            assert_equal(variants.loc[0, "nalleles"], 2)
-            assert_equal(variants.loc[0, "allele_ids"], "A,G")
-            assert_equal(variants.loc[0, "pos"], 1)
-            assert_equal(variants.loc[0, "rsid"], "V1")
-
-            assert_equal(variants.loc[7, "chrom"], "01")
-            assert_equal(variants.loc[7, "id"], "")
-            assert_equal(variants.loc[7, "nalleles"], 7)
-            assert_equal(variants.loc[7, "allele_ids"], "A,G,GT,GTT,GTTT,GTTTT,GTTTTT")
-            assert_equal(variants.loc[7, "pos"], 8)
-            assert_equal(variants.loc[7, "rsid"], "M8")
-
-            n = variants.shape[0]
-            assert_equal(variants.loc[n - 1, "chrom"], "01")
-            assert_equal(variants.loc[n - 1, "id"], "")
-            assert_equal(variants.loc[n - 1, "nalleles"], 2)
-            assert_equal(variants.loc[n - 1, "allele_ids"], "A,G")
-            assert_equal(variants.loc[n - 1, "pos"], 10)
-            assert_equal(variants.loc[n - 1, "rsid"], "M10")
-
-            assert_equal(samples.loc[0], "sample_0")
-            assert_equal(samples.loc[3], "sample_3")
-
-            g = bgen["genotype"][0].compute()["probs"][0]
-            assert_allclose(g[:2], [1, 0])
-            assert_(isnan(g[2]))
-
-            g = bgen["genotype"][0].compute()["probs"][1]
-            assert_allclose(g[:3], [1, 0, 0])
-
-            g = bgen["genotype"][-1].compute()["probs"][-1]
-            assert_allclose(g[:5], [0, 0, 0, 1, 0])
-
-            ploidy = bgen["genotype"][0].compute()["ploidy"]
-            assert_allclose(ploidy, [1, 2, 2, 2])
-            ploidy = bgen["genotype"][-1].compute()["ploidy"]
-            assert_allclose(ploidy, [4, 4, 4, 4])
-
-            nvariants = len(variants)
-            phased = [bgen["genotype"][i].compute()["phased"] for i in range(nvariants)]
-            phased = array(phased)
-            assert_equal(phased.dtype.name, "bool")
-            ideal = array([False, True, True, False, True, True, True, True, False, False])
-            assert_(array_equal(phased, ideal))
-
-
-    def cmktest_bgen_reader_complex_sample_file(self):
-        with example_files(["complex.23bits.bgen", "complex.sample"]) as filepaths:
-            bgen = read_bgen(filepaths[0], samples_filepath=filepaths[1], verbose=False)
-            variants = bgen["variants"].compute()
-            samples = bgen["samples"]
-            assert_("genotype" in bgen)
-
-            assert_equal(variants.loc[0, "chrom"], "01")
-            assert_equal(variants.loc[0, "id"], "")
-            assert_equal(variants.loc[0, "nalleles"], 2)
-            assert_equal(variants.loc[0, "allele_ids"], "A,G")
-            assert_equal(variants.loc[0, "pos"], 1)
-            assert_equal(variants.loc[0, "rsid"], "V1")
-
-            assert_equal(variants.loc[7, "chrom"], "01")
-            assert_equal(variants.loc[7, "id"], "")
-            assert_equal(variants.loc[7, "nalleles"], 7)
-            assert_equal(variants.loc[7, "allele_ids"], "A,G,GT,GTT,GTTT,GTTTT,GTTTTT")
-            assert_equal(variants.loc[7, "pos"], 8)
-            assert_equal(variants.loc[7, "rsid"], "M8")
-
-            n = variants.shape[0]
-            assert_equal(variants.loc[n - 1, "chrom"], "01")
-            assert_equal(variants.loc[n - 1, "id"], "")
-            assert_equal(variants.loc[n - 1, "nalleles"], 2)
-            assert_equal(variants.loc[n - 1, "allele_ids"], "A,G")
-            assert_equal(variants.loc[n - 1, "pos"], 10)
-            assert_equal(variants.loc[n - 1, "rsid"], "M10")
-
-            assert_equal(samples.loc[0], "sample_0")
-            assert_equal(samples.loc[3], "sample_3")
-
-            ploidy = bgen["genotype"][2].compute()["ploidy"]
-            missing = bgen["genotype"][2].compute()["missing"]
-            nvariants = len(variants)
-            phased = [bgen["genotype"][i].compute()["phased"] for i in range(nvariants)]
-            assert_allclose(ploidy, [1, 2, 2, 2])
-            assert_allclose(missing, [0, 0, 0, 0])
-            assert_allclose(phased, [0, 1, 1, 0, 1, 1, 1, 1, 0, 0])
+    
 
 
 def getTestSuite():

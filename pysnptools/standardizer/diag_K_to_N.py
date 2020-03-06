@@ -61,7 +61,7 @@ class DiagKtoN(Standardizer):
             return kerneldata
 
     def standardize(self, input, block_size=None, return_trained=False, force_python_only=False):
-        from pysnptools.kernelreader import KernelData
+        from pysnptools.kernelreader import KernelReader
         if block_size is not None:
             warnings.warn("block_size is deprecated (and not needed, since standardization is in-place", DeprecationWarning)
         if isinstance(input,KernelReader) and hasattr(input,'val'):
@@ -72,10 +72,10 @@ class DiagKtoN(Standardizer):
     def _standardize_snps(self, snps, return_trained=False, force_python_only=False):
 
         if hasattr(snps,"val"):
-            val = snps.val
+            val = snps.val#!!!cmkcover
         else:
             warnings.warn("standardizing an nparray instead of a SnpData is deprecated", DeprecationWarning)
-            val = snps
+            val = snps#!!!cmkcover
 
         vec = val.reshape(-1, order="A")
         # make sure no copy was made
@@ -116,11 +116,11 @@ class DiagKtoNTrained(Standardizer):
         if block_size is not None:
             warnings.warn("block_size is deprecated (and not needed, since standardization is in-place", DeprecationWarning)
 
-        from pysnptools.kernelreader import KernelData
+        from pysnptools.kernelreader import KernelReader
         if isinstance(input,KernelReader) and hasattr(input,'val'):
-            return self._standardize_kernel(input, return_trained=return_trained,force_python_only=force_python_only)
+            return self._standardize_kernel(input, return_trained=return_trained,force_python_only=force_python_only)#!!!cmkcover
         else:
-            return self._standardize_snps(input, return_trained=return_trained,force_python_only=force_python_only)
+            return self._standardize_snps(input, return_trained=return_trained,force_python_only=force_python_only)#!!!cmkcover
 
     @property
     def is_constant(self):
@@ -129,9 +129,9 @@ class DiagKtoNTrained(Standardizer):
     def _standardize_snps(self, snps, return_trained=False, force_python_only=False):
     
         if hasattr(snps,"val"):
-            val = snps.val
+            val = snps.val#!!!cmkcover
         else:
-            warnings.warn("standardizing an nparray instead of a SnpData is deprecated", DeprecationWarning)
+            warnings.warn("standardizing an nparray instead of a SnpData is deprecated", DeprecationWarning)#!!!cmkcover
             val = snps
 
         if not self.is_constant:

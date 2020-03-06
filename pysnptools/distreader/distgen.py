@@ -100,11 +100,10 @@ class DistGen(DistReader):
         start = 0
         chrom_size_so_far = 0
         for chrom_index in range(self._chrom_count):
-            chrom_size_so_before = chrom_size_so_far
             chrom_size_so_far += DistGen._chrom_size[chrom_index]
             stop = chrom_size_so_far * self._sid_count // chrom_total
             self._col_property[start:stop,0] = chrom_index+1
-            self._col_property[start:stop,2] = np.arange(0,stop-start)*step+chrom_size_so_before+1
+            self._col_property[start:stop,2] = np.arange(0,stop-start)*step+1#!!!cmk23 fix up again and elsewhere
             #print(chrom_index+1,start,stop,self._sid_count)
             start = stop
 
@@ -112,6 +111,8 @@ class DistGen(DistReader):
         self._run_once()
         copier.input(self._cache_file)
 
+    #!!!cmk on 3/4/2020 this returned float64 when float32 was requested. 1. add a test for this, for all other *.gen's, for all other dist*.reads and more test for everything if needed
+    #!!!cmk also add test(s) for order
     # Most _read's support only indexlists or None, but this one supports Slices, too.
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
         self._run_once()
@@ -120,13 +121,13 @@ class DistGen(DistReader):
         row_index_count = len(row_index_or_none) if row_index_or_none is not None else self._iid_count # turn to a count of the index positions e.g. all of them
         col_index = col_index_or_none if col_index_or_none is not None else np.arange(self._sid_count) # turn to an array of index positions, e.g. 0,1,200,2200,10
         batch_index = col_index // self._sid_batch_size  #find the batch index of each index position, e.g. 0,0,0,2,0
-        val = np.empty((row_index_count,len(col_index),3)) #allocate memory for result
+        val = np.empty((row_index_count,len(col_index),3),order=order, dtype=dtype) #allocate memory for result
         list_batch_index = list(set(batch_index))
         for ii,i in enumerate(list_batch_index):  #for each distinct batch index, generate dists #!!!fix up snpgen this way, too with ii
             #!!!cmk logging.info("working on distgen batch {0} of {1}".format(ii,len(list_batch_index))) #!!!why does this produce messages like 'working on distgen batch 8 of 2'?
             start = i*self._sid_batch_size  #e.g. 0 (then 2000)
             stop = start + self._sid_batch_size #e.g. 1000, then 3000
-            batch_val = self._get_val(start,stop) # generate whole batch
+            batch_val = self._get_val(start,stop,dtype) # generate whole batch
             a = (batch_index==i) #e.g. [True,True,True,False,True], then [False,False,False,True,False]
             b = col_index[a]-start #e.g.  0,1,200,10, then 200
             val[:,a,:] = batch_val[:,b,:] if row_index_or_none is None else pstutil.sub_matrix(batch_val, row_index_or_none, b)
@@ -152,7 +153,7 @@ class DistGen(DistReader):
         sid = ["sid_{0}".format(i) for i in range(sid_start,sid_stop)]
         return sid
 
-    def _get_val(self, sid_start, sid_stop):
+    def _get_val(self, sid_start, sid_stop,dtype):
         missing_rate = .218
         sid_batch_size = sid_stop-sid_start
 

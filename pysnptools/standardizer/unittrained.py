@@ -56,7 +56,7 @@ class UnitTrained(Standardizer):
                     self.sid_to_index = {sid:index for index,sid in enumerate(self.sid)}
                 stats = np.array([self.stats[self.sid_to_index[sid]] for sid in snps.sid])
         else:
-            warnings.warn("standardizing an nparray instead of a SnpData is deprecated", DeprecationWarning)
+            warnings.warn("standardizing an nparray instead of a SnpData is deprecated", DeprecationWarning)#!!!cmkcover
             val = snps
             stats = self.stats
 

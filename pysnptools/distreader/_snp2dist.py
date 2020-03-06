@@ -1,5 +1,4 @@
 import numpy as np
-import subprocess, sys, os.path
 from itertools import *
 import pandas as pd
 import logging
@@ -41,17 +40,15 @@ class _Snp2Dist(DistReader):
 
     def _snpval_to_distval(self, snpval, order, dtype):
         if order=='A':
-            orderx='F'
-        else:
-            orderx = order
-        distval = np.zeros([snpval.shape[0],snpval.shape[1],3],dtype=dtype,order=orderx)
+            order='F'
+        distval = np.zeros([snpval.shape[0],snpval.shape[1],3],dtype=dtype,order=order)
         distval = distval.reshape(-1,distval.shape[-1])
         factor = 2.0/self.max_weight
         for count in range(distval.shape[-1]):
             bool_array = snpval.reshape(-1)*factor==count
             distval[bool_array,count]=1
-        distval[distval.sum(axis=-1)!=1,:]=np.nan
-        distval = distval.reshape([snpval.shape[0],snpval.shape[1],distval.shape[-1]])#!!!cmk23 create a test where we turn it back
+        distval[distval.sum(axis=-1)!=1,:]=np.nan #replace any dist that doesn't sum to 1 with nan
+        distval = distval.reshape([snpval.shape[0],snpval.shape[1],distval.shape[-1]])
         return distval
 
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):

@@ -285,3 +285,7 @@ ModelManifest.xml
 /doc/ipynb/example32.dist.memmap
 /doc/ipynb/example16.dist.memmap
 /doc/ipynb/example.dist.memmap
+/doc/ipynb/Untitled1.ipynb
+/pysnptools/distreader/temp
+/pysnptools/snpreader/deldir
+/pysnptools/snpreader/temp

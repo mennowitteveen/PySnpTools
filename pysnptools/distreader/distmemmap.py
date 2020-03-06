@@ -157,14 +157,14 @@ class DistMemMap(PstMemMap,DistData):
             order = PstMemMap._order(distreader) if order=='A' else order
             dtype = dtype or distreader.val.dtype
         else:
-            order = 'F' if order=='A' else order
+            order = 'F' if order=='A' else order#!!!cmk23cover
             dtype = dtype or np.float64
 
         self = PstMemMap.empty(row_ascii, col_ascii, filename+'.temp', row_property=distreader.row_property, col_property=distreader.col_property,order=order,dtype=dtype, val_count=3)
         if hasattr(distreader,'val'):
             self.val[:,:,:] = distreader.val
         else:
-            start = 0
+            start = 0#!!!cmk23cover
             with log_in_place("sid_index ", logging.INFO) as updater:
                 while start < distreader.sid_count:
                     updater('{0} of {1}'.format(start,distreader.sid_count))

@@ -1,5 +1,4 @@
 import numpy as np
-import subprocess, sys
 import os.path
 from itertools import *
 import pandas as pd
@@ -573,9 +572,8 @@ class SnpReader(PstReader):
             block_size = blocksize
         return self._read_kernel(standardizer, block_size=block_size)
 
-    #!!!cmk22 test
     def as_dist(self, max_weight=2.0, block_size=None):
-        """Returns a :class:`SnpData` such that the :meth:`SnpData.val` property will be a ndarray of expected SNP values.#!!!cmk23 fix up and be will appear in api docs
+        """Returns a :class:`SnpData` such that the :meth:`SnpData.val` property will be a ndarray of expected SNP values.#!!!cmk24 fix up and be will appear in api docs
 
         :param block_size: optional -- Default of None (meaning to load all). Suggested number of sids to read into memory at a time.
         :type block_size: int or None

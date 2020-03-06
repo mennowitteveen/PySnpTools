@@ -100,11 +100,10 @@ class SnpGen(SnpReader):
         start = 0
         chrom_size_so_far = 0
         for chrom_index in range(self._chrom_count):
-            chrom_size_so_before = chrom_size_so_far
             chrom_size_so_far += SnpGen._chrom_size[chrom_index]
             stop = chrom_size_so_far * self._sid_count // chrom_total
             self._col_property[start:stop,0] = chrom_index+1
-            self._col_property[start:stop,2] = np.arange(0,stop-start)*step+chrom_size_so_before+1
+            self._col_property[start:stop,2] = np.arange(0,stop-start)*step+1
             #print(chrom_index+1,start,stop,self._sid_count)
             start = stop
 
@@ -120,13 +119,13 @@ class SnpGen(SnpReader):
         row_index_count = len(row_index_or_none) if row_index_or_none is not None else self._iid_count # turn to a count of the index positions e.g. all of them
         col_index = col_index_or_none if col_index_or_none is not None else np.arange(self._sid_count) # turn to an array of index positions, e.g. 0,1,200,2200,10
         batch_index = col_index // self._sid_batch_size  #find the batch index of each index position, e.g. 0,0,0,2,0
-        val = np.empty((row_index_count,len(col_index))) #allocate memory for result
+        val = np.empty((row_index_count,len(col_index)),order=order,dtype=dtype) #allocate memory for result
         list_batch_index = list(set(batch_index))
         for i in list_batch_index:  #for each distinct batch index, generate snps
             logging.info("working on snpgen batch {0} of {1}".format(i,len(list_batch_index))) #!!!why does this produce messages like 'working on snpgen batch 8 of 2'?
             start = i*self._sid_batch_size  #e.g. 0 (then 2000)
             stop = start + self._sid_batch_size #e.g. 1000, then 3000
-            batch_val = self._get_val2(start,stop) # generate whole batch
+            batch_val = self._get_val2(start,stop,order=order,dtype=dtype) # generate whole batch
             a = (batch_index==i) #e.g. [True,True,True,False,True], then [False,False,False,True,False]
             b = col_index[a]-start #e.g.  0,1,200,10, then 200
             val[:,a] = batch_val[:,b] if row_index_or_none is None else pstutil.sub_matrix(batch_val, row_index_or_none, b)
@@ -152,25 +151,25 @@ class SnpGen(SnpReader):
         sid = ["sid_{0}".format(i) for i in range(sid_start,sid_stop)]
         return sid
 
-    def _get_val2(self, sid_start, sid_stop):
+    def _get_val2(self, sid_start, sid_stop, order, dtype):
         x_sample, dist = self._get_dist() # The discrete distribution of minor allele frequencies (based on curve fitting to real data)
-        val = SnpGen._get_val(x_sample,dist,self._iid_count,sid_start,sid_stop, self._seed)
+        val = SnpGen._get_val(x_sample,dist,self._iid_count,sid_start,sid_stop, self._seed, order,dtype)
         return val
 
     @staticmethod
-    def _get_val(x_sample,dist,iid_count,sid_start,sid_stop,seed):
+    def _get_val(x_sample,dist,iid_count,sid_start,sid_stop,seed,order,dtype):
         missing_rate = .218
         sid_batch_size_a = sid_stop-sid_start
         sid_batch_size_b = sid_stop-sid_start
 
         np.random.seed(seed+sid_start)
-        val_a = np.empty((iid_count,sid_batch_size_a),order="F")
+        val_a = np.empty((iid_count,sid_batch_size_a),order=order,dtype=dtype)
         sid_so_far = 0
     
         while sid_so_far < sid_batch_size_a:
             logging.debug(sid_so_far)
             sid_index_to_freq = np.random.choice(x_sample,size=sid_batch_size_b,replace=True,p=dist) #For each sid, pick its minor allele freq
-            val_b = (np.random.rand(iid_count,2,sid_batch_size_b) < sid_index_to_freq).sum(axis=1).astype(float) #Sample each allele and then sum the minor alleles #!!!slowest part
+            val_b = (np.random.rand(iid_count,2,sid_batch_size_b) < sid_index_to_freq).sum(axis=1).astype(dtype) #Sample each allele and then sum the minor alleles #!!!slowest part
             missing = np.random.rand(iid_count,sid_batch_size_b)<missing_rate
             val_b[missing] = np.nan
 

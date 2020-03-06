@@ -15,6 +15,7 @@ from pysnptools.distreader import DistNpz, DistHdf5, DistMemMap, DistData
 from pysnptools.util import create_directory_if_necessary
 from pysnptools.snpreader import SnpNpz, Bed
 from pysnptools.kernelreader.test import _fortesting_JustCheckExists
+from pysnptools.pstreader import PstData
 
 # TestDistMemMap #!!!cmk be sure includes docstrings
 
@@ -37,11 +38,9 @@ class TestDistReaders(unittest.TestCase):
         col_count = 5
         val_count = 3
         val = np.random.random((row_count,col_count,val_count))
-        val /= val.sum(axis=2,keepdims=True)  #make probabilities sum to 1 #!!!cmk make a method?
+        val /= val.sum(axis=2,keepdims=True)  #make probabilities sum to 1
         distdata = DistData(val=val,iid=[['iid{0}'.format(i)]*2 for i in range(row_count)],sid=['sid{0}'.format(s) for s in range(col_count)]
                             )
-        
-
 
     def test_scalar_index(self):
         distreader = DistNpz(self.currentFolder + "/../examples/toydata.dist.npz")
@@ -204,7 +203,7 @@ class TestDistReaders(unittest.TestCase):
         for row_count in [0,5,2,1]:
             for col_count in [4,2,1,0]:
                 val=np.random.random(size=[row_count,col_count,3])
-                val /= val.sum(axis=2,keepdims=True)  #make probabilities sum to 1 #!!!cmk make a method?
+                val /= val.sum(axis=2,keepdims=True)  #make probabilities sum to 1
 
                 val[val==3]=np.NaN
                 row = [('0','0'),('1','1'),('2','2'),('3','3'),('4','4')][:row_count]
@@ -262,7 +261,7 @@ class TestDistReaders(unittest.TestCase):
         np.random.seed(0)
         snp_count = 20
         val=np.array(np.random.random(size=[3,snp_count,3]),dtype=np.float64,order='F')
-        val /= val.sum(axis=2,keepdims=True)  #make probabilities sum to 1 #!!!cmk make a method?
+        val /= val.sum(axis=2,keepdims=True)  #make probabilities sum to 1
         distreader = DistData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(snp_count)],val=val)
         snpdata0 = distreader.as_snp(max_weight=100,block_size=1).read()
         snpdata1 = distreader.as_snp(max_weight=100,block_size=None).read()
@@ -323,6 +322,16 @@ class TestDistReaders(unittest.TestCase):
 
         logging.info("Done with test_intersection")
 
+    def test_roundtrip(self):
+        max_weight = 2
+        snpreader1 = Bed(self.currentFolder + "/../examples/toydata.bed",count_A1=True)
+        snpdata1 = snpreader1.read()
+        distreader1 = snpreader1.as_dist(max_weight)
+        snpreader2 = distreader1.as_snp(max_weight)
+        assert snpdata1.allclose(npreader2.read(),equal_nan=True)
+        snpdata1.val[0,0] = np.nan
+        assert snpdata1.allclose(snpdata1.as_dist(max_weight).as_snp(max_weight).read(),equal_nan=True)
+
     def test_dist_snp2(self):
         logging.info("in test_dist_snp2")
         distreader = DistNpz(self.currentFolder + "/../examples/toydata.dist.npz")
@@ -365,7 +374,7 @@ class TestDistReaders(unittest.TestCase):
             for order_start in ['F','C','A']:
                 for snp_count in [20,2]:
                     val=np.array(np.random.random(size=[3,snp_count,3]),dtype=dtype_start,order=order_start)
-                    val /= val.sum(axis=2,keepdims=True)  #make probabilities sum to 1 #!!!cmk make a method?
+                    val /= val.sum(axis=2,keepdims=True)  #make probabilities sum to 1
                     distdataX = DistData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(snp_count)],val=val)
                     for max_weight in [1.0,2.0]:
                         weights = np.array([0,.5,1])*max_weight
@@ -381,7 +390,7 @@ class TestDistReaders(unittest.TestCase):
                                     DistData._array_properties_are_ok(k.val,order_goal,dtype_goal)
                                     np.testing.assert_array_almost_equal(refval0,k.val, decimal=min(decimal_start,decimal_goal))
 
-    def cmktest_respect_inputs_SnpData(self):#!!!cmk23 test this
+    def test_respect_inputs_SnpData(self):
         np.random.seed(0)
         for dtype_start,decimal_start in [(np.float32,5),(np.float64,10)]:
             for order_start in ['F','C','A']:
@@ -391,7 +400,7 @@ class TestDistReaders(unittest.TestCase):
                     for snpreader0 in [snpdataX,snpdataX[:,1:]]:
                         snpreader1 = snpreader0[1:,:]
                         refdata0 = snpreader0.read()
-                        refval0 = (refdata0.val * weights).sum(axis=-1)#!!!cmk23 call that function (which should be moved out)
+                        refval0 = (refdata0.val * weights).sum(axis=-1)
                         refdata1 = snpreader1.read()#!!!cmk why aren't these used?
                         refval1 = (refdata1.val * weights).sum(axis=-1)#!!!cmk why aren't these used?
                         for dtype_goal,decimal_goal in [(np.float32,5),(np.float64,10)]:

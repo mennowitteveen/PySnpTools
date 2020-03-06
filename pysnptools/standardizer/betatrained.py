@@ -52,7 +52,7 @@ class BetaTrained(Standardizer):
             val = snps.val
             assert np.array_equal(self.sid,snps.sid), "sid in training and use must be the same and in the same order"
         else:
-            warnings.warn("standardizing an nparray instead of a SnpData is deprecated", DeprecationWarning)
+            warnings.warn("standardizing an nparray instead of a SnpData is deprecated", DeprecationWarning)#!!!cmkcover
             val = snps
 
         self._standardize_unit_and_beta(val, is_beta=True, a=self.a, b=self.b, apply_in_place=True,use_stats=True,stats=self.stats,force_python_only=force_python_only)

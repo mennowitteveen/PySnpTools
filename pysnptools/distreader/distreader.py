@@ -1,5 +1,4 @@
 import numpy as np
-import subprocess, sys
 import os
 import os.path
 from itertools import *
@@ -322,7 +321,6 @@ class DistReader(PstReader):
         iid_indexer, snp_indexer = iid_indexer_and_snp_indexer
         return _DistSubset(self, iid_indexer, snp_indexer)
 
-    #!!!cmk22 change anything like isinstance(distreader,*Data) to instead look for val
     @staticmethod
     def _as_distdata(distreader, force_python_only, order, dtype): #!!!cmk should all these methods look for a .val property so they worked with memorymapped etc?
         '''

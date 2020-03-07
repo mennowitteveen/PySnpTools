@@ -196,7 +196,7 @@ class TestSnpGen(unittest.TestCase):
         assert(snpdata.allclose(snpdata2))
 
         from pysnptools.snpreader import Bed
-        ref = Bed( os.path.dirname(os.path.realpath(__file__))+'/../../tests/datasets/snpgen.bed',count_A1=False).read()
+        ref = Bed(os.path.dirname(os.path.realpath(__file__))+'/../../tests/datasets/snpgen.bed',count_A1=False).read()
         assert(snpdata.allclose(ref,equal_nan=True))
 
         cache_file = 'tempdir/cache_file_test1.npz'

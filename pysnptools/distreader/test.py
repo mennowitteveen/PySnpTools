@@ -16,6 +16,7 @@ from pysnptools.util import create_directory_if_necessary
 from pysnptools.snpreader import SnpNpz, Bed
 from pysnptools.kernelreader.test import _fortesting_JustCheckExists
 from pysnptools.pstreader import PstData
+from pysnptools.snpreader import SnpData
 
 # TestDistMemMap #!!!cmk be sure includes docstrings
 
@@ -328,7 +329,7 @@ class TestDistReaders(unittest.TestCase):
         snpdata1 = snpreader1.read()
         distreader1 = snpreader1.as_dist(max_weight)
         snpreader2 = distreader1.as_snp(max_weight)
-        assert snpdata1.allclose(npreader2.read(),equal_nan=True)
+        assert snpdata1.allclose(snpreader2.read(),equal_nan=True)
         snpdata1.val[0,0] = np.nan
         assert snpdata1.allclose(snpdata1.as_dist(max_weight).as_snp(max_weight).read(),equal_nan=True)
 
@@ -382,32 +383,13 @@ class TestDistReaders(unittest.TestCase):
                             distreader1 = distreader0[1:,:]
                             refdata0 = distreader0.read()
                             refval0 = (refdata0.val * weights).sum(axis=-1)
-                            refdata1 = distreader1.read()#!!!cmk why aren't these used?
-                            refval1 = (refdata1.val * weights).sum(axis=-1)#!!!cmk why aren't these used?
                             for dtype_goal,decimal_goal in [(np.float32,5),(np.float64,10)]:
                                 for order_goal in ['F','C','A']:
                                     k = distreader0.as_snp(max_weight=max_weight,block_size=1).read(order=order_goal,dtype=dtype_goal)
                                     DistData._array_properties_are_ok(k.val,order_goal,dtype_goal)
                                     np.testing.assert_array_almost_equal(refval0,k.val, decimal=min(decimal_start,decimal_goal))
 
-    def test_respect_inputs_SnpData(self):
-        np.random.seed(0)
-        for dtype_start,decimal_start in [(np.float32,5),(np.float64,10)]:
-            for order_start in ['F','C','A']:
-                for snp_count in [20,2]:
-                    val=np.array(np.random.ranint(0,3,size=[3,snp_count]),dtype=dtype_start,order=order_start)
-                    snpdataX = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(snp_count)],val=val)
-                    for snpreader0 in [snpdataX,snpdataX[:,1:]]:
-                        snpreader1 = snpreader0[1:,:]
-                        refdata0 = snpreader0.read()
-                        refval0 = (refdata0.val * weights).sum(axis=-1)
-                        refdata1 = snpreader1.read()#!!!cmk why aren't these used?
-                        refval1 = (refdata1.val * weights).sum(axis=-1)#!!!cmk why aren't these used?
-                        for dtype_goal,decimal_goal in [(np.float32,5),(np.float64,10)]:
-                            for order_goal in ['F','C','A']:
-                                k = snpreader0.as_snp(max_weight=max_weight,block_size=1,order=order_goal,dtype=dtype_goal).read()
-                                DistData._array_properties_are_ok(k.val,order_goal,dtype_goal)
-                                np.testing.assert_array_almost_equal(refval0,k.val, decimal=min(decimal_start,decimal_goal))
+
     def test_npz(self):
         logging.info("in test_npz")
         distreader = DistNpz(self.currentFolder + "/../examples/toydata.dist.npz")

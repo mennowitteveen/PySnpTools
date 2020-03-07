@@ -594,7 +594,7 @@ class SnpReader(PstReader):
         2500
         >>> snpdata1 = snpreader1.read()
         >>> print(round(snpdata1.val[0,0],6))
-        0.339216
+        0.339132
         """
         from pysnptools.distreader._snp2dist import _Snp2Dist
         snp2dist = _Snp2Dist(self,max_weight=max_weight,block_size=block_size)

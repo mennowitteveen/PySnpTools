@@ -574,7 +574,7 @@ class TestPySnpTools(unittest.TestCase):
         from pysnptools.snpreader import SnpData, SnpHdf5, SnpNpz, SnpMemMap
 
         the_class_and_suffix_list = [(DistributedBed, "distributed_bed"),(Dense,"dense"),(Bed,"bed"),(Dat,"dat"),(Ped,"ped"),(Pheno,"pheno"),
-                                    (SnpHdf5,"hdf5"),(SnpNpz,"npz"),(SnpMemMap,"memmap")]
+                                    (SnpHdf5,"hdf5"),(SnpNpz,"npz"),(SnpMemMap,"memmap")]#!!!cmk22 create a distreader test and include Bgen
         cant_do_col_prop_none_set = {"dense","distributed_bed"}
         cant_do_col_len_0_set = {"distributed_bed"}
         cant_do_row_count_zero_set = {'dense','ped','pheno'}
@@ -842,10 +842,10 @@ class TestSnpDocStrings(unittest.TestCase):
         assert result.failed == 0, "failed doc test: " + __file__
 
     def test_dist2snp(self):
-        import pysnptools.snpreader.dist2snp
+        import pysnptools.snpreader._dist2snp
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
-        result = doctest.testmod(pysnptools.snpreader.dist2snp)
+        result = doctest.testmod(pysnptools.snpreader._dist2snp)
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 

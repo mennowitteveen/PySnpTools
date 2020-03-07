@@ -135,11 +135,6 @@ class TestKernelReader(unittest.TestCase):
 
         logging.info("Done with test_intersection")
 
-
-
-
-
-
     def test_respect_inputs(self):
         np.random.seed(0)
         for dtype_start,decimal_start in [(np.float32,5),(np.float64,10)]:

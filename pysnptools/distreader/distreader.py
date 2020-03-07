@@ -121,9 +121,9 @@ class DistReader(PstReader):
         >>> from pysnptools.distreader import Bgen
         >>> dist_on_disk = Bgen('../examples/2500x100.bgen')
         >>> print(dist_on_disk.iid[:3]) # print the first three iids
-        [['' 'iid_0']
-         ['' 'iid_1']
-         ['' 'iid_2']]
+        [['0' 'iid_0']
+         ['0' 'iid_1']
+         ['0' 'iid_2']]
         """
         return self.row
 
@@ -180,10 +180,10 @@ class DistReader(PstReader):
         >>> from pysnptools.distreader import Bgen
         >>> dist_on_disk = Bgen('../examples/2500x100.bgen')
         >>> print(dist_on_disk.pos[:4,].astype('int')) # print position information for the first four sids: #The '...' is for possible space char
-        [[       1        0        1]
-         [       1        0 30630001]
-         [       1        0 61260001]
-         [       1        0 91890001]]
+        [[        1         0   9270273]
+         [        1         0  39900273]
+         [        1         0  70530273]
+         [        1         0 101160273]]
         """
         return self.col_property
 
@@ -241,7 +241,7 @@ class DistReader(PstReader):
         ndarray
         >>> subset_distdata = dist_on_disk[:,::2].read() # From the disk, read SNP values for every other sid
         >>> print(subset_distdata.val[0,0]) # Print the first SNP value in the subset
-        [0.46666667 0.38823529 0.14509804]
+        [0.466804   0.38812848 0.14506752]
         >>> subsub_distdata = subset_distdata[:10,:].read(order='A',view_ok=True) # Create an in-memory subset of the subset with SNP values for the first ten iids. Share memory if practical.
         >>> import numpy as np
         >>> # print np.may_share_memory(subset_distdata.val, subsub_distdata.val) # Do the two ndarray's share memory? They could. Currently they won't.       
@@ -273,7 +273,7 @@ class DistReader(PstReader):
         2500
         >>> snpdata1 = snpreader1.read()
         >>> print(round(snpdata1.val[0,0],6))
-        0.339216
+        0.339132
         """
         dist2snp = _Dist2Snp(self,max_weight=max_weight,block_size=block_size)
         return dist2snp
@@ -292,7 +292,7 @@ class DistReader(PstReader):
 
         >>> from pysnptools.distreader import Bgen
         >>> dist_on_disk = Bgen('../examples/2500x100.bgen') # Specify SNP data on disk
-        >>> print(dist_on_disk.iid_to_index([['','iid_2'],['','iid_1']])) #Find the indexes for two iids.
+        >>> print(dist_on_disk.iid_to_index([['0','iid_2'],['0','iid_1']])) #Find the indexes for two iids.
         [2 1]
         """
         return self.row_to_index(list)

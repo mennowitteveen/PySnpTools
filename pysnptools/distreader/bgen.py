@@ -63,7 +63,7 @@ class Bgen(DistReader):
 
     '''
     warning_dictionary = {}
-    def __init__(self, filename, verbose=False, iid_function=default_iid_function, sid_function=default_sid_function):
+    def __init__(self, filename, iid_function=default_iid_function, sid_function=default_sid_function, verbose=False, metadata=None, sample=None):
         #!!!cmk document that sid_function can be 'id' or 'rsid' and will be faster
         super(Bgen, self).__init__()
         self._ran_once = False
@@ -73,6 +73,8 @@ class Bgen(DistReader):
         self._verbose = verbose
         self._iid_function = iid_function
         self._sid_function = sid_function
+        self._sample = sample
+        self._metadata = metadata
 
     @property
     def row(self):
@@ -105,9 +107,11 @@ class Bgen(DistReader):
         else:
             Bgen.warning_dictionary[self.filename] = new_file_date
 
-        self._read_bgen = read_bgen(self.filename,verbose=self._verbose)
+        self._read_bgen = read_bgen(self.filename,samples_filepath=self._sample,verbose=self._verbose)
 
-        metadata2 = self.filename + ".metadata.npz"
+        sample_hash = '' if self._sample is None else hash(self._sample) #If they give a sample file, we need a different metadata2 file.
+        metadata2 = self.filename + ".metadata{0}.npz".format(sample_hash)
+
         samples,id_list,rsid_list,col_property = None,None,None,None
         must_write_metadata2 = False
         if os.path.exists(metadata2):
@@ -147,10 +151,7 @@ class Bgen(DistReader):
 
         if col_property is None:
             col_property = np.zeros((len(self._col),3),dtype='float')
-            try:
-                col_property[:,0] = self._read_bgen['variants']['chrom'] #!!!cmk if this doesn't parse as numbers, leave it a zeros
-            except:
-                print('!!!cmk22')
+            col_property[:,0] = self._read_bgen['variants']['chrom']
             col_property[:,2] = self._read_bgen['variants']['pos']
             must_write_metadata2 = True
         self._col_property = col_property
@@ -172,7 +173,7 @@ class Bgen(DistReader):
         if order=='A':
             order='F'
 
-        iid_count_in = self.iid_count #!!!cmk similar code elsewhere
+        iid_count_in = self.iid_count #!!!similar code elsewhere
         sid_count_in = self.sid_count
 
         if iid_index_or_none is not None:
@@ -207,7 +208,7 @@ class Bgen(DistReader):
     def __repr__(self): 
         return "{0}('{1}')".format(self.__class__.__name__,self.filename)
 
-    def __del__(self):#!!!cmk
+    def __del__(self):
         self.flush()
 
     #!!!cmk23 test it
@@ -227,14 +228,11 @@ class Bgen(DistReader):
         if hasattr(self,'_ran_once') and self._ran_once:
             self._ran_once = False
             if hasattr(self,'_read_bgen') and self._read_bgen is not None:  # we need to test this because Python doesn't guarantee that __init__ was fully run
-                del self._read_bgen #!!!cmk is this needed? Meaningful?
+                del self._read_bgen
                 self._read_bgen = None
             
 
 
-    #!!!cmk confirm that na na na 0,0,0 round trips
-    #!!!cmk write a test for this
-    #!!!cmk22 name these snpid_function, etc
     #!!!cmk22 can we set all batch sizes on this file automatically better?
     @staticmethod
     def write(filename, distreader, bits=None, compression=None, sample_function=default_sample_function, id_rsid_function=default_id_rsid_function, iid_function=default_iid_function, sid_function=default_sid_function, sid_batch_size=100, qctool_path=None, cleanup_temp_files=True):
@@ -244,20 +242,18 @@ class Bgen(DistReader):
          #cmk doc that compression can be blank or zlib or zstd 
          #cmk doc that default bits seems to be 16
 
-        if qctool_path is None:
-            key = 'QCTOOLPATH'
-            qctool_path = os.environ.get(key)
-            assert qctool_path is not None, "Bgen.write() requires a path to an external qctool program either via the qctool_path input or by setting the QCTOOLPATH environment variable."
+        qctool_path = qctool_path or os.environ.get('QCTOOLPATH')
+        assert qctool_path is not None, "Bgen.write() requires a path to an external qctool program either via the qctool_path input or by setting the QCTOOLPATH environment variable."
+
         genfile =  os.path.splitext(filename)[0]+'.gen'
         samplefile =  os.path.splitext(filename)[0]+'.sample'
         metadata =  filename+'.metadata'
         metadatanpz =  filename+'.metadata.npz'
-        if bits is None:
-            decimal_places=None
-        else:
-             #We need the +1 so that all three values will have enough precision to be very near 1
-             #The max(3,..) is needed to even 1 bit will have enough precision in the gen file
-            decimal_places = max(3,math.ceil(math.log(2**bits,10))+1)
+
+        bits = bits or 16
+        #We need the +1 so that all three values will have enough precision to be very near 1
+        #The max(3,..) is needed to even 1 bit will have enough precision in the gen file
+        decimal_places = max(3,math.ceil(math.log(2**bits,10))+1)
         Bgen.genwrite(genfile,distreader,decimal_places,id_rsid_function,sample_function,sid_batch_size)
         if os.path.exists(filename):
             os.remove(filename)
@@ -277,11 +273,7 @@ class Bgen(DistReader):
             os.remove(genfile)
             os.remove(samplefile)
         return Bgen(filename, iid_function=iid_function, sid_function=sid_function)
-        #!!!cmkreturn cmd
 
-
-    #!!!cmk confirm that na na na 0,0,0 round trips
-    #!!!cmk write a test for this
     @staticmethod
     def genwrite(filename, distreader, decimal_places=None, id_rsid_function=default_id_rsid_function, sample_function=default_sample_function, sid_batch_size=100):
         """Writes a :class:`DistReader` to Gen format and returns None #!!!cmk update docs
@@ -358,53 +350,23 @@ class TestBgen(unittest.TestCase):    #!!!cmk23 be sure these are run
     def test1(self):
         logging.info("in TestBgen test1")
         bgen = Bgen('../examples/example.bgen')
-        #print(bgen.iid,bgen.sid,bgen.pos)
         distdata = bgen.read()
-        #print(distdata.val)
         bgen2 = bgen[:2,::3]
-        #print(bgen2.iid,bgen2.sid,bgen2.pos)
         distdata2 = bgen2.read()
-        #print(distdata2.val)
 
     def test2(self):
         logging.info("in TestBgen test2")
         bgen = Bgen('../examples/bits1.bgen')
-        #print(bgen.iid,bgen.sid,bgen.pos)
         distdata = bgen.read()
-        #print(distdata.val)
         bgen2 = bgen[:2,::3]
-        #print(bgen2.iid,bgen2.sid,bgen2.pos)
         distdata2 = bgen2.read()
-        #print(distdata2.val)
-
-    def cmkdeletethistesttest_abs_error(self):
-        file0 = '../examples/example.bgen'
-        example = Bgen(file0,iid_function=TestBgen.iid_function,sid_function=TestBgen.sid_function)
-        bgen0 = example[:,20]
-        distdata0 = bgen0.read()
-        for bits in [None]+list(range(1,33)):
-            file1 = 'temp/abs_error{0}.bgen'.format(bits)
-            bgen1 = Bgen.write(file1,bgen0,bits=bits,compression='zlib',
-                        sample_function=lambda f,i:i,
-                        id_rsid_function=TestBgen.id_rsid_function,
-                        iid_function=TestBgen.iid_function,
-                        sid_function=TestBgen.sid_function,
-                        cleanup_temp_files=False)
-            distdata1=bgen1.read()
-            bgen1.flush()
-            abs_error = np.abs(distdata0.val-distdata1.val).max()
-            print((bits,abs_error))
-
 
     def test_read_write_round_trip(self):
         from pysnptools.distreader import DistGen
         assert 'QCTOOLPATH' in os.environ, "To run test_read_write_round_trip, QCTOOLPATH environment variable must be set. (On Windows, install QcTools in 'Ubuntu on Windows' and set to 'ubuntu run <qctoolLinuxPath>')."
 
-        file0 = '../examples/example.bgen'
-        exampledata = Bgen(file0)[:,10].read()
-        iid_count = 50
-        sid_count = 5
-        distgen0data = DistGen(seed=332,iid_count=iid_count,sid_count=sid_count).read()
+        exampledata = Bgen('../examples/example.bgen')[:,10].read()
+        distgen0data = DistGen(seed=332,iid_count=50,sid_count=5).read()
 
         for i,distdata0 in enumerate([distgen0data,exampledata]):
             for bits in [None]+list(range(1,33)):
@@ -431,15 +393,14 @@ class TestBgen(unittest.TestCase):    #!!!cmk23 be sure these are run
 
         for loop_index in range(2):
             iid_function = lambda bgen_sample_id: (bgen_sample_id,bgen_sample_id) #Use the bgen_sample_id for both parts of iid
-            sid_function = 'id'
-            bgen = Bgen(file_to,iid_function)
+            bgen = Bgen(file_to)
             assert np.array_equal(bgen.iid[0],['0', 'sample_001'])
-            assert bgen.sid[0]=='SNPID_2'
+            assert bgen.sid[0]=='SNPID_2,RSID_2'
             bgen = Bgen(file_to,iid_function,sid_function='id')
-            assert np.array_equal(bgen.iid[0],['0', 'sample_001'])
+            assert np.array_equal(bgen.iid[0],['sample_001', 'sample_001'])
             assert bgen.sid[0]=='SNPID_2'
             bgen = Bgen(file_to,iid_function,sid_function='rsid')
-            assert np.array_equal(bgen.iid[0],['0', 'sample_001'])
+            assert np.array_equal(bgen.iid[0],['sample_001', 'sample_001'])
             assert bgen.sid[0]=='RSID_2'
             sid_function = lambda id,rsid: '{0},{1}'.format(id,rsid)
             bgen = Bgen(file_to,iid_function,sid_function=sid_function)
@@ -452,7 +413,7 @@ class TestBgen(unittest.TestCase):    #!!!cmk23 be sure these are run
 
         os.remove(file_to+".metadata.npz")
         bgen = Bgen(file_to,iid_function,sid_function='rsid')
-        assert np.array_equal(bgen.iid[0],['0', 'sample_001'])
+        assert np.array_equal(bgen.iid[0],['sample_001', 'sample_001'])
         assert bgen.sid[0]=='RSID_2'
 
 
@@ -472,39 +433,15 @@ class TestBgen(unittest.TestCase):    #!!!cmk23 be sure these are run
 
 
     def test_bgen_samples_specify_samples_file(self):
-        with example_files(["complex.23bits.bgen", "complex.sample"]) as filepaths: #!!!cmk what's going on with *.sample????
-            data = Bgen(filepaths[0], samples_filepath=filepaths[1], verbose=False)
-            samples = ["sample_0", "sample_1", "sample_2", "sample_3"]
-            samples = Series(samples, dtype=str, name="id")
-            assert_(all(data["samples"] == samples))
+        with example_files(["complex.23bits.bgen", "complex.sample"]) as filepaths:
+            data = Bgen(filepaths[0], sample=filepaths[1], verbose=False)
+            assert (data.iid[:,1] == ["sample_0", "sample_1", "sample_2", "sample_3"]).all()
 
     def test_metafile_provided(self):
-        filenames = ["haplotypes.bgen", "haplotypes.bgen.metadata.valid"]#!!!cmk what's going on with *.sample????
+        filenames = ["haplotypes.bgen", "haplotypes.bgen.metadata.valid"]
         with example_files(filenames) as filepaths:
-            read_bgen(filepaths[0], metafile_filepath=filepaths[1], verbose=False)
-
-
-    #We don't support phased
-    #def test_bgen_reader_phased_genotype(self): #!!!cmk think about support for phased
-    #    with example_files("haplotypes.bgen") as filepath:
-    #        bgen = Bgen(filepath, verbose=False)
-    #        assert(bgen.pos[0,0] == 1)
-    #        assert(bgen.sid[0] == "SNP1")
-    #        assert(bgen.pos[0,2]== 1)
-
-    #        assert(bgen.pos[2,0] == 1)
-    #        assert(bgen.sid[2] == "SNP3")
-    #        assert(bgen.pos[2,2]== 3)
-
-    #        assert((bgen.iid[0] ==("","sample_0")).all())
-    #        assert((bgen.iid[2] ==("","sample_2")).all())
-
-    #        assert((bgen.iid[-1] ==("","sample_3")).all())
-
-    #        g = bgen[0,0].read()
-    #        assert_allclose(g.val, [[[1.0, 0.0, 1.0, 0.0]]]) #cmk code doesn't know about phased
-    #        g = bgen[-1,-1].read()
-    #        assert_allclose(g.val, [[[1.0, 0.0, 0.0, 1.0]]])
+            bgen = Bgen(filepaths[0], metadata=filepaths[1], verbose=False)
+            bgen.iid
 
 
 
@@ -544,43 +481,7 @@ class TestBgen(unittest.TestCase):    #!!!cmk23 be sure these are run
             np.testing.assert_array_almost_equal(g.val, b)
 
 
-    def cmk_test_bgen_reader_phased_genotype(self): #!!!cmk don't know about phased
-        with example_files("haplotypes.bgen") as filepath:
-            bgen = read_bgen(filepath, verbose=False)
-            variants = bgen["variants"].compute()
-            samples = bgen["samples"]
-            assert_("genotype" in bgen)
-
-            assert_equal(variants.loc[0, "chrom"], "1")
-            assert_equal(variants.loc[0, "id"], "SNP1")
-            assert_equal(variants.loc[0, "nalleles"], 2)
-            assert_equal(variants.loc[0, "allele_ids"], "A,G")
-            assert_equal(variants.loc[0, "pos"], 1)
-            assert_equal(variants.loc[0, "rsid"], "RS1")
-
-            assert_equal(variants.loc[2, "chrom"], "1")
-            assert_equal(variants.loc[2, "id"], "SNP3")
-            assert_equal(variants.loc[2, "nalleles"], 2)
-            assert_equal(variants.loc[2, "allele_ids"], "A,G")
-            assert_equal(variants.loc[2, "pos"], 3)
-            assert_equal(variants.loc[2, "rsid"], "RS3")
-
-            assert_equal(samples.loc[0], "sample_0")
-            assert_equal(samples.loc[2], "sample_2")
-
-            n = samples.shape[0]
-            assert_equal(samples.loc[n - 1], "sample_3")
-
-            g = bgen["genotype"][0].compute()["probs"]
-            a = [1.0, 0.0, 1.0, 0.0]
-            assert_allclose(g[0, :], a)
-
-            k = len(variants)
-            n = len(samples)
-            a = [1.0, 0.0, 0.0, 1.0]
-            g = bgen["genotype"][k - 1].compute()["probs"]
-            assert_allclose(g[n - 1, :], a)
-
+    
 
     def test_bgen_reader_without_metadata(self):
         with example_files("example.32bits.bgen") as filepath:
@@ -652,7 +553,7 @@ if __name__ == "__main__":
         bgen2 = Bgen(r'M:\deldir\10x5000000.bgen',verbose=True)
         print(bgen2.shape)
 
-    if False: 
+    if True: 
         #iid_count = 500*1000
         #sid_count = 100
         #sid_batch_size = 25
@@ -663,29 +564,12 @@ if __name__ == "__main__":
         sid_count = 100
         sid_batch_size = 10
 
+        #!!!cmk22 regenerate 2500x100, move it examples, see tests/test.py work better
         from pysnptools.distreader import DistGen
         from pysnptools.distreader import Bgen
         distgen = DistGen(seed=332,iid_count=iid_count,sid_count=sid_count,sid_batch_size=sid_batch_size)
-        chrom_list = sorted(set(distgen.pos[:,0]))
-        len(chrom_list)
+        Bgen.write('{0}x{1}.bgen'.format(iid_count,sid_count),distgen)
 
-        import logging
-        logging.basicConfig(level=logging.INFO)
-        #for chrom in chrom_list[::-1]:
-        #    chromgen = distgen[:,distgen.pos[:,0]==chrom]
-        chromgen = distgen
-
-        print(chromgen.sid_count)
-        name = '{0}x{1}'.format(iid_count,sid_count)
-        gen_file = r'm:\deldir\{0}.gen'.format(name)
-        sample_file2 = r'/mnt/m/deldir/{0}.sample'.format(name)
-        gen_file2 = r'/mnt/m/deldir/{0}.gen'.format(name)
-        print("about to read {0}x{1}".format(chromgen.iid_count,chromgen.sid_count))
-        Bgen.genwrite(gen_file,chromgen,decimal_places=5,sid_batch_size=sid_batch_size) #better in batches?
-        print("done")
-        bgen_file = r'm:\deldir\{0}.bgen'.format(name)
-        bgen_file2 = r'/mnt/m/deldir/{0}.bgen'.format(name)
-        print ('/mnt/m/qctool/build/release/qctool_v2.0.7 -g {0} -s {1} -og {2} -bgen-bits 8 -bgen-compression zlib'.format(gen_file2,sample_file2,bgen_file2))
 
     suites = getTestSuite()
     r = unittest.TextTestRunner(failfast=True)

@@ -72,10 +72,10 @@ class DiagKtoN(Standardizer):
     def _standardize_snps(self, snps, return_trained=False, force_python_only=False):
 
         if hasattr(snps,"val"):
-            val = snps.val#!!!cmkcover
+            val = snps.val
         else:
             warnings.warn("standardizing an nparray instead of a SnpData is deprecated", DeprecationWarning)
-            val = snps#!!!cmkcover
+            val = snps
 
         vec = val.reshape(-1, order="A")
         # make sure no copy was made
@@ -118,7 +118,7 @@ class DiagKtoNTrained(Standardizer):
 
         from pysnptools.kernelreader import KernelReader
         if isinstance(input,KernelReader) and hasattr(input,'val'):
-            return self._standardize_kernel(input, return_trained=return_trained,force_python_only=force_python_only)#!!!cmkcover
+            return self._standardize_kernel(input, return_trained=return_trained,force_python_only=force_python_only)
         else:
             return self._standardize_snps(input, return_trained=return_trained,force_python_only=force_python_only)#!!!cmkcover
 

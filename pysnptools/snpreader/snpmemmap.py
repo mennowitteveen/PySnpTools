@@ -44,6 +44,7 @@ class SnpMemMap(PstMemMap,SnpData):
     val = property(PstMemMap._get_val,PstMemMap._set_val)
     """The 2D NumPy memmap array of floats that represents the values.
 
+    >>> cmk covarge
     >>> from pysnptools.snpreader import SnpMemMap
     >>> snp_mem_map = SnpMemMap('../examples/tiny.snp.memmap')
     >>> print(snp_mem_map.val[0,1])

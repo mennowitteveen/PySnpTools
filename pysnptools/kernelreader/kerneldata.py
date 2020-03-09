@@ -95,6 +95,7 @@ class KernelData(KernelReader,PstData):
     val = property(PstData._get_val,PstData._set_val)
     """The 2D NumPy array of floats that represents the values of the kernel.
 
+    >>> cmk covarge
     >>> from pysnptools.kernelreader import KernelData
     >>> kerneldata = KernelData(iid=[['fam0','iid0'],['fam0','iid1']], val=[[1.,.5],[.5,1.]])
     >>> print((kerneldata.val[0,1], kerneldata.iid_count))

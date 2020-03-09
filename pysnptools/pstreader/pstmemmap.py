@@ -55,6 +55,7 @@ class PstMemMap(PstData):
     val = property(_get_val,_set_val)
     """The 2D NumPy memmap array of floats that represents the values.
 
+    >>> cmk covarge
     >>> from pysnptools.pstreader import PstMemMap
     >>> pst_mem_map = PstMemMap('../examples/tiny.pst.memmap')
     >>> print(pst_mem_map.val[0,1])
@@ -218,8 +219,8 @@ class PstMemMap(PstData):
     _read_accepts_slices = True
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
         val, shares_memory = self._apply_sparray_or_slice_to_val(self.val, row_index_or_none, col_index_or_none, order, dtype, force_python_only)
-        if not shares_memory and view_ok:
-            logging.warn("Read from {0} required copy".format(self)) #!!!keep this warning?
+        #if not shares_memory and view_ok:
+        #    logging.warn("Read from {0} required copy".format(self)) #!!!cmkkeep this warning?
         if shares_memory and not view_ok:
             val = val.copy(order='K')
         return val
@@ -246,8 +247,9 @@ class PstMemMap(PstData):
 
         '''
         if self._ran_once:
-            self.val.flush()
+            self._val.flush()
             del self._val
+            self._val = None
             self._ran_once = False
 
     @staticmethod

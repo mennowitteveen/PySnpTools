@@ -20,9 +20,10 @@ class DistGen(DistReader):
         :Parameters: * **sid_count** (*number*) --  the number of sids (number of SNPs)
         :Parameters: * **chrom_count** (*number*) --  the number of chromosomes to generate (must be 22 or fewer)#!!!cmk tell that defaults to 22
         :Parameters: * **cache_file** (*string*) -- (default None) If provided, tells where to cache the common iid, sid, and pos information. Using it can save time.
-        :Parameters: * **sid_batch_size** (*number*) -- (default 1000) Tells how many SNP to generate at once. The default value is usually good.
+        :Parameters: * **sid_batch_size** (*number*) -- (default !!!cmk) Tells how many SNP to generate at once. The default value is usually good.
         
         :Example:
+        cmk update doc
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.distreader import DistGen
@@ -31,15 +32,15 @@ class DistGen(DistReader):
         >>> print(dist_gen.iid_count,dist_gen.sid_count)
         1000 1000000
         >>> dist_data = dist_gen[:,200*1000:201*1000].read() #Generate for all users and for SNPs 200K to 201K
-        >>> print(dist_data.val[1,1], dist_data.iid_count, dist_data.sid_count)
-        [0.24002321 0.36563798 0.39433881] 1000 1000
+        >>> print(dist_data.val[2,2], dist_data.iid_count, dist_data.sid_count)
+        [0.2760024  0.19624834 0.52774925] 1000 1000
 
 
     :Also See: :func:`.dist_gen`
 
     '''
 
-    def __init__(self, seed, iid_count, sid_count, chrom_count=22, cache_file=None, sid_batch_size=1000):
+    def __init__(self, seed, iid_count, sid_count, chrom_count=22, cache_file=None, sid_batch_size=None):
         self._ran_once = False
         self._cache_file = cache_file
 
@@ -47,8 +48,7 @@ class DistGen(DistReader):
         self._iid_count = iid_count
         self._sid_count = sid_count
         self._chrom_count = chrom_count
-        self._sid_batch_size = sid_batch_size
-
+        self._sid_batch_size = sid_batch_size or max((100*1000)//max(1,iid_count),1)
 
         if cache_file is not None:
             if not os.path.exists(cache_file):
@@ -173,7 +173,7 @@ class TestDistGen(unittest.TestCase):
     def test1(self):
         logging.info("in TestDistGen test1")
         seed = 0
-        distgen = DistGen(seed=seed,iid_count=1000,sid_count=1000*1000)
+        distgen = DistGen(seed=seed,iid_count=1000,sid_count=1000*1000,sid_batch_size=1000)
         distdata = distgen[:,[0,1,200,2200,10]].read()
         distdata2 = distgen[:,[0,1,200,2200,10]].read()
         assert(distdata.allclose(distdata2))
@@ -184,12 +184,21 @@ class TestDistGen(unittest.TestCase):
 
         cache_file = 'tempdir/cache_file_test1.npz'
         os.remove(cache_file) if os.path.exists(cache_file) else None
-        distgen3 = DistGen(seed=seed,iid_count=1000,sid_count=1000*1000,cache_file=cache_file)
+        distgen3 = DistGen(seed=seed,iid_count=1000,sid_count=1000*1000,sid_batch_size=1000,cache_file=cache_file)
         distdata3 = distgen3[::10,[0,1,200,2200,10]].read()
         assert(distdata3.allclose(distdata2[::10,:].read()))
-        distgen4 = DistGen(seed=seed,iid_count=1000,sid_count=1000*1000,cache_file=cache_file)
+        distgen4 = DistGen(seed=seed,iid_count=1000,sid_count=1000*1000,sid_batch_size=1000,cache_file=cache_file)
         distdata4 = distgen4[::10,[0,1,200,2200,10]].read()
         assert(distdata4.allclose(distdata2[::10,:].read()))
+
+    def test_doctest(self):
+        import pysnptools.distreader.distgen
+        old_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+        result = doctest.testmod(pysnptools.distreader.distgen)
+        os.chdir(old_dir)
+        assert result.failed == 0, "failed doc test: " + __file__
+
 
 def getTestSuite():
     """

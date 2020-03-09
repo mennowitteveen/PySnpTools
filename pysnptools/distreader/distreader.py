@@ -19,6 +19,8 @@ class DistReader(PstReader):
 
     * A class such as :class:`.DistNpz` for you to specify data in a file. For example, #!!!cmk Switch to Bgen for examples
 
+        cmk update doc
+
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.distreader import Bgen
         >>> dist_on_disk = Bgen('../examples/2500x100.bgen')
@@ -113,6 +115,8 @@ class DistReader(PstReader):
 
         :rtype: ndarray of strings with shape [:attr:`.iid_count`,2]
 
+        cmk update doc
+
         This property (to the degree practical) reads only iid and sid data from the disk, not SNP distribution data. Moreover, the iid and sid data is read from file only once.
 
         :Example:
@@ -203,6 +207,8 @@ class DistReader(PstReader):
     def read(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False):
         """Reads the SNP values and returns a :class:`.DistData` (with :attr:`.DistData.val` property containing a new 3D ndarray of the SNP distribution values).
 
+        cmk update doc
+
         :param order: {'F' (default), 'C', 'A'}, optional -- Specify the order of the ndarray. If order is 'F' (default),
             then the array will be in F-contiguous order (iid-index varies the fastest).
             If order is 'C', then the returned array will be in C-contiguous order (sid-index varies the fastest).
@@ -252,7 +258,9 @@ class DistReader(PstReader):
         return ret
 
     def as_snp(self, max_weight=2.0, block_size=None):
-        """Returns a :class:`SnpData` such that the :meth:`SnpData.val` property will be a ndarray of expected SNP values.#!!!cmk23 fix up and be will appear in api docs
+        """Returns a :class:`SnpData` such that the :meth:`SnpData.val` property will be a ndarray of expected SNP values.#!!!cmk fix up and be will appear in api docs
+
+        cmk update doc
 
         :param block_size: optional -- Default of None (meaning to load all). Suggested number of sids to read into memory at a time.
         :type block_size: int or None
@@ -290,6 +298,8 @@ class DistReader(PstReader):
 
         :Example:
 
+        cmk update doc
+
         >>> from pysnptools.distreader import Bgen
         >>> dist_on_disk = Bgen('../examples/2500x100.bgen') # Specify SNP data on disk
         >>> print(dist_on_disk.iid_to_index([['0','iid_2'],['0','iid_1']])) #Find the indexes for two iids.
@@ -308,6 +318,8 @@ class DistReader(PstReader):
         This method (to the degree practical) reads only iid and sid data from the disk, not SNP value data. Moreover, the iid and sid data is read from file only once.
 
         :Example:
+
+        cmk update doc
 
         >>> from pysnptools.distreader import Bgen
         >>> dist_on_disk = Bgen('../examples/2500x100.bgen') # Specify SNP data on disk
@@ -351,7 +363,7 @@ if __name__ == "__main__":
         from pysnptools.distreader import Bgen
         dist_on_disk = Bgen('../examples/2500x100.bgen')
         print(dist_on_disk.pos[:4,].astype('int')) # print position information for the first three sids: #The '...' is for possible space char
-    #!!!cmk23  Bgen('../examples/2500x100.bgen').read() seems slow. This could be an example for memmap speed up
+    #!!!cmk24  Bgen('../examples/2500x100.bgen').read() seems slow. This could be an example for memmap speed up
 
     import doctest
     doctest.testmod(optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)

@@ -17,6 +17,7 @@ class DistHdf5(PstHdf5,DistReader):
         :Parameters: * **filename** (*string*) -- The DistHdf5 file to read.
 
         :Example:
+        cmk update doc
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.distreader import DistHdf5
@@ -48,6 +49,7 @@ class DistHdf5(PstHdf5,DistReader):
     @staticmethod
     def write(filename, distdata, hdf5_dtype=None, sid_major=True):
         """Writes a :class:`DistData` to DistHdf5 format and return a the :class:`.DistHdf5`.
+        cmk update doc
 
         :param filename: the name of the file to create
         :type filename: string

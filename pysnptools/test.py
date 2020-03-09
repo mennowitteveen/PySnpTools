@@ -33,6 +33,8 @@ from pysnptools.distreader.test import TestDistReaders
 from pysnptools.distreader.test import TestDistReaderDocStrings
 from pysnptools.distreader.test import TestDistNaNCNC
 from pysnptools.distreader.distmemmap import TestDistMemMap
+from pysnptools.distreader.distgen import TestDistGen
+from pysnptools.distreader.bgen import TestBgen
 
 import unittest
 import os.path
@@ -573,8 +575,16 @@ class TestPySnpTools(unittest.TestCase):
     def test_writes(self):
         from pysnptools.snpreader import SnpData, SnpHdf5, SnpNpz, SnpMemMap
 
-        the_class_and_suffix_list = [(DistributedBed, "distributed_bed"),(Dense,"dense"),(Bed,"bed"),(Dat,"dat"),(Ped,"ped"),(Pheno,"pheno"),
-                                    (SnpHdf5,"hdf5"),(SnpNpz,"npz"),(SnpMemMap,"memmap")]#!!!cmk22 create a distreader test and include Bgen
+        the_class_and_suffix_list = [(DistributedBed, "distributed_bed",None,None),
+                                     (Dense,"dense",None,None),
+                                     (Bed,"bed",lambda filename:Bed(filename,count_A1=False),None),
+                                     (Dat,"dat",None,None),
+                                     (Ped,"ped",None,None),
+                                     (Pheno,"pheno",None,None),
+                                    (SnpHdf5,"hdf5",None,None),
+                                    (SnpNpz,"npz",None,None),
+                                    (SnpMemMap,"memmap",None,None)
+                                    ]
         cant_do_col_prop_none_set = {"dense","distributed_bed"}
         cant_do_col_len_0_set = {"distributed_bed"}
         cant_do_row_count_zero_set = {'dense','ped','pheno'}
@@ -603,7 +613,10 @@ class TestPySnpTools(unittest.TestCase):
                     row_prop = None
                     col_prop = None if is_none else [(x,x,x) for x in range(5)][:col_count]
                     snpdata = SnpData(iid=row,sid=col,val=val,pos=col_prop,name=str(i))
-                    for the_class,suffix in the_class_and_suffix_list:
+                    for the_class,suffix,constructor,writer in the_class_and_suffix_list:
+                        constructor = constructor or (lambda filename: the_class(filename))
+                        writer = writer or (lambda filename,distdata: the_class.write(filename,distdata))
+
                         if col_count == 0 and suffix in cant_do_col_len_0_set:
                             continue
                         if col_prop is None and suffix in cant_do_col_prop_none_set:
@@ -615,9 +628,9 @@ class TestPySnpTools(unittest.TestCase):
                         i += 1
                         if suffix in erase_any_write_dir and os.path.exists(filename):
                             shutil.rmtree(filename)
-                        the_class.write(filename,snpdata)
+                        writer(filename,snpdata)#!!!cmk should we test that writer returns a class?
                         for subsetter in [None, sp.s_[::2,::3]]:
-                            reader = the_class(filename)
+                            reader = constructor(filename)
                             _fortesting_JustCheckExists().input(reader)
                             subreader = reader if subsetter is None else reader[subsetter[0],subsetter[1]]
                             readdata = subreader.read(order='C')
@@ -902,10 +915,13 @@ def getTestSuite():
 
     test_suite = unittest.TestSuite([])
 
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaders))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestBgen))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaderDocStrings))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistGen))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistMemMap))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaders))
     test_suite.addTests(TestDistNaNCNC.factory_iterator())
+
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPySnpTools))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistributedBed))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestFileCache))

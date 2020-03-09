@@ -17,6 +17,7 @@ class DistNpz(PstNpz,DistReader):
         :Parameters: * **filename** (*string*) -- The DistNpz file to read.
 
         :Example:
+        cmk update doc
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.distreader import DistNpz
@@ -55,6 +56,8 @@ class DistNpz(PstNpz,DistReader):
         :param distdata: The in-memory data that should be written to disk.
         :type distdata: :class:`DistData`
         :rtype: :class:`.DistNpz`
+
+        cmk update doc
 
         >>> from pysnptools.distreader import DistNpz, DistHdf5
         >>> import pysnptools.util as pstutil

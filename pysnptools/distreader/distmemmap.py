@@ -25,6 +25,7 @@ class DistMemMap(PstMemMap,DistData):
         Also see :meth:`.DistMemMap.empty` and :meth:`.DistMemMap.write`.
 
         :Example:
+        cmk update doc
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.distreader import DistMemMap
@@ -45,7 +46,9 @@ class DistMemMap(PstMemMap,DistData):
 
     val = property(PstMemMap._get_val,PstMemMap._set_val)
     """The 2D NumPy memmap array of floats that represents the values.
+    cmk update doc
 
+    >>> !!!cmkl
     >>> from pysnptools.distreader import DistMemMap
     >>> dist_mem_map = DistMemMap('../examples/tiny.dist.memmap')
     >>> print(dist_mem_map.val[0,1])
@@ -55,6 +58,7 @@ class DistMemMap(PstMemMap,DistData):
     @property
     def offset(self):
         '''The byte position in the file where the memory-mapped values start.
+        cmk update doc
        
         (The disk space before this is used to store :attr:`.DistReader.iid`, etc. information.
         This property is useful when interfacing with, for example, external Fortran and C matrix libraries.)
@@ -94,6 +98,8 @@ class DistMemMap(PstMemMap,DistData):
 
         :rtype: :class:`.DistMemMap`
 
+        cmk update doc
+
         >>> import pysnptools.util as pstutil
         >>> from pysnptools.distreader import DistMemMap
         >>> filename = "tempdir/tiny.dist.memmap"
@@ -111,6 +117,7 @@ class DistMemMap(PstMemMap,DistData):
 
     def flush(self):
         '''Flush :attr:`.DistMemMap.val` to disk and close the file. (If values or properties are accessed again, the file will be reopened.)
+        cmk update doc
 
         >>> import pysnptools.util as pstutil
         >>> from pysnptools.distreader import DistMemMap
@@ -129,7 +136,7 @@ class DistMemMap(PstMemMap,DistData):
 
 
     @staticmethod
-    def write(filename, distreader, sid_batch_size=100, dtype=None, order='A'):
+    def write(filename, distreader, sid_batch_size=None, dtype=None, order='A'):
         """Writes a :class:`DistData` to :class:`DistMemMap` format. #!!!cmk update for reader and fix up snpmemmap.write etc also
 
         :param filename: the name of the file to create
@@ -153,18 +160,20 @@ class DistMemMap(PstMemMap,DistData):
         row_ascii = np.array(distreader.row,dtype='S') #!!!avoid this copy when not needed
         col_ascii = np.array(distreader.col,dtype='S') #!!!avoid this copy when not needed
 
+        sid_batch_size = sid_batch_size or max((100*1000)//max(1,distreader.row_count),1)
+
         if hasattr(distreader,'val'):
             order = PstMemMap._order(distreader) if order=='A' else order
             dtype = dtype or distreader.val.dtype
         else:
-            order = 'F' if order=='A' else order#!!!cmk23cover
+            order = 'F' if order=='A' else order
             dtype = dtype or np.float64
 
         self = PstMemMap.empty(row_ascii, col_ascii, filename+'.temp', row_property=distreader.row_property, col_property=distreader.col_property,order=order,dtype=dtype, val_count=3)
         if hasattr(distreader,'val'):
             self.val[:,:,:] = distreader.val
         else:
-            start = 0#!!!cmk23cover
+            start = 0
             with log_in_place("sid_index ", logging.INFO) as updater:
                 while start < distreader.sid_count:
                     updater('{0} of {1}'.format(start,distreader.sid_count))
@@ -175,8 +184,11 @@ class DistMemMap(PstMemMap,DistData):
         self.flush()
         if os.path.exists(filename):
            remove(filename) 
-        move(filename+'.temp',filename)#!!!cmk23 do this in snpmemmap, dstmemmap too
-        logging.debug("Done writing " + filename) #!!!cmk23 test might be good to write to *.temp and then rename the (here and other place)
+        try:
+            move(filename+'.temp',filename)#!!!cmk do this in snpmemmap, pstmemmap too
+        except:
+            print('!!!cmk')
+        logging.debug("Done writing " + filename)
         return DistMemMap(filename)
 
 
@@ -192,7 +204,7 @@ class DistMemMap(PstMemMap,DistData):
 
 class TestDistMemMap(unittest.TestCase):     
 
-    def test1(self):
+    def test1(self):        
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -221,6 +233,26 @@ class TestDistMemMap(unittest.TestCase):
         assert isinstance(distdata.val,np.memmap)
         os.chdir(old_dir)
 
+    def test2(self):
+        from pysnptools.distreader import Bgen
+
+        old_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
+        bgen = Bgen('../examples/example.bgen')
+        distmemmap = DistMemMap.write("tempdir/bgentomemmap.dist.memamp",bgen)
+        assert DistData.allclose(bgen.read(),distmemmap.read(),equal_nan=True)
+        os.chdir(old_dir)
+
+    def test_doctest(self):
+        import pysnptools.distreader.distmemmap
+        import doctest
+
+        old_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+        result = doctest.testmod(pysnptools.distreader.distmemmap)
+        os.chdir(old_dir)
+        assert result.failed == 0, "failed doc test: " + __file__
 
 def getTestSuite():
     """

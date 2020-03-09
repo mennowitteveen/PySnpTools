@@ -24,6 +24,7 @@ class DistData(PstData,DistReader):
                      * **copyinputs_function** (optional, function) -- *Used internally by optional clustering code*
 
         :Example:
+        cmk update doc
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.distreader import DistData
@@ -99,7 +100,9 @@ class DistData(PstData,DistReader):
 
     val = property(PstData._get_val,PstData._set_val)
     """The 3D NumPy array of floats that represents the values of the SNPs.
+    cmk update doc
 
+    >>> !!!cmkf
     >>> from pysnptools.distreader import Bgen
     >>> distdata = Bgen('../examples/2500x100.bgen')[:5,:].read() #read data for first 5 iids
     >>> print(distdata.val[4,100]) #print one of the SNP values

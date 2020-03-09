@@ -11,6 +11,8 @@ import time
 from six.moves import range
 
 from pysnptools.distreader.distmemmap import TestDistMemMap
+from pysnptools.distreader.bgen import TestBgen
+from pysnptools.distreader.distgen import TestDistGen
 from pysnptools.distreader import DistNpz, DistHdf5, DistMemMap, DistData
 from pysnptools.util import create_directory_if_necessary
 from pysnptools.snpreader import SnpNpz, Bed
@@ -178,17 +180,20 @@ class TestDistReaders(unittest.TestCase):
 
 
     def test_writes(self):
-        from pysnptools.distreader import DistData, DistHdf5, DistNpz, DistMemMap
+        from pysnptools.distreader import DistData, DistHdf5, DistNpz, DistMemMap, Bgen
         from pysnptools.kernelreader.test import _fortesting_JustCheckExists
 
-        the_class_and_suffix_list = [(DistNpz,"npz"),
-                                    (DistHdf5,"hdf5"),(DistMemMap,"memmap")]
-        cant_do_col_prop_none_set = {}
-        cant_do_col_len_0_set = {}
-        cant_do_row_count_zero_set = {}
+        the_class_and_suffix_list = [(DistNpz,"npz",None,None),
+                                     (Bgen,"bgen",None,lambda filename,distdata: the_class.write(filename,distdata,bits=32)),
+                                     (DistHdf5,"hdf5",None,None),
+                                     (DistMemMap,"memmap",None,None)]
+        cant_do_col_prop_none_set = {'bgen'}
+        cant_do_col_len_0_set = {'bgen'}
+        cant_do_row_count_zero_set = {'bgen'}
         can_swap_0_2_set = {}
         can_change_col_names_set = {}
         ignore_fam_id_set = {}
+        ignore_pos1_set = {'bgen'}
         ignore_pos_set = {}
         erase_any_write_dir = {}
 
@@ -213,7 +218,9 @@ class TestDistReaders(unittest.TestCase):
                     row_prop = None
                     col_prop = None if is_none else [(x,x,x) for x in range(5)][:col_count]
                     distdata = DistData(iid=row,sid=col,val=val,pos=col_prop,name=str(i))
-                    for the_class,suffix in the_class_and_suffix_list:
+                    for the_class,suffix,constructor,writer in the_class_and_suffix_list:
+                        constructor = constructor or (lambda filename: the_class(filename))
+                        writer = writer or (lambda filename,distdata: the_class.write(filename,distdata))
                         if col_count == 0 and suffix in cant_do_col_len_0_set:
                             continue
                         if col_prop is None and suffix in cant_do_col_prop_none_set:
@@ -225,9 +232,9 @@ class TestDistReaders(unittest.TestCase):
                         i += 1
                         if suffix in erase_any_write_dir and os.path.exists(filename):
                             shutil.rmtree(filename)
-                        the_class.write(filename,distdata)
+                        writer(filename,distdata)#!!!cmk should we test that writer returns a class?
                         for subsetter in [None, sp.s_[::2,::3]]:
-                            reader = the_class(filename)
+                            reader = constructor(filename)
                             _fortesting_JustCheckExists().input(reader)
                             subreader = reader if subsetter is None else reader[subsetter[0],subsetter[1]]
                             readdata = subreader.read(order='C')
@@ -248,7 +255,9 @@ class TestDistReaders(unittest.TestCase):
                                 assert readdata.col_count==expected.col_count
                             assert np.array_equal(readdata.row_property,expected.row_property) or (readdata.row_property.shape[1]==0 and expected.row_property.shape[1]==0)
 
-                            if not suffix in ignore_pos_set:
+                            if suffix in ignore_pos1_set:
+                                assert np.allclose(readdata.col_property[:,[0,2]],expected.col_property[:,[0,2]],equal_nan=True) or (readdata.col_property.shape[1]==0 and expected.col_property.shape[1]==0)
+                            elif not suffix in ignore_pos_set:
                                 assert np.allclose(readdata.col_property,expected.col_property,equal_nan=True) or (readdata.col_property.shape[1]==0 and expected.col_property.shape[1]==0)
                             else:
                                 assert len(readdata.col_property)==len(expected.col_property)
@@ -342,7 +351,7 @@ class TestDistReaders(unittest.TestCase):
 
     def test_snp_dist2(self):
         logging.info("in test_snp_dist2")
-        snpreader = Bed(self.currentFolder + "/../examples/toydata.bed")
+        snpreader = Bed(self.currentFolder + "/../examples/toydata.bed",count_A1=False)
         snp2dist = snpreader.as_dist(max_weight=2)
         s = str(snp2dist)
         _fortesting_JustCheckExists().input(snp2dist)
@@ -360,7 +369,7 @@ class TestDistReaders(unittest.TestCase):
 
     def test_subset_Snp2Dist(self): #!!!move these to another test class
         logging.info("in test_subset")
-        snpreader = Bed(self.currentFolder + "/../examples/toydata.bed")
+        snpreader = Bed(self.currentFolder + "/../examples/toydata.bed",count_A1=False)
         snp2dist = snpreader.as_dist(max_weight=2)
         sub = snp2dist[::2,::2]
         distdata1 = sub.read()
@@ -525,16 +534,6 @@ class TestDistReaderDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    def test_distmemmap(self):
-        import pysnptools.distreader.distmemmap
-        old_dir = os.getcwd()
-        old_level = logging.getLogger().level 
-        os.chdir(os.path.dirname(os.path.realpath(__file__)))
-        logging.getLogger().setLevel(logging.WARN)
-        result = doctest.testmod(pysnptools.distreader.distmemmap)
-        os.chdir(old_dir)
-        logging.getLogger().setLevel(old_level)
-        assert result.failed == 0, "failed doc test: " + __file__
 
 def getTestSuite():
     """
@@ -543,10 +542,12 @@ def getTestSuite():
 
     test_suite = unittest.TestSuite([])
 
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestBgen))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaderDocStrings))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistGen))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistMemMap))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaders))
     test_suite.addTests(TestDistNaNCNC.factory_iterator())
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistMemMap))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaderDocStrings))
     
 
     return test_suite

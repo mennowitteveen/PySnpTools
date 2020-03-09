@@ -82,6 +82,7 @@ class SnpData(PstData,SnpReader):
     val = property(PstData._get_val,PstData._set_val)
     """The 2D NumPy array of floats that represents the values of the SNPs.
 
+    >>> cmk covarge
     >>> from pysnptools.snpreader import Bed
     >>> snpdata = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)[:5,:].read() #read data for first 5 iids
     >>> print(snpdata.val[4,100]) #print one of the SNP values

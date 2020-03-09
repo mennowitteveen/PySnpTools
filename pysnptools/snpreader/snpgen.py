@@ -20,7 +20,7 @@ class SnpGen(SnpReader):
         :Parameters: * **sid_count** (*number*) --  the number of sids (number of SNPs)
         :Parameters: * **chrom_count** (*number*) --  the number of chromosomes to generate (must be 22 or fewer)
         :Parameters: * **cache_file** (*string*) -- (default None) If provided, tells where to cache the common iid, sid, and pos information. Using it can save time.
-        :Parameters: * **sid_batch_size** (*number*) -- (default 1000) Tells how many SNP to generate at once. The default value is usually good.
+        :Parameters: * **sid_batch_size** (*number*) -- (default ???cmkupdate) Tells how many SNP to generate at once. The default value is usually good.
         
         :Example:
 
@@ -39,7 +39,7 @@ class SnpGen(SnpReader):
 
     '''
 
-    def __init__(self, seed, iid_count, sid_count, chrom_count=22, cache_file=None, sid_batch_size=1000):
+    def __init__(self, seed, iid_count, sid_count, chrom_count=22, cache_file=None, sid_batch_size=None):
         self._ran_once = False
         self._cache_file = cache_file
 
@@ -47,7 +47,7 @@ class SnpGen(SnpReader):
         self._iid_count = iid_count
         self._sid_count = sid_count
         self._chrom_count = chrom_count
-        self._sid_batch_size = sid_batch_size
+        self._sid_batch_size = sid_batch_size or max((100*1000)//max(1,iid_count),1)
 
 
         if cache_file is not None:
@@ -190,7 +190,7 @@ class TestSnpGen(unittest.TestCase):
     def test1(self):
         logging.info("in TestSnpGen test1")
         seed = 0
-        snpgen = SnpGen(seed=seed,iid_count=1000,sid_count=1000*1000)
+        snpgen = SnpGen(seed=seed,iid_count=1000,sid_count=1000*1000,sid_batch_size=1000)
         snpdata = snpgen[:,[0,1,200,2200,10]].read()
         snpdata2 = snpgen[:,[0,1,200,2200,10]].read()
         assert(snpdata.allclose(snpdata2))
@@ -201,10 +201,10 @@ class TestSnpGen(unittest.TestCase):
 
         cache_file = 'tempdir/cache_file_test1.npz'
         os.remove(cache_file) if os.path.exists(cache_file) else None
-        snpgen3 = SnpGen(seed=seed,iid_count=1000,sid_count=1000*1000,cache_file=cache_file)
+        snpgen3 = SnpGen(seed=seed,iid_count=1000,sid_count=1000*1000,sid_batch_size=1000,cache_file=cache_file)
         snpdata3 = snpgen3[::10,[0,1,200,2200,10]].read()
         assert(snpdata3.allclose(snpdata2[::10,:].read()))
-        snpgen4 = SnpGen(seed=seed,iid_count=1000,sid_count=1000*1000,cache_file=cache_file)
+        snpgen4 = SnpGen(seed=seed,iid_count=1000,sid_count=1000*1000,sid_batch_size=1000,cache_file=cache_file)
         snpdata4 = snpgen4[::10,[0,1,200,2200,10]].read()
         assert(snpdata4.allclose(snpdata2[::10,:].read()))
 

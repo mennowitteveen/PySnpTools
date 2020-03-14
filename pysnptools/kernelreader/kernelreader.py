@@ -13,13 +13,13 @@ from pysnptools.kernelstandardizer import DiagKtoN
 class KernelReader(PstReader):
     """A KernelReader is one of three things:
 
-    * A class such as :class:`KernelNpz` for you to specify data in a file. For example,
+    * A class such as :class:`KernelNpz` for you to a file with data. For example,
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.kernelreader import KernelNpz
         >>> 
         >>> kernel_on_disk = KernelNpz('../examples/toydata.kernel.npz')
-        >>> print(kernel_on_disk) # prints specification for reading from file
+        >>> print(kernel_on_disk) # prints the name of the file reader
         KernelNpz('../examples/toydata.kernel.npz')
         >>> kernel_on_disk.iid_count # prints the number of iids (but doesn't read any kernel values)
         500
@@ -87,7 +87,8 @@ class KernelReader(PstReader):
        
         See below for details.
 
-        :class:`.KernelData` is a KernelReader so it supports the above properties and methods. In addition, it supports property :attr:`.KernelData.val`, method :meth:`.KernelData.standardize`, and equality testing.
+        :class:`.KernelData` is a KernelReader so it supports the above properties and methods. In addition, it supports property :attr:`KernelData.val`, method :meth:`.KernelData.standardize`, and equality testing.
+
         See below for details.
 
         Some of the classes, such as :class:`.KernelNpz`, also provide a static :meth:`KernelNpz.write` method for writing :class:`.KernelData`.
@@ -105,7 +106,7 @@ class KernelReader(PstReader):
 
     iids:
 
-        Individual are identified with an iid, which is a ndarray of two strings: a family ID and a case ID. For example:
+        Individual are identified with an iid, which is a ndarray of two strings: a family ID and an individual ID. For example:
 
         >>> kernel_on_disk = KernelNpz('../examples/toydata.kernel.npz')
         >>> print(kernel_on_disk.iid[:3]) # print the first three iids
@@ -124,8 +125,8 @@ class KernelReader(PstReader):
 
     The :meth:`read` Method
   
-        By default the :meth:`read` returns a ndarray of scipy.float64 laid out in memory in F-contiguous order (iid0-index varies the fastest). You may, instead,
-        ask for scipy.float32 or for C-contiguous order or any order. See :meth:`read` for details.
+        By default the :meth:`read` returns a ndarray of numpy.float64 laid out in memory in F-contiguous order (iid0-index varies the fastest). You may, instead,
+        ask for numpy.float32 or for C-contiguous order or any order. See :meth:`read` for details.
 
     The :meth:`.KernelData.standardize` Method
         The :meth:`.KernelData.standardize` method, available only on :class:`.KernelData`, does in-place standardization of the in-memory
@@ -151,7 +152,7 @@ class KernelReader(PstReader):
 
     @property
     def iid(self):
-        """A ndarray of the iids. Each iid is a ndarray of two strings (a family ID and a case ID) that identifies an individual.
+        """A ndarray of the iids. Each iid is a ndarray of two strings (a family ID and a individual ID) that identifies an individual.
         Assumes the kernel is square, so will throw an exception if the row iids are different from the column iids.
 
         :rtype: ndarray (length :attr:`.iid_count`) of ndarray (length 2) of strings
@@ -236,16 +237,16 @@ class KernelReader(PstReader):
 
     #!!check that views always return contiguous memory by default
     def read(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False):
-        """Reads the kernel values and returns a :class:`.KernelData` (with :attr:`.KernelData.val` property containing a new ndarray of the kernel values).
+        """Reads the kernel values and returns a :class:`.KernelData` (with :attr:`KernelData.val` property containing a new ndarray of the kernel values).
 
         :param order: {'F' (default), 'C', 'A'}, optional -- Specify the order of the ndarray. If order is 'F' (default),
             then the array will be in F-contiguous order (iid0-index varies the fastest).
             If order is 'C', then the returned array will be in C-contiguous order (iid1-index varies the fastest).
-            If order is 'A', then the :attr:`.KernelData.val`
+            If order is 'A', then the :attr:`KernelData.val`
             ndarray may be in any order (either C-, Fortran-contiguous, or even discontiguous).
         :type order: string or None
 
-        :param dtype: {scipy.float64 (default), scipy.float32}, optional -- The data-type for the :attr:`.KernelData.val` ndarray.
+        :param dtype: {numpy.float64 (default), numpy.float32}, optional -- The data-type for the :attr:`KernelData.val` ndarray.
         :type dtype: data-type
 
         :param force_python_only: optional -- If False (default), may use outside library code. If True, requests that the read
@@ -253,7 +254,7 @@ class KernelReader(PstReader):
         :type force_python_only: bool
 
 
-        :param view_ok: optional -- If False (default), allocates new memory for the :attr:`.KernelData.val`'s ndarray. If True,
+        :param view_ok: optional -- If False (default), allocates new memory for the :attr:`KernelData.val`'s ndarray. If True,
             if practical and reading from a :class:`KernelData`, will return a new 
             :class:`KernelData` with a ndarray shares memory with the original :class:`KernelData`.
             Typically, you'll also wish to use "order='A'" to increase the chance that sharing will be possible.

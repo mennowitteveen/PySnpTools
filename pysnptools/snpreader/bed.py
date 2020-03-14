@@ -17,7 +17,7 @@ class Bed(SnpReader):
 
     See :class:`.SnpReader` for details and examples.
 
-    The format is described in http://zzz.bwh.harvard.edu/plink/binary.shtml.
+    The format is described `here <http://zzz.bwh.harvard.edu/plink/binary.shtml>`__.
 
     **Constructor:**
         :Parameters: * **filename** (*string*) -- The \*.bed file to read. The '.bed' suffix is optional. The related \*.bim and \*.fam files will also be read.
@@ -25,9 +25,9 @@ class Bed(SnpReader):
 
                      *The following options are never needed, but can be used to avoid reading large '.fam' and '.bim' files when their information is already known.*
 
-                     * **iid** (an array of strings) -- The :attr:`.SnpReader.iid` information. If not given, reads info from '.fam' file.
-                     * **sid** (an array of strings) -- The :attr:`.SnpReader.sid` information. If not given, reads info from '.bim' file.
-                     * **pos** (optional, an array of strings) -- The :attr:`.SnpReader.pos` information.  If not given, reads info from '.bim' file.
+                     * **iid** (an array of strings) -- The :attr:`SnpReader.iid` information. If not given, reads info from '.fam' file.
+                     * **sid** (an array of strings) -- The :attr:`SnpReader.sid` information. If not given, reads info from '.bim' file.
+                     * **pos** (optional, an array of strings) -- The :attr:`SnpReader.pos` information.  If not given, reads info from '.bim' file.
                      * **skip_format_check** (*bool*) -- If False (default), will check that '.bed' file has expected starting bytes.
 
     **Methods beyond** :class:`.SnpReader`
@@ -302,10 +302,8 @@ class Bed(SnpReader):
                 val[0::4,SNPsIndex:SNPsIndex+1][bytes>=2]=1
                 val[0::4,SNPsIndex:SNPsIndex+1][bytes>=3]=byteThree
             val = val[iid_index_out,:] #reorder or trim any extra allocation
-
-
-            #!!LATER this can fail because the trim statement above messes up the order
-            #assert(SnpReader._array_properties_are_ok(val, order, dtype)) #!!
+            if not SnpReader._array_properties_are_ok(val, order, dtype):
+                val = val.copy(order=order)
             self._close_bed()
 
         return val

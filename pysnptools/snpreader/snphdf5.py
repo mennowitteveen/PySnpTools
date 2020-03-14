@@ -10,7 +10,7 @@ class SnpHdf5(PstHdf5,SnpReader):
 
     See :class:`.SnpReader` for general examples of using SnpReaders.
 
-    The general HDF5 format is described in http://www.hdfgroup.org/HDF5/. The SnpHdf5 format stores
+    The general HDF5 format is described `here <http://www.hdfgroup.org/HDF5/>`__. The SnpHdf5 format stores
     val, iid, sid, and pos information in Hdf5 format.
    
     **Constructor:**
@@ -56,7 +56,7 @@ class SnpHdf5(PstHdf5,SnpReader):
         :param hdf5_dtype: None (use the .val's dtype) or a Hdf5 dtype, e.g. 'f8','f4',etc.
         :type hdf5_dtype: string
         :param sid_major: Tells if vals should be stored on disk in sid_major (default) or iid_major format.
-        :type col_major: bool
+        :type sid_major: bool
         :rtype: :class:`.SnpHdf5`
 
         >>> from pysnptools.snpreader import SnpHdf5, Bed

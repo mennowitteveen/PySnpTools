@@ -13,7 +13,7 @@ class PstNpz(PstReader):
 
     See :class:`.PstReader` for general examples of using PstReaders.
 
-    The general NPZ format is described in http://docs.scipy.org/doc/numpy/reference/generated/numpy.savez.html. The PstNpz format stores
+    The general NPZ format is described `here <http://docs.scipy.org/doc/numpy/reference/generated/numpy.savez.html>`__. The PstNpz format stores
     val, row, col, row_property, and col_property information in NPZ format.
    
     **Constructor:**

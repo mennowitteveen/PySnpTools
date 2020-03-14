@@ -16,7 +16,7 @@ class PstHdf5(PstReader):
 
     See :class:`.PstReader` for general examples of using PstReaders.
 
-    The general HDF5 format is described in http://www.hdfgroup.org/HDF5/. The PstHdf5 format stores
+    The general HDF5 format is described in `here <http://www.hdfgroup.org/HDF5/>`__. The PstHdf5 format stores
     val, row, col, row_property, and col_property information in Hdf5 format.
    
     **Constructor:**
@@ -128,7 +128,7 @@ class PstHdf5(PstReader):
 
     #!!!cmk2 add a test for flush that shows that it can be reopened    
     def flush(self):#!!!cmk9 update this for hdf5
-        '''Flush :attr:`.PstMemMap.val` to disk and close the file. (If values or properties are accessed again, the file will be reopened.)
+        '''Flush :attr:`PstMemMap.val` to disk and close the file. (If values or properties are accessed again, the file will be reopened.)
 
         >>> import pysnptools.util as pstutil
         >>> from pysnptools.pstreader import PstMemMap

@@ -35,7 +35,7 @@ class KernelData(KernelReader,PstData):
 
     **Equality:**
 
-        Two KernelData objects are equal if their three arrays (:attr:`.iid0`, :attr:`.iid1`, and :attr:`.KernelData.val`) are 'array_equal'.
+        Two KernelData objects are equal if their three arrays (:attr:`.iid0`, :attr:`.iid1`, and :attr:`KernelData.val`) are 'array_equal'.
         (Their 'string' does not need to be the same).
         If either :attr:`.KernelData.val` contains NaN, the objects will not be equal. However, :meth:`.KernelData.allclose` can be used to treat NaN as
         regular values.
@@ -106,7 +106,7 @@ class KernelData(KernelReader,PstData):
         '''
         :param value: Other object with which to compare.
         :type value: :class:`KernelData`
-        :param equal_nan: (Default: True) Tells if NaN in :attr:`.KernelData.val` should be treated as regular values when testing equality.
+        :param equal_nan: (Default: True) Tells if NaN in :attr:`KernelData.val` should be treated as regular values when testing equality.
         :type equal_nan: bool
 
         >>> import numpy as np

@@ -10,21 +10,22 @@ import warnings
 import time
 
 class DistData(PstData,DistReader):
-    """A :class:`.DistReader` for holding SNP distributions (or similar values) in-memory, along with related iid and sid information.
-    It is usually created by calling the :meth:`.DistReader.read` method on another :class:`.DistReader`, for example, :class:`.DistNpz`. It can also be constructed directly.
+    """
+    A :class:`.DistReader` for holding SNP distributions (or similar values) in-memory, along with related *iid*, *sid*, and *pos* information.
+    It is usually created by calling the :meth:`.DistReader.read` method on another :class:`.DistReader`, for example, :class:`.Bgen`.
+    It can also be constructed directly.
 
     See :class:`.DistReader` for details and examples.
 
     **Constructor:**
-        :Parameters: * **iid** (an array of string pair) -- The :attr:`.DistReader.iid` information.
-                     * **sid** (an array of strings) -- The :attr:`.DistReader.sid` information.
+        :Parameters: * **iid** (an array of string pair) -- The :attr:`DistReader.iid` information.
+                     * **sid** (an array of strings) -- The :attr:`DistReader.sid` information.
                      * **val** (a 3-D array of floats) -- The SNP value distribution #!!!cmk1
-                     * **pos** (optional, an array of strings) -- The :attr:`.DistReader.pos` information
+                     * **pos** (optional, an array of strings) -- The :attr:`DistReader.pos` information
                      * **name** (optional, string) -- Information to be display about the origin of this data
                      * **copyinputs_function** (optional, function) -- *Used internally by optional clustering code*
 
         :Example:
-        cmk update doc
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.distreader import DistData
@@ -36,9 +37,9 @@ class DistData(PstData,DistReader):
 
     **Equality:**
 
-        Two DistData objects are equal if their four arrays (:attr:`.DistData.val`, :attr:`DistReader.iid`, :attr:`.DistReader.sid`, and :attr:`.DistReader.pos`)
+        Two DistData objects are equal if their four arrays (:attr:`DistData.val`, :attr:`DistReader.iid`, :attr:`DistReader.sid`, and :attr:`DistReader.pos`)
         are 'array_equal'. (Their 'name' does not need to be the same).
-        If either :attr:`.DistData.val` contains NaN, the objects will not be equal. However, :meth:`.DistData.allclose` can be used to treat NaN as
+        If either :attr:`DistData.val` contains NaN, the objects will not be equal. However, :meth:`.DistData.allclose` can be used to treat NaN as
         regular values.
 
         :Example:
@@ -81,6 +82,7 @@ class DistData(PstData,DistReader):
         True
 
     **Methods beyond** :class:`.DistReader`
+
     """
 
     def __init__(self, iid, sid, val, pos=None, name=None, copyinputs_function=None):
@@ -93,27 +95,26 @@ class DistData(PstData,DistReader):
         self._col = PstData._fixup_input(sid,empty_creator=lambda ignore:np.empty([0],dtype='str'),dtype='str')
         self._row_property = PstData._fixup_input(None,count=len(self._row),empty_creator=lambda count:np.empty([count,0],dtype='str'),dtype='str')
         self._col_property = PstData._fixup_input(pos,count=len(self._col),empty_creator=lambda count:np.full([count, 3], np.nan))
-        self._val = PstData._fixup_input_val(val,row_count=len(self._row),col_count=len(self._col),empty_creator=lambda row_count,col_count:np.empty([row_count,col_count,3],dtype=np.float64))#!!!cmk Replace empty with my FillNA method?
+        self._val = PstData._fixup_input_val(val,row_count=len(self._row),col_count=len(self._col),empty_creator=lambda row_count,col_count:np.empty([row_count,col_count,3],dtype=np.float64))#!!!Replace empty with my FillNA method?
         self._assert_iid_sid_pos(check_val=True)
         self._name = name or ""
         self._std_string_list = []
 
     val = property(PstData._get_val,PstData._set_val)
-    """The 3D NumPy array of floats that represents the values of the SNPs.
-    cmk update doc
+    """The 3D NumPy array of floats that represents the distribution of SNP values.
 
-    >>> !!!cmkf
+    >>> !!!cmk
     >>> from pysnptools.distreader import Bgen
     >>> distdata = Bgen('../examples/2500x100.bgen')[:5,:].read() #read data for first 5 iids
     >>> print(distdata.val[4,100]) #print one of the SNP values
-    2.0
+    [1,0,0]
     """
 
     def allclose(self,value,equal_nan=True):
         '''
         :param value: Other object with which to compare.
         :type value: :class:`DistData`
-        :param equal_nan: (Default: True) Tells if NaN in :attr:`.DistData.val` should be treated as regular values when testing equality.
+        :param equal_nan: (Default: True) Tells if NaN in :attr:`DistData.val` should be treated as regular values when testing equality.
         :type equal_nan: bool
 
         >>> import numpy as np

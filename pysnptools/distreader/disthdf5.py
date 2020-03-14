@@ -10,14 +10,13 @@ class DistHdf5(PstHdf5,DistReader):
 
     See :class:`.DistReader` for general examples of using DistReaders.
 
-    The general HDF5 format is described in http://www.hdfgroup.org/HDF5/. The DistHdf5 format stores
+    The general HDF5 format is described `here <http://www.hdfgroup.org/HDF5/>`__. The DistHdf5 format stores
     val, iid, sid, and pos information in Hdf5 format.
    
     **Constructor:**
         :Parameters: * **filename** (*string*) -- The DistHdf5 file to read.
 
         :Example:
-        cmk update doc
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.distreader import DistHdf5
@@ -49,7 +48,6 @@ class DistHdf5(PstHdf5,DistReader):
     @staticmethod
     def write(filename, distdata, hdf5_dtype=None, sid_major=True):
         """Writes a :class:`DistData` to DistHdf5 format and return a the :class:`.DistHdf5`.
-        cmk update doc
 
         :param filename: the name of the file to create
         :type filename: string
@@ -63,7 +61,7 @@ class DistHdf5(PstHdf5,DistReader):
 
         >>> from pysnptools.distreader import DistHdf5, Bgen
         >>> import pysnptools.util as pstutil
-        >>> distdata = Bgen('../examples/2500x100.bgen')[:,:10].read()     # Read first 10 snps from DistNpz format
+        >>> distdata = Bgen('../examples/2500x100.bgen')[:,:10].read()     # Read first 10 snps from BGEN format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata10.dist.hdf5")
         >>> DistHdf5.write("tempdir/toydata10.dist.hdf5",distdata)        # Write data in DistHdf5 format
         DistHdf5('tempdir/toydata10.dist.hdf5')

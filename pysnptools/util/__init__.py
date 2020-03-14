@@ -192,7 +192,7 @@ def intersect_ids(idslist):
     .. deprecated::
        Use :func:`.intersect_apply` instead.    
     
-    Takes a list of 2d string arrays of family and case ids.
+    Takes a list of 2d string arrays of family and individual ids.
     These are intersected.
 
     :rtype: indarr, an array of size N x L, where N is the number of
@@ -246,7 +246,7 @@ def sub_matrix(val, row_index_list, col_index_list, order='A', dtype=sp.float64)
         If order is 'F', then the array will be in F-contiguous order (second index varies the fastest).
         If order is 'A', then sub-matrix may be in any order F or C.
     :type order: string or None
-    :param dtype: {scipy.float64 (default), scipy.float32}, optional -- The data-type for sub-matrix created.
+    :param dtype: {numpy.float64 (default), numpy.float32}, optional -- The data-type for sub-matrix created.
     :type dtype: data-type
 
     :rtype: ndarray

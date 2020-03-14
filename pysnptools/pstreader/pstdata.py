@@ -20,8 +20,8 @@ class PstData(PstReader):
     See :class:`.PstReader` for details and examples.
 
     **Constructor:**
-        :Parameters: * **row** (an array of anything) -- The :attr:`.PstReader.row` information
-                     * **col** (an array of anything) -- The :attr:`.PstReader.col` information
+        :Parameters: * **row** (an array of anything) -- The :attr:`PstReader.row` information
+                     * **col** (an array of anything) -- The :attr:`PstReader.col` information
                      * **val** (a 2-D array of floats or an array of floats) -- The values
                      * **row_property** (optional, an array of anything) -- Additional information associated with each row.
                      * **col_property** (optional, an array of anything) -- Additional information associated with each col.
@@ -38,9 +38,9 @@ class PstData(PstReader):
 
     **Equality:**
 
-        Two PstData objects are equal if their five arrays (:attr:`.PstData.val`, :attr:`.PstReader.row`, :attr:`.PstReader.col`, :attr:`.PstReader.row_property`, and :attr:`.PstReader.col_property`) arrays are equal.
+        Two PstData objects are equal if their five arrays (:attr:`PstData.val`, :attr:`PstReader.row`, :attr:`PstReader.col`, :attr:`PstReader.row_property`, and :attr:`PstReader.col_property`) arrays are equal.
         (Their 'name' does not need to be the same).  
-        If either :attr:`.PstData.val` contains NaN, the objects will not be equal. However, :meth:`.PstData.allclose` can be used to treat NaN as regular values.
+        If either :attr:`PstData.val` contains NaN, the objects will not be equal. However, :meth:`.PstData.allclose` can be used to treat NaN as regular values.
         Any NaN's in the other four arrays are treated as regular values.
 
         :Example:
@@ -95,7 +95,7 @@ class PstData(PstReader):
         '''
         :param value: Other object with which to compare.
         :type value: :class:`PstData`
-        :param equal_nan: (Default: True) Tells if NaN in :attr:`.PstData.val` should be treated as regular values when testing equality.
+        :param equal_nan: (Default: True) Tells if NaN in :attr:`PstData.val` should be treated as regular values when testing equality.
         :type equal_nan: bool
 
         >>> import numpy as np

@@ -10,13 +10,14 @@ class DistNpz(PstNpz,DistReader):
 
     See :class:`.DistReader` for general examples of using DistReaders.
 
-    The general NPZ format is described in http://docs.scipy.org/doc/numpy/reference/generated/numpy.savez.html. The DistNpz format stores
+    The general NPZ format is described `here <http://docs.scipy.org/doc/numpy/reference/generated/numpy.savez.html>`__. The DistNpz format stores
     val, iid, sid, and pos information in NPZ format.
    
     **Constructor:**
         :Parameters: * **filename** (*string*) -- The DistNpz file to read.
 
         :Example:
+
         cmk update doc
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility

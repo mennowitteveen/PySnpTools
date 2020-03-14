@@ -17,7 +17,7 @@ class Ped(_OneShot,SnpReader):
 
     See :class:`.SnpReader` for general examples of using SnpReaders.
 
-    This format is described in http://zzz.bwh.harvard.edu/plink/data.shtml#ped and looks like::
+    This format is described `here <http://zzz.bwh.harvard.edu/plink/data.shtml#ped>`__ and looks like::
 
          FAM001  1  0 0  1  2  A A  G G  A C 
          FAM001  2  0 0  1  2  A A  A G  0 0 

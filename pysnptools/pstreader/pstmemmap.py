@@ -102,25 +102,25 @@ class PstMemMap(PstData):
     def empty(row, col, filename, row_property=None, col_property=None, order="F", dtype=np.float64, val_count=None): #!!!cmk2 document val_count
         '''Create an empty :class:`.PstMemMap` on disk.
 
-        :param row: The :attr:`.PstReader.row` information
+        :param row: The :attr:`PstReader.row` information
         :type row: an array of anything
 
-        :param col: The :attr:`.PstReader.col` information
+        :param col: The :attr:`PstReader.col` information
         :type col: an array of anything
 
         :param filename: name of memory-mapped file to create
         :type filename: string
 
-        :param row_property: optional -- The additional :attr:`.PstReader.row_property` information associated with each row. Default: None
+        :param row_property: optional -- The additional :attr:`PstReader.row_property` information associated with each row. Default: None
         :type row_property: an array of anything
 
-        :param col_property: optional -- The additional :attr:`.PstReader.col_property` information associated with each col. Default: None
+        :param col_property: optional -- The additional :attr:`PstReader.col_property` information associated with each col. Default: None
         :type col_property: an array of anything
 
         :param order: {'F' (default), 'C'}, optional -- Specify the order of the ndarray.
         :type order: string or None
 
-        :param dtype: {scipy.float64 (default), scipy.float32}, optional -- The data-type for the :attr:`.PstMemMap.val` ndarray.
+        :param dtype: {numpy.float64 (default), numpy.float32}, optional -- The data-type for the :attr:`PstMemMap.val` ndarray.
         :type dtype: data-type
 
         :rtype: :class:`.PstMemMap`
@@ -235,7 +235,7 @@ class PstMemMap(PstData):
 
 
     def flush(self):
-        '''Flush :attr:`.PstMemMap.val` to disk and close the file. (If values or properties are accessed again, the file will be reopened.)
+        '''Flush :attr:`PstMemMap.val` to disk and close the file. (If values or properties are accessed again, the file will be reopened.)
 
         >>> import pysnptools.util as pstutil
         >>> from pysnptools.pstreader import PstMemMap

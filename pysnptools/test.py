@@ -571,6 +571,45 @@ class TestPySnpTools(unittest.TestCase):
             GCx = Unit().standardize(SNPs_floatCx)
             self.assertTrue(np.allclose(GFx, G2x, rtol=1e-05, atol=1e-05))
 
+    def test_respect_read_inputs(self):
+        from pysnptools.snpreader import _MergeIIDs,_MergeSIDs, SnpGen, SnpMemMap
+        from pysnptools.distreader import Bgen
+
+        for snpreader in [
+                           Bgen('../examples/example.bgen')[:10,::10].as_snp(block_size=10),
+                           Bgen('../examples/bits1.bgen').as_snp(),
+                           SnpGen(seed=0,iid_count=500,sid_count=50),
+                           SnpHdf5('../examples/toydata.snpmajor.snp.hdf5'),
+                           SnpMemMap('../examples/tiny.snp.memmap'),
+                           SnpNpz('../examples/toydata10.snp.npz'),
+                           Bed('../examples/toydata.bed',count_A1=True)[::2,::2],
+                           _MergeIIDs([Bed('../examples/toydata.bed',count_A1=True)[:5,:].read(),Bed('../examples/toydata.bed',count_A1=True)[5:,:].read()]),
+                           _MergeSIDs([Bed('../examples/toydata.bed',count_A1=True)[:,:5].read(),Bed('../examples/toydata.bed',count_A1=True)[:,5:].read()]),
+                           Bed('../examples/toydata.bed',count_A1=True),
+                           Dat('../examples/toydata.dat'),
+                           Dense('../examples/toydata100.dense.txt'),
+                           DistributedBed('../examples/toydataSkip10.distributedbed'),
+                           Ped('../examples/toydata.ped'),
+                           Pheno('../examples/toydata.phe'),
+                           Bed('../examples/toydata.bed',count_A1=True).read()
+                          ]:
+            logging.info(str(snpreader))
+            for order in ['F','C','A']:
+                for dtype in [np.float32,np.float64]:
+                    for force_python_only in [True,False]:
+                        for view_ok in [True,False]:
+                            val = snpreader.read(order=order,dtype=dtype,force_python_only=force_python_only,view_ok=view_ok).val
+                            has_right_order = order=="A" or (order=="C" and val.flags["C_CONTIGUOUS"]) or (order=="F" and val.flags["F_CONTIGUOUS"])
+                            if hasattr(snpreader,'val') and not view_ok:
+                                assert snpreader.val is not val
+                            if (hasattr(snpreader,'val') and view_ok and snpreader.val is not val and
+                                (order == 'A' or (order == 'F' and snpreader.val.flags['F_CONTIGUOUS']) or (order == 'C' and snpreader.val.flags['C_CONTIGUOUS'])) and
+                                (dtype is None or  snpreader.val.dtype == dtype)):
+                                logging.info("{0} could have read a view, but didn't".format(snpreader))
+                            assert val.dtype == dtype and has_right_order
+
+
+
 
     def test_writes(self):
         from pysnptools.snpreader import SnpData, SnpHdf5, SnpNpz, SnpMemMap

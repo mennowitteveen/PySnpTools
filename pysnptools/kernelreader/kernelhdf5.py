@@ -1,4 +1,5 @@
 import logging
+import numpy as np
 from pysnptools.kernelreader import KernelReader
 from pysnptools.pstreader import PstHdf5
 import warnings
@@ -9,7 +10,7 @@ class KernelHdf5(PstHdf5,KernelReader):
 
     See :class:`.KernelReader` for general examples of using KernelReaders.
 
-    The general HDF5 format is described in http://www.hdfgroup.org/HDF5/. The KernelHdf5 format stores
+    The general HDF5 format is described in `here <http://www.hdfgroup.org/HDF5/>`__. The KernelHdf5 format stores
     val, iid, sid, and pos information in Hdf5 format.
    
     **Constructor:**
@@ -28,6 +29,21 @@ class KernelHdf5(PstHdf5,KernelReader):
     '''
     def __init__(self,*args, **kwargs):
         super(KernelHdf5, self).__init__(*args, **kwargs)
+
+    @property
+    def row(self):
+        self._run_once()
+        if self._row.dtype.type is not np.str:
+            self._row = np.array(self._row,dtype='str')
+        return self._row
+
+    @property
+    def col(self):
+        self._run_once()
+        if self._col.dtype.type is not np.str:
+            self._col = np.array(self._col,dtype='str')
+        return self._col
+
 
     @staticmethod
     def write(filename, kerneldata, hdf5_dtype=None, sid_major=True):

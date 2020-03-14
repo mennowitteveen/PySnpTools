@@ -28,7 +28,7 @@ class PstReader(object):
 
         >>> from pysnptools.pstreader import PstNpz
         >>> on_disk = PstNpz('../../tests/datasets/all_chr.maf0.001.N300.pst.npz')
-        >>> print(on_disk) # prints specification for reading from file
+        >>> print(on_disk) # prints the name of the file reader
         PstNpz('../../tests/datasets/all_chr.maf0.001.N300.pst.npz')
         >>> on_disk.col_count # prints the number of columns (but doesn't read any matrix values)
         1015
@@ -80,14 +80,14 @@ class PstReader(object):
             :class:`.KernelReader`             val             iid0,row,iid iid1,col,iid none                 none
             ================================== =============== ============ ============ ==================== ====================
 
-            :Note: A :attr:`.KernelReader.iid` may be used when :attr:`.KernelReader.iid0` is equal to :attr:`.KernelReader.iid1`
+            :Note: A :attr:`KernelReader.iid` may be used when :attr:`KernelReader.iid0` is equal to :attr:`KernelReader.iid1`
   
     Methods & Properties:
 
         Every PstReader, such as :class:`.PstNpz` and :class:`.PstData`, has these properties: :attr:`row`, :attr:`row_count`, :attr:`col`, :attr:`col_count`,
         :attr:`row_property`, :attr:`col_property` and these methods: :meth:`read`, :meth:`row_to_index`, :meth:`col_to_index`. See below for details.
 
-        :class:`.PstData` is a PstReader so it supports the above properties and methods. In addition, it supports property :attr:`.PstData.val` and equality testing.
+        :class:`.PstData` is a PstReader so it supports the above properties and methods. In addition, it supports property :attr:`PstData.val` and equality testing.
         See below for details.
 
     Rows and Cols:
@@ -147,7 +147,7 @@ class PstReader(object):
     When Matrix Data is Re-Read and Copied:
 
         Every time you call a PstReader's :meth:`read` method, the PstReader re-reads the value data and returns a new in-memory :class:`.PstData`
-        (with :attr:`.PstData.val` property containing a new ndarray of the values).
+        (with :attr:`PstData.val` property containing a new ndarray of the values).
 
         Here is an example of what not to do, because it causes all the matrix value data to be read twice.
 
@@ -244,7 +244,7 @@ class PstReader(object):
             (1, 1015)
 
         Indexing is also useful when you have matrix values in memory via a :class:`PstData` index and want to copy a subset of those values.
-        While you could instead index directly on the `.PstData.val` ndarray, by indexing on the :class:`PstData` instance you
+        While you could instead index directly on the :attr:`PstData.val` ndarray, by indexing on the :class:`PstData` instance you
         also get row and col information.
 
             >>> on_disk = PstNpz('../../tests/datasets/all_chr.maf0.001.N300.pst.npz') # Specify some data on disk in PstNpz format
@@ -274,8 +274,8 @@ class PstReader(object):
 
     The :meth:`read` Method
   
-        By default the :meth:`read` returns a ndarray of scipy.float64 laid out in memory in F-contiguous order (row-index varies the fastest). You may, instead,
-        ask for scipy.float32 or for C-contiguous order or any order. See :meth:`read` for details.
+        By default the :meth:`read` returns a ndarray of numpy.float64 laid out in memory in F-contiguous order (row-index varies the fastest). You may, instead,
+        ask for numpy.float32 or for C-contiguous order or any order. See :meth:`read` for details.
 
     Details of Methods & Properties:
     """
@@ -407,16 +407,16 @@ class PstReader(object):
 
     #!!check that views always return contiguous memory by default
     def read(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False):
-        """Reads the matrix values and returns a :class:`.PstData` (with :attr:`.PstData.val` property containing a new ndarray of the matrix values).
+        """Reads the matrix values and returns a :class:`.PstData` (with :attr:`PstData.val` property containing a new ndarray of the matrix values).
 
         :param order: {'F' (default), 'C', 'A'}, optional -- Specify the order of the ndarray. If order is 'F' (default),
             then the array will be in F-contiguous order (row-index varies the fastest).
             If order is 'C', then the returned array will be in C-contiguous order (col-index varies the fastest).
-            If order is 'A', then the :attr:`.PstData.val`
+            If order is 'A', then the :attr:`PstData.val`
             ndarray may be in any order (either C-, Fortran-contiguous).
         :type order: string or None
 
-        :param dtype: {scipy.float64 (default), scipy.float32}, optional -- The data-type for the :attr:`.PstData.val` ndarray.
+        :param dtype: {numpy.float64 (default), numpy.float32}, optional -- The data-type for the :attr:`PstData.val` ndarray.
         :type dtype: data-type
 
         :param force_python_only: optional -- If False (default), may use outside library code. If True, requests that the read
@@ -424,7 +424,7 @@ class PstReader(object):
         :type force_python_only: bool
 
 
-        :param view_ok: optional -- If False (default), allocates new memory for the :attr:`.PstData.val`'s ndarray. If True,
+        :param view_ok: optional -- If False (default), allocates new memory for the :attr:`PstData.val`'s ndarray. If True,
             if practical and reading from a :class:`PstData`, will return a new 
             :class:`PstData` with a ndarray shares memory with the original :class:`PstData`.
             Typically, you'll also wish to use "order='A'" to increase the chance that sharing will be possible.
@@ -597,7 +597,7 @@ class PstReader(object):
         return True
 
     def _apply_sparray_or_slice_to_val(self, val, row_indexer_or_none, col_indexer_or_none, order, dtype, force_python_only):
-        if (PstReader._is_all_slice(row_indexer_or_none) and PstReader._is_all_slice(col_indexer_or_none)  and not force_python_only and 
+        if (PstReader._is_all_slice(row_indexer_or_none) and PstReader._is_all_slice(col_indexer_or_none) and 
                 (order == 'A' or (order == 'F' and val.flags['F_CONTIGUOUS']) or (order == 'C' and val.flags['C_CONTIGUOUS'])) and
                 (dtype is None or  val.dtype == dtype)):
             return val, True

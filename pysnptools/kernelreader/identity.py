@@ -41,6 +41,13 @@ class Identity(KernelReader):
         if test is None:
             test = iid
 
+        if test is iid:
+            iid = PstData._fixup_input(iid,empty_creator=lambda ignore:np.empty([0,2],dtype='str'),dtype='str')
+            test = iid
+        else:
+            iid = PstData._fixup_input(iid,empty_creator=lambda ignore:np.empty([0,2],dtype='str'),dtype='str')
+            test = PstData._fixup_input(test,empty_creator=lambda ignore:np.empty([0,2],dtype='str'),dtype='str')
+
         if len(iid)>0:
             self._row0 = iid
         else:
@@ -67,7 +74,10 @@ class Identity(KernelReader):
 
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
         if row_index_or_none is None and col_index_or_none is None and self._row0 is self._row1: #read all of a square ID
-            return np.identity(self.row_count,dtype=dtype)
+            val = np.identity(self.row_count,dtype=dtype)
+            if (order=='F'and not val.flags["F_CONTIGUOUS"]) or (order=='C'and not val.flags["C_CONTIGUOUS"]):
+                val = val.T
+            return val
         else: #Non-square
             #!!! This is also less efficient than it could be because it create a big identity matrix and then slices it.
 

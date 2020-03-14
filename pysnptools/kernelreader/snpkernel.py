@@ -76,7 +76,7 @@ class SnpKernel(KernelReader):
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
         #Special case: If square and constant, can push the subsetting into the SnpReader
         if (self.standardizer.is_constant and row_index_or_none is not None and col_index_or_none is not None and np.array_equal(row_index_or_none,col_index_or_none)):
-            return self.snpreader[row_index_or_none,:]._read_kernel(self.standardizer,self.block_size,order, dtype, force_python_only, view_ok)
+            return self.snpreader[row_index_or_none,:]._read_kernel(self.standardizer,self.block_size,order, dtype, force_python_only, view_ok)#!!!LATER can this ever be reached?
         else:
             #LATER: If it was often that case that we wanted to standardize on all the data, but then only return a slice of the result,
             #       that could be done with less memory by working in blocks but not tabulating for all the iids.
@@ -124,19 +124,19 @@ class SnpKernel(KernelReader):
 
     @property
     def sid(self):
-        '''The :attr:`.SnpReader.sid` property of the SNP data.
+        '''The :attr:`SnpReader.sid` property of the SNP data.
         '''
         return self.snpreader.sid
 
     @property
     def sid_count(self):
-        '''The :attr:`.SnpReader.sid_count` property of the SNP data.
+        '''The :attr:`SnpReader.sid_count` property of the SNP data.
         '''
         return self.snpreader.sid_count
 
     @property
     def pos(self):
-        '''The :attr:`.SnpReader.pos` property of the SNP data.
+        '''The :attr:`SnpReader.pos` property of the SNP data.
         '''
         return self.snpreader.pos
 
@@ -147,18 +147,18 @@ class SnpKernel(KernelReader):
         :param order: {'F' (default), 'C', 'A'}, optional -- Specify the order of the ndarray. If order is 'F' (default),
             then the array will be in F-contiguous order (iid-index varies the fastest).
             If order is 'C', then the returned array will be in C-contiguous order (sid-index varies the fastest).
-            If order is 'A', then the :attr:`.SnpData.val`
+            If order is 'A', then the :attr:`SnpData.val`
             ndarray may be in any order (either C-, Fortran-contiguous).
         :type order: string or None
 
-        :param dtype: {scipy.float64 (default), scipy.float32}, optional -- The data-type for the :attr:`.SnpData.val` ndarray.
+        :param dtype: {numpy.float64 (default), numpy.float32}, optional -- The data-type for the :attr:`SnpData.val` ndarray.
         :type dtype: data-type
 
         :param force_python_only: optional -- If False (default), may use outside library code. If True, requests that the read
             be done without outside library code.
         :type force_python_only: bool
 
-        :param view_ok: optional -- If False (default), allocates new memory for the :attr:`.SnpData.val`'s ndarray. If True,
+        :param view_ok: optional -- If False (default), allocates new memory for the :attr:`SnpData.val`'s ndarray. If True,
             if practical and reading from a :class:`SnpData`, will return a new 
             :class:`SnpData` with a ndarray shares memory with the original :class:`SnpData`.
             Typically, you'll also wish to use "order='A'" to increase the chance that sharing will be possible.

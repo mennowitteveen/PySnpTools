@@ -10,7 +10,7 @@ class KernelNpz(KernelReader,PstNpz):
 
     See :class:`.KernelReader` for general examples of using KernelReaders.
 
-    The general NPZ format is described in http://docs.scipy.org/doc/numpy/reference/generated/numpy.savez.html. The KernelNpz format stores
+    The general NPZ format is described `here <http://docs.scipy.org/doc/numpy/reference/generated/numpy.savez.html>`__. The KernelNpz format stores
     val, iid0, and iid1 information in NPZ format.
    
     **Constructor:**

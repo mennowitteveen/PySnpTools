@@ -14,8 +14,17 @@ import subprocess
 import pysnptools.util as pstutil
 from pysnptools.distreader import DistReader
 
-#!!!cmk document these
 def default_iid_function(sample):
+    '''
+    The default function for turning a Bgen sample into a two-part :attr:`pysnptools.distreader.DistReader.iid`.
+    If the Bgen sample contains a single comma, we split on the comma to create the iid.
+    Otherwise, the iid will be ('0',sample)
+
+    >>> default_iid_function('fam0,ind0')
+    ('fam0', 'ind0')
+    >>> default_iid_function('ind0')
+    ('0', 'ind0')
+    '''
     fields = sample.split(',')
     if len(fields)==2:
         return fields[0],fields[1]
@@ -23,18 +32,48 @@ def default_iid_function(sample):
         return ('0',sample)
 
 def default_sid_function(id,rsid):
+    '''
+    The default function for turning a Bgen (SNP) id and rsid into a :attr:`pysnptools.distreader.DistReader.sid`.
+    If the Bgen rsid is '' or '0', the sid will be the (SNP) id.
+    Otherwise, the sid will be 'ID,RSID'
+
+    >>> default_sid_function('SNP1','rs102343')
+    'SNP1,rs102343'
+    >>> default_sid_function('SNP1','0')
+    'SNP1'
+    '''
     if rsid=='0' or rsid=='':
         return id
     else:
         return id+','+rsid
 
 def default_sample_function(famid,indid):
+    '''
+    The default function for turning a two-part :attr:`pysnptools.distreader.DistReader.iid` into a a Bgen sample.
+    If the iid's first part (the family id) is '0' or '', the sample will be iid's 2nd part.
+    Otherwise, the sample will be 'FAMID,INDID'
+
+    >>> default_sample_function('fam0','ind0')
+    'fam0,ind0'
+    >>> default_sample_function('0','ind0')
+    'ind0'
+    '''
     if famid=='0' or famid=='':
         return indid
     else:
         return famid+','+indid
 
 def default_id_rsid_function(sid):
+    '''
+    The default function for turning a :attr:`pysnptools.distreader.DistReader.sid` into a Bgen (SNP) id and rsid.
+    If the sid contains a single comma, we split on the comma to create the id and rsid.
+    Otherwise, the (SNP) id will be the sid and the rsid will be '0'
+
+    >>> default_id_rsid_function('SNP1,rs102343')
+    ('SNP1', 'rs102343')
+    >>> default_id_rsid_function('SNP1')
+    ('SNP1', '0')
+    '''
     fields = sid.split(',')
     if len(fields)==2:
         return fields[0],fields[1]
@@ -45,30 +84,38 @@ def default_id_rsid_function(sid):
 
 class Bgen(DistReader):
     '''
-    A :class:`.DistReader` for reading \*.dist.hdf5 files from disk.#!!!cmk update
+    A :class:`.DistReader` for reading \*.bgen files from disk.
 
     See :class:`.DistReader` for general examples of using DistReaders.
 
-    The general HDF5 format is described in http://www.hdfgroup.org/HDF5/. The DistHdf5 format stores
-    val, iid, sid, and pos information in Hdf5 format.
+    The BGEN format is described `here <https://www.well.ox.ac.uk/~gav/bgen_format/>`__.
+
+        **Tip:** The 'gen' in BGEN stands for 'genetic'. The 'gen' in :class:`DistGen` stands for generate, because it generates random (genetic) data.*
    
     **Constructor:**
-        :Parameters: * **filename** (*string*) -- The DistHdf5 file to read.
+        :Parameters: * **filename** (string) -- The BGEN file to read.
+                     * **iid_function** (optional, function) -- Function to turn a BGEN sample into a :attr:`DistReader.iid`.
+                       (Default: :meth:`bgen.default_iid_function`.)
+                     * **sid_function** (optional, function or string) -- Function to turn a BGEN (SNP) id and rsid into a :attr:`DistReader.sid`.
+                       (Default: :meth:`bgen.default_sid_function`.) Can also be the string 'id' or 'rsid', which is faster than using a function.
+                     * **verbose** (optional, boolean) -- If true, reads verbosely. Defaults to false.
+                     * **metadata** (optional, string) -- Name of an existing metadata file. Defaults to '*filename*.sample'.
+                       If not given and doesn't exist, will be created.
+                     * **sample** (optional, string) -- A GEN sample file. If given, overrides information in \*.bgen file.
 
-        :Example: cmk update doc
+        :Example:
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
-        >>> from pysnptools.distreader import DistHdf5
-        >>> data_on_disk = DistHdf5('../examples/toydata.snpmajor.dist.hdf5')
+        >>> from pysnptools.distreader import Bgen
+        >>> data_on_disk = Bgen('../examples/example.bgen')
         >>> print((data_on_disk.iid_count, data_on_disk.sid_count))
-        (25, 10000)
+        (500, 199)
 
     **Methods beyond** :class:`.DistReader`
 
     '''
-    warning_dictionary = {}
+    _warning_dictionary = {}
     def __init__(self, filename, iid_function=default_iid_function, sid_function=default_sid_function, verbose=False, metadata=None, sample=None):
-        #!!!cmk document that sid_function can be 'id' or 'rsid' and will be faster
         super(Bgen, self).__init__()
         self._ran_once = False
         self.read_bgen = None
@@ -115,13 +162,13 @@ class Bgen(DistReader):
 
         assert os.path.exists(self.filename), "Expect file to exist ('{0}')".format(self.filename)
 
-        #Warn about reopening files with new contents #!!!cmk remove when bug is fixed
+        #!!!cmk99 remove when bug is fixed
         new_file_date = os.stat(self.filename).st_ctime
-        old_file_date = Bgen.warning_dictionary.get(self.filename)
+        old_file_date = Bgen._warning_dictionary.get(self.filename)
         if old_file_date is not None and old_file_date != new_file_date:
             logging.warning('Opening a file again, but its creation date has changed See https://github.com/limix/bgen-reader-py/issues/25. File "{0}"'.format(self.filename))
         else:
-            Bgen.warning_dictionary[self.filename] = new_file_date
+            Bgen._warning_dictionary[self.filename] = new_file_date
 
         self._read_bgen = read_bgen(self.filename,metafile_filepath=self._metadata,samples_filepath=self._sample,verbose=self._verbose)
 
@@ -136,7 +183,7 @@ class Bgen(DistReader):
             rsid_list = d['rsid_list'] if 'rsid_list' in d else None
             col_property = d['col_property']
 
-        #!!!cmk want this mesasage? logging.info("Reading and saving variant and sample metadata")
+        #!!!cmk99 want this mesasage? logging.info("Reading and saving variant and sample metadata")
         if samples is None:
             samples =  np.array(self._read_bgen['samples'],dtype='str')
             must_write_metadata2 = True
@@ -162,7 +209,7 @@ class Bgen(DistReader):
             self._col = np.array([self._sid_function(id,rsid) for id,rsid in zip(id_list,rsid_list)],dtype='str')
 
         if len(self._col)>0: #spot check
-            assert list(self._read_bgen['variants'].loc[0, "nalleles"])[0]==2, "Expect nalleles==2" #!!!cmk test that this is fast even with 1M sid_count
+            assert list(self._read_bgen['variants'].loc[0, "nalleles"])[0]==2, "Expect nalleles==2" #!!!cmk30 test that this is fast even with 1M sid_count
 
         if col_property is None:
             col_property = np.zeros((len(self._col),3),dtype='float')
@@ -227,17 +274,14 @@ class Bgen(DistReader):
         self.flush()
 
     def flush(self):
-        '''Flush :attr:`.DistMemMap.val` to disk and close the file. (If values or properties are accessed again, the file will be reopened.)#!!!cmk update doc
-        cmk update doc
+        '''Close the \*.bgen file for reading. (If values or properties are accessed again, the file will be reopened.)
 
-        >>> import pysnptools.util as pstutil
-        >>> from pysnptools.distreader import DistMemMap
-        >>> filename = "tempdir/tiny.dist.memmap"
-        >>> pstutil.create_directory_if_necessary(filename)
-        >>> dist_mem_map = DistMemMap.empty(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'],filename=filename,order="F",dtype=np.float64)
-        >>> dist_mem_map.val[:,:,:] = [[[.5,.5,0],[0,0,1],[.5,.5,0]],
-        ...                            [[0,1.,0],[0,.75,.25],[.5,.5,0]]]
-        >>> dist_mem_map.flush()
+        >>> from __future__ import print_function #Python 2 & 3 compatibility
+        >>> from pysnptools.distreader import Bgen
+        >>> data_on_disk = Bgen('../examples/example.bgen')
+        >>> print((data_on_disk.iid_count, data_on_disk.sid_count))
+        (500, 199)
+        >>> data_on_disk.flush()
 
         '''
         if hasattr(self,'_ran_once') and self._ran_once:
@@ -249,18 +293,48 @@ class Bgen(DistReader):
 
 
     @staticmethod
-    def write(filename, distreader, bits=None, compression=None, sample_function=default_sample_function, id_rsid_function=default_id_rsid_function, iid_function=default_iid_function, sid_function=default_sid_function, sid_batch_size=None, qctool_path=None, cleanup_temp_files=True):
+    def write(filename, distreader, bits=16, compression=None, sample_function=default_sample_function, id_rsid_function=default_id_rsid_function, iid_function=default_iid_function, sid_function=default_sid_function, block_size=None, qctool_path=None, cleanup_temp_files=True):
+        """Writes a :class:`DistReader` to BGEN format and return a the :class:`.Bgen`. Requires access to the 3rd party QCTool.
+
+        :param filename: the name of the file to create
+        :type filename: string
+        :param distreader: The data that should be written to disk. It can also be any distreader, for example, :class:`.DistNpz`, :class:`.DistData`, or
+           another :class:`.Bgen`.
+        :type distreader: :class:`DistReader`
+        :param bits: Number of bits, between 1 and 32 used to represent each 0-to-1 probability value. Default is 16.
+            An np.float32 needs 23 bits. A np.float64 would need 52 bits, which the BGEN format doesn't offer, so use 32.
+        :type bits: int
+        :param compression: How to compress the file. Can be None (default), 'zlib', or 'zstd'.
+        :type compression: bool
+        :param sample_function: Function to turn a :attr:`DistReader.iid` into a BGEN sample.
+           (Default: :meth:`bgen.default_sample_function`.)
+        :type sample_function: function
+        :param id_rsid_function: Function to turn a  a :attr:`DistReader.sid` into a BGEN (SNP) id and rsid.
+           (Default: :meth:`bgen.default_id_rsid_function`.)
+        :type id_rsid_function: function
+        :param iid_function: Function to turn a BGEN sample into a :attr:`DistReader.iid`.
+           (Default: :meth:`bgen.default_iid_function`.)
+        :type iid_function: function
+        :param sid_function: Function to turn a BGEN (SNP) id and rsid into a :attr:`DistReader.sid`.
+           (Default: :meth:`bgen.default_sid_function`.)
+        :type sid_function: function
+        :param block_size: The number of SNPs to read in a batch from *distreader*. Defaults to a *block_size* such that *block_size* \* *iid_count* is about 100,000.
+        :type block_size: number
+        :param qctool_path: Tells the path to the 3rd party `QCTool <https://www.well.ox.ac.uk/~gav/qctool_v2/>`_. Defaults to reading
+           path from environment variable QCTOOLPATH. (To use on Windows, install Ubuntu for Windows, install QCTool in Ubuntu,
+           and then give the path as "ubuntu run <UBUNTU PATH TO QCTOOL".)
+        :type qctool_path: string
+        :param cleanup_temp_files: Tells if delete temporary \*.gen and \*.sample files.
+        :type cleanup_temp_files: bool
+        :rtype: :class:`.Bgen`
+
+        >>> from pysnptools.distreader import DistHdf5, Bgen
+        >>> import pysnptools.util as pstutil
+        >>> distreader = DistHdf5('../examples/toydata.snpmajor.dist.hdf5')[:,:10] # A reader for the first 10 SNPs in Hdf5 format
+        >>> pstutil.create_directory_if_necessary("tempdir/toydata10.bgen")
+        >>> Bgen.write("tempdir/toydata10.bgen",distreader)        # Write data in BGEN format
+        Bgen('tempdir/toydata10.bgen')
         """
-        cmk update doc
-
-        """
-        #!!!cmk doc WARN that 32 bits here, the max, corresponds to 10 decial places of precession and needs a dtype of float64 to capture.
-        #!!!cmk a dtype of float32 correponds to 23 bgen bits (7 decimal places)
-        #cmk doc: nan, 3 0's, one nan will all turn into 3 nan's. Negative, sum not 1 will raise error
-        #cmk doc that compression can be blank or zlib or zstd 
-        #cmk doc that default bits seems to be 16
-
-
         qctool_path = qctool_path or os.environ.get('QCTOOLPATH')
         assert qctool_path is not None, "Bgen.write() requires a path to an external qctool program either via the qctool_path input or by setting the QCTOOLPATH environment variable."
 
@@ -269,11 +343,10 @@ class Bgen(DistReader):
         metadata =  filename+'.metadata'
         metadatanpz =  filename+'.metadata.npz'
 
-        bits = bits or 16
         #We need the +1 so that all three values will have enough precision to be very near 1
         #The max(3,..) is needed to even 1 bit will have enough precision in the gen file
         decimal_places = max(3,math.ceil(math.log(2**bits,10))+1)
-        Bgen.genwrite(genfile,distreader,decimal_places,id_rsid_function,sample_function,sid_batch_size)
+        Bgen.genwrite(genfile,distreader,decimal_places,id_rsid_function,sample_function,block_size)
         if os.path.exists(filename):
             os.remove(filename)
         if os.path.exists(metadata):
@@ -294,28 +367,36 @@ class Bgen(DistReader):
         return Bgen(filename, iid_function=iid_function, sid_function=sid_function)
 
     @staticmethod
-    def genwrite(filename, distreader, decimal_places=None, id_rsid_function=default_id_rsid_function, sample_function=default_sample_function, sid_batch_size=None):
-        """Writes a :class:`DistReader` to Gen format and returns None #!!!cmk update docs
+    def genwrite(filename, distreader, decimal_places=None, id_rsid_function=default_id_rsid_function, sample_function=default_sample_function, block_size=None):
+        """Writes a :class:`DistReader` to Gen format
 
-        :param filename: the name of the file to create
+        :param filename: the name of the file to create (will also create *filename_without_gen*.sample file.)
         :type filename: string
-        :param distdata: The in-memory data that should be written to disk.
-        :type distdata: :class:`DistData`
-        :rtype: :class:`.DistNpz`
+        :param distreader: The data that should be written to disk. It can also be any distreader, for example, :class:`.DistNpz`, :class:`.DistData`, or
+           another :class:`.Bgen`.
+        :type distreader: :class:`DistReader`
+        :param decimal_places: (Default: None) Number of decimal places with which to write the text numbers. *None* writes to full precision.
+        :type bits: int or None
+        :param id_rsid_function: Function to turn a  a :attr:`DistReader.sid` into a GEN (SNP) id and rsid.
+           (Default: :meth:`bgen.default_id_rsid_function`.)
+        :type id_rsid_function: function
+        :param sid_function: Function to turn a GEN (SNP) id and rsid into a :attr:`DistReader.sid`.
+           (Default: :meth:`bgen.default_sid_function`.)
+        :type sid_function: function
+        :param block_size: The number of SNPs to read in a batch from *distreader*. Defaults to a *block_size* such that *block_size* \* *iid_count* is about 100,000.
+        :type block_size: number
+        :rtype: None
 
-        cmk update doc
-
-        >>> from pysnptools.distreader import DistNpz, DistHdf5
+        >>> from pysnptools.distreader import DistHdf5, Bgen
         >>> import pysnptools.util as pstutil
-        >>> distdata = DistHdf5('../examples/toydata.iidmajor.dist.hdf5')[:,:10].read()     # Read first 10 snps from DistHdf5 format
-        >>> pstutil.create_directory_if_necessary("tempdir/toydata10.dist.npz")
-        >>> DistNpz.write("tempdir/toydata10.dist.npz",distdata)          # Write data in DistNpz format
-        DistNpz('tempdir/toydata10.dist.npz')
+        >>> distreader = DistHdf5('../examples/toydata.snpmajor.dist.hdf5')[:,:10] # A reader for the first 10 SNPs in Hdf5 format
+        >>> pstutil.create_directory_if_necessary("tempdir/toydata10.bgen")
+        >>> Bgen.genwrite("tempdir/toydata10.gen",distreader)        # Write data in GEN format
         """
         #https://www.cog-genomics.org/plink2/formats#gen
         #https://web.archive.org/web/20181010160322/http://www.stats.ox.ac.uk/~marchini/software/gwas/file_format.html
 
-        sid_batch_size = sid_batch_size or max((100*1000)//max(1,distreader.row_count),1)
+        block_size = block_size or max((100*1000)//max(1,distreader.row_count),1)
 
         if decimal_places is None:
             format_function = lambda num:'{0}'.format(num)
@@ -327,7 +408,7 @@ class Bgen(DistReader):
         with log_in_place("sid_index ", logging.INFO) as updater:
             with open(filename+'.temp','w',newline='\n') as genfp:
                 while start < distreader.sid_count:
-                    distdata = distreader[:,start:start+sid_batch_size].read(view_ok=True)
+                    distdata = distreader[:,start:start+block_size].read(view_ok=True)
                     for sid_index in range(distdata.sid_count):
                         if updater_freq>1 and (start+sid_index) % updater_freq == 0:
                             updater('{0:,} of {1:,}'.format(start+sid_index,distreader.sid_count))
@@ -416,7 +497,7 @@ class TestBgen(unittest.TestCase):
         distgen0data = DistGen(seed=332,iid_count=50,sid_count=5).read()
 
         for i,distdata0 in enumerate([distgen0data,exampledata]):
-            for bits in [None]+list(range(1,33)):
+            for bits in list(range(1,33)):
                 logging.info("input#={0},bits={1}".format(i,bits))
                 file1 = 'temp/roundtrip1-{0}-{1}.bgen'.format(i,bits)
                 distdata1 = Bgen.write(file1,distdata0,bits=bits,compression='zlib',cleanup_temp_files=False).read()
@@ -647,20 +728,18 @@ def getTestSuite():
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
-    #!!!cmk
-
     if False:
         from pysnptools.distreader import Bgen
         bgen = Bgen(r'M:\deldir\2500x100.bgen',verbose=True)
         bgen.read()
         print(bgen.shape)
-        print("cmk")
+        print("")
 
     if False:
         from pysnptools.distreader import Bgen
         bgen = Bgen(r'M:\deldir\1x1000000.bgen',verbose=True)
         print(bgen.shape)
-        print("cmk")
+        print("")
 
 
     if False:
@@ -682,10 +761,11 @@ if __name__ == "__main__":
         Bgen.write('{0}x{1}.bgen'.format(iid_count,sid_count),distgen)
 
 
+    import doctest
+    result = doctest.testmod()
+    assert result.failed == 0, "failed doc test: " + __file__
+
     suites = getTestSuite()
     r = unittest.TextTestRunner(failfast=True)
     r.run(suites)
 
-    import doctest
-    result = doctest.testmod()
-    assert result.failed == 0, "failed doc test: " + __file__

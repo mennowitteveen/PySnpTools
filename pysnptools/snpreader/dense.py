@@ -8,7 +8,7 @@ from pysnptools.pstreader import _OneShot
 from six.moves import range
 
 def zero_family(s):
-    '''Given an input id from the file, returns 0 as the family id and that input id as the case id.
+    '''Given an input id from the file, returns 0 as the family id and that input id as the individual id.
     '''
     return "0",s
 
@@ -18,7 +18,7 @@ def zero_pos(s):
     return 0,s,0,0
 
 def just_case(iid):
-    '''Use just the case id (ignoring the family id) in the file.
+    '''Use just the individual id (ignoring the family id) in the file.
     '''
     return iid[1]
 
@@ -45,10 +45,10 @@ class Dense(_OneShot,SnpReader):
 
     **Constructor:**
         :Parameters: * **filename** (*string*) -- The Dense file to read.
-                     * **extract_iid_function** (*string*) -- A function that breaks the row id from the file into a family id and an case id. Defaults to
+                     * **extract_iid_function** (*string*) -- A function that breaks the row id from the file into a family id and an individual id. Defaults to
                        setting the family id to 0 and using the whole row id as the iid.
                      * **extract_sid_pos_function** (*string*) -- A function that breaks the column id from the file into (chromosome, sid, genetic distance, basepair distance).
-                       Defaults to setting the :attr:`.SnpReader.pos` information to 0 and using the whole column id as the sid.
+                       Defaults to setting the :attr:`SnpReader.pos` information to 0 and using the whole column id as the sid.
 
         :Example:
 
@@ -108,11 +108,11 @@ class Dense(_OneShot,SnpReader):
         :type filename: string
         :param snpdata: The in-memory data that should be written to disk.
         :type snpdata: :class:`SnpData`
-        :param join_iid_function: function to turn a family id and case id into a file id for columns.
-                                  Defaults ignoring the family id and using the case id as the column id.
+        :param join_iid_function: function to turn a family id and individual id into a file id for columns.
+                                  Defaults ignoring the family id and using the individual id as the column id.
         :type join_iid_function: a function
         :param join_sid_pos_function: function to turn a sid and pos data into a file id for rows.
-                                      Defaults ignoring the :attr:`.SnpReader.pos` information and using the sid id as the row id.
+                                      Defaults ignoring the :attr:`SnpReader.pos` information and using the sid id as the row id.
         :type join_sid_pos_function: a function
         :rtype: :class:`.Dense`
 

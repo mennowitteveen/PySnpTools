@@ -55,7 +55,7 @@ class SnpMemMap(PstMemMap,SnpData):
     def offset(self):
         '''The byte position in the file where the memory-mapped values start.
        
-        (The disk space before this is used to store :attr:`.SnpReader.iid`, etc. information.
+        (The disk space before this is used to store :attr:`SnpReader.iid`, etc. information.
         This property is useful when interfacing with, for example, external Fortran and C matrix libraries.)
         
         '''
@@ -73,22 +73,22 @@ class SnpMemMap(PstMemMap,SnpData):
     def empty(iid, sid, filename, pos=None,order="F",dtype=np.float64):
         '''Create an empty :class:`.SnpMemMap` on disk.
 
-        :param iid: The :attr:`.SnpReader.iid` information
+        :param iid: The :attr:`SnpReader.iid` information
         :type iid: an array of string pairs
 
-        :param sid: The :attr:`.SnpReader.sid` information
+        :param sid: The :attr:`SnpReader.sid` information
         :type sid: an array of strings
 
         :param filename: name of memory-mapped file to create
         :type filename: string
 
-        :param pos: optional -- The additional :attr:`.SnpReader.pos` information associated with each sid. Default: None
+        :param pos: optional -- The additional :attr:`SnpReader.pos` information associated with each sid. Default: None
         :type pos: an array of numeric triples
 
         :param order: {'F' (default), 'C'}, optional -- Specify the order of the ndarray.
         :type order: string or None
 
-        :param dtype: {scipy.float64 (default), scipy.float32}, optional -- The data-type for the :attr:`.SnpMemMap.val` ndarray.
+        :param dtype: {numpy.float64 (default), numpy.float32}, optional -- The data-type for the :attr:`SnpMemMap.val` ndarray.
         :type dtype: data-type
 
         :rtype: :class:`.SnpMemMap`
@@ -108,7 +108,7 @@ class SnpMemMap(PstMemMap,SnpData):
         return self
 
     def flush(self):
-        '''Flush :attr:`.SnpMemMap.val` to disk and close the file. (If values or properties are accessed again, the file will be reopened.)
+        '''Flush :attr:`SnpMemMap.val` to disk and close the file. (If values or properties are accessed again, the file will be reopened.)
 
         >>> import pysnptools.util as pstutil
         >>> from pysnptools.snpreader import SnpMemMap
@@ -138,7 +138,7 @@ class SnpMemMap(PstMemMap,SnpData):
         >>> import pysnptools.util as pstutil
         >>> from pysnptools.snpreader import SnpData, SnpMemMap
         >>> data1 = SnpData(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'],val= [[0.,2.,0.],[0.,1.,2.]])
-        >>> pstutil.create_directory_if_necessary("tempdir/tiny.pst.memmap")
+        >>> pstutil.create_directory_if_necessary("tempdir/tiny.snp.memmap") #!!!cmk99 should we just promise to create directories?
         >>> SnpMemMap.write("tempdir/tiny.snp.memmap",data1)      # Write data1 in SnpMemMap format
         SnpMemMap('tempdir/tiny.snp.memmap')
         """

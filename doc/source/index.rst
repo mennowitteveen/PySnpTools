@@ -246,7 +246,6 @@ See `PySnpTools's README.md <https://github.com/fastlmm/PySnpTools/blob/master/R
 	:special-members:
     :exclude-members: copyinputs, col, col_property, row, row_property
 
-#!!!cmk add doc for distreader and dist2snp
 :class:`kernelreader.SnpKernel`
 +++++++++++++++++++++++++++++++++++
 .. autoclass:: pysnptools.kernelreader.SnpKernel
@@ -380,6 +379,91 @@ See `PySnpTools's README.md <https://github.com/fastlmm/PySnpTools/blob/master/R
 	:show-inheritance:
 	:special-members: __getitem__
     :exclude-members: copyinputs,standardize
+
+**************************
+:mod:`distreader` Module
+**************************
+
+.. automodule:: pysnptools.distreader
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+
+
+:class:`distreader.DistReader`
+++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.distreader.DistReader
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members: __getitem__
+    :exclude-members: copyinputs
+
+
+:class:`distreader.Bgen`
++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.distreader.Bgen
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: copyinputs, col, col_property, row
+
+.. autofunction:: pysnptools.distreader.bgen.default_iid_function
+
+.. autofunction:: pysnptools.distreader.bgen.default_sid_function
+
+.. autofunction:: pysnptools.distreader.bgen.default_sample_function
+
+.. autofunction:: pysnptools.distreader.bgen.default_id_rsid_function
+
+:class:`distreader.DistData`
++++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.distreader.DistData
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: copyinputs, col, col_property, row
+
+
+:class:`distreader.DistHdf5`
+++++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.distreader.DistHdf5
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: copyinputs, col, col_property, row, row_property
+
+:class:`distreader.DistNpz`
+++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.distreader.DistNpz
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: copyinputs, col, col_property, row, row_property
+
+
+:class:`distreader.DistMemMap`
+++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.distreader.DistMemMap
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: copyinputs, col, col_property, row, row_property
+
+:class:`distreader.DistGen`
+++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.distreader.DistGen
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members: copyinputs, col, col_property, row, row_property
 
 
 ***********************

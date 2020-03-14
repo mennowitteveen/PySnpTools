@@ -10,7 +10,10 @@ from pysnptools.pstreader import _OneShot
 
 class Dat(_OneShot,SnpReader):
     '''
-    A :class:`.SnpReader` for reading Dat/Fam/Map-formated files from disk.
+    A :class:`.SnpReader` for reading Dat/Fam/Map-formated files from disk. #cmk say that this is also called dosage or bimbam
+    #!!!cmk work when the extension is \*.dosage or anything else
+    #!!!cmk make so fam can be called bam and map can be called bim
+
 
     See :class:`.SnpReader` for general examples of using SnpReaders.
 
@@ -21,7 +24,7 @@ class Dat(_OneShot,SnpReader):
         null_200	j	n	0	nan	1
         ...
 
-    Its Map and Fam files are described in http://pngu.mgh.harvard.edu/~purcell/plink/data.shtml.
+    Its Map and Fam files are described `here <http://zzz.bwh.harvard.edu/plink/data.shtml>`__.
 
     **Constructor:**
         :Parameters: * **filename** (*string*) -- The Dat file to read.

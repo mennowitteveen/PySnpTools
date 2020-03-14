@@ -184,7 +184,7 @@ class TestDistReaders(unittest.TestCase):
         from pysnptools.kernelreader.test import _fortesting_JustCheckExists
 
         the_class_and_suffix_list = [(DistNpz,"npz",None,None),
-                                     (Bgen,"bgen",None,lambda filename,distdata: the_class.write(filename,distdata,bits=32)),
+                                     (Bgen,"bgen",None,lambda filename,distdata: Bgen.write(filename,distdata,bits=32)),
                                      (DistHdf5,"hdf5",None,None),
                                      (DistMemMap,"memmap",None,None)]
         cant_do_col_prop_none_set = {'bgen'}
@@ -378,6 +378,38 @@ class TestDistReaders(unittest.TestCase):
 
         logging.info("done with test")
 
+    def test_respect_read_inputs(self):
+        from pysnptools.distreader import Bgen,DistGen,DistHdf5,DistMemMap,DistNpz
+        from pysnptools.snpreader import Bed
+
+        for distreader in [
+                           Bed('../examples/toydata.bed',count_A1=True).as_dist(block_size=2000),
+                           Bed('../examples/toydata.bed',count_A1=True).as_dist(),
+                           Bgen('../examples/example.bgen').read(),
+                           Bgen('../examples/bits1.bgen'),                          
+                           DistGen(seed=0,iid_count=500,sid_count=50),
+                           DistGen(seed=0,iid_count=500,sid_count=50)[::2,::2],
+                           DistHdf5('../examples/toydata.snpmajor.dist.hdf5'),
+                           DistMemMap('../examples/tiny.dist.memmap'),
+                           DistNpz('../examples/toydata10.dist.npz')
+                          ]:
+            logging.info(str(distreader))
+            for order in ['F','C','A']:
+                for dtype in [np.float32,np.float64]:
+                    for force_python_only in [True,False]:
+                        for view_ok in [True,False]:
+                            val = distreader.read(order=order,dtype=dtype,force_python_only=force_python_only,view_ok=view_ok).val
+                            has_right_order = order=="A" or (order=="C" and val.flags["C_CONTIGUOUS"]) or (order=="F" and val.flags["F_CONTIGUOUS"])
+                            if hasattr(distreader,'val') and not view_ok:
+                                assert distreader.val is not val
+                            if (hasattr(distreader,'val') and view_ok and distreader.val is not val and
+                                (order == 'A' or (order == 'F' and distreader.val.flags['F_CONTIGUOUS']) or (order == 'C' and distreader.val.flags['C_CONTIGUOUS'])) and
+                                (dtype is None or  distreader.val.dtype == dtype)):
+                                logging.info("{0} could have read a view, but didn't".format(distreader))
+                            assert val.dtype == dtype and has_right_order
+
+
+
     def test_respect_inputs_DistData(self):
         np.random.seed(0)
         for dtype_start,decimal_start in [(np.float32,5),(np.float64,10)]:
@@ -542,12 +574,12 @@ def getTestSuite():
 
     test_suite = unittest.TestSuite([])
 
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestBgen))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaderDocStrings))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistGen))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistMemMap))
+    #!!!cmk test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestBgen))
+    #!!!cmk test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaderDocStrings))
+    #!!!cmk test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistGen))
+    #!!!cmk test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistMemMap))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaders))
-    test_suite.addTests(TestDistNaNCNC.factory_iterator())
+    #!!!cmk test_suite.addTests(TestDistNaNCNC.factory_iterator())
     
 
     return test_suite

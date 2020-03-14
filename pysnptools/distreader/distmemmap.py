@@ -25,7 +25,6 @@ class DistMemMap(PstMemMap,DistData):
         Also see :meth:`.DistMemMap.empty` and :meth:`.DistMemMap.write`.
 
         :Example:
-        cmk update doc
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.distreader import DistMemMap
@@ -35,7 +34,7 @@ class DistMemMap(PstMemMap,DistData):
 
     **Methods inherited from** :class:`.DistData`
 
-        :meth:`.DistData.allclose`, :meth:`.DistData.standardize`
+        :meth:`.DistData.allclose`
 
     **Methods beyond** :class:`.DistReader`
 
@@ -45,22 +44,20 @@ class DistMemMap(PstMemMap,DistData):
         super(DistMemMap, self).__init__(*args, **kwargs)
 
     val = property(PstMemMap._get_val,PstMemMap._set_val)
-    """The 2D NumPy memmap array of floats that represents the values.
-    cmk update doc
+    """The 3D NumPy memmap array of floats that represents the distribution of SNP values.
 
-    >>> !!!cmkl
+    >>> !!!cmk22
     >>> from pysnptools.distreader import DistMemMap
     >>> dist_mem_map = DistMemMap('../examples/tiny.dist.memmap')
     >>> print(dist_mem_map.val[0,1])
-    2.0
+    [1,0,0]
     """
 
     @property
     def offset(self):
         '''The byte position in the file where the memory-mapped values start.
-        cmk update doc
        
-        (The disk space before this is used to store :attr:`.DistReader.iid`, etc. information.
+        (The disk space before this is used to store :attr:`DistReader.iid`, etc. information.
         This property is useful when interfacing with, for example, external Fortran and C matrix libraries.)
         
         '''
@@ -78,27 +75,25 @@ class DistMemMap(PstMemMap,DistData):
     def empty(iid, sid, filename, pos=None,order="F",dtype=np.float64):
         '''Create an empty :class:`.DistMemMap` on disk.
 
-        :param iid: The :attr:`.DistReader.iid` information
+        :param iid: The :attr:`DistReader.iid` information
         :type iid: an array of string pairs
 
-        :param sid: The :attr:`.DistReader.sid` information
+        :param sid: The :attr:`DistReader.sid` information
         :type sid: an array of strings
 
         :param filename: name of memory-mapped file to create
         :type filename: string
 
-        :param pos: optional -- The additional :attr:`.DistReader.pos` information associated with each sid. Default: None
+        :param pos: optional -- The additional :attr:`DistReader.pos` information associated with each sid. Default: None
         :type pos: an array of numeric triples
 
         :param order: {'F' (default), 'C'}, optional -- Specify the order of the ndarray.
         :type order: string or None
 
-        :param dtype: {scipy.float64 (default), scipy.float32}, optional -- The data-type for the :attr:`.DistMemMap.val` ndarray.
+        :param dtype: {numpy.float64 (default), numpy.float32}, optional -- The data-type for the :attr:`DistMemMap.val` ndarray.
         :type dtype: data-type
 
         :rtype: :class:`.DistMemMap`
-
-        cmk update doc
 
         >>> import pysnptools.util as pstutil
         >>> from pysnptools.distreader import DistMemMap
@@ -116,8 +111,7 @@ class DistMemMap(PstMemMap,DistData):
         return self
 
     def flush(self):
-        '''Flush :attr:`.DistMemMap.val` to disk and close the file. (If values or properties are accessed again, the file will be reopened.)
-        cmk update doc
+        '''Flush :attr:`DistMemMap.val` to disk and close the file. (If values or properties are accessed again, the file will be reopened.)
 
         >>> import pysnptools.util as pstutil
         >>> from pysnptools.distreader import DistMemMap
@@ -136,22 +130,28 @@ class DistMemMap(PstMemMap,DistData):
 
 
     @staticmethod
-    def write(filename, distreader, sid_batch_size=None, dtype=None, order='A'):
-        """Writes a :class:`DistData` to :class:`DistMemMap` format. #!!!cmk update for reader and fix up snpmemmap.write etc also
+    def write(filename, distreader, order='A', dtype=None, block_size=None):
+        """Writes a :class:`DistReader` to :class:`DistMemMap` format. #!!!cmk update for reader and fix up snpmemmap.write etc also
 
         :param filename: the name of the file to create
         :type filename: string
-        :param distdata: The in-memory data that should be written to disk.
-        :type distdata: :class:`DistData`
+        :param distreader: The data that should be written to disk. It can also be any distreader, for example, :class:`.DistNpz`, :class:`.DistData`, or
+           another :class:`.Bgen`.
+        :type distreader: :class:`DistReader`
+        :param order: {'A' (default), 'F', 'C'}, optional -- Specify the order of the ndarray. By default, will match the order of the input if knowable; otherwise, 'F'
+        :type order: string or None
+        :param dtype: {None (default), numpy.float64, numpy.float32}, optional -- The data-type for the :attr:`DistMemMap.val` ndarray.
+             By default, will match the order of the input if knowable; otherwise np.float64.
+        :type dtype: data-type
+        :param block_size: The number of SNPs to read in a batch from *distreader*. Defaults to a *block_size* such that *block_size* \* *iid_count* is about 100,000.
+        :type block_size: number
         :rtype: :class:`.DistMemMap`
 
         >>> import pysnptools.util as pstutil
-        >>> from pysnptools.distreader import DistData, DistMemMap
-        >>> data1 = DistData(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'],
-        ...                     val=[[[.5,.5,0],[0,0,1],[.5,.5,0]],
-        ...                          [[0,1.,0],[0,.75,.25],[.5,.5,0]]])
-        >>> pstutil.create_directory_if_necessary("tempdir/tiny.pst.memmap")
-        >>> DistMemMap.write("tempdir/tiny.dist.memmap",data1)      # Write data1 in DistMemMap format
+        >>> from pysnptools.distreader import Bgen, DistMemMap
+        >>> distreader = Bgen('../examples/2500x100.bgen')[:,:10] #Create a reader for the first 10 SNPs
+        >>> pstutil.create_directory_if_necessary("tempdir/tiny.dist.memmap")
+        >>> DistMemMap.write("tempdir/tiny.dist.memmap",distreader)      # Write distreader in DistMemMap format
         DistMemMap('tempdir/tiny.dist.memmap')
 
         """
@@ -160,7 +160,7 @@ class DistMemMap(PstMemMap,DistData):
         row_ascii = np.array(distreader.row,dtype='S') #!!!avoid this copy when not needed
         col_ascii = np.array(distreader.col,dtype='S') #!!!avoid this copy when not needed
 
-        sid_batch_size = sid_batch_size or max((100*1000)//max(1,distreader.row_count),1)
+        block_size = block_size or max((100*1000)//max(1,distreader.row_count),1)
 
         if hasattr(distreader,'val'):
             order = PstMemMap._order(distreader) if order=='A' else order
@@ -177,17 +177,14 @@ class DistMemMap(PstMemMap,DistData):
             with log_in_place("sid_index ", logging.INFO) as updater:
                 while start < distreader.sid_count:
                     updater('{0} of {1}'.format(start,distreader.sid_count))
-                    distdata = distreader[:,start:start+sid_batch_size].read(order=order,dtype=dtype)
+                    distdata = distreader[:,start:start+block_size].read(order=order,dtype=dtype)
                     self.val[:,start:start+distdata.sid_count,:] = distdata.val
                     start += distdata.sid_count
 
         self.flush()
         if os.path.exists(filename):
            remove(filename) 
-        try:
-            move(filename+'.temp',filename)#!!!cmk do this in snpmemmap, pstmemmap too
-        except:
-            print('!!!cmk')
+        move(filename+'.temp',filename)#!!!cmk40 do this in snpmemmap, pstmemmap too
         logging.debug("Done writing " + filename)
         return DistMemMap(filename)
 

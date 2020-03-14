@@ -42,14 +42,14 @@ class _Dist2Snp(SnpReader):
 
         assert row_index_or_none is None and col_index_or_none is None #real assert because indexing should already be pushed to the inner distreader
 
-        weights = np.array([0,.5,1])*self.max_weight
+        weights = np.array([0,.5,1],dtype=dtype)*self.max_weight
 
         #Do all-at-once (not in blocks) if 1. No block size is given or 2. The #ofSNPs < Min(block_size,iid_count)
         if self.block_size is None or (self.sid_count <= self.block_size or self.sid_count <= self.iid_count):
             distdata = DistReader._as_distdata(self.distreader,dtype=dtype,order=order,force_python_only=force_python_only)
             val = (distdata.val*weights).sum(axis=-1)
             has_right_order = order="A" or (order=="C" and val.flags["C_CONTIGUOUS"]) or (order=="F" and val.flags["F_CONTIGUOUS"])
-            assert has_right_order, "!!!cmk expect this to be right"
+            assert has_right_order
             return val
         else: #Do in blocks
             t0 = time.time()
@@ -81,19 +81,19 @@ class _Dist2Snp(SnpReader):
 
     @property
     def sid(self):
-        '''The :attr:`.SnpReader.sid` property of the SNP data.
+        '''The :attr:`SnpReader.sid` property of the SNP data.
         '''
         return self.distreader.sid
 
     @property
     def sid_count(self):
-        '''The :attr:`.SnpReader.sid_count` property of the SNP data.
+        '''The :attr:`SnpReader.sid_count` property of the SNP data.
         '''
         return self.distreader.sid_count
 
     @property
     def pos(self):
-        '''The :attr:`.SnpReader.pos` property of the SNP data.
+        '''The :attr:`SnpReader.pos` property of the SNP data.
         '''
         return self.distreader.pos
 

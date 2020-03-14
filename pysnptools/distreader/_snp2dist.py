@@ -42,13 +42,13 @@ class _Snp2Dist(DistReader):
         if order=='A':
             order='F'
         distval = np.zeros([snpval.shape[0],snpval.shape[1],3],dtype=dtype,order=order)
-        distval = distval.reshape(-1,distval.shape[-1])
+        distval = distval.reshape(-1,distval.shape[-1],order=order)
         factor = 2.0/self.max_weight
         for count in range(distval.shape[-1]):
-            bool_array = snpval.reshape(-1)*factor==count
+            bool_array = snpval.reshape(-1,order=order)*factor==count
             distval[bool_array,count]=1
         distval[distval.sum(axis=-1)!=1,:]=np.nan #replace any dist that doesn't sum to 1 with nan
-        distval = distval.reshape([snpval.shape[0],snpval.shape[1],distval.shape[-1]])
+        distval = distval.reshape([snpval.shape[0],snpval.shape[1],distval.shape[-1]],order=order)
         return distval
 
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
@@ -60,13 +60,13 @@ class _Snp2Dist(DistReader):
             val = self._snpval_to_distval(snpdata.val,order,dtype)
 
             has_right_order = order="A" or (order=="C" and val.flags["C_CONTIGUOUS"]) or (order=="F" and val.flags["F_CONTIGUOUS"])
-            assert has_right_order, "!!!cmk expect this to be right"
+            assert has_right_order
             return val
         else: #Do in blocks
             t0 = time.time()
             if order=='A':
                 order = 'F'
-            val = np.zeros([self.iid_count,self.sid_count,3],dtype=dtype,order=order)#!!!cmk should use empty or fillnan
+            val = np.zeros([self.iid_count,self.sid_count,3],dtype=dtype,order=order)#LATER use empty or fillnan???
 
             logging.info("reading {0} value data in blocks of {1} SNPs and finding distribution (for {2} individuals)".format(self.sid_count, self.block_size, self.iid_count))
             ct = 0
@@ -93,19 +93,19 @@ class _Snp2Dist(DistReader):
 
     @property
     def sid(self):
-        '''The :attr:`.SnpReader.sid` property of the SNP data.
+        '''The :attr:`SnpReader.sid` property of the SNP data.
         '''
         return self.snpreader.sid
 
     @property
     def sid_count(self):
-        '''The :attr:`.SnpReader.sid_count` property of the SNP data.
+        '''The :attr:`SnpReader.sid_count` property of the SNP data.
         '''
         return self.snpreader.sid_count
 
     @property
     def pos(self):
-        '''The :attr:`.SnpReader.pos` property of the SNP data.
+        '''The :attr:`SnpReader.pos` property of the SNP data.
         '''
         return self.snpreader.pos
 

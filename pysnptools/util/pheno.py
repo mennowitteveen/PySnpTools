@@ -29,7 +29,7 @@ def loadOnePhen(filename,  i_pheno = 0, missing = '-9', vectorize = False):
 
     * 'header' : [1] array phenotype namesv (only if header line is specified in file),
     * 'vals'   : [N*1] array of phenotype-data,
-    * 'iid'    : [N*2] array of family IDs and case IDs
+    * 'iid'    : [N*2] array of family IDs and individual IDs
     '''
     missing = missing
     allColumns = loadPhen(filename, missing)
@@ -73,7 +73,7 @@ def loadPhen(filename, missing = '-9',famid='FID', sampid='ID'):
 
     * 'header' : [1] array phenotype names (only if header line is specified in file),
     * 'vals'   : [N*1] array of phenotype-data,
-    * 'iid'    : [N*2] array of family IDs and case IDs
+    * 'iid'    : [N*2] array of family IDs and individual IDs
     '''
     if missing == '-9':
         logging.warning("loadPhen is using default missing value of '-9'.")

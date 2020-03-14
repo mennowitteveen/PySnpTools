@@ -10,7 +10,7 @@ class SnpNpz(PstNpz,SnpReader):
 
     See :class:`.SnpReader` for general examples of using SnpReaders.
 
-    The general NPZ format is described in http://docs.scipy.org/doc/numpy/reference/generated/numpy.savez.html. The SnpNpz format stores
+    The general NPZ format is described `here <http://docs.scipy.org/doc/numpy/reference/generated/numpy.savez.html>`__. The SnpNpz format stores
     val, iid, sid, and pos information in NPZ format.
    
     **Constructor:**

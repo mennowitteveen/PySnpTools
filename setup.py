@@ -137,9 +137,11 @@ setup(
         "tests/datasets/snpgen.fam",
         ]
                  },
-    install_requires = ['scipy>=1.1.0', 'numpy>=1.11.3', 'pandas>=0.19.0', 'psutil>=5.6.7', 'h5py>=2.10.0', 'dill>=0.2.9'],
+    install_requires = ['scipy>=1.1.0', 'numpy>=1.11.3', 'pandas>=0.19.0', 'psutil>=5.6.7', 'h5py>=2.10.0', 'dill>=0.2.9'], #!!!cmk add bgen reader
 
     # extensions
     cmdclass = cmdclass,
     ext_modules = ext_modules
   )
+
+#!!!cmk update pyproject.toml with whatever needed to avoid pep 517 and/or 518 warnings https://snarky.ca/clarifying-pep-518/

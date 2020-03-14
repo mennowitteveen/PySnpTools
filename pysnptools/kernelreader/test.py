@@ -135,6 +135,43 @@ class TestKernelReader(unittest.TestCase):
 
         logging.info("Done with test_intersection")
 
+    def test_respect_read_inputs(self):
+        from pysnptools.kernelreader import KernelHdf5,Identity,KernelNpz,SnpKernel
+        from pysnptools.standardizer import Unit
+        from pysnptools.standardizer import Identity as StdIdentity
+        from pysnptools.snpreader import Bed
+
+        iidref = KernelNpz('../examples/toydata.kernel.npz').iid
+
+        for kernelreader in [
+                           SnpKernel(Bed('../examples/toydata.bed',count_A1=True),StdIdentity())[::2,::2],
+                           Bed('../examples/toydata.bed',count_A1=True)[::2,::2].read_kernel(StdIdentity()),
+                           KernelHdf5('../examples/toydata.kernel.hdf5'),
+                           Identity(iidref,test=[('0','x'),('0','y')]),
+                           Identity(iidref),
+                           KernelNpz('../examples/toydata.kernel.npz'),
+                           KernelNpz('../examples/toydata.kernel.npz').read(),
+                           KernelNpz('../examples/toydata.kernel.npz')[::2,::2],
+                           Bed('../examples/toydata.bed',count_A1=True).read_kernel(Unit()),
+                           SnpKernel(Bed('../examples/toydata.bed',count_A1=True),Unit())
+                          ]:
+            logging.info(str(kernelreader))
+            for order in ['F','C','A']:
+                for dtype in [np.float32,np.float64]:
+                    for force_python_only in [True,False]:
+                        for view_ok in [True,False]:
+                            val = kernelreader.read(order=order,dtype=dtype,force_python_only=force_python_only,view_ok=view_ok).val
+                            has_right_order = order=="A" or (order=="C" and val.flags["C_CONTIGUOUS"]) or (order=="F" and val.flags["F_CONTIGUOUS"])
+                            if hasattr(kernelreader,'val') and not view_ok:
+                                assert kernelreader.val is not val
+                            if (hasattr(kernelreader,'val') and view_ok and kernelreader.val is not val and
+                                (order == 'A' or (order == 'F' and kernelreader.val.flags['F_CONTIGUOUS']) or (order == 'C' and kernelreader.val.flags['C_CONTIGUOUS'])) and
+                                (dtype is None or  kernelreader.val.dtype == dtype)):
+                                logging.info("{0} could have read a view, but didn't".format(distreader))
+                            assert val.dtype == dtype and has_right_order
+
+
+
     def test_respect_inputs(self):
         np.random.seed(0)
         for dtype_start,decimal_start in [(np.float32,5),(np.float64,10)]:

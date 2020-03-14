@@ -16,10 +16,10 @@ class SnpData(PstData,SnpReader):
     See :class:`.SnpReader` for details and examples.
 
     **Constructor:**
-        :Parameters: * **iid** (an array of string pair) -- The :attr:`.SnpReader.iid` information.
-                     * **sid** (an array of strings) -- The :attr:`.SnpReader.sid` information.
+        :Parameters: * **iid** (an array of string pair) -- The :attr:`SnpReader.iid` information.
+                     * **sid** (an array of strings) -- The :attr:`SnpReader.sid` information.
                      * **val** (a 2-D array of floats) -- The SNP values
-                     * **pos** (optional, an array of strings) -- The :attr:`.SnpReader.pos` information
+                     * **pos** (optional, an array of strings) -- The :attr:`SnpReader.pos` information
                      * **name** (optional, string) -- Information to be display about the origin of this data
                      * **copyinputs_function** (optional, function) -- *Used internally by optional clustering code*
 
@@ -33,9 +33,9 @@ class SnpData(PstData,SnpReader):
 
     **Equality:**
 
-        Two SnpData objects are equal if their four arrays (:attr:`.SnpData.val`, :attr:`SnpReader.iid`, :attr:`.SnpReader.sid`, and :attr:`.SnpReader.pos`)
+        Two SnpData objects are equal if their four arrays (:attr:`SnpData.val`, :attr:`SnpReader.iid`, :attr:`SnpReader.sid`, and :attr:`SnpReader.pos`)
         are 'array_equal'. (Their 'name' does not need to be the same).
-        If either :attr:`.SnpData.val` contains NaN, the objects will not be equal. However, :meth:`.SnpData.allclose` can be used to treat NaN as
+        If either :attr:`SnpData.val` contains NaN, the objects will not be equal. However, :meth:`SnpData.allclose` can be used to treat NaN as
         regular values.
 
         :Example:
@@ -61,7 +61,7 @@ class SnpData(PstData,SnpReader):
 
     **Methods beyond** :class:`.SnpReader`
     """
-
+    #!!!cmk23 all the *Data should raise an error if the dtype is not float32 or float64
     def __init__(self, iid, sid, val, pos=None, name=None, parent_string=None, copyinputs_function=None):
 
         #We don't have a 'super(SnpData, self).__init__()' here because SnpData takes full responsibility for initializing both its superclasses
@@ -93,7 +93,7 @@ class SnpData(PstData,SnpReader):
         '''
         :param value: Other object with which to compare.
         :type value: :class:`SnpData`
-        :param equal_nan: (Default: True) Tells if NaN in :attr:`.SnpData.val` should be treated as regular values when testing equality.
+        :param equal_nan: (Default: True) Tells if NaN in :attr:`SnpData.val` should be treated as regular values when testing equality.
         :type equal_nan: bool
 
         >>> import numpy as np

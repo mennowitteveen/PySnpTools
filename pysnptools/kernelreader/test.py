@@ -46,8 +46,8 @@ class TestKernelReader(unittest.TestCase):
         #unit vs beta
         for std in [stdizer.Beta(2,10),stdizer.Unit()]:
             np.random.seed(0)
-            snp_count = 20
-            snpreader = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(snp_count)],val=np.array(np.random.randint(3,size=[3,snp_count]),dtype=np.float64,order='F'))
+            sid_count = 20
+            snpreader = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(sid_count)],val=np.array(np.random.randint(3,size=[3,sid_count]),dtype=np.float64,order='F'))
             kerneldata0,trained0,diag0 = SnpKernel(snpreader,std,block_size=1)._read_with_standardizing(to_kerneldata=True,return_trained=True)
             kerneldata1,trained1,diag1 = SnpKernel(snpreader,std,block_size=None)._read_with_standardizing(to_kerneldata=True,return_trained=True)
             np.testing.assert_array_almost_equal(kerneldata0.val,kerneldata1.val, decimal=10)
@@ -63,9 +63,9 @@ class TestKernelReader(unittest.TestCase):
                 #unit vs beta
                 for std in [stdizer.Unit(),stdizer.Beta(2,10)]:
                         np.random.seed(0)
-                        snp_count = 20
-                        snpreader0 = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(snp_count)],val=np.array(np.random.randint(3,size=[3,snp_count]),dtype=dtype,order=order))
-                        snpreader1 = SnpData(iid=[["3","3"],["4","4"]],sid=[str(i) for i in range(snp_count)],val=np.array(np.random.randint(3,size=[2,snp_count]),dtype=dtype,order=order))
+                        sid_count = 20
+                        snpreader0 = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(sid_count)],val=np.array(np.random.randint(3,size=[3,sid_count]),dtype=dtype,order=order))
+                        snpreader1 = SnpData(iid=[["3","3"],["4","4"]],sid=[str(i) for i in range(sid_count)],val=np.array(np.random.randint(3,size=[2,sid_count]),dtype=dtype,order=order))
 
                         #has SNC
                         for has_SNC_in_train in [False, True]:
@@ -179,8 +179,8 @@ class TestKernelReader(unittest.TestCase):
         np.random.seed(0)
         for dtype_start,decimal_start in [(np.float32,5),(np.float64,10)]:
             for order_start in ['F','C','A']:
-                for snp_count in [20,2]:
-                    snpdataX = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(snp_count)],val=np.array(np.random.randint(3,size=[3,snp_count]),dtype=dtype_start,order=order_start))
+                for sid_count in [20,2]:
+                    snpdataX = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(sid_count)],val=np.array(np.random.randint(3,size=[3,sid_count]),dtype=dtype_start,order=order_start))
                     for stdx in [stdizer.Beta(1,25),stdizer.Identity(),stdizer.Unit()]:
                         for snpreader0 in [snpdataX,snpdataX[:,1:]]:
                             snpreader1 = snpreader0[1:,:]

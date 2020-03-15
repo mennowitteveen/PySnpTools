@@ -126,17 +126,14 @@ class PstHdf5(PstReader):
                 return False
         return True
 
-    #!!!cmk22 add a test for flush that shows that it can be reopened    
-    def flush(self):#!!!cmk22 update this for hdf5
-        '''Flush :attr:`PstMemMap.val` to disk and close the file. (If values or properties are accessed again, the file will be reopened.)
+    def flush(self):
+        '''Flush the connection to the HDF5 file. (If values or properties are accessed again, the file will be reopened.)
 
         >>> import pysnptools.util as pstutil
-        >>> from pysnptools.pstreader import PstMemMap
-        >>> filename = "tempdir/tiny.pst.memmap"
-        >>> pstutil.create_directory_if_necessary(filename)
-        >>> pst_mem_map = PstMemMap.empty(row=['a','b','c'],col=['y','z'],filename=filename,row_property=['A','B','C'],order="F",dtype=np.float64)
-        >>> pst_mem_map.val[:,:] = [[1,2],[3,4],[np.nan,6]]
-        >>> pst_mem_map.flush()
+        >>> from pysnptools.pstreader import PstHdf5
+        >>> reader = PstHdf5('../examples/toydata.kernel.hdf5')
+        >>> val1 = reader[0,0].read()
+        >>> reader.flush()
 
         '''
         if self._ran_once:

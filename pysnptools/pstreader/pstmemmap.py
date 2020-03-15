@@ -99,7 +99,7 @@ class PstMemMap(PstData):
 
     
     @staticmethod
-    def empty(row, col, filename, row_property=None, col_property=None, order="F", dtype=np.float64, val_count=None): #!!!cmk22 document val_count
+    def empty(row, col, filename, row_property=None, col_property=None, order="F", dtype=np.float64, val_count=None):
         '''Create an empty :class:`.PstMemMap` on disk.
 
         :param row: The :attr:`PstReader.row` information
@@ -122,6 +122,9 @@ class PstMemMap(PstData):
 
         :param dtype: {numpy.float64 (default), numpy.float32}, optional -- The data-type for the :attr:`PstMemMap.val` ndarray.
         :type dtype: data-type
+
+        :param val_count: (Default: None), optional -- The shape of the last dimension of :attr:`PstMemMap.val`. *None* means each value is a scalar.
+        :type val_count: None or a number
 
         :rtype: :class:`.PstMemMap`
 

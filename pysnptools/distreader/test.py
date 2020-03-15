@@ -269,10 +269,10 @@ class TestDistReaders(unittest.TestCase):
 
     def test_block_size_DistData(self):
         np.random.seed(0)
-        snp_count = 20
-        val=np.array(np.random.random(size=[3,snp_count,3]),dtype=np.float64,order='F')
+        sid_count = 20
+        val=np.array(np.random.random(size=[3,sid_count,3]),dtype=np.float64,order='F')
         val /= val.sum(axis=2,keepdims=True)  #make probabilities sum to 1
-        distreader = DistData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(snp_count)],val=val)
+        distreader = DistData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(sid_count)],val=val)
         snpdata0 = distreader.as_snp(max_weight=100,block_size=1).read()
         snpdata1 = distreader.as_snp(max_weight=100,block_size=None).read()
         np.testing.assert_array_almost_equal(snpdata0.val,snpdata1.val, decimal=10)
@@ -281,9 +281,9 @@ class TestDistReaders(unittest.TestCase):
         from pysnptools.snpreader import SnpData
         from pysnptools.distreader._snp2dist import _Snp2Dist
         np.random.seed(0)
-        snp_count = 20
-        val=np.array(np.random.randint(0,3,size=[3,snp_count]),dtype=np.float64,order='F')
-        snpreader = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(snp_count)],val=val)
+        sid_count = 20
+        val=np.array(np.random.randint(0,3,size=[3,sid_count]),dtype=np.float64,order='F')
+        snpreader = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(sid_count)],val=val)
         distdata0 = snpreader.as_dist(max_weight=2,block_size=1).read()
         distdata1 = snpreader.as_dist(max_weight=2,block_size=None).read()
         np.testing.assert_array_almost_equal(distdata0.val,distdata1.val, decimal=10)
@@ -418,10 +418,10 @@ class TestDistReaders(unittest.TestCase):
         np.random.seed(0)
         for dtype_start,decimal_start in [(np.float32,5),(np.float64,10)]:
             for order_start in ['F','C','A']:
-                for snp_count in [20,2]:
-                    val=np.array(np.random.random(size=[3,snp_count,3]),dtype=dtype_start,order=order_start)
+                for sid_count in [20,2]:
+                    val=np.array(np.random.random(size=[3,sid_count,3]),dtype=dtype_start,order=order_start)
                     val /= val.sum(axis=2,keepdims=True)  #make probabilities sum to 1
-                    distdataX = DistData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(snp_count)],val=val)
+                    distdataX = DistData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(sid_count)],val=val)
                     for max_weight in [1.0,2.0]:
                         weights = np.array([0,.5,1])*max_weight
                         for distreader0 in [distdataX,distdataX[:,1:]]:

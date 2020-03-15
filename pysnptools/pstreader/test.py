@@ -249,6 +249,49 @@ class TestPstReader(unittest.TestCase):
         assert np.array_equal(pstdata[1:,:2].col_property,pstdata.col_property[:2])
         logging.info("done with test")
 
+    def test_flush(self):
+
+        previous_wd = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
+        reader = PstHdf5('../examples/toydata.kernel.hdf5')
+        val1 = reader[0,0].read()
+        reader.flush()
+        val2 = reader[0,0].read()
+        assert val1 == val2
+
+    def test_respect_read_inputs(self):
+        from pysnptools.pstreader import _MergeRows,_MergeCols
+
+        previous_wd = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
+        for pstreader in [
+                           PstNpz('../examples/toydata10.snp.npz'),
+                           _MergeRows([PstHdf5('../examples/toydata.snpmajor.snp.hdf5')[:5,:].read(),PstHdf5('../examples/toydata.snpmajor.snp.hdf5')[5:,:].read()]),
+                           _MergeCols([PstHdf5('../examples/toydata.snpmajor.snp.hdf5')[:,:5].read(),PstHdf5('../examples/toydata.snpmajor.snp.hdf5')[:,5:].read()]),
+                           PstHdf5('../examples/toydata.snpmajor.snp.hdf5')[::2,::2],
+                           PstHdf5('../examples/toydata.snpmajor.dist.hdf5').read(),
+                           PstHdf5('../examples/toydata.kernel.hdf5'),
+                           PstMemMap('../examples/tiny.pst.memmap')
+                          ]:
+            logging.info(str(pstreader))
+            for order in ['F','C','A']:
+                for dtype in [np.float32,np.float64]:
+                    for force_python_only in [True,False]:
+                        for view_ok in [True,False]:
+                            val = pstreader.read(order=order,dtype=dtype,force_python_only=force_python_only,view_ok=view_ok).val
+                            has_right_order = order=="A" or (order=="C" and val.flags["C_CONTIGUOUS"]) or (order=="F" and val.flags["F_CONTIGUOUS"])
+                            if hasattr(pstreader,'val') and not view_ok:
+                                assert pstreader.val is not val
+                            if (hasattr(pstreader,'val') and view_ok and pstreader.val is not val and
+                                (order == 'A' or (order == 'F' and pstreader.val.flags['F_CONTIGUOUS']) or (order == 'C' and pstreader.val.flags['C_CONTIGUOUS'])) and
+                                (dtype is None or  pstreader.val.dtype == dtype)):
+                                logging.info("{0} could have read a view, but didn't".format(pstreader))
+                            assert val.dtype == dtype and has_right_order
+
+        os.chdir(previous_wd)
+
     def test_inputs4(self):
         from pysnptools.pstreader import PstData
         pstdata = PstData(row=None,

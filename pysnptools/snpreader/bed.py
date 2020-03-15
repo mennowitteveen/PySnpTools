@@ -87,6 +87,7 @@ class Bed(SnpReader):
         mode = self._filepointer.read(1) #\x01 = SNP major \x00 = individual major
         if mode != b'\x01': raise Exception('only SNP-major is implemented')
         logging.info("bed file is open {0}".format(bedfile))
+
     def _close_bed(self):
         self.__del__()
         self.file_pointer = None
@@ -107,6 +108,7 @@ class Bed(SnpReader):
             self._open_bed()
             self._close_bed()
 
+    #!!!cmk99 should Bed have a "flush"
     def __del__(self):
         if hasattr(self,'_filepointer') and self._filepointer is not None:  # we need to test this because Python doesn't guarantee that __init__ was fully run
             self._filepointer.close()

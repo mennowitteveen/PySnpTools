@@ -140,7 +140,7 @@ class PstData(PstReader):
         if input is None:
             assert row_count == 0 or col_count == 0, "If val is None, either row_count or col_count must be 0"
             input = _default_empty_creator_val(row_count, col_count)
-        elif not isinstance(input,np.ndarray or (input.dtype not in [np.float32,np.float64])):
+        elif not isinstance(input,np.ndarray) or input.dtype.type not in {np.float32,np.float64}:
             input = np.array(input,dtype=np.float64)
 
         assert len(input.shape) in {2,3}, "Expect val to be two or three dimensional."

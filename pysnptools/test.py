@@ -571,6 +571,63 @@ class TestPySnpTools(unittest.TestCase):
             GCx = Unit().standardize(SNPs_floatCx)
             self.assertTrue(np.allclose(GFx, G2x, rtol=1e-05, atol=1e-05))
 
+    def test_val_is_float(self):
+        from pysnptools.snpreader import SnpData
+        from pysnptools.distreader import DistData
+        from pysnptools.kernelreader import KernelData
+        from pysnptools.pstreader import PstData
+
+        iid_count = 3
+        sid_count = 2
+        iid = [[str(i),str(i)] for i in range(iid_count)]
+        sid = [str(s) for s in range(sid_count)]
+        np.random.seed(0)
+        vali = np.random.randint(10,size=[iid_count,sid_count])
+        snpdata = SnpData(iid=iid,sid=sid,val=vali)
+        assert snpdata.val.dtype == np.float64
+        snpdata = SnpData(iid=iid,sid=sid,val=np.array(vali,dtype=np.float32))
+        assert snpdata.val.dtype == np.float32
+        snpdata = SnpData(iid=iid,sid=sid,val=np.array(vali,dtype=np.float64))
+        assert snpdata.val.dtype == np.float64
+        snpdata = SnpData(iid=iid,sid=sid,val=np.array(vali,dtype=np.float16))
+        assert snpdata.val.dtype == np.float64
+        assert np.float64 == SnpData(iid=iid,sid=sid,val=np.array(vali,dtype=np.str_)).val.dtype
+
+        val3D = np.random.randint(10,size=[iid_count,sid_count,3])
+        distdata = DistData(iid=iid,sid=sid,val=np.array(val3D,dtype=np.float64))
+        assert distdata.val.dtype == np.float64
+
+        valk = np.random.randint(10,size=[iid_count,iid_count])
+        valk3d = np.random.randint(10,size=[iid_count,iid_count,3])
+        assert np.float64 == KernelData(iid=iid,val=valk).val.dtype
+        assert np.float64 == PstData(row=iid,col=iid,val=valk).val.dtype
+        assert np.float64 == PstData(row=iid,col=iid,val=valk3d).val.dtype
+
+        valstr = np.array(vali,dtype=np.str_)
+        valstr[0,0] = 'cannot convert'
+        error_seen = False
+        try:
+            SnpData(iid=iid,sid=sid,val=valstr) #expect error
+        except:
+            error_seen = True
+        assert error_seen
+        error_seen = False
+        try:
+            SnpData(iid=iid,sid=sid,val=np.array(val3D,dtype=np.float64)) #expect error
+        except:
+            error_seen = True
+        assert error_seen
+        error_seen = False
+        try:
+            KernelData(iid=iid,val=valk3d) #expect error
+        except:
+            error_seen = True
+        assert error_seen
+
+
+
+
+
     def test_respect_read_inputs(self):
         from pysnptools.snpreader import _MergeIIDs,_MergeSIDs, SnpGen, SnpMemMap
         from pysnptools.distreader import Bgen

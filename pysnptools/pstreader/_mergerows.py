@@ -80,42 +80,42 @@ class _MergeRows(PstReader): #!!!why does this start with _
         for reader in self.reader_list:
             copier.input(reader)
 
-    def _create_reader_and_iid_index_list(self,iid_index):
+    def _create_reader_and_row_index_list(self,row_index):
         result = []
         start = 0
         for reader_index in range(len(self.reader_list)): #!!!this needs test coverage
             stop = start + self._row_count_list[reader_index]
-            is_here = (iid_index >= start) * (iid_index < stop)
+            is_here = (row_index >= start) * (row_index < stop)
             if any(is_here):
-                iid_index_rel = iid_index[is_here]-start
-                result.append((reader_index,is_here,iid_index_rel))
+                row_index_rel = row_index[is_here]-start
+                result.append((reader_index,is_here,row_index_rel))
             start = stop
         return result
 
-    def _read(self, iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok):
-        #!!!tests to do: no iid's
-        #!!!tests to do: no sid's
+    def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
+        #!!!tests to do: no row's
+        #!!!tests to do: no col's
         #!!!test to do: from file 1, file2, and then file1 again
 
-        iid_index = iid_index_or_none if iid_index_or_none is not None else np.arange(self.iid_count) #!!!might want to special case reading all
-        sid_index_or_none_count = self.sid_count if sid_index_or_none is None else len(sid_index_or_none)
-        reader_and_iid_index_list = self._create_reader_and_iid_index_list(iid_index)
+        row_index = row_index_or_none if row_index_or_none is not None else np.arange(self.row_count) #!!!might want to special case reading all
+        col_index_or_none_count = self.col_count if col_index_or_none is None else len(col_index_or_none)
+        reader_and_row_index_list = self._create_reader_and_row_index_list(row_index)
 
-        if len(reader_and_iid_index_list) == 0:
-            return self.reader_list[0]._read(iid_index,sid_index_or_none,order,dtype,force_python_only, view_ok)
-        elif len(reader_and_iid_index_list) == 1:
-            reader_index,iid_index_in,iid_index_rel = reader_and_iid_index_list[0]
+        if len(reader_and_row_index_list) == 0:
+            return self.reader_list[0]._read(row_index,col_index_or_none,order,dtype,force_python_only, view_ok)
+        elif len(reader_and_row_index_list) == 1:
+            reader_index,row_index_in,row_index_rel = reader_and_row_index_list[0]
             reader = self.reader_list[reader_index]
-            return reader._read(iid_index_rel,sid_index_or_none,order,dtype,force_python_only, view_ok)
+            return reader._read(row_index_rel,col_index_or_none,order,dtype,force_python_only, view_ok)
         else:
-            logging.info("Starting read from {0} subreaders".format(len(reader_and_iid_index_list)))
+            logging.info("Starting read from {0} subreaders".format(len(reader_and_row_index_list)))
             if order == 'A' or order is None:
                 order = 'F'
-            val = np.empty((len(iid_index),sid_index_or_none_count),dtype=dtype,order=order)
-            for reader_index,is_here,iid_index_rel in reader_and_iid_index_list:
+            val = np.empty((len(row_index),col_index_or_none_count),dtype=dtype,order=order)
+            for reader_index,is_here,row_index_rel in reader_and_row_index_list:
                 reader = self.reader_list[reader_index]
                 if reader_index % 1 == 0: logging.info("Reading from #{0}: {1}".format(reader_index,reader))
-                val[is_here,:] = reader._read(iid_index_rel,sid_index_or_none,order,dtype,force_python_only, view_ok=True)
-            logging.info("Ended read from {0} subreaders".format(len(reader_and_iid_index_list)))
+                val[is_here,:] = reader._read(row_index_rel,col_index_or_none,order,dtype,force_python_only, view_ok=True)
+            logging.info("Ended read from {0} subreaders".format(len(reader_and_row_index_list)))
             return val
 

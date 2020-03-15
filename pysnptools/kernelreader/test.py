@@ -141,6 +141,9 @@ class TestKernelReader(unittest.TestCase):
         from pysnptools.standardizer import Identity as StdIdentity
         from pysnptools.snpreader import Bed
 
+        previous_wd = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
         iidref = KernelNpz('../examples/toydata.kernel.npz').iid
 
         for kernelreader in [
@@ -169,7 +172,7 @@ class TestKernelReader(unittest.TestCase):
                                 (dtype is None or  kernelreader.val.dtype == dtype)):
                                 logging.info("{0} could have read a view, but didn't".format(distreader))
                             assert val.dtype == dtype and has_right_order
-
+        os.chdir(previous_wd)
 
 
     def test_respect_inputs(self):

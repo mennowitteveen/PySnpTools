@@ -361,7 +361,6 @@ if __name__ == "__main__":
         from pysnptools.distreader import Bgen
         dist_on_disk = Bgen('../examples/2500x100.bgen')
         print(dist_on_disk.pos[:4,].astype('int')) # print position information for the first three sids: #The '...' is for possible space char
-    #!!!cmk24  Bgen('../examples/2500x100.bgen').read() seems slow. This could be an example for memmap speed up
 
     import doctest
     doctest.testmod(optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)

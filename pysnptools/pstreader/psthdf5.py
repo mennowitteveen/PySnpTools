@@ -126,8 +126,8 @@ class PstHdf5(PstReader):
                 return False
         return True
 
-    #!!!cmk2 add a test for flush that shows that it can be reopened    
-    def flush(self):#!!!cmk9 update this for hdf5
+    #!!!cmk22 add a test for flush that shows that it can be reopened    
+    def flush(self):#!!!cmk22 update this for hdf5
         '''Flush :attr:`PstMemMap.val` to disk and close the file. (If values or properties are accessed again, the file will be reopened.)
 
         >>> import pysnptools.util as pstutil
@@ -173,7 +173,7 @@ class PstHdf5(PstReader):
                 return np.empty([len(self._row),block_size,self._val_count], dtype=dtype, order=order), order
         else:
             if self._val_count is None:
-                #!!!cmk2 should make own version np.empty with optional 3rd dimension and np.nan fill?
+                #!!!cmk29 should make own version np.empty with optional 3rd dimension and np.nan fill?
                 return np.empty([len(self._row),block_size], dtype=dtype, order=opposite_order), opposite_order
             else:
                 return np.empty([len(self._row),block_size, self._val_count,], dtype=dtype, order=opposite_order), opposite_order
@@ -215,8 +215,8 @@ class PstHdf5(PstReader):
             val = np.empty([row_index_count, col_index_count], dtype=dtype, order=order)
         else:
             val = np.empty([row_index_count, col_index_count,self._val_count], dtype=dtype, order=order)
-        val.fill(np.nan) #!!!cmk2 Keep this?
-        #!!!cmk2 val_count may not be the right name. How about _val_shape for now?
+        val.fill(np.nan) #!!!cmk29 Keep this?
+        #!!!cmk29 val_count may not be the right name. How about _val_shape for now?
 
         matches_order = self.is_col_major == (order=="F")
         is_simple = not force_python_only and row_is_sorted and col_are_sorted and matches_order #If 'is_simple' may be able to use a faster reader

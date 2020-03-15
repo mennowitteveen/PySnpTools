@@ -46,7 +46,7 @@ class DistMemMap(PstMemMap,DistData):
     val = property(PstMemMap._get_val,PstMemMap._set_val)
     """The 3D NumPy memmap array of floats that represents the distribution of SNP values.
 
-    >>> !!!cmk22
+    >>> !!!cmk29
     >>> from pysnptools.distreader import DistMemMap
     >>> dist_mem_map = DistMemMap('../examples/tiny.dist.memmap')
     >>> print(dist_mem_map.val[0,1])

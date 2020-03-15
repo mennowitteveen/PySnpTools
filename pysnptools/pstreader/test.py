@@ -32,7 +32,7 @@ class TestPstReader(unittest.TestCase):
 
         print("done")
 
-    def test_big_npz_3d(self): #!!!cmk2 test for python2, too
+    def test_big_npz_3d(self): #!!!cmk99 test for python2, too
         logging.info("in test_big_npz_3d")
         n = 1000
         pstdata = PstData(row=range(n-1),col=range(n+1),val=np.zeros([n-1,n+1,3]))

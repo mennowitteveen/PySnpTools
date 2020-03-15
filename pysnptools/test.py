@@ -575,23 +575,27 @@ class TestPySnpTools(unittest.TestCase):
         from pysnptools.snpreader import _MergeIIDs,_MergeSIDs, SnpGen, SnpMemMap
         from pysnptools.distreader import Bgen
 
+        previous_wd = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
+
         for snpreader in [
-                           Bgen('../examples/example.bgen')[:10,::10].as_snp(block_size=10),
-                           Bgen('../examples/bits1.bgen').as_snp(),
+                           _MergeIIDs([Bed('examples/toydata.bed',count_A1=True)[:5,:].read(),Bed('examples/toydata.bed',count_A1=True)[5:,:].read()]),
+                           Bgen('examples/example.bgen')[:10,::10].as_snp(block_size=10),
+                           Bgen('examples/bits1.bgen').as_snp(),
                            SnpGen(seed=0,iid_count=500,sid_count=50),
-                           SnpHdf5('../examples/toydata.snpmajor.snp.hdf5'),
-                           SnpMemMap('../examples/tiny.snp.memmap'),
-                           SnpNpz('../examples/toydata10.snp.npz'),
-                           Bed('../examples/toydata.bed',count_A1=True)[::2,::2],
-                           _MergeIIDs([Bed('../examples/toydata.bed',count_A1=True)[:5,:].read(),Bed('../examples/toydata.bed',count_A1=True)[5:,:].read()]),
-                           _MergeSIDs([Bed('../examples/toydata.bed',count_A1=True)[:,:5].read(),Bed('../examples/toydata.bed',count_A1=True)[:,5:].read()]),
-                           Bed('../examples/toydata.bed',count_A1=True),
-                           Dat('../examples/toydata.dat'),
-                           Dense('../examples/toydata100.dense.txt'),
-                           DistributedBed('../examples/toydataSkip10.distributedbed'),
-                           Ped('../examples/toydata.ped'),
-                           Pheno('../examples/toydata.phe'),
-                           Bed('../examples/toydata.bed',count_A1=True).read()
+                           SnpHdf5('examples/toydata.snpmajor.snp.hdf5'),
+                           SnpMemMap('examples/tiny.snp.memmap'),
+                           SnpNpz('examples/toydata10.snp.npz'),
+                           Bed('examples/toydata.bed',count_A1=True)[::2,::2],
+                           _MergeSIDs([Bed('examples/toydata.bed',count_A1=True)[:,:5].read(),Bed('examples/toydata.bed',count_A1=True)[:,5:].read()]),
+                           Bed('examples/toydata.bed',count_A1=True),
+                           Dat('examples/toydata.dat'),
+                           Dense('examples/toydata100.dense.txt'),
+                           DistributedBed('examples/toydataSkip10.distributedbed'),
+                           Ped('examples/toydata.ped'),
+                           Pheno('examples/toydata.phe'),
+                           Bed('examples/toydata.bed',count_A1=True).read()
                           ]:
             logging.info(str(snpreader))
             for order in ['F','C','A']:
@@ -607,7 +611,7 @@ class TestPySnpTools(unittest.TestCase):
                                 (dtype is None or  snpreader.val.dtype == dtype)):
                                 logging.info("{0} could have read a view, but didn't".format(snpreader))
                             assert val.dtype == dtype and has_right_order
-
+        os.chdir(previous_wd)
 
 
 

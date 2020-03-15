@@ -33,15 +33,23 @@ class KernelHdf5(PstHdf5,KernelReader):
     @property
     def row(self):
         self._run_once()
-        if self._row.dtype.type is not np.str:
-            self._row = np.array(self._row,dtype='str')
+        if self._row.dtype.type is not np.str_:
+            if self._row is self._col:
+                self._row = np.array(self._row,dtype='str')
+                self._col = self._row
+            else:
+                self._row = np.array(self._row,dtype='str')
         return self._row
 
     @property
     def col(self):
         self._run_once()
-        if self._col.dtype.type is not np.str:
-            self._col = np.array(self._col,dtype='str')
+        if self._col.dtype.type is not np.str_:
+            if self._row is self._col:
+                self._col = np.array(self._col,dtype='str')
+                self._row = self._col
+            else:
+                self._col = np.array(self._col,dtype='str')
         return self._col
 
 
@@ -74,6 +82,12 @@ class KernelHdf5(PstHdf5,KernelReader):
 if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO)
+
+    if False:
+        from pysnptools.kernelreader import KernelHdf5
+        data_on_disk = KernelHdf5('../examples/toydata.kernel.hdf5')
+        print(data_on_disk.iid_count)
+
 
     import doctest
     doctest.testmod()

@@ -475,8 +475,7 @@ it also returns itself. See <a class="reference internal" href="#pysnptools.snpr
 </dl>
 <p>The <a class="reference internal" href="#pysnptools.snpreader.SnpReader.read_kernel" title="pysnptools.snpreader.SnpReader.read_kernel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_kernel()</span></code></a> Method</p>
 <blockquote>
-<div><p>!!!cmk check val and read_kernel</p>
-<p>The <a class="reference internal" href="#pysnptools.snpreader.SnpReader.read_kernel" title="pysnptools.snpreader.SnpReader.read_kernel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_kernel()</span></code></a> method, available on any SnpReader, returns a <code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code>. The <code class="xref py py-attr docutils literal notranslate"><span class="pre">val</span></code> property of the <code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code> is
+<div><p>The <a class="reference internal" href="#pysnptools.snpreader.SnpReader.read_kernel" title="pysnptools.snpreader.SnpReader.read_kernel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_kernel()</span></code></a> method, available on any SnpReader, returns a <code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code>. The <code class="xref py py-attr docutils literal notranslate"><span class="pre">val</span></code> property of the <code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code> is
 an ndarray of the (possibility standardized) SNP values multiplied with their transposed selves. When applied to an read-from-disk SnpReader, such as <a class="reference internal" href="#pysnptools.snpreader.Bed" title="pysnptools.snpreader.Bed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bed</span></code></a>,
 the method can save memory by reading (and standardizing) the data in blocks. See <a class="reference internal" href="#pysnptools.snpreader.SnpReader.read_kernel" title="pysnptools.snpreader.SnpReader.read_kernel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_kernel()</span></code></a> for details.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.standardizer</span> <span class="k">import</span> <span class="n">Unit</span>
@@ -490,36 +489,34 @@ the method can save memory by reading (and standardizing) the data in blocks. Se
 </pre></div>
 </div>
 </div></blockquote>
-<p>#!!!cmk add as_dist</p>
 <p>Details of Methods &amp; Properties:</p>
 </dd>
 </dl>
 <dl class="method">
 <dt id="pysnptools.snpreader.SnpReader.as_dist">
 <code class="sig-name descname">as_dist</code><span class="sig-paren">(</span><em class="sig-param">max_weight=2.0</em>, <em class="sig-param">block_size=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpReader.as_dist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> such that the <a class="reference internal" href="#pysnptools.snpreader.SnpData.val" title="pysnptools.snpreader.SnpData.val"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SnpData.val()</span></code></a> property will be a ndarray of expected SNP values.</p>
+<dd><p>Returns a <a class="reference internal" href="#pysnptools.distreader.DistReader" title="pysnptools.distreader.DistReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">pysnptools.distreader.DistReader</span></code></a> such that turns the an allele count of 0,1, or 2 into a probability distribution of
+[1,0,0],[0,1,0], or [0,0,1], respectively. Any other values produce a distribution of [NaN,NaN,NaN].</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>block_size</strong> (<em>int</em><em> or </em><em>None</em>) – optional – Default of None (meaning to load all). Suggested number of sids to read into memory at a time.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>max_weight</strong> (<em>number</em>) – optional – Tells the maximum allele count. Default of 2.</p></li>
+<li><p><strong>block_size</strong> (<em>int</em><em> or </em><em>None</em>) – optional – Default of None (meaning to load all). Suggested number of sids to read into memory at a time.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p>class:<cite>SnpData</cite></p>
+<dd class="field-even"><p>class:<cite>DistReader</cite></p>
 </dd>
-</dl>
-<p>Calling the method again causes the distribution values to be re-read and allocates a new class:<cite>SnpData</cite>.</p>
-<p>When applied to an read-from-disk SnpReader, such as <code class="xref py py-class docutils literal notranslate"><span class="pre">Dist.Npz</span></code>, the method can save memory by reading the data in blocks.#!!!cmk true?</p>
-<dl class="field-list simple">
 <dt class="field-odd">Example</dt>
 <dd class="field-odd"><p></p></dd>
 </dl>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.distreader</span> <span class="k">import</span> <span class="n">Bgen</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dist_on_disk</span> <span class="o">=</span> <span class="n">Bgen</span><span class="p">(</span><span class="s1">&#39;../examples/2500x100.bgen&#39;</span><span class="p">)</span> <span class="c1"># Specify distribution data on disk</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">snpreader1</span> <span class="o">=</span> <span class="n">dist_on_disk</span><span class="o">.</span><span class="n">as_snp</span><span class="p">(</span><span class="n">max_weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snpreader1</span><span class="o">.</span><span class="n">iid_count</span><span class="p">)</span>
-<span class="go">2500</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata1</span> <span class="o">=</span> <span class="n">snpreader1</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">snpdata1</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span><span class="mi">6</span><span class="p">))</span>
-<span class="go">0.339132</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">snpreader</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snpreader</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">val</span><span class="p">)</span>
+<span class="go">[[2.]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">distreader</span> <span class="o">=</span> <span class="n">snpreader</span><span class="o">.</span><span class="n">as_dist</span><span class="p">(</span><span class="n">max_weight</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">distreader</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">val</span><span class="p">)</span>
+<span class="go">[[[0. 0. 1.]]]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -978,9 +975,8 @@ standard deviation 1.0) and <a class="reference internal" href="#pysnptools.stan
 <dl class="method">
 <dt id="pysnptools.snpreader.SnpData.val">
 <em class="property">property </em><code class="sig-name descname">val</code><a class="headerlink" href="#pysnptools.snpreader.SnpData.val" title="Permalink to this definition">¶</a></dt>
-<dd><p>The 2D NumPy array of floats that represents the values of the SNPs.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cmk</span> <span class="n">covarge</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
+<dd><p>The 2D NumPy array of floats that represents the values of the SNPs.  You can get or set this property.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">Bed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata</span> <span class="o">=</span> <span class="n">Bed</span><span class="p">(</span><span class="s1">&#39;../../tests/datasets/all_chr.maf0.001.N300&#39;</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)[:</span><span class="mi">5</span><span class="p">,:]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="c1">#read data for first 5 iids</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snpdata</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">100</span><span class="p">])</span> <span class="c1">#print one of the SNP values</span>
 <span class="go">2.0</span>
@@ -1135,9 +1131,9 @@ Returns the <a class="reference internal" href="#pysnptools.snpreader.Ped" title
 <dl class="class">
 <dt id="pysnptools.snpreader.Dat">
 <em class="property">class </em><code class="sig-prename descclassname">pysnptools.snpreader.</code><code class="sig-name descname">Dat</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.Dat" title="Permalink to this definition">¶</a></dt>
-<dd><p>A <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> for reading Dat/Fam/Map-formated files from disk. #cmk say that this is also called dosage or bimbam
-#!!!cmk work when the extension is *.dosage or anything else
-#!!!cmk make so fam can be called bam and map can be called bim</p>
+<dd><p>A <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> for reading Dat/Fam/Map-formated files from disk. #cmk99 say that this is also called dosage or bimbam
+#!!!cmk99 work when the extension is *.dosage or anything else
+#!!!cmk99 make so fam can be called bam and map can be called bim</p>
 <p>See <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> for general examples of using SnpReaders.</p>
 <p>This is a text format that can store any numeric values. (In contrast, Bed and Ped can only store 0,1,2, and missing). Its Dat files look like:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">null_0</span>          <span class="n">j</span>       <span class="n">n</span>       <span class="mf">0.333</span>   <span class="mi">1</span>       <span class="mi">2</span>
@@ -1477,9 +1473,8 @@ This property is useful when interfacing with, for example, external Fortran and
 <dl class="method">
 <dt id="pysnptools.snpreader.SnpMemMap.val">
 <em class="property">property </em><code class="sig-name descname">val</code><a class="headerlink" href="#pysnptools.snpreader.SnpMemMap.val" title="Permalink to this definition">¶</a></dt>
-<dd><p>The 2D NumPy memmap array of floats that represents the values.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cmk</span> <span class="n">covarge</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">SnpMemMap</span>
+<dd><p>The 2D NumPy memmap array of floats that represents the values. You can get this property, but cannot set it (except with itself)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.snpreader</span> <span class="k">import</span> <span class="n">SnpMemMap</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snp_mem_map</span> <span class="o">=</span> <span class="n">SnpMemMap</span><span class="p">(</span><span class="s1">&#39;../examples/tiny.snp.memmap&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">snp_mem_map</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
 <span class="go">2.0</span>
@@ -1551,7 +1546,7 @@ This property is useful when interfacing with, for example, external Fortran and
 </dd>
 <dt class="field-even">Parameters</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>block_size</strong> (<em>number</em>) – (default ???cmkupdate) Tells how many SNP to generate at once. The default value is usually good.</p></li>
+<li><p><strong>block_size</strong> (<em>number</em> or None) – (default None) Tells how many SNP to generate at once. The default picks a <em>block_size</em> such that <em>iid_count * *block_size</em> is about 100,000.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Example</dt>
@@ -2121,9 +2116,8 @@ it also returns the KernelData.</p>
 <dl class="method">
 <dt id="pysnptools.kernelreader.KernelData.val">
 <em class="property">property </em><code class="sig-name descname">val</code><a class="headerlink" href="#pysnptools.kernelreader.KernelData.val" title="Permalink to this definition">¶</a></dt>
-<dd><p>The 2D NumPy array of floats that represents the values of the kernel.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cmk</span> <span class="n">covarge</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelreader</span> <span class="k">import</span> <span class="n">KernelData</span>
+<dd><p>The 2D NumPy array of floats that represents the values of the kernel. You can get or set this property.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.kernelreader</span> <span class="k">import</span> <span class="n">KernelData</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">kerneldata</span> <span class="o">=</span> <span class="n">KernelData</span><span class="p">(</span><span class="n">iid</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid0&#39;</span><span class="p">],[</span><span class="s1">&#39;fam0&#39;</span><span class="p">,</span><span class="s1">&#39;iid1&#39;</span><span class="p">]],</span> <span class="n">val</span><span class="o">=</span><span class="p">[[</span><span class="mf">1.</span><span class="p">,</span><span class="o">.</span><span class="mi">5</span><span class="p">],[</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span><span class="mf">1.</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">((</span><span class="n">kerneldata</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">kerneldata</span><span class="o">.</span><span class="n">iid_count</span><span class="p">))</span>
 <span class="go">(0.5, 2)</span>
@@ -3036,7 +3030,7 @@ ask for numpy.float32 or for C-contiguous order or any order. See <a class="refe
 <dl class="method">
 <dt id="pysnptools.distreader.DistReader.as_snp">
 <code class="sig-name descname">as_snp</code><span class="sig-paren">(</span><em class="sig-param">max_weight=2.0</em>, <em class="sig-param">block_size=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.distreader.DistReader.as_snp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a <code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code> such that turns the probability distribution into an expected value..</p>
+<dd><p>Returns a <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">pysnptools.snpreader.SnpReader</span></code></a> such that turns the probability distribution into an expected value.</p>
 <p>For example, if the probability distribution is [0.466804   0.38812848 0.14506752] and the max_weight is 2, then the expected
 value will be (0.466804*0+0.38812848*.5+0.14506752*1)*2, 0.67826352 .</p>
 <dl class="field-list simple">
@@ -3467,7 +3461,7 @@ It can also be constructed directly.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>iid</strong> (an array of string pair) – The <a class="reference internal" href="#pysnptools.distreader.DistReader.iid" title="pysnptools.distreader.DistReader.iid"><code class="xref py py-attr docutils literal notranslate"><span class="pre">DistReader.iid</span></code></a> information.</p></li>
 <li><p><strong>sid</strong> (an array of strings) – The <a class="reference internal" href="#pysnptools.distreader.DistReader.sid" title="pysnptools.distreader.DistReader.sid"><code class="xref py py-attr docutils literal notranslate"><span class="pre">DistReader.sid</span></code></a> information.</p></li>
-<li><p><strong>val</strong> (a 3-D array of floats) – The SNP value distribution #!!!cmk1</p></li>
+<li><p><strong>val</strong> (a 3-D array of floats) – The SNP value distribution</p></li>
 <li><p><strong>pos</strong> (optional, an array of strings) – The <a class="reference internal" href="#pysnptools.distreader.DistReader.pos" title="pysnptools.distreader.DistReader.pos"><code class="xref py py-attr docutils literal notranslate"><span class="pre">DistReader.pos</span></code></a> information</p></li>
 <li><p><strong>name</strong> (optional, string) – Information to be display about the origin of this data</p></li>
 <li><p><strong>copyinputs_function</strong> (optional, function) – <em>Used internally by optional clustering code</em></p></li>
@@ -3568,12 +3562,11 @@ regular values.</p>
 <dl class="method">
 <dt id="pysnptools.distreader.DistData.val">
 <em class="property">property </em><code class="sig-name descname">val</code><a class="headerlink" href="#pysnptools.distreader.DistData.val" title="Permalink to this definition">¶</a></dt>
-<dd><p>The 3D NumPy array of floats that represents the distribution of SNP values.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; !!!cmk
-&gt;&gt;&gt; from pysnptools.distreader import Bgen
-&gt;&gt;&gt; distdata = Bgen(&#39;../examples/2500x100.bgen&#39;)[:5,:].read() #read data for first 5 iids
-&gt;&gt;&gt; print(distdata.val[4,100]) #print one of the SNP values
-[1,0,0]
+<dd><p>The 3D NumPy array of floats that represents the distribution of SNP values. You can get or set this property.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.distreader</span> <span class="k">import</span> <span class="n">Bgen</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">distdata</span> <span class="o">=</span> <span class="n">Bgen</span><span class="p">(</span><span class="s1">&#39;../examples/2500x100.bgen&#39;</span><span class="p">)[:</span><span class="mi">5</span><span class="p">,:]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="c1">#read data for first 5 iids</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">distdata</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">55</span><span class="p">])</span> <span class="c1">#print one of the SNP values</span>
+<span class="go">[0.23137255 0.65342184 0.11520562]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -3659,7 +3652,6 @@ val, iid, sid, and pos information in NPZ format.</p>
 <dt class="field-even">Example</dt>
 <dd class="field-even"><p></p></dd>
 </dl>
-<p>cmk update doc</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span> <span class="c1">#Python 2 &amp; 3 compatibility</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.distreader</span> <span class="k">import</span> <span class="n">DistNpz</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data_on_disk</span> <span class="o">=</span> <span class="n">DistNpz</span><span class="p">(</span><span class="s1">&#39;../examples/toydata10.dist.npz&#39;</span><span class="p">)</span>
@@ -3685,7 +3677,6 @@ val, iid, sid, and pos information in NPZ format.</p>
 <dd class="field-even"><p><a class="reference internal" href="#pysnptools.distreader.DistNpz" title="pysnptools.distreader.DistNpz"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistNpz</span></code></a></p>
 </dd>
 </dl>
-<p>cmk update doc</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.distreader</span> <span class="k">import</span> <span class="n">DistNpz</span><span class="p">,</span> <span class="n">DistHdf5</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pysnptools.util</span> <span class="k">as</span> <span class="nn">pstutil</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">distdata</span> <span class="o">=</span> <span class="n">DistHdf5</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.iidmajor.dist.hdf5&#39;</span><span class="p">)[:,:</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>     <span class="c1"># Read first 10 snps from DistHdf5 format</span>
@@ -3795,12 +3786,11 @@ This property is useful when interfacing with, for example, external Fortran and
 <dl class="method">
 <dt id="pysnptools.distreader.DistMemMap.val">
 <em class="property">property </em><code class="sig-name descname">val</code><a class="headerlink" href="#pysnptools.distreader.DistMemMap.val" title="Permalink to this definition">¶</a></dt>
-<dd><p>The 3D NumPy memmap array of floats that represents the distribution of SNP values.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; !!!cmk22
-&gt;&gt;&gt; from pysnptools.distreader import DistMemMap
-&gt;&gt;&gt; dist_mem_map = DistMemMap(&#39;../examples/tiny.dist.memmap&#39;)
-&gt;&gt;&gt; print(dist_mem_map.val[0,1])
-[1,0,0]
+<dd><p>The 3D NumPy memmap array of floats that represents the distribution of SNP values. You can get this property, but cannot set it (except with itself)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.distreader</span> <span class="k">import</span> <span class="n">DistMemMap</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dist_mem_map</span> <span class="o">=</span> <span class="n">DistMemMap</span><span class="p">(</span><span class="s1">&#39;../examples/tiny.dist.memmap&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">dist_mem_map</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+<span class="go">[0.43403135 0.28289911 0.28306954]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -3808,7 +3798,7 @@ This property is useful when interfacing with, for example, external Fortran and
 <dl class="method">
 <dt id="pysnptools.distreader.DistMemMap.write">
 <em class="property">static </em><code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">distreader</em>, <em class="sig-param">order='A'</em>, <em class="sig-param">dtype=None</em>, <em class="sig-param">block_size=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.distreader.DistMemMap.write" title="Permalink to this definition">¶</a></dt>
-<dd><p>Writes a <a class="reference internal" href="#pysnptools.distreader.DistReader" title="pysnptools.distreader.DistReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistReader</span></code></a> to <a class="reference internal" href="#pysnptools.distreader.DistMemMap" title="pysnptools.distreader.DistMemMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistMemMap</span></code></a> format. #!!!cmk update for reader and fix up snpmemmap.write etc also</p>
+<dd><p>Writes a <a class="reference internal" href="#pysnptools.distreader.DistReader" title="pysnptools.distreader.DistReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistReader</span></code></a> to <a class="reference internal" href="#pysnptools.distreader.DistMemMap" title="pysnptools.distreader.DistMemMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistMemMap</span></code></a> format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -4587,19 +4577,18 @@ Any NaN’s in the other four arrays are treated as regular values.</p>
 <dl class="method">
 <dt id="pysnptools.pstreader.PstData.val">
 <em class="property">property </em><code class="sig-name descname">val</code><a class="headerlink" href="#pysnptools.pstreader.PstData.val" title="Permalink to this definition">¶</a></dt>
-<dd><p>The 2D NumPy array of floats (or array of floats) that represents the values.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cmk</span> <span class="n">covarge</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.pstreader</span> <span class="k">import</span> <span class="n">PstNpz</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pstdata</span> <span class="o">=</span> <span class="n">PstNpz</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.pst.npz&#39;</span><span class="p">)[:</span><span class="mi">5</span><span class="p">,:]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="c1">#read data for first 5 rows</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pstdata</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">100</span><span class="p">])</span> <span class="c1">#print one of the values</span>
+<dd><p>The 2D NumPy array of floats (or array of floats) that represents the values.  You can get or set this property.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.pstreader</span> <span class="k">import</span> <span class="n">PstNpz</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pstdata</span> <span class="o">=</span> <span class="n">PstNpz</span><span class="p">(</span><span class="s1">&#39;../examples/toydata10.snp.npz&#39;</span><span class="p">)[:</span><span class="mi">5</span><span class="p">,:]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="c1">#read data for first 5 rows</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pstdata</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">])</span> <span class="c1">#print one of the values</span>
 <span class="go">2.0</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="method">
-<dt id="pysnptools.pstreader.PstData.val_count">
-<em class="property">property </em><code class="sig-name descname">val_count</code><a class="headerlink" href="#pysnptools.pstreader.PstData.val_count" title="Permalink to this definition">¶</a></dt>
+<dt id="pysnptools.pstreader.PstData.val_shape">
+<em class="property">property </em><code class="sig-name descname">val_shape</code><a class="headerlink" href="#pysnptools.pstreader.PstData.val_shape" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -4637,14 +4626,12 @@ val, row, col, row_property, and col_property information in Hdf5 format.</p>
 <dl class="method">
 <dt id="pysnptools.pstreader.PstHdf5.flush">
 <code class="sig-name descname">flush</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.pstreader.PstHdf5.flush" title="Permalink to this definition">¶</a></dt>
-<dd><p>Flush <a class="reference internal" href="#pysnptools.pstreader.PstMemMap.val" title="pysnptools.pstreader.PstMemMap.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstMemMap.val</span></code></a> to disk and close the file. (If values or properties are accessed again, the file will be reopened.)</p>
+<dd><p>Flush the connection to the HDF5 file. (If values or properties are accessed again, the file will be reopened.)</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pysnptools.util</span> <span class="k">as</span> <span class="nn">pstutil</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.pstreader</span> <span class="k">import</span> <span class="n">PstMemMap</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;tempdir/tiny.pst.memmap&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pstutil</span><span class="o">.</span><span class="n">create_directory_if_necessary</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pst_mem_map</span> <span class="o">=</span> <span class="n">PstMemMap</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="s1">&#39;c&#39;</span><span class="p">],</span><span class="n">col</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">,</span><span class="s1">&#39;z&#39;</span><span class="p">],</span><span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span><span class="n">row_property</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span><span class="s1">&#39;B&#39;</span><span class="p">,</span><span class="s1">&#39;C&#39;</span><span class="p">],</span><span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pst_mem_map</span><span class="o">.</span><span class="n">val</span><span class="p">[:,:]</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span><span class="mi">6</span><span class="p">]]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pst_mem_map</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.pstreader</span> <span class="k">import</span> <span class="n">PstHdf5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">reader</span> <span class="o">=</span> <span class="n">PstHdf5</span><span class="p">(</span><span class="s1">&#39;../examples/toydata.kernel.hdf5&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">val1</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">reader</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -4767,7 +4754,7 @@ val, row, col, row_property, and col_property information in NPZ format.</p>
 <p><strong>Methods beyond</strong> <a class="reference internal" href="#pysnptools.pstreader.PstReader" title="pysnptools.pstreader.PstReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstReader</span></code></a></p>
 <dl class="method">
 <dt id="pysnptools.pstreader.PstMemMap.empty">
-<em class="property">static </em><code class="sig-name descname">empty</code><span class="sig-paren">(</span><em class="sig-param">row</em>, <em class="sig-param">col</em>, <em class="sig-param">filename</em>, <em class="sig-param">row_property=None</em>, <em class="sig-param">col_property=None</em>, <em class="sig-param">order='F'</em>, <em class="sig-param">dtype=&lt;class 'numpy.float64'&gt;</em>, <em class="sig-param">val_count=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.pstreader.PstMemMap.empty" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">empty</code><span class="sig-paren">(</span><em class="sig-param">row</em>, <em class="sig-param">col</em>, <em class="sig-param">filename</em>, <em class="sig-param">row_property=None</em>, <em class="sig-param">col_property=None</em>, <em class="sig-param">order='F'</em>, <em class="sig-param">dtype=&lt;class 'numpy.float64'&gt;</em>, <em class="sig-param">val_shape=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.pstreader.PstMemMap.empty" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create an empty <a class="reference internal" href="#pysnptools.pstreader.PstMemMap" title="pysnptools.pstreader.PstMemMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstMemMap</span></code></a> on disk.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -4779,6 +4766,7 @@ val, row, col, row_property, and col_property information in NPZ format.</p>
 <li><p><strong>col_property</strong> (<em>an array of anything</em>) – optional – The additional <a class="reference internal" href="#pysnptools.pstreader.PstReader.col_property" title="pysnptools.pstreader.PstReader.col_property"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstReader.col_property</span></code></a> information associated with each col. Default: None</p></li>
 <li><p><strong>order</strong> (<em>string</em><em> or </em><em>None</em>) – {‘F’ (default), ‘C’}, optional – Specify the order of the ndarray.</p></li>
 <li><p><strong>dtype</strong> (<em>data-type</em>) – {numpy.float64 (default), numpy.float32}, optional – The data-type for the <a class="reference internal" href="#pysnptools.pstreader.PstMemMap.val" title="pysnptools.pstreader.PstMemMap.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstMemMap.val</span></code></a> ndarray.</p></li>
+<li><p><strong>val_shape</strong> (<em>None</em><em> or </em><em>a number</em>) – (Default: None), optional – The shape of the last dimension of <a class="reference internal" href="#pysnptools.pstreader.PstMemMap.val" title="pysnptools.pstreader.PstMemMap.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstMemMap.val</span></code></a>. <em>None</em> means each value is a scalar.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -4826,9 +4814,8 @@ val, row, col, row_property, and col_property information in NPZ format.</p>
 <dl class="method">
 <dt id="pysnptools.pstreader.PstMemMap.val">
 <em class="property">property </em><code class="sig-name descname">val</code><a class="headerlink" href="#pysnptools.pstreader.PstMemMap.val" title="Permalink to this definition">¶</a></dt>
-<dd><p>The 2D NumPy memmap array of floats that represents the values.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cmk</span> <span class="n">covarge</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.pstreader</span> <span class="k">import</span> <span class="n">PstMemMap</span>
+<dd><p>The NumPy memmap array of floats that represents the values.  You can get this property, but cannot set it (except with itself)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.pstreader</span> <span class="k">import</span> <span class="n">PstMemMap</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pst_mem_map</span> <span class="o">=</span> <span class="n">PstMemMap</span><span class="p">(</span><span class="s1">&#39;../examples/tiny.pst.memmap&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pst_mem_map</span><span class="o">.</span><span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
 <span class="go">2.0</span>

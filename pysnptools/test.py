@@ -94,6 +94,74 @@ class TestPySnpTools(unittest.TestCase):
         self.snpdata = snpreader.read(order='F',force_python_only=True)
         self.snps = self.snpdata.val
 
+    #!!!cmk99 make a test (trying) to assign a val to memmaps
+    def test_val_assign(self):
+        from pysnptools.snpreader import SnpData
+        from pysnptools.distreader import DistData
+        from pysnptools.kernelreader import KernelData
+        from pysnptools.pstreader import PstData
+
+        iid_count = 3
+        sid_count = 2
+        iid = [[str(i),str(i)] for i in range(iid_count)]
+        sid = [str(s) for s in range(sid_count)]
+        np.random.seed(0)
+        vali = np.random.randint(10,size=[iid_count,sid_count])
+        vali2 = np.random.randint(10,size=[iid_count,sid_count])
+        snpdata = SnpData(iid=iid,sid=sid,val=vali)
+        snpdata.val = vali2
+        assert snpdata.val.dtype == np.float64
+
+        val3D = np.random.randint(10,size=[iid_count,sid_count,3])
+        distdata = DistData(iid=iid,sid=sid,val=val3D)
+        assert distdata.val.dtype == np.float64
+        val3D2 = np.array(np.random.randint(10,size=[iid_count,sid_count,3]),dtype=np.float32)
+        distdata.val = val3D2
+        assert distdata.val is val3D2
+        
+        valk = np.random.randint(10,size=[iid_count,iid_count])
+        valk2 = np.random.randint(10,size=[iid_count,iid_count])
+        kerneldata = KernelData(iid=iid,val=valk)
+        assert np.float64 == kerneldata.val.dtype
+        kerneldata.val = valk2
+        assert np.float64 == kerneldata.val.dtype
+
+        valk3d = np.random.randint(10,size=[iid_count,iid_count,3])
+        pstdata = PstData(row=iid,col=iid,val=valk)
+        assert np.float64 == pstdata.val.dtype
+        pstdata.val = np.array(valk,dtype=np.float32)
+        assert np.float32 == pstdata.val.dtype
+        pstdata.val = valk3d
+        assert np.float64 == pstdata.val.dtype
+
+        valstr = np.array(vali,dtype=np.str_)
+        valstr[0,0] = 'cannot convert'
+        error_seen = False
+        try:
+            snpdata.val = valstr
+        except:
+            error_seen = True
+        assert error_seen
+        error_seen = False
+        try:
+            snpdata.val = valk3d
+        except:
+            error_seen = True
+        assert error_seen
+        error_seen = False
+        try:
+            kerneldata.val = vali
+        except:
+            error_seen = True
+        assert error_seen
+        error_seen = False
+        try:
+            pstdata.val = vali
+        except:
+            error_seen = True
+        assert error_seen
+
+
     def test_diagKtoN(self):
         """
         make sure standardization on SNPs results in sum(diag(K))=N
@@ -624,10 +692,6 @@ class TestPySnpTools(unittest.TestCase):
             error_seen = True
         assert error_seen
 
-
-
-
-
     def test_respect_read_inputs(self):
         from pysnptools.snpreader import _MergeIIDs,_MergeSIDs, SnpGen, SnpMemMap
         from pysnptools.distreader import Bgen
@@ -728,7 +792,8 @@ class TestPySnpTools(unittest.TestCase):
                         i += 1
                         if suffix in erase_any_write_dir and os.path.exists(filename):
                             shutil.rmtree(filename)
-                        writer(filename,snpdata)#!!!cmk should we test that writer returns a class?
+                        ret = writer(filename,snpdata)
+                        assert ret is not None
                         for subsetter in [None, sp.s_[::2,::3]]:
                             reader = constructor(filename)
                             _fortesting_JustCheckExists().input(reader)

@@ -20,7 +20,7 @@ class SnpGen(SnpReader):
         :Parameters: * **sid_count** (*number*) --  the number of sids (number of SNPs)
         :Parameters: * **chrom_count** (*number*) --  the number of chromosomes to generate (must be 22 or fewer)
         :Parameters: * **cache_file** (*string*) -- (default None) If provided, tells where to cache the common iid, sid, and pos information. Using it can save time.
-        :Parameters: * **block_size** (*number*) -- (default ???cmkupdate) Tells how many SNP to generate at once. The default value is usually good.
+        :Parameters: * **block_size** (*number* or None) -- (default None) Tells how many SNP to generate at once. The default picks a *block_size* such that *iid_count \* *block_size* is about 100,000.
         
         :Example:
 
@@ -47,7 +47,8 @@ class SnpGen(SnpReader):
         self._iid_count = iid_count
         self._sid_count = sid_count
         self._chrom_count = chrom_count
-        #!!!cmk add deprcation warning for sid_batch_size
+        if sid_batch_size is not None:
+            warnings.warn("'sid_batch_size' is deprecated. Use 'block_size'", DeprecationWarning)
         self._block_size = block_size or sid_batch_size or max((100*1000)//max(1,iid_count),1)
 
 

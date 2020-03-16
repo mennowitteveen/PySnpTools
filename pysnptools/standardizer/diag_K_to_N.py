@@ -120,7 +120,7 @@ class DiagKtoNTrained(Standardizer):
         if isinstance(input,KernelReader) and hasattr(input,'val'):
             return self._standardize_kernel(input, return_trained=return_trained,force_python_only=force_python_only)
         else:
-            return self._standardize_snps(input, return_trained=return_trained,force_python_only=force_python_only)#!!!cmkcover
+            return self._standardize_snps(input, return_trained=return_trained,force_python_only=force_python_only)#!!!cmk99 test coverage
 
     @property
     def is_constant(self):
@@ -131,7 +131,7 @@ class DiagKtoNTrained(Standardizer):
         if hasattr(snps,"val"):
             val = snps.val#!!!cmkcover
         else:
-            warnings.warn("standardizing an nparray instead of a SnpData is deprecated", DeprecationWarning)#!!!cmkcover
+            warnings.warn("standardizing an nparray instead of a SnpData is deprecated", DeprecationWarning)#!!!cmk99 test coverage
             val = snps
 
         if not self.is_constant:

@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{60f1cb4a-9da3-47c2-9b89-60ac1ce93347}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>test.py</StartupFile>
+    <StartupFile>pstreader\pstmemmap.py</StartupFile>
     <SearchPath>..\</SearchPath>
     <WorkingDirectory>.\snpreader</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -199,6 +199,9 @@
     </Content>
     <Content Include="..\MANIFEST.in">
       <Link>setup\MANIFEST.in</Link>
+    </Content>
+    <Content Include="..\pyproject.toml">
+      <Link>setup\pyproject.toml</Link>
     </Content>
     <Content Include="..\README.md">
       <Link>setup\README.md</Link>

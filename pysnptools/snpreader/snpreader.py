@@ -295,8 +295,6 @@ snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) #
    
     The :meth:`read_kernel` Method
 
-        !!!cmk check val and read_kernel
-
         The :meth:`read_kernel` method, available on any SnpReader, returns a :class:`KernelData`. The :attr:`val` property of the :class:`KernelData` is
         an ndarray of the (possibility standardized) SNP values multiplied with their transposed selves. When applied to an read-from-disk SnpReader, such as :class:`.Bed`,
         the method can save memory by reading (and standardizing) the data in blocks. See :meth:`read_kernel` for details.
@@ -310,9 +308,6 @@ snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) #
             >>> kerneldata2 = snp_on_disk.read_kernel(Unit(),block_size=10) #Create an in-memory kernel from the snp data on disk, but only read 10 SNPS at a time from the disk.
             >>> print('{0:.6f}'.format(kerneldata2.val[0,0]))
             901.421836
-
-    #!!!cmk add as_dist
-
 
     Details of Methods & Properties:
     """
@@ -576,27 +571,26 @@ snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) #
         return self._read_kernel(standardizer, block_size=block_size)
 
     def as_dist(self, max_weight=2.0, block_size=None):
-        """Returns a :class:`SnpData` such that the :meth:`SnpData.val` property will be a ndarray of expected SNP values.
+        """Returns a :class:`pysnptools.distreader.DistReader` such that turns the an allele count of 0,1, or 2 into a probability distribution of
+        [1,0,0],[0,1,0], or [0,0,1], respectively. Any other values produce a distribution of [NaN,NaN,NaN].
+
+        :param max_weight: optional -- Tells the maximum allele count. Default of 2.
+        :type max_weight: number
 
         :param block_size: optional -- Default of None (meaning to load all). Suggested number of sids to read into memory at a time.
         :type block_size: int or None
 
-        :rtype: class:`SnpData`
-
-        Calling the method again causes the distribution values to be re-read and allocates a new class:`SnpData`.
-
-        When applied to an read-from-disk SnpReader, such as :class:`.Dist.Npz`, the method can save memory by reading the data in blocks.#!!!cmk true?
+        :rtype: class:`DistReader`
 
         :Example:
 
-        >>> from pysnptools.distreader import Bgen
-        >>> dist_on_disk = Bgen('../examples/2500x100.bgen') # Specify distribution data on disk
-        >>> snpreader1 = dist_on_disk.as_snp(max_weight=1)
-        >>> print(snpreader1.iid_count)
-        2500
-        >>> snpdata1 = snpreader1.read()
-        >>> print(round(snpdata1.val[0,0],6))
-        0.339132
+        >>> from pysnptools.snpreader import Bed
+        >>> snpreader = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
+        >>> print(snpreader[0,0].read().val)
+        [[2.]]
+        >>> distreader = snpreader.as_dist(max_weight=2)
+        >>> print(distreader[0,0].read().val)
+        [[[0. 0. 1.]]]
         """
         from pysnptools.distreader._snp2dist import _Snp2Dist
         snp2dist = _Snp2Dist(self,max_weight=max_weight,block_size=block_size)
@@ -666,6 +660,8 @@ snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) #
     def _assert_iid_sid_pos(self,check_val):
         if check_val:
             assert len(self._val.shape)==2, "val should have two dimensions"
+            assert self._val.shape == (len(self._row),len(self._col)), "val shape should match that of iid_row x sid_row"
+
         assert self._row.dtype.type is np.str_ and len(self._row.shape)==2 and self._row.shape[1]==2, "iid should be dtype str, have two dimensions, and the second dimension should be size 2"
         assert self._col.dtype.type is np.str_ and len(self._col.shape)==1, "sid should be of dtype of str and one dimensional"
 

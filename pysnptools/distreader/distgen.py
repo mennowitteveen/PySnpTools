@@ -89,7 +89,7 @@ class DistGen(DistReader):
         if (self._ran_once):
             return
         self._ran_once = True
-        self._row = np.array([('0','iid_{0}'.format(i)) for i in range(self._iid_count)])#!!!cmk why family id of 0 intstead of ''?
+        self._row = np.array([('0','iid_{0}'.format(i)) for i in range(self._iid_count)])
         self._col = np.array(['sid_{0}'.format(i) for i in range(self._sid_count)])
         self._col_property = np.zeros(((self._sid_count),3)) #Must be zero (not empty) because will leave _col_property[:,1] unchanged
 

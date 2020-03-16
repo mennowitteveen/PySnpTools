@@ -79,14 +79,17 @@ class PstData(PstReader):
             self._col = self._row
         self._row_property = PstData._fixup_input(row_property,count=len(self._row))
         self._col_property = PstData._fixup_input(col_property,count=len(self._col))
-
-
         self._val = PstData._fixup_input_val(val,row_count=len(self._row),col_count=len(self._col))
+        self._assert_row_col_and_properties(check_val=True)
 
         name = name or parent_string or ""
         if parent_string is not None:
             warnings.warn("'parent_string' is deprecated. Use 'name'", DeprecationWarning)
         self._name = name
+
+    def _assert_row_col_and_properties(self,check_val):
+        if check_val:
+            assert self._val.shape[:2] == (len(self._row),len(self._col)), "val shape should match that of row_count x col_count"
 
     def __eq__(a,b):
         return a.allclose(b,equal_nan=False)
@@ -176,29 +179,31 @@ class PstData(PstReader):
     def col_property(self):
         return self._col_property
 
-    def _get_val(self):
-        return self._val
 
     @property
-    def val_count(self):
+    def val_shape(self):
         if len(self._val.shape)==2:
             return None
         else:
             return self._val.shape[2]
 
+    @property
+    def val(self):
+        """The 2D NumPy array of floats (or array of floats) that represents the values.  You can get or set this property.
 
-    def _set_val(self, new_value):
-        self._val = new_value
+        >>> from pysnptools.pstreader import PstNpz
+        >>> pstdata = PstNpz('../examples/toydata10.snp.npz')[:5,:].read() #read data for first 5 rows
+        >>> print(pstdata.val[4,5]) #print one of the values
+        2.0
+        """
+        return self._val
 
-    val = property(_get_val,_set_val)
-    """The 2D NumPy array of floats (or array of floats) that represents the values.
+    @val.setter
+    def val(self, new_value):
+        self._val = PstData._fixup_input_val(new_value,row_count=len(self._row),col_count=len(self._col))
+        self._assert_row_col_and_properties(check_val=True)
 
-    >>> cmk covarge
-    >>> from pysnptools.pstreader import PstNpz
-    >>> pstdata = PstNpz('../examples/toydata.pst.npz')[:5,:].read() #read data for first 5 rows
-    >>> print(pstdata.val[4,100]) #print one of the values
-    2.0
-    """
+
 
     # Most _read's support only indexlists or None, but this one supports Slices, too.
     _read_accepts_slices = True

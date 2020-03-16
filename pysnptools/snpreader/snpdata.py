@@ -78,15 +78,22 @@ class SnpData(PstData,SnpReader):
         self._name = name or parent_string or ""
         self._std_string_list = []
 
-    val = property(PstData._get_val,PstData._set_val)
-    """The 2D NumPy array of floats that represents the values of the SNPs.
+    @property
+    def val(self):
+        """The 2D NumPy array of floats that represents the values of the SNPs.  You can get or set this property.
 
-    >>> cmk covarge
-    >>> from pysnptools.snpreader import Bed
-    >>> snpdata = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)[:5,:].read() #read data for first 5 iids
-    >>> print(snpdata.val[4,100]) #print one of the SNP values
-    2.0
-    """
+        >>> from pysnptools.snpreader import Bed
+        >>> snpdata = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)[:5,:].read() #read data for first 5 iids
+        >>> print(snpdata.val[4,100]) #print one of the SNP values
+        2.0
+        """
+        return self._val
+
+    @val.setter
+    def val(self, new_value):
+        self._val = PstData._fixup_input_val(new_value,row_count=len(self._row),col_count=len(self._col),empty_creator=lambda row_count,col_count:np.empty([row_count,col_count],dtype=np.float64))
+        self._assert_iid_sid_pos(check_val=True)
+
 
     def allclose(self,value,equal_nan=True):
         '''

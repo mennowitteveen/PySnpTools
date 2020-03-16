@@ -91,15 +91,22 @@ class KernelData(KernelReader,PstData):
         self._std_string_list = []
 
 
-    val = property(PstData._get_val,PstData._set_val)
-    """The 2D NumPy array of floats that represents the values of the kernel.
+    @property
+    def val(self):
+        """The 2D NumPy array of floats that represents the values of the kernel. You can get or set this property.
 
-    >>> cmk covarge
-    >>> from pysnptools.kernelreader import KernelData
-    >>> kerneldata = KernelData(iid=[['fam0','iid0'],['fam0','iid1']], val=[[1.,.5],[.5,1.]])
-    >>> print((kerneldata.val[0,1], kerneldata.iid_count))
-    (0.5, 2)
-    """
+        >>> from pysnptools.kernelreader import KernelData
+        >>> kerneldata = KernelData(iid=[['fam0','iid0'],['fam0','iid1']], val=[[1.,.5],[.5,1.]])
+        >>> print((kerneldata.val[0,1], kerneldata.iid_count))
+        (0.5, 2)
+        """
+        return self._val
+
+    @val.setter
+    def val(self, new_value):
+        self._val = PstData._fixup_input_val(new_value,row_count=len(self._row),col_count=len(self._col),empty_creator=lambda row_count,col_count:np.empty([row_count,col_count],dtype=np.float64))
+        self._assert_iid0_iid1(check_val=True) 
+
 
     def allclose(self, value,equal_nan=True):
         '''

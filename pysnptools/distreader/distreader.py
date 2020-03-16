@@ -262,7 +262,7 @@ class DistReader(PstReader):
         return ret
 
     def as_snp(self, max_weight=2.0, block_size=None):
-        """Returns a :class:`SnpReader` such that turns the probability distribution into an expected value..
+        """Returns a :class:`pysnptools.snpreader.SnpReader` such that turns the probability distribution into an expected value.
 
         For example, if the probability distribution is [0.466804   0.38812848 0.14506752] and the max_weight is 2, then the expected
         value will be (0.466804*0+0.38812848*.5+0.14506752*1)*2, 0.67826352 .
@@ -348,6 +348,7 @@ class DistReader(PstReader):
     def _assert_iid_sid_pos(self,check_val):
         if check_val:
             assert len(self._val.shape)==3 and self._val.shape[-1]==3, "val should have 3 dimensions and the last dimension should have size 3"
+            assert self._val.shape == (len(self._row),len(self._col),3), "val shape should match that of iid_count x sid_count"
         assert self._row.dtype.type is np.str_ and len(self._row.shape)==2 and self._row.shape[1]==2, "iid should be dtype str, have two dimensions, and the second dimension should be size 2"
         assert self._col.dtype.type is np.str_ and len(self._col.shape)==1, "sid should be of dtype of str and one dimensional"
 
@@ -357,7 +358,7 @@ class DistReader(PstReader):
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
-    if False:#!!!cmk
+    if False:
         from pysnptools.distreader import Bgen
         dist_on_disk = Bgen('../examples/2500x100.bgen')
         print(dist_on_disk.pos[:4,].astype('int')) # print position information for the first three sids: #The '...' is for possible space char

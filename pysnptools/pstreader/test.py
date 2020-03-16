@@ -32,7 +32,7 @@ class TestPstReader(unittest.TestCase):
 
         print("done")
 
-    def test_big_npz_3d(self): #!!!cmk99 test for python2, too
+    def test_big_npz_3d(self):
         logging.info("in test_big_npz_3d")
         n = 1000
         pstdata = PstData(row=range(n-1),col=range(n+1),val=np.zeros([n-1,n+1,3]))
@@ -82,12 +82,11 @@ class TestPstReader(unittest.TestCase):
         import tempfile
         temp_dir = tempfile.TemporaryDirectory("pstreader")
         output_template = temp_dir.name + '/writes.{0}.{1}'
-        #!!!cmk0 remove create_directory_if_necessary(output_template.format(0,"npz"))
         i = 0
         for row_count in [5,2,1,0]:
             for col_count in [4,2,1,0]:
-                for val_count in [3,None,1]:
-                    val = np.random.normal(.5,2,size=(row_count,col_count)) if val_count is None else np.random.normal(.5,2,size=(row_count,col_count,val_count))
+                for val_shape in [3,None,1]:
+                    val = np.random.normal(.5,2,size=(row_count,col_count)) if val_shape is None else np.random.normal(.5,2,size=(row_count,col_count,val_shape))
                     for row_or_col_gen in [_oned_int,_oned_str,_twooned_int,_twooned_str,_twotwod_int,_twotwod_str]:#!!!,_twotwod_U can't roundtrop Unicode in hdf5
                         row = row_or_col_gen(row_count)
                         col = row_or_col_gen(col_count)
@@ -124,10 +123,10 @@ class TestPstReader(unittest.TestCase):
             for order_to in ['F','C']:
                 for dtype_from in [np.float32,np.float64]:
                     for dtype_to in [np.float32,np.float64]:
-                        for val_count in [None,1,3]:
+                        for val_shape in [None,1,3]:
                             for force_python_only in [True,False]:
                                 np.random.seed(0)
-                                val0 = np.random.normal(.5,2,size=(3,2)) if val_count is None else np.random.normal(.5,2,size=(3,2,val_count))
+                                val0 = np.random.normal(.5,2,size=(3,2)) if val_shape is None else np.random.normal(.5,2,size=(3,2,val_shape))
                                 val = np.array(val0,order=order_from,dtype=dtype_from)
                                 pstdata = PstData(val=val,row=list(range(3)),col=list(range(2)))
                                 expected = np.array(val[::-2,:][:,::-1],order=order_to,dtype=dtype_to)

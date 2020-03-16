@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import logging
 import os
+import shutil
 import numpy as np
 import unittest
 import doctest
@@ -41,15 +42,26 @@ class SnpMemMap(PstMemMap,SnpData):
     def __init__(self, *args, **kwargs):
         super(SnpMemMap, self).__init__(*args, **kwargs)
 
-    val = property(PstMemMap._get_val,PstMemMap._set_val)
-    """The 2D NumPy memmap array of floats that represents the values.
+    @property
+    def val(self):
+        """The 2D NumPy memmap array of floats that represents the values. You can get this property, but cannot set it (except with itself)
 
-    >>> cmk covarge
-    >>> from pysnptools.snpreader import SnpMemMap
-    >>> snp_mem_map = SnpMemMap('../examples/tiny.snp.memmap')
-    >>> print(snp_mem_map.val[0,1])
-    2.0
-    """
+        >>> from pysnptools.snpreader import SnpMemMap
+        >>> snp_mem_map = SnpMemMap('../examples/tiny.snp.memmap')
+        >>> print(snp_mem_map.val[0,1])
+        2.0
+        """
+        self._run_once()
+        return self._val
+
+
+    @val.setter
+    def val(self, new_value):
+        self._run_once()
+        if self._val is new_value:
+            return
+        raise Exception("SnpMemMap val's cannot be set to a different array")
+
 
     @property
     def offset(self):
@@ -104,7 +116,7 @@ class SnpMemMap(PstMemMap,SnpData):
         '''
 
         self = SnpMemMap(filename)
-        self._empty_inner(row=iid, col=sid, filename=filename, row_property=None, col_property=pos,order=order,dtype=dtype,val_count=None)
+        self._empty_inner(row=iid, col=sid, filename=filename, row_property=None, col_property=pos,order=order,dtype=dtype,val_shape=None)
         return self
 
     def flush(self):
@@ -146,9 +158,12 @@ class SnpMemMap(PstMemMap,SnpData):
         #We write iid and sid in ascii for compatibility between Python 2 and Python 3 formats.
         row_ascii = np.array(snpdata.row,dtype='S') #!!!avoid this copy when not needed
         col_ascii = np.array(snpdata.col,dtype='S') #!!!avoid this copy when not needed
-        self = PstMemMap.empty(row_ascii, col_ascii, filename, row_property=snpdata.row_property, col_property=snpdata.col_property,order=PstMemMap._order(snpdata),dtype=snpdata.val.dtype)
+        self = PstMemMap.empty(row_ascii, col_ascii, filename+'.temp', row_property=snpdata.row_property, col_property=snpdata.col_property,order=PstMemMap._order(snpdata),dtype=snpdata.val.dtype)
         self.val[:,:] = snpdata.val
         self.flush()
+        if os.path.exists(filename):
+           os.remove(filename) 
+        shutil.move(filename+'.temp',filename)
         logging.debug("Done writing " + filename)
         return SnpMemMap(filename)
 

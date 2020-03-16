@@ -108,7 +108,7 @@ class Bed(SnpReader):
             self._open_bed()
             self._close_bed()
 
-    #!!!cmk99 should Bed have a "flush"
+    #!!!cmk99 should Bed have a "flush"?
     def __del__(self):
         if hasattr(self,'_filepointer') and self._filepointer is not None:  # we need to test this because Python doesn't guarantee that __init__ was fully run
             self._filepointer.close()

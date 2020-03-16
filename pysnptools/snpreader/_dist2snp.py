@@ -55,7 +55,7 @@ class _Dist2Snp(SnpReader):
             t0 = time.time()
             if order=='A':
                 order = 'F'
-            val = np.zeros([self.iid_count,self.sid_count],dtype=dtype,order=order)#!!!cmk should use empty or fillnan
+            val = np.zeros([self.iid_count,self.sid_count],dtype=dtype,order=order)#!!!cmk99 should use empty or fillnan
 
             logging.info("reading {0} distribution data in blocks of {1} SNPs and finding expected values (for {2} individuals)".format(self.sid_count, self.block_size, self.iid_count))
             ct = 0

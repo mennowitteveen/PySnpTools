@@ -187,8 +187,8 @@ class TestKernelReader(unittest.TestCase):
 
                             refdata0, trained_standardizer = snpreader0.read().standardize(stdx,return_trained=True,force_python_only=True)
                             refval0 = refdata0.val.dot(refdata0.val.T)
-                            refdata1 = snpreader1.read().standardize(trained_standardizer,force_python_only=True)#!!!cmk why aren't these used?
-                            refval1 = refdata0.val.dot(refdata1.val.T)#!!!cmk why aren't these used?
+                            refdata1 = snpreader1.read().standardize(trained_standardizer,force_python_only=True)#!!!cmk99 why aren't these used?
+                            refval1 = refdata0.val.dot(refdata1.val.T)#!!!cmk99 why aren't these used?
                             for dtype_goal,decimal_goal in [(np.float32,5),(np.float64,10)]:
                                 for order_goal in ['F','C','A']:
                                     k = snpreader0.read_kernel(standardizer=stdx,block_size=1,order=order_goal,dtype=dtype_goal)

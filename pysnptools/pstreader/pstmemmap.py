@@ -4,6 +4,7 @@ import logging
 import numpy as np
 import unittest
 import os
+import shutil
 import doctest
 import pysnptools.util as pstutil
 from pysnptools.pstreader import PstReader, PstData
@@ -42,26 +43,26 @@ class PstMemMap(PstData):
     def __repr__(self): 
         return "{0}('{1}')".format(self.__class__.__name__,self._filename)
 
-    def _get_val(self):
+
+
+    @property
+    def val(self):
+        """The NumPy memmap array of floats that represents the values.  You can get this property, but cannot set it (except with itself)
+
+        >>> from pysnptools.pstreader import PstMemMap
+        >>> pst_mem_map = PstMemMap('../examples/tiny.pst.memmap')
+        >>> print(pst_mem_map.val[0,1])
+        2.0
+        """
         self._run_once()
         return self._val
 
-    def _set_val(self, new_value):
+    @val.setter
+    def val(self, new_value):
         self._run_once()
         if self._val is new_value:
             return
         raise Exception("PstMemMap val's cannot be set to a different array")
-
-    val = property(_get_val,_set_val)
-    """The 2D NumPy memmap array of floats that represents the values.
-
-    >>> cmk covarge
-    >>> from pysnptools.pstreader import PstMemMap
-    >>> pst_mem_map = PstMemMap('../examples/tiny.pst.memmap')
-    >>> print(pst_mem_map.val[0,1])
-    2.0
-    """
-
 
     @property
     def row(self):
@@ -99,7 +100,7 @@ class PstMemMap(PstData):
 
     
     @staticmethod
-    def empty(row, col, filename, row_property=None, col_property=None, order="F", dtype=np.float64, val_count=None):
+    def empty(row, col, filename, row_property=None, col_property=None, order="F", dtype=np.float64, val_shape=None):
         '''Create an empty :class:`.PstMemMap` on disk.
 
         :param row: The :attr:`PstReader.row` information
@@ -123,8 +124,8 @@ class PstMemMap(PstData):
         :param dtype: {numpy.float64 (default), numpy.float32}, optional -- The data-type for the :attr:`PstMemMap.val` ndarray.
         :type dtype: data-type
 
-        :param val_count: (Default: None), optional -- The shape of the last dimension of :attr:`PstMemMap.val`. *None* means each value is a scalar.
-        :type val_count: None or a number
+        :param val_shape: (Default: None), optional -- The shape of the last dimension of :attr:`PstMemMap.val`. *None* means each value is a scalar.
+        :type val_shape: None or a number
 
         :rtype: :class:`.PstMemMap`
 
@@ -139,11 +140,11 @@ class PstMemMap(PstData):
         '''
 
         self = PstMemMap(filename)
-        self._empty_inner(row, col, filename, row_property, col_property,order,dtype,val_count)
+        self._empty_inner(row, col, filename, row_property, col_property,order,dtype,val_shape)
         return self
 
 
-    def _empty_inner(self, row, col, filename, row_property, col_property, order, dtype, val_count):
+    def _empty_inner(self, row, col, filename, row_property, col_property, order, dtype, val_shape):
         self._ran_once = True
         self._dtype = dtype
         self._order = order
@@ -163,11 +164,11 @@ class PstMemMap(PstData):
             np.save(fp, col_property)
             np.save(fp, np.array([self._dtype]))
             np.save(fp, np.array([self._order]))
-            np.save(fp, np.array([val_count]))
+            np.save(fp, np.array([val_shape]))
             self._offset = fp.tell()
 
         logging.info("About to start allocating memmap '{0}'".format(filename))
-        shape = (len(row),len(col)) if val_count is None else (len(row),len(col),val_count)
+        shape = (len(row),len(col)) if val_shape is None else (len(row),len(col),val_shape)
         val = np.memmap(filename, offset=self._offset, dtype=dtype, mode="r+", order=order, shape=shape)
         logging.info("Finished allocating memmap '{0}'. Size is {1}".format(filename,os.path.getsize(filename)))
         PstData.__init__(self,row,col,val,row_property,col_property,name="np.memmap('{0}')".format(filename))
@@ -196,7 +197,7 @@ class PstMemMap(PstData):
                 col_property = np.load(fp,allow_pickle=True)
                 self._dtype = np.load(fp,allow_pickle=True)[0]
                 self._order = np.load(fp,allow_pickle=True)[0]
-                val_count = np.load(fp,allow_pickle=True)[0]
+                val_shape = np.load(fp,allow_pickle=True)[0]
                 self._offset = fp.tell()
             else: #Try to load version one
                 row = first
@@ -205,10 +206,10 @@ class PstMemMap(PstData):
                 col_property = np.load(fp,allow_pickle=True)
                 self._dtype = np.load(fp,allow_pickle=True)[0]
                 self._order = np.load(fp,allow_pickle=True)[0]
-                val_count = None
+                val_shape = None
                 self._offset = fp.tell()
 
-        shape=(len(row),len(col)) if val_count is None else (len(row),len(col),val_count)
+        shape=(len(row),len(col)) if val_shape is None else (len(row),len(col),val_shape)
         val = np.memmap(self._filename, offset=self._offset, dtype=self._dtype, mode='r', order=self._order, shape=shape)
         return row,col,val,row_property,col_property
 
@@ -223,7 +224,7 @@ class PstMemMap(PstData):
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
         val, shares_memory = self._apply_sparray_or_slice_to_val(self.val, row_index_or_none, col_index_or_none, order, dtype, force_python_only)
         #if not shares_memory and view_ok:
-        #    logging.warn("Read from {0} required copy".format(self)) #!!!cmkkeep this warning?
+        #    logging.warn("Read from {0} required copy".format(self)) #!!!cmk99 keep this warning?
         if shares_memory and not view_ok:
             val = val.copy(order='K')
         return val
@@ -273,15 +274,18 @@ class PstMemMap(PstData):
         PstMemMap('tempdir/tiny.pst.memmap')
         """
 
-        self = PstMemMap.empty(pstdata.row, pstdata.col, filename, row_property=pstdata.row_property, col_property=pstdata.col_property,order=PstMemMap._order(pstdata),dtype=pstdata.val.dtype, val_count=pstdata.val_count)
-        if pstdata.val_count is None:
+        self = PstMemMap.empty(pstdata.row, pstdata.col, filename+'.temp', row_property=pstdata.row_property, col_property=pstdata.col_property,order=PstMemMap._order(pstdata),dtype=pstdata.val.dtype, val_shape=pstdata.val_shape)
+        if pstdata.val_shape is None:
             self.val[:,:] = pstdata.val
         else:
             self.val[:,:,:] = pstdata.val
         self.flush()
+        if os.path.exists(filename):
+           os.remove(filename) 
+        shutil.move(filename+'.temp',filename)
         logging.debug("Done writing " + filename)
 
-        return self
+        return PstMemMap(filename)
 
 
 class TestPstMemMap(unittest.TestCase):     

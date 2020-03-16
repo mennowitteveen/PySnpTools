@@ -20,7 +20,7 @@ class DistData(PstData,DistReader):
     **Constructor:**
         :Parameters: * **iid** (an array of string pair) -- The :attr:`DistReader.iid` information.
                      * **sid** (an array of strings) -- The :attr:`DistReader.sid` information.
-                     * **val** (a 3-D array of floats) -- The SNP value distribution #!!!cmk1
+                     * **val** (a 3-D array of floats) -- The SNP value distribution
                      * **pos** (optional, an array of strings) -- The :attr:`DistReader.pos` information
                      * **name** (optional, string) -- Information to be display about the origin of this data
                      * **copyinputs_function** (optional, function) -- *Used internally by optional clustering code*
@@ -100,15 +100,21 @@ class DistData(PstData,DistReader):
         self._name = name or ""
         self._std_string_list = []
 
-    val = property(PstData._get_val,PstData._set_val)
-    """The 3D NumPy array of floats that represents the distribution of SNP values.
+    @property
+    def val(self):
+        """The 3D NumPy array of floats that represents the distribution of SNP values. You can get or set this property.
 
-    >>> !!!cmk
-    >>> from pysnptools.distreader import Bgen
-    >>> distdata = Bgen('../examples/2500x100.bgen')[:5,:].read() #read data for first 5 iids
-    >>> print(distdata.val[4,100]) #print one of the SNP values
-    [1,0,0]
-    """
+        >>> from pysnptools.distreader import Bgen
+        >>> distdata = Bgen('../examples/2500x100.bgen')[:5,:].read() #read data for first 5 iids
+        >>> print(distdata.val[4,55]) #print one of the SNP values
+        [0.23137255 0.65342184 0.11520562]
+        """
+        return self._val
+
+    @val.setter
+    def val(self, new_value):
+        self._val = PstData._fixup_input_val(new_value,row_count=len(self._row),col_count=len(self._col),empty_creator=lambda row_count,col_count:np.empty([row_count,col_count,3],dtype=np.float64))#!!!Replace empty with my FillNA method?
+        self._assert_iid_sid_pos(check_val=True)
 
     def allclose(self,value,equal_nan=True):
         '''

@@ -337,6 +337,8 @@ class KernelReader(PstReader):
     def _assert_iid0_iid1(self,check_val):
         if check_val:
             assert len(self._val.shape)==2, "val should have two dimensions"
+            assert self._val.shape == (len(self._row),len(self._col)), "val shape should match that of iid0_count x iid1_count"
+
         assert self._row.dtype.type is np.str_ and len(self._row.shape)==2 and self._row.shape[1]==2, "iid0 should be dtype str, have two dimensions, and the second dimension should be size 2"
         assert self._col.dtype.type is np.str_ and len(self._col.shape)==2 and self._col.shape[1]==2, "iid1 should be dtype str have two dimensions, and the second dimension should be size 2"
 

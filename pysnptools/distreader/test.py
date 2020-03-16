@@ -20,9 +20,6 @@ from pysnptools.kernelreader.test import _fortesting_JustCheckExists
 from pysnptools.pstreader import PstData
 from pysnptools.snpreader import SnpData
 
-# TestDistMemMap #!!!cmk be sure includes docstrings
-
-
 class TestDistReaders(unittest.TestCase):     
 
 
@@ -39,8 +36,8 @@ class TestDistReaders(unittest.TestCase):
         np.random.seed(0)
         row_count = 4
         col_count = 5
-        val_count = 3
-        val = np.random.random((row_count,col_count,val_count))
+        val_shape = 3
+        val = np.random.random((row_count,col_count,val_shape))
         val /= val.sum(axis=2,keepdims=True)  #make probabilities sum to 1
         distdata = DistData(val=val,iid=[['iid{0}'.format(i)]*2 for i in range(row_count)],sid=['sid{0}'.format(s) for s in range(col_count)]
                             )
@@ -232,7 +229,8 @@ class TestDistReaders(unittest.TestCase):
                         i += 1
                         if suffix in erase_any_write_dir and os.path.exists(filename):
                             shutil.rmtree(filename)
-                        writer(filename,distdata)#!!!cmk should we test that writer returns a class?
+                        ret = writer(filename,distdata)
+                        assert ret is not None
                         for subsetter in [None, sp.s_[::2,::3]]:
                             reader = constructor(filename)
                             _fortesting_JustCheckExists().input(reader)
@@ -518,7 +516,6 @@ class TestDistNaNCNC(unittest.TestCase):
         snps = distreader[iid_index_list,snp_index_list].read(order=order, dtype=dtype, force_python_only=force_python_only).val
         snps[0,0] = [np.nan]*3 # add a NaN
         snps[:,1] = [.1,.2,.7] # make a SNC
-        #!!!cmk snps = standardizer.standardize(snps,force_python_only=force_python_only) #!!!cmk does this TEst Class do anything useful w/o Standardize?
         os.chdir(previous_wd)
         return snps, dtype
 
@@ -570,6 +567,23 @@ class TestDistReaderDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
+    #Don't need this because included in TestDistMemMap
+    #def test_distmemmap(self):
+    #    import pysnptools.distreader.distmemmap
+    #    old_dir = os.getcwd()
+    #    os.chdir(os.path.dirname(os.path.realpath(__file__)))
+    #    result = doctest.testmod(pysnptools.distreader.distmemmap)
+    #    os.chdir(old_dir)
+    #    assert result.failed == 0, "failed doc test: " + __file__
+
+    #Don't need this because included in Bgen
+    #def test_distmemmap(self):
+    #import pysnptools.distreader.bgen
+    #old_dir = os.getcwd()
+    #os.chdir(os.path.dirname(os.path.realpath(__file__)))
+    #result = doctest.testmod(pysnptools.distreader.bgen)
+    #os.chdir(old_dir)
+    #assert result.failed == 0, "failed doc test: " + __file__
 
 def getTestSuite():
     """
@@ -578,12 +592,12 @@ def getTestSuite():
 
     test_suite = unittest.TestSuite([])
 
-    #!!!cmk test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestBgen))
-    #!!!cmk test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaderDocStrings))
-    #!!!cmk test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistGen))
-    #!!!cmk test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistMemMap))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestBgen))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaderDocStrings))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistGen))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistMemMap))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaders))
-    #!!!cmk test_suite.addTests(TestDistNaNCNC.factory_iterator())
+    test_suite.addTests(TestDistNaNCNC.factory_iterator())
     
 
     return test_suite
@@ -616,5 +630,5 @@ if __name__ == '__main__':
         print('done')
 
     suites = getTestSuite()
-    r = unittest.TextTestRunner(failfast=True) #!!!cmk change back to false
+    r = unittest.TextTestRunner(failfast=False)
     r.run(suites)

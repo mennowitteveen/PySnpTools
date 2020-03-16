@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import logging
 import os
+import shutil
 import numpy as np
 import unittest
 import doctest
@@ -10,8 +11,7 @@ from pysnptools.pstreader import PstData
 from pysnptools.pstreader import PstMemMap
 from pysnptools.distreader import DistReader, DistData
 from pysnptools.util import log_in_place
-from os import remove
-from shutil import move
+
 
 class DistMemMap(PstMemMap,DistData):
     '''
@@ -43,15 +43,27 @@ class DistMemMap(PstMemMap,DistData):
     def __init__(self, *args, **kwargs):
         super(DistMemMap, self).__init__(*args, **kwargs)
 
-    val = property(PstMemMap._get_val,PstMemMap._set_val)
-    """The 3D NumPy memmap array of floats that represents the distribution of SNP values.
+    @property
+    def val(self):
+        """The 3D NumPy memmap array of floats that represents the distribution of SNP values. You can get this property, but cannot set it (except with itself)
 
-    >>> !!!cmk29
-    >>> from pysnptools.distreader import DistMemMap
-    >>> dist_mem_map = DistMemMap('../examples/tiny.dist.memmap')
-    >>> print(dist_mem_map.val[0,1])
-    [1,0,0]
-    """
+
+        >>> from pysnptools.distreader import DistMemMap
+        >>> dist_mem_map = DistMemMap('../examples/tiny.dist.memmap')
+        >>> print(dist_mem_map.val[0,1])
+        [0.43403135 0.28289911 0.28306954]
+        """
+        self._run_once()
+        return self._val
+
+
+    @val.setter
+    def val(self, new_value):
+        self._run_once()
+        if self._val is new_value:
+            return
+        raise Exception("DistMemMap val's cannot be set to a different array")
+
 
     @property
     def offset(self):
@@ -107,7 +119,7 @@ class DistMemMap(PstMemMap,DistData):
         '''
 
         self = DistMemMap(filename)
-        self._empty_inner(row=iid, col=sid, filename=filename, row_property=None, col_property=pos,order=order,dtype=dtype,val_count=3)
+        self._empty_inner(row=iid, col=sid, filename=filename, row_property=None, col_property=pos,order=order,dtype=dtype,val_shape=3)
         return self
 
     def flush(self):
@@ -131,7 +143,7 @@ class DistMemMap(PstMemMap,DistData):
 
     @staticmethod
     def write(filename, distreader, order='A', dtype=None, block_size=None):
-        """Writes a :class:`DistReader` to :class:`DistMemMap` format. #!!!cmk update for reader and fix up snpmemmap.write etc also
+        """Writes a :class:`DistReader` to :class:`DistMemMap` format.
 
         :param filename: the name of the file to create
         :type filename: string
@@ -169,7 +181,7 @@ class DistMemMap(PstMemMap,DistData):
             order = 'F' if order=='A' else order
             dtype = dtype or np.float64
 
-        self = PstMemMap.empty(row_ascii, col_ascii, filename+'.temp', row_property=distreader.row_property, col_property=distreader.col_property,order=order,dtype=dtype, val_count=3)
+        self = PstMemMap.empty(row_ascii, col_ascii, filename+'.temp', row_property=distreader.row_property, col_property=distreader.col_property,order=order,dtype=dtype, val_shape=3)
         if hasattr(distreader,'val'):
             self.val[:,:,:] = distreader.val
         else:
@@ -183,8 +195,8 @@ class DistMemMap(PstMemMap,DistData):
 
         self.flush()
         if os.path.exists(filename):
-           remove(filename) 
-        move(filename+'.temp',filename)#!!!cmk40 do this in snpmemmap, pstmemmap too
+           os.remove(filename) 
+        shutil.move(filename+'.temp',filename)
         logging.debug("Done writing " + filename)
         return DistMemMap(filename)
 

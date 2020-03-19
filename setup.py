@@ -7,7 +7,7 @@ from distutils.command.clean import clean as Clean
 import numpy
 
 # Version number
-version = '0.4.11'
+version = '0.4.12'
 
 def readme():
     with open('README.md') as f:
@@ -120,6 +120,7 @@ setup(
         "pysnptools/kernelstandardizer",
         "pysnptools/pstreader",
         "pysnptools/snpreader",
+        "pysnptools/distreader",
         "pysnptools/standardizer",
         "pysnptools/util",
         "pysnptools/util/filecache",

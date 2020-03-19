@@ -129,7 +129,7 @@ class DiagKtoNTrained(Standardizer):
     def _standardize_snps(self, snps, return_trained=False, force_python_only=False):
     
         if hasattr(snps,"val"):
-            val = snps.val#!!!cmkcover
+            val = snps.val#!!!cmk99 test coverage
         else:
             warnings.warn("standardizing an nparray instead of a SnpData is deprecated", DeprecationWarning)#!!!cmk99 test coverage
             val = snps

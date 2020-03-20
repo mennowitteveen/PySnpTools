@@ -54,7 +54,7 @@ class _PstSubset(PstReader):
     _read_accepts_slices = True
     def _read(self, row_indexer, col_indexer, order, dtype, force_python_only, view_ok):
         self._run_once()
-
+        dtype = np.dtype(dtype)
         if hasattr(self._internal,'_read_accepts_slices'):
             assert self._internal._read_accepts_slices, "If an object has the _read_accepts_slices attribute, it must have value 'True'"
             composed_row_index_or_none = _PstSubset.compose_indexer_with_indexer(self._internal.row_count, self._row_indexer, self.row_count, row_indexer)

@@ -118,6 +118,7 @@ class SnpGen(SnpReader):
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
         self._run_once()
         import pysnptools.util as pstutil
+        dtype = np.dtype(dtype)
 
         if order == 'A':
             order = 'F'
@@ -158,6 +159,8 @@ class SnpGen(SnpReader):
         return sid
 
     def _get_val2(self, sid_start, sid_stop, order, dtype):
+        dtype = np.dtype(dtype)
+
         x_sample, dist = self._get_dist() # The discrete distribution of minor allele frequencies (based on curve fitting to real data)
         val = SnpGen._get_val(x_sample,dist,self._iid_count,sid_start,sid_stop, self._seed, order,dtype)
         return val

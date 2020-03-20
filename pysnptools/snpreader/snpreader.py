@@ -454,6 +454,7 @@ snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) #
         import numpy as np
         # print np.may_share_memory(subset_snpdata.val, subsub_snpdata.val) # Do the two ndarray's share memory? They could. Currently they won't.       
         """
+        dtype = np.dtype(dtype)
         val = self._read(None, None, order, dtype, force_python_only, view_ok)
         from pysnptools.snpreader import SnpData
         ret = SnpData(self.iid,self.sid,val,pos=self.pos,name=str(self))
@@ -529,6 +530,7 @@ snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) #
         (300, '901.421836')
         """
         assert standardizer is not None, "'standardizer' must be provided"
+        dtype = np.dtype(dtype)
 
         from pysnptools.kernelreader import SnpKernel
         snpkernel = SnpKernel(self,standardizer=standardizer,block_size=block_size)
@@ -603,6 +605,8 @@ snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) #
         Like 'read' except (1) won't read if already a snpdata and (2) returns the standardizer
         '''
         from pysnptools.snpreader import SnpData
+        dtype = np.dtype(dtype)
+
         if (hasattr(snpreader,'val') and
             snpreader.val.dtype==dtype and 
             isinstance(standardizer,stdizer.Identity) and
@@ -613,6 +617,8 @@ snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) #
             return snpreader.read(order=order,dtype=dtype).standardize(standardizer,return_trained=True,force_python_only=force_python_only)
     
     def _read_kernel(self, standardizer, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False, return_trained=False):
+        dtype = np.dtype(dtype)
+
         #Do all-at-once (not in blocks) if 1. No block size is given or 2. The #ofSNPs < Min(block_size,iid_count)
         if block_size is None or (self.sid_count <= block_size or self.sid_count <= self.iid_count):
             train_data,trained_standardizer  = SnpReader._as_snpdata(self,standardizer=standardizer,dtype=dtype,order='A',force_python_only=force_python_only)
@@ -718,6 +724,12 @@ snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) #
             sid = np.array(fields[1].tolist(),dtype='str')
             pos = fields[[0,2,3]].values
             return sid,pos
+
+    @property
+    def val_shape(self):#!!!cmk99 need doc
+        '''        
+        '''
+        return None
 
 
 if __name__ == "__main__":

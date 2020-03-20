@@ -13,7 +13,7 @@ from six.moves import range
 from pysnptools.distreader.distmemmap import TestDistMemMap
 from pysnptools.distreader.bgen import TestBgen
 from pysnptools.distreader.distgen import TestDistGen
-from pysnptools.distreader import DistNpz, DistHdf5, DistMemMap, DistData
+from pysnptools.distreader import DistNpz, DistHdf5, DistMemMap, DistData, _DistMergeSIDs
 from pysnptools.util import create_directory_if_necessary
 from pysnptools.snpreader import SnpNpz, Bed
 from pysnptools.kernelreader.test import _fortesting_JustCheckExists
@@ -384,15 +384,16 @@ class TestDistReaders(unittest.TestCase):
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
         for distreader in [
-                           Bed('../examples/toydata.bed',count_A1=True).as_dist(block_size=2000),
-                           Bed('../examples/toydata.bed',count_A1=True).as_dist(),
-                           Bgen('../examples/example.bgen').read(),
-                           Bgen('../examples/bits1.bgen'),                          
-                           DistGen(seed=0,iid_count=500,sid_count=50),
-                           DistGen(seed=0,iid_count=500,sid_count=50)[::2,::2],
-                           DistHdf5('../examples/toydata.snpmajor.dist.hdf5'),
-                           DistMemMap('../examples/tiny.dist.memmap'),
-                           DistNpz('../examples/toydata10.dist.npz')
+                           _DistMergeSIDs([Bgen('../examples/example.bgen')[:,:5].read(),Bgen('../examples/example.bgen')[:,5:].read()]),
+                           #Bed('../examples/toydata.bed',count_A1=True).as_dist(block_size=2000),
+                           #Bed('../examples/toydata.bed',count_A1=True).as_dist(),
+                           #Bgen('../examples/example.bgen').read(),
+                           #Bgen('../examples/bits1.bgen'),                          
+                           #DistGen(seed=0,iid_count=500,sid_count=50),
+                           #DistGen(seed=0,iid_count=500,sid_count=50)[::2,::2],
+                           #DistHdf5('../examples/toydata.snpmajor.dist.hdf5'),
+                           #DistMemMap('../examples/tiny.dist.memmap'),
+                           #DistNpz('../examples/toydata10.dist.npz')
                           ]:
             logging.info(str(distreader))
             for order in ['F','C','A']:
@@ -451,7 +452,7 @@ class TestDistNaNCNC(unittest.TestCase):
         self.iid_index_list = iid_index_list
         self.snp_index_list = snp_index_list
         self.distreader = distreader
-        self.dtype = dtype
+        self.dtype = np.dtype(dtype)
         self.order = order
         self.force_python_only = force_python_only
         self.reference_snps = reference_snps

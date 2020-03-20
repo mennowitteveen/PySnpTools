@@ -283,6 +283,7 @@ class KernelReader(PstReader):
         >>> import numpy as np
         >>> #print(np.may_share_memory(subset_kerneldata.val, subsub_kerneldata.val)) # Do the two ndarray's share memory? They could. Currently they won't.       
         """
+        dtype = np.dtype(dtype)
         val = self._read(None, None, order, dtype, force_python_only, view_ok)
         from pysnptools.kernelreader import KernelData
         ret = KernelData(iid0=self.iid0, iid1=self.iid1, val=val, name=str(self))
@@ -350,6 +351,12 @@ class KernelReader(PstReader):
             return kernel, None, kernel_trained
         else:
             return kernel
+
+    @property
+    def val_shape(self):#!!!cmk99 need doc
+        '''        
+        '''
+        return None
 
 
 if __name__ == "__main__":

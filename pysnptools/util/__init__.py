@@ -273,6 +273,7 @@ def sub_matrix(val, row_index_list, col_index_list, order='A', dtype=sp.float64)
             effective_order = 'C'
     else:
         effective_order = order
+    dtype = np.dtype(dtype)
 
 
     original_dimensions = len(val.shape)

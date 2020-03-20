@@ -39,6 +39,8 @@ class _Dist2Snp(SnpReader):
 
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
         from pysnptools.distreader import DistReader
+        dtype = np.dtype(dtype)
+
 
         assert row_index_or_none is None and col_index_or_none is None #real assert because indexing should already be pushed to the inner distreader
 

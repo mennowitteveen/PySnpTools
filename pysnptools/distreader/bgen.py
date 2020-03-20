@@ -167,8 +167,7 @@ class Bgen(DistReader):
         old_file_date = Bgen._warning_dictionary.get(self.filename)
         if old_file_date is not None and old_file_date != new_file_date:
             logging.warning('Opening a file again, but its creation date has changed See https://github.com/limix/bgen-reader-py/issues/25. File "{0}"'.format(self.filename))
-        else:
-            Bgen._warning_dictionary[self.filename] = new_file_date
+        Bgen._warning_dictionary[self.filename] = new_file_date
 
         self._read_bgen = read_bgen(self.filename,metafile_filepath=self._metadata,samples_filepath=self._sample,verbose=self._verbose)
 
@@ -234,6 +233,7 @@ class Bgen(DistReader):
 
         if order=='A':
             order='F'
+        dtype = np.dtype(dtype)
 
         iid_count_in = self.iid_count #!!!similar code elsewhere
         sid_count_in = self.sid_count

@@ -138,7 +138,7 @@ class PstMemMap(PstData):
         >>> pst_mem_map.flush()
 
         '''
-
+        dtype = np.dtype(dtype)
         self = PstMemMap(filename)
         self._empty_inner(row, col, filename, row_property, col_property,order,dtype,val_shape)
         return self
@@ -146,7 +146,7 @@ class PstMemMap(PstData):
 
     def _empty_inner(self, row, col, filename, row_property, col_property, order, dtype, val_shape):
         self._ran_once = True
-        self._dtype = dtype
+        self._dtype =  np.dtype(dtype)
         self._order = order
 
         row = PstData._fixup_input(row)
@@ -222,6 +222,7 @@ class PstMemMap(PstData):
     # Most _read's support only indexlists or None, but this one supports Slices, too.
     _read_accepts_slices = True
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
+        dtype = np.dtype(dtype)
         val, shares_memory = self._apply_sparray_or_slice_to_val(self.val, row_index_or_none, col_index_or_none, order, dtype, force_python_only)
         #if not shares_memory and view_ok:
         #    logging.warn("Read from {0} required copy".format(self)) #!!!cmk99 keep this warning?

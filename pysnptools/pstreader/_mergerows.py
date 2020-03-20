@@ -96,7 +96,7 @@ class _MergeRows(PstReader): #!!!why does this start with _
         #!!!tests to do: no row's
         #!!!tests to do: no col's
         #!!!test to do: from file 1, file2, and then file1 again
-
+        dtype = np.dtype(dtype)
         row_index = row_index_or_none if row_index_or_none is not None else np.arange(self.row_count) #!!!might want to special case reading all
         col_index_or_none_count = self.col_count if col_index_or_none is None else len(col_index_or_none)
         reader_and_row_index_list = self._create_reader_and_row_index_list(row_index)

@@ -74,6 +74,7 @@ class SnpKernel(KernelReader):
         copier.input(self.standardizer)
 
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
+        dtype = np.dtype(dtype)
         #Special case: If square and constant, can push the subsetting into the SnpReader
         if (self.standardizer.is_constant and row_index_or_none is not None and col_index_or_none is not None and np.array_equal(row_index_or_none,col_index_or_none)):
             return self.snpreader[row_index_or_none,:]._read_kernel(self.standardizer,self.block_size,order, dtype, force_python_only, view_ok)#!!!LATER can this ever be reached?
@@ -170,6 +171,7 @@ class SnpKernel(KernelReader):
         :rtype: :class:`.SnpData`
 
         """
+        dtype = np.dtype(dtype)
         return self.snpreader.read(order=order, dtype=dtype, force_python_only=force_python_only, view_ok=view_ok).standardize(self.standardizer)
 
 if __name__ == "__main__":

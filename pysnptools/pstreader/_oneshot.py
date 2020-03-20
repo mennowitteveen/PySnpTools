@@ -62,6 +62,7 @@ class _OneShot(PstReader):
     _read_accepts_slices = True
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
         self._run_once()
+        dtype = np.dtype(dtype)
         val = self._data._read(row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok)
         return val
 

@@ -176,7 +176,7 @@ class SnpData(PstData,SnpReader):
                 * No standardization is needed & everything is in memory  OR uses the FROM-DISK method
         '''
         from pysnptools.pstreader import PstReader
-
+        dtype = np.dtype(dtype)
 
         #Just do a 'python' dot, if no standardization is needed and everything is the right type
         if isinstance(standardizer,Identity) and train.val.dtype == dtype:

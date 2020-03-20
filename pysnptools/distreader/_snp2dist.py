@@ -41,6 +41,8 @@ class _Snp2Dist(DistReader):
     def _snpval_to_distval(self, snpval, order, dtype):
         if order=='A':
             order='F'
+        dtype = np.dtype(dtype)
+
         distval = np.zeros([snpval.shape[0],snpval.shape[1],3],dtype=dtype,order=order)
         distval = distval.reshape(-1,distval.shape[-1],order=order)
         factor = 2.0/self.max_weight
@@ -53,6 +55,7 @@ class _Snp2Dist(DistReader):
 
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
         assert row_index_or_none is None and col_index_or_none is None #real assert because indexing should already be pushed to the inner snpreader
+        dtype = np.dtype(dtype)
 
         #Do all-at-once (not in blocks) if 1. No block size is given or 2. The #ofSNPs < Min(block_size,iid_count)
         if self.block_size is None or (self.sid_count <= self.block_size or self.sid_count <= self.iid_count):

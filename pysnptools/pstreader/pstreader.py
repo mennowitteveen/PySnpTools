@@ -453,6 +453,7 @@ class PstReader(object):
         >>> import numpy as np
         >>> # print(np.may_share_memory(subset_snpdata.val, subsub_snpdata.val)) # Do the two ndarray's share memory? They could. Currently they won't.       
         """
+        dtype = np.dtype(dtype)
         val = self._read(None, None, order, dtype, force_python_only, view_ok)
         from pysnptools.pstreader import PstData
         ret = PstData(self.row, self.col, val, row_property=self.row_property, col_property=self.col_property, name=str(self))
@@ -587,6 +588,8 @@ class PstReader(object):
 
     @staticmethod
     def _array_properties_are_ok(val, order, dtype):
+        dtype = np.dtype(dtype)
+
         if val.dtype != dtype:
             return False
         if order is 'F':
@@ -597,6 +600,8 @@ class PstReader(object):
         return True
 
     def _apply_sparray_or_slice_to_val(self, val, row_indexer_or_none, col_indexer_or_none, order, dtype, force_python_only):
+        dtype = np.dtype(dtype)
+
         if (PstReader._is_all_slice(row_indexer_or_none) and PstReader._is_all_slice(col_indexer_or_none) and 
                 (order == 'A' or (order == 'F' and val.flags['F_CONTIGUOUS']) or (order == 'C' and val.flags['C_CONTIGUOUS'])) and
                 (dtype is None or  val.dtype == dtype)):

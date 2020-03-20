@@ -221,6 +221,7 @@ class Bed(SnpReader):
 
         if order=='A':
             order='F'
+        dtype = np.dtype(dtype)
 
         assert not hasattr(self, 'ind_used'), "A SnpReader should not have a 'ind_used' attribute"
 

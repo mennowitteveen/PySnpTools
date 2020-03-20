@@ -180,6 +180,7 @@ class DistMemMap(PstMemMap,DistData):
         else:
             order = 'F' if order=='A' else order
             dtype = dtype or np.float64
+        dtype = np.dtype(dtype)
 
         self = PstMemMap.empty(row_ascii, col_ascii, filename+'.temp', row_property=distreader.row_property, col_property=distreader.col_property,order=order,dtype=dtype, val_shape=3)
         if hasattr(distreader,'val'):

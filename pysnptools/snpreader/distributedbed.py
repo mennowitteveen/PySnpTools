@@ -96,6 +96,8 @@ class DistributedBed(SnpReader):
 
     def _read(self, iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok):
         self._run_once()
+        dtype = np.dtype(dtype)
+
         return self._merge._read(iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok)
 
     #!!! in future could make a default for piece_per_chrom_count that made each piece some GB size
@@ -270,6 +272,8 @@ class _Distributed1Bed(SnpReader):
 
     def _read(self, iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok):
         self._run_once()
+        dtype = np.dtype(dtype)
+
         return self.local._read(iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok)
     
     @staticmethod

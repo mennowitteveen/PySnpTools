@@ -163,6 +163,8 @@ class PstHdf5(PstReader):
     def _create_block(self, block_size, order, dtype):
         matches_order = self.is_col_major == (order =="F")
         opposite_order = "C" if order == "F" else "F"
+        dtype = np.dtype(dtype)
+
         if matches_order:
             if self._val_shape is None:
                 return np.empty([len(self._row),block_size], dtype=dtype, order=order), order
@@ -177,6 +179,7 @@ class PstHdf5(PstReader):
 
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
         self._run_once()
+        dtype = np.dtype(dtype)
 
         assert order in ['F','C','A'], "Expect order to be 'F', 'C' or 'A'"
 

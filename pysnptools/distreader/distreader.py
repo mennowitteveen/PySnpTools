@@ -256,6 +256,7 @@ class DistReader(PstReader):
         >>> import numpy as np
         >>> # print np.may_share_memory(subset_distdata.val, subsub_distdata.val) # Do the two ndarray's share memory? They could. Currently they won't.       
         """
+        dtype = np.dtype(dtype)
         val = self._read(None, None, order, dtype, force_python_only, view_ok)
         from pysnptools.distreader import DistData
         ret = DistData(self.iid,self.sid,val,pos=self.pos,name=str(self))
@@ -326,6 +327,13 @@ class DistReader(PstReader):
         """
         return self.col_to_index(list)
 
+    @property
+    def val_shape(self):#!!!cmk99 need doc
+        '''        
+        '''
+        return 3
+
+
     def __getitem__(self, iid_indexer_and_snp_indexer):
         from pysnptools.distreader._subset import _DistSubset
         iid_indexer, snp_indexer = iid_indexer_and_snp_indexer
@@ -337,6 +345,8 @@ class DistReader(PstReader):
         Like 'read' except won't read if already a DistData
         '''
         from pysnptools.distreader import DistData #must import here to avoid cycles
+        dtype = np.dtype(dtype)
+
         if hasattr(distreader,'val') and distreader.val.dtype==dtype and (order=="A" or (order=="C" and distreader.val.flags["C_CONTIGUOUS"]) or (order=="F" and distreader.val.flags["F_CONTIGUOUS"])):
             return distreader
         else:

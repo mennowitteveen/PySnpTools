@@ -120,9 +120,10 @@ class _MergeCols(PstReader):
         #!!!tests to do: no row's
         #!!!tests to do: no col's
         #!!!test to do: from file 1, file2, and then file1 again
-
+        dtype = np.dtype(dtype)
         col_index = col_index_or_none if col_index_or_none is not None else np.arange(self.col_count) #!!!might want to special case reading all
         row_index_or_none_count = self.row_count if row_index_or_none is None else len(row_index_or_none)
+        col_index_or_none_count = self.col_count if col_index_or_none is None else len(col_index_or_none)
 
         #Create a list of (reader,col_index)
         reader_and_col_index_list = self._create_reader_and_col_index_list(col_index)
@@ -136,18 +137,17 @@ class _MergeCols(PstReader):
             logging.info("Starting read from {0} subreaders".format(len(reader_and_col_index_list)))
             if order == 'A' or order is None:#!!!cmk99 does every _read( need code like this?
                 order = 'F'
-            val = np.empty((row_index_or_none_count,len(col_index)),dtype=dtype,order=order)
-            if self._val_shape is None:
-                val = np.empty([row_index_count, col_index_count], dtype=dtype, order=order)
+            assert hasattr(self,'val_shape'), "!!!cmk99 need code for _mergecols with no val_shape"
+            if self.val_shape is None:
+                val = np.empty([row_index_or_none_count, col_index_or_none_count], dtype=dtype, order=order)
             else:
-                val = np.empty([row_index_count, col_index_count,self._val_shape], dtype=dtype, order=order)
+                val = np.empty([row_index_or_none_count, col_index_or_none_count, self.val_shape], dtype=dtype, order=order)
             val.fill(np.nan) #!!!cmk99 Keep this?
-
 
             for reader_index,is_here,col_index_rel in reader_and_col_index_list:
                 reader = self.reader_list[reader_index]
                 if reader_index % 1 == 0: logging.info("Reading from #{0}: {1}".format(reader_index,reader))
-                if self._val_shape is None:
+                if self.val_shape is None:
                     val[:,is_here] = reader._read(row_index_or_none,col_index_rel,order,dtype,force_python_only, view_ok=True)
                 else:
                     val[:,is_here,:] = reader._read(row_index_or_none,col_index_rel,order,dtype,force_python_only, view_ok=True)

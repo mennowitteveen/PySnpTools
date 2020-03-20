@@ -107,6 +107,7 @@ class _Pairs(SnpReader):
 
     def _read(self, iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok):
         self._run_once()
+        dtype = np.dtype(dtype)
 
         iid_count_in = self.iid_count
         sid_count_in = self.sid_count

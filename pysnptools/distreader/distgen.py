@@ -117,6 +117,7 @@ class DistGen(DistReader):
 
         if order == 'A':
             order = 'F'
+        dtype = np.dtype(dtype)
 
         row_index_count = len(row_index_or_none) if row_index_or_none is not None else self._iid_count # turn to a count of the index positions e.g. all of them
         col_index = col_index_or_none if col_index_or_none is not None else np.arange(self._sid_count) # turn to an array of index positions, e.g. 0,1,200,2200,10

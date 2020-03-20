@@ -73,6 +73,7 @@ class Identity(KernelReader):
         return self._row1
 
     def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
+        dtype = np.dtype(dtype)
         if row_index_or_none is None and col_index_or_none is None and self._row0 is self._row1: #read all of a square ID
             val = np.identity(self.row_count,dtype=dtype)
             if (order=='F'and not val.flags["F_CONTIGUOUS"]) or (order=='C'and not val.flags["C_CONTIGUOUS"]):

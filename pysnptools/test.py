@@ -692,6 +692,15 @@ class TestPySnpTools(unittest.TestCase):
             error_seen = True
         assert error_seen
 
+    def test_read_dtype(self):
+        previous_wd = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
+        bed = Bed('examples/toydata.bed',count_A1=True)
+        bed[:3,:2].read(dtype='float32').val
+
+        os.chdir(previous_wd)
+
     def test_respect_read_inputs(self):
         from pysnptools.snpreader import _MergeIIDs,_MergeSIDs, SnpGen, SnpMemMap
         from pysnptools.distreader import Bgen
@@ -1080,6 +1089,8 @@ def getTestSuite():
 
     test_suite = unittest.TestSuite([])
 
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPySnpTools))
+
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestBgen))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaderDocStrings))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistGen))
@@ -1087,7 +1098,6 @@ def getTestSuite():
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaders))
     test_suite.addTests(TestDistNaNCNC.factory_iterator())
 
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPySnpTools))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistributedBed))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestFileCache))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestUtilTools))

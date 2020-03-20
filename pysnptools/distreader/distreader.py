@@ -74,7 +74,7 @@ class DistReader(PstReader):
 
         See below for details.
 
-        Many of the classes, such as :class:`.Bgen`, also provide a static :meth:`DistBgen.write` method for writing :class:`.DistReader` or :class:`.DistData` to disk.
+        Many of the classes, such as :class:`.Bgen`, also provide a static :meth:`Bgen.write` method for writing :class:`.DistReader` or :class:`.DistData` to disk.
 
         >>> from pysnptools.distreader import DistHdf5, Bgen
         >>> import pysnptools.util as pstutil

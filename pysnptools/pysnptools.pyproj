@@ -41,6 +41,7 @@
     <Compile Include="distreader\bgen.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="distreader\_distmergesids.py" />
     <Compile Include="distreader\_snp2dist.py" />
     <Compile Include="distreader\distdata.py" />
     <Compile Include="distreader\distreader.py" />

@@ -137,10 +137,20 @@ class _MergeCols(PstReader):
             if order == 'A' or order is None:#!!!cmk99 does every _read( need code like this?
                 order = 'F'
             val = np.empty((row_index_or_none_count,len(col_index)),dtype=dtype,order=order)
+            if self._val_shape is None:
+                val = np.empty([row_index_count, col_index_count], dtype=dtype, order=order)
+            else:
+                val = np.empty([row_index_count, col_index_count,self._val_shape], dtype=dtype, order=order)
+            val.fill(np.nan) #!!!cmk99 Keep this?
+
+
             for reader_index,is_here,col_index_rel in reader_and_col_index_list:
                 reader = self.reader_list[reader_index]
                 if reader_index % 1 == 0: logging.info("Reading from #{0}: {1}".format(reader_index,reader))
-                val[:,is_here] = reader._read(row_index_or_none,col_index_rel,order,dtype,force_python_only, view_ok=True)
+                if self._val_shape is None:
+                    val[:,is_here] = reader._read(row_index_or_none,col_index_rel,order,dtype,force_python_only, view_ok=True)
+                else:
+                    val[:,is_here,:] = reader._read(row_index_or_none,col_index_rel,order,dtype,force_python_only, view_ok=True)
             logging.info("Ended read from {0} subreaders".format(len(reader_and_col_index_list)))
             return val
 

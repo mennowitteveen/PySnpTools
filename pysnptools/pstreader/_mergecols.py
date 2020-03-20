@@ -137,20 +137,25 @@ class _MergeCols(PstReader):
             logging.info("Starting read from {0} subreaders".format(len(reader_and_col_index_list)))
             if order == 'A' or order is None:#!!!cmk99 does every _read( need code like this?
                 order = 'F'
-            assert hasattr(self,'val_shape'), "!!!cmk99 need code for _mergecols with no val_shape"
-            if self.val_shape is None:
-                val = np.empty([row_index_or_none_count, col_index_or_none_count], dtype=dtype, order=order)
-            else:
-                val = np.empty([row_index_or_none_count, col_index_or_none_count, self.val_shape], dtype=dtype, order=order)
-            val.fill(np.nan) #!!!cmk99 Keep this?
+            val = None
 
             for reader_index,is_here,col_index_rel in reader_and_col_index_list:
                 reader = self.reader_list[reader_index]
                 if reader_index % 1 == 0: logging.info("Reading from #{0}: {1}".format(reader_index,reader))
-                if self.val_shape is None:
-                    val[:,is_here] = reader._read(row_index_or_none,col_index_rel,order,dtype,force_python_only, view_ok=True)
+                piece = reader._read(row_index_or_none,col_index_rel,order,dtype,force_python_only, view_ok=True)
+                if val is None:
+                    if len(piece.shape) == 2:
+                        val = np.empty([row_index_or_none_count, col_index_or_none_count], dtype=dtype, order=order)
+                    else:
+                        val = np.empty([row_index_or_none_count, col_index_or_none_count, self.val_shape], dtype=dtype, order=order)
+                    val.fill(np.nan) #!!!cmk99 Keep this?
+
+                if len(val.shape)== 2:
+                    val[:,is_here] = piece 
                 else:
-                    val[:,is_here,:] = reader._read(row_index_or_none,col_index_rel,order,dtype,force_python_only, view_ok=True)
+                    val[:,is_here,:] = piece
+
             logging.info("Ended read from {0} subreaders".format(len(reader_and_col_index_list)))
+            assert val is not None
             return val
 

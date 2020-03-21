@@ -33,7 +33,7 @@ class PstHdf5(PstReader):
     **Methods beyond** :class:`.PstReader`
     '''
 
-    def __init__(self, filename, block_size=5000): #!!!cmk99 document block size
+    def __init__(self, filename, block_size=5000): #LATER document block size
         super(PstHdf5, self).__init__() #We know PstReader doesn't want the file name
 
         self._block_size = block_size
@@ -172,7 +172,7 @@ class PstHdf5(PstReader):
                 return np.empty([len(self._row),block_size,self._val_shape], dtype=dtype, order=order), order
         else:
             if self._val_shape is None:
-                #!!!cmk99 should make own version np.empty with optional 3rd dimension and np.nan fill?
+                #LATER should make own version np.empty with optional 3rd dimension and np.nan fill?
                 return np.empty([len(self._row),block_size], dtype=dtype, order=opposite_order), opposite_order
             else:
                 return np.empty([len(self._row),block_size, self._val_shape,], dtype=dtype, order=opposite_order), opposite_order
@@ -215,7 +215,7 @@ class PstHdf5(PstReader):
             val = np.empty([row_index_count, col_index_count], dtype=dtype, order=order)
         else:
             val = np.empty([row_index_count, col_index_count,self._val_shape], dtype=dtype, order=order)
-        val.fill(np.nan) #!!!cmk99 Keep this?
+        val.fill(np.nan) #LATER Keep this?
 
         matches_order = self.is_col_major == (order=="F")
         is_simple = not force_python_only and row_is_sorted and col_are_sorted and matches_order #If 'is_simple' may be able to use a faster reader

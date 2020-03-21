@@ -353,8 +353,9 @@ class KernelReader(PstReader):
             return kernel
 
     @property
-    def val_shape(self):#!!!cmk99 need doc
-        '''        
+    def val_shape(self):
+        '''
+        Tells the shape of value for a given individual and SNP. For KernelReaders always returns None, meaning a single scalar value.
         '''
         return None
 

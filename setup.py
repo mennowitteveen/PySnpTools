@@ -7,7 +7,7 @@ from distutils.command.clean import clean as Clean
 import numpy
 
 # Version number
-version = '0.4.16'
+version = '0.4.17'
 
 def readme():
     with open('README.md') as f:
@@ -76,7 +76,11 @@ else:
                             define_macros=macros)]
     cmdclass = {}
 
-
+install_requires = ['scipy>=1.1.0', 'numpy>=1.11.3', 'pandas>=0.19.0', 'psutil>=5.6.7', 'h5py>=2.10.0', 'dill>=0.2.9']
+if sys.version_info[0] >= 3:
+    install_requires += ['bgen-reader>=3.0.7']
+else:
+    install_requires += ['backports.tempfile']
 
 class CleanCommand(Clean):
     description = "Remove build directories, and compiled files (including .pyc)"
@@ -138,7 +142,7 @@ setup(
         "tests/datasets/snpgen.fam",
         ]
                  },
-    install_requires = ['scipy>=1.1.0', 'numpy>=1.11.3', 'pandas>=0.19.0', 'psutil>=5.6.7', 'h5py>=2.10.0', 'dill>=0.2.9', 'bgen-reader>=3.0.7'],
+    install_requires = install_requires,
 
     # extensions
     cmdclass = cmdclass,

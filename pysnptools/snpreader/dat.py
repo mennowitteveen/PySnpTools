@@ -10,9 +10,9 @@ from pysnptools.pstreader import _OneShot
 
 class Dat(_OneShot,SnpReader):
     '''
-    A :class:`.SnpReader` for reading Dat/Fam/Map-formated files from disk. #cmk99 say that this is also called dosage or bimbam
-    #!!!cmk99 work when the extension is \*.dosage or anything else
-    #!!!cmk99 make so fam can be called bam and map can be called bim
+    A :class:`.SnpReader` for reading Dat/Fam/Map-formated files from disk. #LATER say that this is also called dosage or bimbam
+    #LATER work when the extension is \*.dosage or anything else
+    #LATER make so fam can be called bam and map can be called bim
 
 
     See :class:`.SnpReader` for general examples of using SnpReaders.

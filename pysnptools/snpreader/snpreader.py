@@ -726,8 +726,9 @@ snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) #
             return sid,pos
 
     @property
-    def val_shape(self):#!!!cmk99 need doc
-        '''        
+    def val_shape(self):
+        '''
+        Tells the shape of value for a given individual and SNP. For SnpReaders always returns None, meaning a single scalar value.
         '''
         return None
 

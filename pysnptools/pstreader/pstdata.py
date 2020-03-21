@@ -182,6 +182,9 @@ class PstData(PstReader):
 
     @property
     def val_shape(self):
+        '''
+        Tells the shape of value for a given individual and SNP. If None, means a single scalar value.
+        '''
         if len(self._val.shape)==2:
             return None
         else:

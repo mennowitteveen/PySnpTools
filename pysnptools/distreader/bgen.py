@@ -3,13 +3,16 @@ import logging
 import numpy as np
 import warnings
 import unittest
-from bgen_reader import read_bgen
-from bgen_reader import example_files
-from bgen_reader import create_metafile
+import sys
+
+if sys.version_info[0] >= 3:
+    from bgen_reader import read_bgen
+    from bgen_reader import example_files
+    from bgen_reader import create_metafile
+from tempfile import TemporaryFile
 from pysnptools.util import log_in_place
 import shutil
 import math
-from tempfile import TemporaryFile
 import subprocess
 import pysnptools.util as pstutil
 from pysnptools.distreader import DistReader
@@ -162,7 +165,7 @@ class Bgen(DistReader):
 
         assert os.path.exists(self.filename), "Expect file to exist ('{0}')".format(self.filename)
 
-        #!!!cmk99 remove when bug is fixed
+        #LATER remove when bug is fixed
         new_file_date = os.stat(self.filename).st_ctime
         old_file_date = Bgen._warning_dictionary.get(self.filename)
         if old_file_date is not None and old_file_date != new_file_date:
@@ -182,7 +185,7 @@ class Bgen(DistReader):
             rsid_list = d['rsid_list'] if 'rsid_list' in d else None
             col_property = d['col_property']
 
-        #!!!cmk99 want this mesasage? logging.info("Reading and saving variant and sample metadata")
+        #LATER want this mesasage? logging.info("Reading and saving variant and sample metadata")
         if samples is None:
             samples =  np.array(self._read_bgen['samples'],dtype='str')
             must_write_metadata2 = True
@@ -208,7 +211,7 @@ class Bgen(DistReader):
             self._col = np.array([self._sid_function(id,rsid) for id,rsid in zip(id_list,rsid_list)],dtype='str')
 
         if len(self._col)>0: #spot check
-            assert list(self._read_bgen['variants'].loc[0, "nalleles"])[0]==2, "Expect nalleles==2" #!!!cmk30 test that this is fast even with 1M sid_count
+            assert list(self._read_bgen['variants'].loc[0, "nalleles"])[0]==2, "Expect nalleles==2"
 
         if col_property is None:
             col_property = np.zeros((len(self._col),3),dtype='float')
@@ -759,6 +762,10 @@ if __name__ == "__main__":
         from pysnptools.distreader import Bgen
         distgen = DistGen(seed=332,iid_count=iid_count,sid_count=sid_count)
         Bgen.write('{0}x{1}.bgen'.format(iid_count,sid_count),distgen)
+    if False:
+        from pysnptools.distreader import Bgen
+        bgen = Bgen(r'M:\deldir\10x5000000.bgen')
+        print(bgen.iid)
 
 
     import doctest

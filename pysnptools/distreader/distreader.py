@@ -328,8 +328,9 @@ class DistReader(PstReader):
         return self.col_to_index(list)
 
     @property
-    def val_shape(self):#!!!cmk99 need doc
-        '''        
+    def val_shape(self):
+        '''
+        Tells the shape of value for a given individual and SNP. For DistReaders always returns 3.
         '''
         return 3
 

@@ -150,7 +150,7 @@ class SnpMemMap(PstMemMap,SnpData):
         >>> import pysnptools.util as pstutil
         >>> from pysnptools.snpreader import SnpData, SnpMemMap
         >>> data1 = SnpData(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'],val= [[0.,2.,0.],[0.,1.,2.]])
-        >>> pstutil.create_directory_if_necessary("tempdir/tiny.snp.memmap") #!!!cmk99 should we just promise to create directories?
+        >>> pstutil.create_directory_if_necessary("tempdir/tiny.snp.memmap") #LATER should we just promise to create directories?
         >>> SnpMemMap.write("tempdir/tiny.snp.memmap",data1)      # Write data1 in SnpMemMap format
         SnpMemMap('tempdir/tiny.snp.memmap')
         """

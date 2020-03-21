@@ -125,7 +125,7 @@ class DistGen(DistReader):
         val = np.empty((row_index_count,len(col_index),3),order=order, dtype=dtype) #allocate memory for result
         list_batch_index = list(set(batch_index))
         for ii,i in enumerate(list_batch_index):  #for each distinct batch index, generate dists #!!!fix up snpgen this way, too with ii
-            #!!!cmk99 logging.info("working on distgen batch {0} of {1}".format(ii,len(list_batch_index))) #!!!why does this produce messages like 'working on distgen batch 8 of 2'?
+            #LATER logging.info("working on distgen batch {0} of {1}".format(ii,len(list_batch_index))) #!!!why does this produce messages like 'working on distgen batch 8 of 2'?
             start = i*self._block_size  #e.g. 0 (then 2000)
             stop = start + self._block_size #e.g. 1000, then 3000
             batch_val = self._get_val(start,stop,dtype) # generate whole batch

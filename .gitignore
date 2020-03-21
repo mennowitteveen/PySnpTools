@@ -329,3 +329,4 @@ ModelManifest.xml
 /doc/ipynb/toydata.bed
 /doc/ipynb/example10.bgen
 /doc/ipynb/mergecache.npz
+/pysnptools/tempdir

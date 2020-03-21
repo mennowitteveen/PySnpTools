@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import numpy as np
+import sys
 import scipy as sp
 import logging
 import doctest
@@ -34,7 +35,8 @@ from pysnptools.distreader.test import TestDistReaderDocStrings
 from pysnptools.distreader.test import TestDistNaNCNC
 from pysnptools.distreader.distmemmap import TestDistMemMap
 from pysnptools.distreader.distgen import TestDistGen
-from pysnptools.distreader.bgen import TestBgen
+if sys.version_info[0] >= 3:
+    from pysnptools.distreader.bgen import TestBgen
 
 import unittest
 import os.path
@@ -94,7 +96,6 @@ class TestPySnpTools(unittest.TestCase):
         self.snpdata = snpreader.read(order='F',force_python_only=True)
         self.snps = self.snpdata.val
 
-    #!!!cmk99 make a test (trying) to assign a val to memmaps
     def test_val_assign(self):
         from pysnptools.snpreader import SnpData
         from pysnptools.distreader import DistData
@@ -708,11 +709,8 @@ class TestPySnpTools(unittest.TestCase):
         previous_wd = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
-
-        for snpreader in [
+        snpreader_list = [
                            _MergeIIDs([Bed('examples/toydata.bed',count_A1=True)[:5,:].read(),Bed('examples/toydata.bed',count_A1=True)[5:,:].read()]),
-                           Bgen('examples/example.bgen')[:10,::10].as_snp(block_size=10),
-                           Bgen('examples/bits1.bgen').as_snp(),
                            SnpGen(seed=0,iid_count=500,sid_count=50),
                            SnpHdf5('examples/toydata.snpmajor.snp.hdf5'),
                            SnpMemMap('examples/tiny.snp.memmap'),
@@ -726,7 +724,14 @@ class TestPySnpTools(unittest.TestCase):
                            Ped('examples/toydata.ped'),
                            Pheno('examples/toydata.phe'),
                            Bed('examples/toydata.bed',count_A1=True).read()
-                          ]:
+                          ]
+        if sys.version_info[0] >= 3:
+            snpreader_list += [
+                           Bgen('examples/example.bgen')[:10,::10].as_snp(block_size=10),
+                           Bgen('examples/bits1.bgen').as_snp()]
+
+
+        for snpreader in snpreader_list:
             logging.info(str(snpreader))
             for order in ['F','C','A']:
                 for dtype in [np.float32,np.float64]:
@@ -1091,11 +1096,12 @@ def getTestSuite():
 
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPySnpTools))
 
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestBgen))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaderDocStrings))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistGen))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistMemMap))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaders))
+    if sys.version_info[0] >= 3:
+        test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestBgen))
+        test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaderDocStrings))
+        test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistGen))
+        test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistMemMap))
+        test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaders))
     test_suite.addTests(TestDistNaNCNC.factory_iterator())
 
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistributedBed))

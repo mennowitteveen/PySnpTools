@@ -207,14 +207,14 @@ class Bgen(DistReader):
     def _map_metadata(self,metafile_filepath): 
         with bgen_metafile(metafile_filepath) as mf:
             nparts = lib.bgen_metafile_npartitions(mf)
-            with bgen_file(self.filename) as bgen: #!!!cmk open this over and over?
+            with bgen_file(self.filename) as bgen:
                 nvariants = lib.bgen_nvariants(bgen)
             updater_freq = 10000
             id_list, rsid_list,chrom_list,pos_list,vaddr_list = [],[],[],[],[]
 
             sid_index = -1
             with log_in_place("Reading Metadata ", logging.INFO) as updater:
-                for ipart in range(nparts): #!!!cmk could we multithread?
+                for ipart in range(nparts): #LATER multithread?
                     nvariants_ptr = ffi.new("int *")
                     metadata = lib.bgen_read_partition(mf, ipart, nvariants_ptr)
                     nvariants_in_part = nvariants_ptr[0]
@@ -222,13 +222,12 @@ class Bgen(DistReader):
                         sid_index += 1
                         if updater_freq>1 and sid_index % updater_freq == 0:
                             updater('{0:,} of {1:,}'.format(sid_index,nvariants))
+                        assert metadata[i].nalleles==2, "Only have code for # of alleles = 2"
 
                         id_list.append(bgen_str_to_str(metadata[i].id))
                         rsid_list.append(bgen_str_to_str(metadata[i].rsid))
-                        chrom_list.append(int(bgen_str_to_str(metadata[i].chrom))) #!!!cmk99 maybe should cover non numbers to 100,101,102... for each unique value
-                        pos_list.append(metadata[i].position) #!!!cmk 22 maybe the position starting with 1 in the whole file????
-                        nalleles = metadata[i].nalleles
-                        assert nalleles==2, "Only have code for # of alleles = 2"
+                        chrom_list.append(int(bgen_str_to_str(metadata[i].chrom))) #LATER maybe should convert nonnumbers to 100,101,102... for each unique value
+                        pos_list.append(metadata[i].position)
                         vaddr_list.append(metadata[i].vaddr)
 
         id_list = np.array(id_list,dtype='str')
@@ -270,20 +269,21 @@ class Bgen(DistReader):
         if iid_count_out * sid_count_out == 0: #!!!cmk test this
             return
 
-        updater_freq = 1000 #!!!cmk change this based on iid_count (not iid_count_out)#!!!cmk can we multithread or process this?
+        #LATER multithread?
+        updater_freq = 1000 #!!!cmk change this based on iid_count (not iid_count_out)
         with log_in_place("Reading Genotype data ", logging.INFO) as updater:
-            nsamples = self.iid_count #remove this!!!cmk
             with bgen_file(self.filename) as bgen: #!!!cmk22!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ok to only open file once????
-                vg = lib.bgen_open_genotype(bgen, vaddr_in[0])
-                ncombs = lib.bgen_ncombs(vg)  #!!!cmk would it save time to assume this is the same for all snps?
-                p = full((nsamples, ncombs), nan, dtype=float64) #!!!cmk if the types worked out, could we pass in part of val directly? including iid_index_or_none
-                lib.bgen_close_genotype(vg)
+                vg0 = lib.bgen_open_genotype(bgen, vaddr_in[0])
+                ncombs = lib.bgen_ncombs(vg0)  #!!!cmk would it save time to assume this is the same for all snps?
+                lib.bgen_close_genotype(vg0)
+                #!!!cmk does only having one p, reused, really save much time?
+                p = full((self.iid_count, ncombs), nan, dtype=float64) #LATER if the types worked out, could we pass in part of val directly? including iid_index_or_none
                 for sid_i,vaddr in enumerate(vaddr_in):
                     if updater_freq>1 and sid_i % updater_freq == 0:
                         updater('{0:,} of {1:,}'.format(sid_i,sid_count_out))
-
                     vg = lib.bgen_open_genotype(bgen, vaddr)
                     lib.bgen_read_genotype(bgen, vg, ffi.cast("double *", p.ctypes.data))
+                    #!!!cmk should we checking that all ncombs really are the same?
                     lib.bgen_close_genotype(vg)
                     val[:,sid_i,:] = (p[iid_index_or_none,:] if iid_index_or_none is not None else p)
         return val
@@ -293,25 +293,26 @@ class Bgen(DistReader):
     def __repr__(self): 
         return "{0}('{1}')".format(self.__class__.__name__,self.filename)
 
-    def __del__(self):
-        self.flush()
+    #!!!cmk flush isn't needed because we (currently) don't leave the file open
+    #def __del__(self):
+    #    self.flush()
 
-    def flush(self):
-        '''Close the \*.bgen file for reading. (If values or properties are accessed again, the file will be reopened.)
+    #def flush(self):
+    #    '''Close the \*.bgen file for reading. (If values or properties are accessed again, the file will be reopened.)
 
-        >>> from __future__ import print_function #Python 2 & 3 compatibility
-        >>> from pysnptools.distreader import Bgen
-        >>> data_on_disk = Bgen('../examples/example.bgen')
-        >>> print((data_on_disk.iid_count, data_on_disk.sid_count))
-        (500, 199)
-        >>> data_on_disk.flush()
+    #    >>> from __future__ import print_function #Python 2 & 3 compatibility
+    #    >>> from pysnptools.distreader import Bgen
+    #    >>> data_on_disk = Bgen('../examples/example.bgen')
+    #    >>> print((data_on_disk.iid_count, data_on_disk.sid_count))
+    #    (500, 199)
+    #    >>> data_on_disk.flush()
 
-        '''
-        if hasattr(self,'_ran_once') and self._ran_once:
-            self._ran_once = False
-            if hasattr(self,'_read_bgen') and self._read_bgen is not None:  # we need to test this because Python doesn't guarantee that __init__ was fully run
-                del self._read_bgen
-                self._read_bgen = None
+    #    '''
+    #    if hasattr(self,'_ran_once') and self._ran_once:
+    #        self._ran_once = False
+    #        if hasattr(self,'_read_bgen') and self._read_bgen is not None:  # we need to test this because Python doesn't guarantee that __init__ was fully run
+    #            del self._read_bgen
+    #            self._read_bgen = None
             
 
 
@@ -773,5 +774,7 @@ if __name__ == "__main__":
     r.run(suites)
 
     import doctest
+    logging.getLogger().setLevel(logging.WARN)
     result = doctest.testmod()
+    logging.getLogger().setLevel(logging.INFO)
     assert result.failed == 0, "failed doc test: " + __file__

@@ -163,10 +163,8 @@ class Bgen(DistReader):
         metadata2 = self._metadata2_file_name()
         if os.path.exists(metadata2):
             d = np.load(metadata2)
-            samples = d['samples']
             id_list = d['id_list']
             rsid_list = d['rsid_list']
-            #!!!cmkdefault_sid_list = d['default_sid_list']
             col_property = d['col_property']
             vaddr_list = d['vaddr_list']
 
@@ -182,7 +180,7 @@ class Bgen(DistReader):
             #try: !!!cmk be sure to remove tempdir
             tempdir = mkdtemp(prefix='pysnptools')
             metafile_filepath = tempdir+'/bgen.metadata'
-            create_metafile(self.filename,metafile_filepath,verbose=self._verbose) #!!!cmk does this slow down with more iids?
+            create_metafile(self.filename,metafile_filepath,verbose=verbose) #!!!cmk does this slow down with more iids?
             iid_list,rsid_list,chrom_list,pos_list,vaddr_list = self._map_metadata(metafile_filepath)
             id_list = np.array(iid_list,dtype='str')
             rsid_list = np.array(rsid_list,dtype='str')
@@ -193,8 +191,13 @@ class Bgen(DistReader):
             self._col = id_list
         elif self._sid_function == 'rsid':
             self._col = rsid_list
+        elsif self._sid_function is default_sid_function:
+            if np.all(rsid_list=='0') or np.all(rsid_list==''):
+               self._col = id_list
+            else:
+               self._col = np.char.add(np.char.add(id,','),rsid)
         else:
-            self._col = np.array([self._sid_function(id,rsid) for id,rsid in zip(id_list,rsid_list)],dtype='str') #!!!cmk cache? run in multiplecores
+            self._col = np.array([self._sid_function(id,rsid) for id,rsid in zip(id_list,rsid_list)],dtype='str')
 
         if col_property is None:
             col_property = np.zeros((len(self._col),3),dtype='float')
@@ -206,15 +209,10 @@ class Bgen(DistReader):
 
 
         if must_write_metadata2:
-            np.savez(metadata2,samples=samples,id_list=id_list,rsid_list=rsid_list,col_property=self._col_property,vaddr_list=vaddr_list)
+            np.savez(metadata2,id_list=id_list,rsid_list=rsid_list,col_property=self._col_property,vaddr_list=vaddr_list)
 
         self._assert_iid_sid_pos(check_val=False)
 
-    def _get_metadata(self):
-        #skipping some file checking in bgen-reader-py\bgen_reader\_metadata.py
-        with bgen_file(bgen_filepath) as bgen:
-            sid_count = lib.bgen_nvariants(bgen) #!!!cmk does this need to be called on a just open bgen handle or can it be called any time?
-            #!!!Must create metadata file because it is part of the C library
 
     def _map_metadata(self,metafile_filepath): 
         with bgen_metafile(metafile_filepath) as mf:

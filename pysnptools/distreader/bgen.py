@@ -106,7 +106,7 @@ class Bgen(DistReader):
                        (Default: :meth:`bgen.default_iid_function`.)
                      * **sid_function** (optional, function or string) -- Function to turn a BGEN (SNP) id and rsid into a :attr:`DistReader.sid`.
                        (Default: :meth:`bgen.default_sid_function`.) Can also be the string 'id' or 'rsid', which is faster than using a function.
-                     * **sample** (optional, string) -- A GEN sample file. If given, overrides information in \*.bgen file. #!!!cmk if a sample file is used metadatafile much as different name or not use for iids
+                     * **sample** (optional, string) -- A GEN sample file. If given, overrides information in \*.bgen file.
 
         :Example:
 
@@ -128,10 +128,6 @@ class Bgen(DistReader):
         self._sid_function = sid_function
         self._sample = sample
 
-    def _metadata2_file_name(self):
-        sample_hash = '' if self._sample is None else hash(self._sample) #If they give a sample file, we need a different metadata2 file.
-        return self.filename + ".metadata{0}.npz".format(sample_hash)
-
     @property
     def row(self):
         self._run_once()
@@ -149,6 +145,31 @@ class Bgen(DistReader):
         self._run_once()
         return self._col_property
 
+    def _apply_iid_function(self,samples_series):
+        assert len(samples_series) > 0, "Expect at least one sample"
+        if self._iid_function is not default_iid_function: #!!!cmk test all this
+            return np.array([self._iid_function(sample) for sample in samples_series],dtype='str')
+        else:
+            samples_df = samples_series.str.split(',',expand=True,n=2)
+            if samples_df.shape[1]==1:
+                samples_df.insert(0,'fam','0')
+            row = np.array(samples_df.values,dtype='str')
+            assert row.shape[1]==2,"Expect two columns"
+            return row
+
+    def _apply_sid_function(self,id_list,rsid_list):
+        if self._sid_function == 'id':
+            return id_list
+        elif self._sid_function == 'rsid':
+            return rsid_list
+        elif self._sid_function is default_sid_function:
+            if np.all(rsid_list=='0') or np.all(rsid_list==''):
+               return id_list
+            else:
+               return np.char.add(np.char.add(id_list,','),rsid_list)
+        else:
+            return np.array([self._sid_function(id,rsid) for id,rsid in zip(id_list,rsid_list)],dtype='str')
+
 
     def _run_once(self):
         if self._ran_once:
@@ -158,66 +179,30 @@ class Bgen(DistReader):
         assert os.path.exists(self.filename), "Expect file to exist ('{0}')".format(self.filename)
         verbose = logging.getLogger().level >= logging.INFO
 
-        samples_series = get_samples(self.filename,self._sample,verbose)
-        assert len(samples_series) > 0, "Expect at least one sample"
-        if self._iid_function is not default_iid_function: #!!!cmk test all this
-            self._row = np.array([self._iid_function(sample) for sample in samples_series],dtype='str')#!!!cmk there a faster way to map function?
-        else:
-            samples_df = samples_series.str.split(',',expand=True,n=2)
-            if samples_df.shape[1]==1:
-                samples_df.insert(0,'fam','0')
-            self._row = np.array(samples_df.values,dtype='str')
-            assert self._row.shape[1]==2,"Expect two columns"
+        self._row = self._apply_iid_function(get_samples(self.filename,self._sample,verbose))
 
-        id_list,rsid_list,col_property,vaddr_list = None,None,None,None
-        must_write_metadata2 = False
-
-        metadata2 = self._metadata2_file_name()
+        metadata2 = self.filename + ".metadata.npz"
         if os.path.exists(metadata2):
             d = np.load(metadata2)
             id_list = d['id_list']
             rsid_list = d['rsid_list']
-            col_property = d['col_property']
-            vaddr_list = d['vaddr_list']
-
-        if id_list is None or rsid_list is None or col_property is None or vaddr_list is None: #!!!cmk make sure all these parallel arrays are there
-            tempdir = None
-            #try: !!!cmk be sure to remove tempdir
-            tempdir = mkdtemp(prefix='pysnptools')
-            metafile_filepath = tempdir+'/bgen.metadata'
-            create_metafile(self.filename,metafile_filepath,verbose=verbose) #!!!cmk does this slow down with more iids?
-            iid_list,rsid_list,chrom_list,pos_list,vaddr_list = self._map_metadata(metafile_filepath)
-            id_list = np.array(iid_list,dtype='str')
-            rsid_list = np.array(rsid_list,dtype='str')
-            vaddr_list = np.array(vaddr_list,dtype=np.uint64)#!!!cmk22 what dtype is best?
-            must_write_metadata2 = True
-
-        if self._sid_function == 'id':
-            self._col = id_list
-        elif self._sid_function == 'rsid':
-            self._col = rsid_list
-        elif self._sid_function is default_sid_function:
-            if np.all(rsid_list=='0') or np.all(rsid_list==''):
-               self._col = id_list
-            else:
-               self._col = np.char.add(np.char.add(id_list,','),rsid_list)
+            self._col_property = d['col_property']
+            self._vaddr_list = d['vaddr_list']
         else:
-            self._col = np.array([self._sid_function(id,rsid) for id,rsid in zip(id_list,rsid_list)],dtype='str')
+            tempdir = None
+            try:
+                tempdir = mkdtemp(prefix='pysnptools')
+                metafile_filepath = tempdir+'/bgen.metadata'
+                create_metafile(self.filename,metafile_filepath,verbose=verbose)
+                id_list,rsid_list,self._col_property,self._vaddr_list = self._map_metadata(metafile_filepath)
+                np.savez(metadata2,id_list=id_list,rsid_list=rsid_list,col_property=self._col_property,vaddr_list=self._vaddr_list)
+            finally:
+                if tempdir is not None:
+                    shutil.rmtree(tempdir)
 
-        if col_property is None:
-            col_property = np.zeros((len(self._col),3),dtype='float')
-            col_property[:,0] = chrom_list
-            col_property[:,2] = pos_list
-        self._col_property = col_property
-
-        self._vaddr_list = vaddr_list
-
-
-        if must_write_metadata2:
-            np.savez(metadata2,id_list=id_list,rsid_list=rsid_list,col_property=self._col_property,vaddr_list=vaddr_list)
+        self._col = self._apply_sid_function(id_list,rsid_list)
 
         self._assert_iid_sid_pos(check_val=False)
-
 
     def _map_metadata(self,metafile_filepath): 
         with bgen_metafile(metafile_filepath) as mf:
@@ -225,11 +210,8 @@ class Bgen(DistReader):
             with bgen_file(self.filename) as bgen: #!!!cmk open this over and over?
                 nvariants = lib.bgen_nvariants(bgen)
             updater_freq = 10000
-            id_list = []
-            rsid_list = []
-            chrom_list = []
-            pos_list = []
-            vaddr_list = []
+            id_list, rsid_list,chrom_list,pos_list,vaddr_list = [],[],[],[],[]
+
             sid_index = -1
             with log_in_place("Reading Metadata ", logging.INFO) as updater:
                 for ipart in range(nparts): #!!!cmk could we multithread?
@@ -247,9 +229,17 @@ class Bgen(DistReader):
                         pos_list.append(metadata[i].position) #!!!cmk 22 maybe the position starting with 1 in the whole file????
                         nalleles = metadata[i].nalleles
                         assert nalleles==2, "Only have code for # of alleles = 2"
-                        #allele_ids = _read_allele_ids(metadata[i]) #cmk don't need
-                        vaddr_list.append(metadata[i].vaddr) #CMK is some offset into the parition???
-        return id_list,rsid_list,chrom_list,pos_list,vaddr_list
+                        vaddr_list.append(metadata[i].vaddr)
+
+        id_list = np.array(id_list,dtype='str')
+        rsid_list = np.array(rsid_list,dtype='str')
+        vaddr_list = np.array(vaddr_list,dtype=np.uint64)#!!!cmk22 what dtype is best?
+
+        col_property = np.zeros((len(id_list),3),dtype='float')
+        col_property[:,0] = chrom_list
+        col_property[:,2] = pos_list
+
+        return id_list,rsid_list,col_property,vaddr_list
 
 
 
@@ -480,7 +470,7 @@ class Bgen(DistReader):
         metadata = self._metadata_file_name()
         if os.path.exists(metadata):
             copier.input(metadata)
-        metadata2 = self._metadata2_file_name()
+        metadata2 = self.filename + ".metadata.npz"
         if os.path.exists(metadata2):
             copier.input(metadata2)
 

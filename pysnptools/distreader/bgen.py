@@ -156,8 +156,20 @@ class Bgen(DistReader):
         self._ran_once = True
 
         assert os.path.exists(self.filename), "Expect file to exist ('{0}')".format(self.filename)
+        verbose = logging.getLogger().level >= logging.INFO
 
-        samples,id_list,rsid_list,col_property,vaddr_list = None,None,None,None,None
+        samples_series = get_samples(self.filename,self._sample,verbose)
+        assert len(samples_series) > 0, "Expect at least one sample"
+        if self._iid_function is not default_iid_function: #!!!cmk test all this
+            self._row = np.array([self._iid_function(sample) for sample in samples_series],dtype='str')#!!!cmk there a faster way to map function?
+        else:
+            samples_df = samples_series.str.split(',',expand=True,n=2)
+            if samples_df.shape[1]==1:
+                samples_df.insert(0,'fam','0')
+            self._row = np.array(samples_df.values,dtype='str')
+            assert self._row.shape[1]==2,"Expect two columns"
+
+        id_list,rsid_list,col_property,vaddr_list = None,None,None,None
         must_write_metadata2 = False
 
         metadata2 = self._metadata2_file_name()
@@ -167,13 +179,6 @@ class Bgen(DistReader):
             rsid_list = d['rsid_list']
             col_property = d['col_property']
             vaddr_list = d['vaddr_list']
-
-        verbose = logging.getLogger().level >= logging.INFO
-
-        if samples is None:
-            samples = np.array(get_samples(self.filename,self._sample,verbose),dtype='str')  #!!!cmk must change name of metadata file if sample file is given
-            must_write_metadata2 = True
-        self._row = np.array([self._iid_function(sample) for sample in samples],dtype='str')#!!!cmk there a faster way to map function?
 
         if id_list is None or rsid_list is None or col_property is None or vaddr_list is None: #!!!cmk make sure all these parallel arrays are there
             tempdir = None
@@ -191,11 +196,11 @@ class Bgen(DistReader):
             self._col = id_list
         elif self._sid_function == 'rsid':
             self._col = rsid_list
-        elsif self._sid_function is default_sid_function:
+        elif self._sid_function is default_sid_function:
             if np.all(rsid_list=='0') or np.all(rsid_list==''):
                self._col = id_list
             else:
-               self._col = np.char.add(np.char.add(id,','),rsid)
+               self._col = np.char.add(np.char.add(id_list,','),rsid_list)
         else:
             self._col = np.array([self._sid_function(id,rsid) for id,rsid in zip(id_list,rsid_list)],dtype='str')
 
@@ -276,7 +281,7 @@ class Bgen(DistReader):
             return
 
         updater_freq = 1000 #!!!cmk change this based on iid_count (not iid_count_out)#!!!cmk can we multithread or process this?
-        with log_in_place("Reading Metadata ", logging.INFO) as updater:
+        with log_in_place("Reading Genotype data ", logging.INFO) as updater:
             nsamples = self.iid_count #remove this!!!cmk
             with bgen_file(self.filename) as bgen: #!!!cmk22!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ok to only open file once????
                 vg = lib.bgen_open_genotype(bgen, vaddr_in[0])
@@ -706,19 +711,6 @@ class TestBgen(unittest.TestCase):
             assert got_error
 
 
-    def test_create_metadata_file(self):
-        with example_files("example.32bits.bgen") as filepath:
-            folder = os.path.dirname(filepath)
-            metafile_filepath = os.path.join(folder, filepath + ".metadata")
-            
-            try:
-                bgen = Bgen(filepath)
-                bgen.iid
-                assert(os.path.exists(metafile_filepath))
-            finally:
-                if os.path.exists(metafile_filepath):
-                    os.remove(metafile_filepath)
-
     def test_doctest(self):
         import pysnptools.distreader.bgen
         import doctest
@@ -780,11 +772,11 @@ if __name__ == "__main__":
         Bgen.write('M:\deldir\{0}x{1}.bgen'.format(iid_count,sid_count),distgen,bits)
     if True:
         from pysnptools.distreader import Bgen
-        bgen = Bgen(r'M:\deldir\1x1000000.bgen')
+        bgen = Bgen(r'M:\deldir\500000x100.bgen')#1x1000000.bgen')
         print(bgen.iid)
         distdata = bgen.read(dtype='float32')
         print('!!!cmk')
-
+    #!!!cmk22 need test to read many samples to make it fast enough w/o cachweeng
 
     suites = getTestSuite()
     r = unittest.TextTestRunner(failfast=True)
@@ -793,6 +785,3 @@ if __name__ == "__main__":
     import doctest
     result = doctest.testmod()
     assert result.failed == 0, "failed doc test: " + __file__
-
-
-

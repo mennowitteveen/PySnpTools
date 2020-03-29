@@ -106,7 +106,7 @@ class Bgen(DistReader):
                        (Default: :meth:`bgen.default_iid_function`.)
                      * **sid_function** (optional, function or string) -- Function to turn a BGEN (SNP) id and rsid into a :attr:`DistReader.sid`.
                        (Default: :meth:`bgen.default_sid_function`.) Can also be the string 'id' or 'rsid', which is faster than using a function.
-                     * **sample** (optional, string) -- A GEN sample file. If given, overrides information in \*.bgen file. #!!!cmkT test this
+                     * **sample** (optional, string) -- A GEN sample file. If given, overrides information in \*.bgen file.
 
         :Example:
 
@@ -177,6 +177,7 @@ class Bgen(DistReader):
         self._ran_once = True
 
         assert os.path.exists(self.filename), "Expect file to exist ('{0}')".format(self.filename)
+        assert os.path.getsize(self.filename)<2**31, "For now, Python cannot access files larger than about 2G bytes (see https://github.com/limix/bgen-reader-py/issues/29)"
         verbose = logging.getLogger().level >= logging.INFO
 
         self._row = self._apply_iid_function(get_samples(self.filename,self._sample,verbose))
@@ -223,7 +224,7 @@ class Bgen(DistReader):
                     nvariants_in_part = nvariants_ptr[0]
                     for i in range(nvariants_in_part):
                         sid_index += 1
-                        if updater_freq>1 and sid_index % updater_freq == 0:
+                        if updater_freq>1 and sid_index > 0 and sid_index % updater_freq == 0:
                             updater('{0:,} of {1:,}'.format(sid_index,len(self._p)))
                         assert metadata[i].nalleles==2, "Only have code for # of alleles = 2"
 
@@ -235,7 +236,7 @@ class Bgen(DistReader):
 
         id_list = np.array(id_list,dtype='str')
         rsid_list = np.array(rsid_list,dtype='str')
-        vaddr_list = np.array(vaddr_list,dtype=np.uint64)#!!!cmkI what dtype is best?
+        vaddr_list = np.array(vaddr_list,dtype=np.uint64)#!!!cmk99 Wait for fix
 
         col_property = np.zeros((len(id_list),3),dtype='float')
         col_property[:,0] = chrom_list
@@ -262,25 +263,25 @@ class Bgen(DistReader):
 
         if sid_index_or_none is not None:
             sid_count_out = len(sid_index_or_none)
-            vaddr_in = self._vaddr_list[sid_index_or_none] #!!!cmk99 what other readers use sid_index_out and what for???? It seem useless
+            vaddr_index = self._vaddr_list[sid_index_or_none]
         else:
             sid_count_out = sid_count_in
-            vaddr_in = self._vaddr_list
+            vaddr_index = self._vaddr_list
 
         
         val = np.zeros((iid_count_out, sid_count_out,3), order=order, dtype=dtype)
-        if iid_count_out * sid_count_out == 0: #!!!cmkT test this
-            return
+        if iid_count_out * sid_count_out == 0:
+            return val
 
         #LATER multithread?
         updater_freq = max(1,1000000//self.iid_count) # we use iid_count, not iid_count_out because all iids are read before being filtered
         with log_in_place("Reading genotype data ", logging.INFO) as updater:
-            vg0 = lib.bgen_open_genotype(self._bgen, vaddr_in[0])
+            vg0 = lib.bgen_open_genotype(self._bgen, vaddr_index[0])
             assert 3 == lib.bgen_ncombs(vg0), "Expect exactly three probabilities for each IID,SID"
             lib.bgen_close_genotype(vg0)
             #allocating p only once make reading 10x5M data 30% faster
-            for sid_i,vaddr in enumerate(vaddr_in):
-                if updater_freq>1 and sid_i % updater_freq == 0:
+            for sid_i,vaddr in enumerate(vaddr_index):
+                if updater_freq>1 and sid_i > 0 and sid_i % updater_freq == 0:
                     updater('{0:,} of {1:,}'.format(sid_i,sid_count_out))
                 vg = lib.bgen_open_genotype(self._bgen, vaddr)
                 assert 3 == lib.bgen_ncombs(vg), "Expect exactly three probabilities for each IID,SID"
@@ -360,22 +361,24 @@ class Bgen(DistReader):
         qctool_path = qctool_path or os.environ.get('QCTOOLPATH')
         assert qctool_path is not None, "Bgen.write() requires a path to an external qctool program either via the qctool_path input or by setting the QCTOOLPATH environment variable."
 
-        genfile =  os.path.splitext(filename)[0]+'.gen'
-        samplefile =  os.path.splitext(filename)[0]+'.sample'
-        metadata =  filename+'.metadata'
-        metadatanpz =  filename+'.metadata.npz'
-
         #We need the +1 so that all three values will have enough precision to be very near 1
         #The max(3,..) is needed to even 1 bit will have enough precision in the gen file
+        genfilename =  os.path.splitext(filename)[0]+'.gen'
         decimal_places = max(3,math.ceil(math.log(2**bits,10))+1)
-        Bgen.genwrite(genfile,distreader,decimal_places,id_rsid_function,sample_function,block_size)
-        if os.path.exists(filename):
-            os.remove(filename)
-        if os.path.exists(metadata):
-            os.remove(metadata)
+        Bgen.genwrite(genfilename,distreader,decimal_places,id_rsid_function,sample_function,block_size)
+
+        dir, file = os.path.split(filename)
+        metadatanpz =  file+'.metadata.npz'
+        samplefile =  os.path.splitext(file)[0]+'.sample'
+        genfile =  os.path.splitext(file)[0]+'.gen'
+        olddir = os.getcwd()
+        os.chdir(dir)
+
+        if os.path.exists(file):
+            os.remove(file)
         if os.path.exists(metadatanpz):
             os.remove(metadatanpz)
-        cmd = '{0} -g {1} -s {2} -og {3}{4}{5}'.format(qctool_path,genfile,samplefile,filename,#!!!cmkB fix this so works (or complains better) about files with dos directories
+        cmd = '{0} -g {1} -s {2} -og {3}{4}{5}'.format(qctool_path,genfile,samplefile,file,
                             ' -bgen-bits {0}'.format(bits) if bits is not None else '',
                             ' -bgen-compression {0}'.format(compression) if compression is not None else '')
         try:
@@ -386,6 +389,7 @@ class Bgen(DistReader):
         if cleanup_temp_files:
             os.remove(genfile)
             os.remove(samplefile)
+        os.chdir(olddir)
         return Bgen(filename, iid_function=iid_function, sid_function=sid_function)
 
     @staticmethod
@@ -439,7 +443,7 @@ class Bgen(DistReader):
                         genfp.write('{0} {1} {2} {3} A G'.format(int(distdata.pos[sid_index,0]),id,rsid,int(distdata.pos[sid_index,2])))
                         for iid_index in range(distdata.iid_count):
                             index += 1
-                            if updater_freq>1 and index % updater_freq == 0:
+                            if updater_freq>1 and index>0 and index % updater_freq == 0:
                                 updater('{0:,} of {1:,} ({2:2}%)'.format(index,distreader.iid_count*distreader.sid_count,100.0*index/(distreader.iid_count*distreader.sid_count)))
                             prob_dist = distdata.val[iid_index,sid_index,:]
                             if not np.isnan(prob_dist).any():
@@ -497,6 +501,26 @@ class TestBgen(unittest.TestCase):
         bgen2 = bgen[:2,::3]
         distdata2 = bgen2.read()
         os.chdir(old_dir)
+
+    def test_other(self):
+        old_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
+        logging.info("in TestBgen test_other")
+        bgen = Bgen('../examples/example.bgen',sample='../examples/other.sample')
+        assert np.all(bgen.iid[0] == ('0','other_001'))
+        os.chdir(old_dir)
+
+    def test_zero(self):
+        old_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
+        bgen = Bgen('../examples/example.bgen')
+        assert bgen[:,[]].read().val.shape == (500,0,3)
+        assert bgen[[],:].read().val.shape == (0,199,3)
+        assert bgen[[],[]].read().val.shape == (0,0,3)
+        os.chdir(old_dir)
+
 
     def test2(self):
         old_dir = os.getcwd()
@@ -638,15 +662,6 @@ class TestBgen(unittest.TestCase):
             samples = [("0","sample_0"), ("0","sample_1"), ("0","sample_2"), ("0","sample_3")]
             assert (data.iid == samples).all()
 
-
-    def test_metafile_provided(self):
-        filenames = ["haplotypes.bgen", "haplotypes.bgen.metadata.valid"]
-        with example_files(filenames) as filepaths:
-            bgen = Bgen(filepaths[0], metadata=filepaths[1], verbose=False)
-            bgen.iid
-
-
-
     def test_bgen_reader_variants_info(self):
         with example_files("example.32bits.bgen") as filepath:
             bgen = Bgen(filepath,sid_function='id')
@@ -757,8 +772,11 @@ if __name__ == "__main__":
         ##sid_count = 1*1000*1000
         #iid_count = 2500
         #sid_count = 100
-        iid_count = 1000
-        sid_count = 5*100*1000
+        #iid_count = 2500
+        #sid_count = 500*1000
+        #bits=16
+        iid_count = 25
+        sid_count = 1000
         bits=16
 
         from pysnptools.distreader import DistGen
@@ -770,7 +788,19 @@ if __name__ == "__main__":
         bgen = Bgen(r'M:\deldir\500000x100.bgen')#1x1000000.bgen')
         print(bgen.iid)
         distdata = bgen.read(dtype='float32')
-    #!!!cmk22 need test to read many samples to make it fast enough w/o cachweeng
+    if False:
+        logging.basicConfig(level=logging.INFO)
+        bgen = Bgen(r'M:\deldir\2500x500000.bgen',sid_function='id')# Bgen(r'M:\deldir\10x5000000.bgen')
+        sid_index = int(.5*bgen.sid_count)
+        distdata = bgen[:,sid_index].read()
+        print(distdata.val)
+    if False:
+        from pysnptools.distreader import DistHdf5, Bgen
+        import pysnptools.util as pstutil
+        distreader = DistHdf5('../examples/toydata.snpmajor.dist.hdf5')[:,:10] # A reader for the first 10 SNPs in Hdf5 format
+        pstutil.create_directory_if_necessary("tempdir/toydata10.bgen")
+        Bgen.write("tempdir/toydata10.bgen",distreader)        # Write data in BGEN format
+
 
     suites = getTestSuite()
     r = unittest.TextTestRunner(failfast=False)

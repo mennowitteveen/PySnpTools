@@ -3,6 +3,7 @@ try:
 except:
     pass
 
+import os
 import logging
 import numpy as np
 from pysnptools.pstreader import PstReader

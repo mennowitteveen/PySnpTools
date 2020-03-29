@@ -181,6 +181,11 @@ class Bgen(DistReader):
 
         self._row = self._apply_iid_function(get_samples(self.filename,self._sample,verbose))
 
+        self._bgen_context_manager = bgen_file(self.filename)
+        self._bgen = self._bgen_context_manager.__enter__()
+        self._p = full((len(self._row), 3), nan, dtype=float64) #LATER if the types worked out, could we pass in part of val directly? including iid_index_or_none
+
+
         metadata2 = self.filename + ".metadata.npz"
         if os.path.exists(metadata2):
             d = np.load(metadata2)
@@ -207,8 +212,6 @@ class Bgen(DistReader):
     def _map_metadata(self,metafile_filepath): 
         with bgen_metafile(metafile_filepath) as mf:
             nparts = lib.bgen_metafile_npartitions(mf)
-            with bgen_file(self.filename) as bgen:
-                nvariants = lib.bgen_nvariants(bgen)
             updater_freq = 10000
             id_list, rsid_list,chrom_list,pos_list,vaddr_list = [],[],[],[],[]
 
@@ -221,7 +224,7 @@ class Bgen(DistReader):
                     for i in range(nvariants_in_part):
                         sid_index += 1
                         if updater_freq>1 and sid_index % updater_freq == 0:
-                            updater('{0:,} of {1:,}'.format(sid_index,nvariants))
+                            updater('{0:,} of {1:,}'.format(sid_index,len(self._p)))
                         assert metadata[i].nalleles==2, "Only have code for # of alleles = 2"
 
                         id_list.append(bgen_str_to_str(metadata[i].id))
@@ -272,20 +275,18 @@ class Bgen(DistReader):
         #LATER multithread?
         updater_freq = max(1,1000000//self.iid_count) # we use iid_count, not iid_count_out because all iids are read before being filtered
         with log_in_place("Reading genotype data ", logging.INFO) as updater:
-            with bgen_file(self.filename) as bgen: #!!!cmkP only open file once? (but if so, need to put __del__ and flush back
-                vg0 = lib.bgen_open_genotype(bgen, vaddr_in[0])
-                assert 3 == lib.bgen_ncombs(vg0), "Expect exactly three probabilities for each IID,SID"
-                lib.bgen_close_genotype(vg0)
-                #allocating p only once make reading 10x5M data 30% faster
-                p = full((self.iid_count, 3), nan, dtype=float64) #LATER if the types worked out, could we pass in part of val directly? including iid_index_or_none
-                for sid_i,vaddr in enumerate(vaddr_in):
-                    if updater_freq>1 and sid_i % updater_freq == 0:
-                        updater('{0:,} of {1:,}'.format(sid_i,sid_count_out))
-                    vg = lib.bgen_open_genotype(bgen, vaddr)
-                    lib.bgen_read_genotype(bgen, vg, ffi.cast("double *", p.ctypes.data))
-                    assert 3 == lib.bgen_ncombs(vg), "Expect exactly three probabilities for each IID,SID"
-                    lib.bgen_close_genotype(vg)
-                    val[:,sid_i,:] = (p[iid_index_or_none,:] if iid_index_or_none is not None else p)
+            vg0 = lib.bgen_open_genotype(self._bgen, vaddr_in[0])
+            assert 3 == lib.bgen_ncombs(vg0), "Expect exactly three probabilities for each IID,SID"
+            lib.bgen_close_genotype(vg0)
+            #allocating p only once make reading 10x5M data 30% faster
+            for sid_i,vaddr in enumerate(vaddr_in):
+                if updater_freq>1 and sid_i % updater_freq == 0:
+                    updater('{0:,} of {1:,}'.format(sid_i,sid_count_out))
+                vg = lib.bgen_open_genotype(self._bgen, vaddr)
+                assert 3 == lib.bgen_ncombs(vg), "Expect exactly three probabilities for each IID,SID"
+                lib.bgen_read_genotype(self._bgen, vg, ffi.cast("double *", self._p.ctypes.data))
+                lib.bgen_close_genotype(vg)
+                val[:,sid_i,:] = (self._p[iid_index_or_none,:] if iid_index_or_none is not None else self._p)
         return val
 
 
@@ -293,27 +294,24 @@ class Bgen(DistReader):
     def __repr__(self): 
         return "{0}('{1}')".format(self.__class__.__name__,self.filename)
 
-    #!!!cmk99 flush isn't needed because we (currently) don't leave the file open
-    #def __del__(self):
-    #    self.flush()
+    def __del__(self):
+        self.flush()
 
-    #def flush(self):
-    #    '''Close the \*.bgen file for reading. (If values or properties are accessed again, the file will be reopened.)
+    def flush(self):
+        '''Close the \*.bgen file for reading. (If values or properties are accessed again, the file will be reopened.)
 
-    #    >>> from __future__ import print_function #Python 2 & 3 compatibility
-    #    >>> from pysnptools.distreader import Bgen
-    #    >>> data_on_disk = Bgen('../examples/example.bgen')
-    #    >>> print((data_on_disk.iid_count, data_on_disk.sid_count))
-    #    (500, 199)
-    #    >>> data_on_disk.flush()
+        >>> from __future__ import print_function #Python 2 & 3 compatibility
+        >>> from pysnptools.distreader import Bgen
+        >>> data_on_disk = Bgen('../examples/example.bgen')
+        >>> print((data_on_disk.iid_count, data_on_disk.sid_count))
+        (500, 199)
+        >>> data_on_disk.flush()
 
-    #    '''
-    #    if hasattr(self,'_ran_once') and self._ran_once:
-    #        self._ran_once = False
-    #        if hasattr(self,'_read_bgen') and self._read_bgen is not None:  # we need to test this because Python doesn't guarantee that __init__ was fully run
-    #            del self._read_bgen
-    #            self._read_bgen = None
-            
+        '''
+        if hasattr(self,'_ran_once') and self._ran_once:
+            self._ran_once = False
+            if hasattr(self,'_bgen_context_manager') and self._bgen_context_manager is not None:  # we need to test this because Python doesn't guarantee that __init__ was fully run
+                self._bgen_context_manager.__exit__(None,None,None)
 
 
     @staticmethod
@@ -751,7 +749,7 @@ if __name__ == "__main__":
         bgen2 = Bgen(r'M:\deldir\10x5000000.bgen',verbose=True)
         print(bgen2.shape)
 
-    if True: 
+    if False: 
         #iid_count = 500*1000
         #sid_count = 100
         #bits=8

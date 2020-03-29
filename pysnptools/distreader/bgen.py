@@ -106,7 +106,7 @@ class Bgen(DistReader):
                        (Default: :meth:`bgen.default_iid_function`.)
                      * **sid_function** (optional, function or string) -- Function to turn a BGEN (SNP) id and rsid into a :attr:`DistReader.sid`.
                        (Default: :meth:`bgen.default_sid_function`.) Can also be the string 'id' or 'rsid', which is faster than using a function.
-                     * **sample** (optional, string) -- A GEN sample file. If given, overrides information in \*.bgen file.
+                     * **sample** (optional, string) -- A GEN sample file. If given, overrides information in \*.bgen file. #!!!cmkT test this
 
         :Example:
 
@@ -147,7 +147,7 @@ class Bgen(DistReader):
 
     def _apply_iid_function(self,samples_series):
         assert len(samples_series) > 0, "Expect at least one sample"
-        if self._iid_function is not default_iid_function: #!!!cmk test all this
+        if self._iid_function is not default_iid_function:
             return np.array([self._iid_function(sample) for sample in samples_series],dtype='str')
         else:
             samples_df = samples_series.str.split(',',expand=True,n=2)
@@ -232,7 +232,7 @@ class Bgen(DistReader):
 
         id_list = np.array(id_list,dtype='str')
         rsid_list = np.array(rsid_list,dtype='str')
-        vaddr_list = np.array(vaddr_list,dtype=np.uint64)#!!!cmk22 what dtype is best?
+        vaddr_list = np.array(vaddr_list,dtype=np.uint64)#!!!cmkI what dtype is best?
 
         col_property = np.zeros((len(id_list),3),dtype='float')
         col_property[:,0] = chrom_list
@@ -259,31 +259,31 @@ class Bgen(DistReader):
 
         if sid_index_or_none is not None:
             sid_count_out = len(sid_index_or_none)
-            vaddr_in = self._vaddr_list[sid_index_or_none] #!!!cmk what other readers use sid_index_out and what for???? It seem useless
+            vaddr_in = self._vaddr_list[sid_index_or_none] #!!!cmk99 what other readers use sid_index_out and what for???? It seem useless
         else:
             sid_count_out = sid_count_in
             vaddr_in = self._vaddr_list
 
         
         val = np.zeros((iid_count_out, sid_count_out,3), order=order, dtype=dtype)
-        if iid_count_out * sid_count_out == 0: #!!!cmk test this
+        if iid_count_out * sid_count_out == 0: #!!!cmkT test this
             return
 
         #LATER multithread?
-        updater_freq = 1000 #!!!cmk change this based on iid_count (not iid_count_out)
-        with log_in_place("Reading Genotype data ", logging.INFO) as updater:
-            with bgen_file(self.filename) as bgen: #!!!cmk22!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ok to only open file once????
+        updater_freq = max(1,1000000//self.iid_count) # we use iid_count, not iid_count_out because all iids are read before being filtered
+        with log_in_place("Reading genotype data ", logging.INFO) as updater:
+            with bgen_file(self.filename) as bgen: #!!!cmkP only open file once? (but if so, need to put __del__ and flush back
                 vg0 = lib.bgen_open_genotype(bgen, vaddr_in[0])
-                ncombs = lib.bgen_ncombs(vg0)  #!!!cmk would it save time to assume this is the same for all snps?
+                assert 3 == lib.bgen_ncombs(vg0), "Expect exactly three probabilities for each IID,SID"
                 lib.bgen_close_genotype(vg0)
-                #!!!cmk does only having one p, reused, really save much time?
-                p = full((self.iid_count, ncombs), nan, dtype=float64) #LATER if the types worked out, could we pass in part of val directly? including iid_index_or_none
+                #allocating p only once make reading 10x5M data 30% faster
+                p = full((self.iid_count, 3), nan, dtype=float64) #LATER if the types worked out, could we pass in part of val directly? including iid_index_or_none
                 for sid_i,vaddr in enumerate(vaddr_in):
                     if updater_freq>1 and sid_i % updater_freq == 0:
                         updater('{0:,} of {1:,}'.format(sid_i,sid_count_out))
                     vg = lib.bgen_open_genotype(bgen, vaddr)
                     lib.bgen_read_genotype(bgen, vg, ffi.cast("double *", p.ctypes.data))
-                    #!!!cmk should we checking that all ncombs really are the same?
+                    assert 3 == lib.bgen_ncombs(vg), "Expect exactly three probabilities for each IID,SID"
                     lib.bgen_close_genotype(vg)
                     val[:,sid_i,:] = (p[iid_index_or_none,:] if iid_index_or_none is not None else p)
         return val
@@ -293,7 +293,7 @@ class Bgen(DistReader):
     def __repr__(self): 
         return "{0}('{1}')".format(self.__class__.__name__,self.filename)
 
-    #!!!cmk flush isn't needed because we (currently) don't leave the file open
+    #!!!cmk99 flush isn't needed because we (currently) don't leave the file open
     #def __del__(self):
     #    self.flush()
 
@@ -377,7 +377,7 @@ class Bgen(DistReader):
             os.remove(metadata)
         if os.path.exists(metadatanpz):
             os.remove(metadatanpz)
-        cmd = '{0} -g {1} -s {2} -og {3}{4}{5}'.format(qctool_path,genfile,samplefile,filename,#!!!cmk fix this so works (or complains better) about files with dos directories
+        cmd = '{0} -g {1} -s {2} -og {3}{4}{5}'.format(qctool_path,genfile,samplefile,filename,#!!!cmkB fix this so works (or complains better) about files with dos directories
                             ' -bgen-bits {0}'.format(bits) if bits is not None else '',
                             ' -bgen-compression {0}'.format(compression) if compression is not None else '')
         try:
@@ -428,9 +428,9 @@ class Bgen(DistReader):
             format_function = lambda num:('{0:.'+str(decimal_places)+'f}').format(num)
 
         start = 0
-        updater_freq = 1000
+        updater_freq = 10000
         index = -1
-        with log_in_place("index ", logging.INFO) as updater:
+        with log_in_place("writing text values ", logging.INFO) as updater:
             with open(filename+'.temp','w',newline='\n') as genfp:
                 while start < distreader.sid_count:
                     distdata = distreader[:,start:start+block_size].read(view_ok=True)
@@ -442,7 +442,7 @@ class Bgen(DistReader):
                         for iid_index in range(distdata.iid_count):
                             index += 1
                             if updater_freq>1 and index % updater_freq == 0:
-                                updater('{0:,} of {1:,}'.format(index,distreader.iid_count*distreader.sid_count))
+                                updater('{0:,} of {1:,} ({2:2}%)'.format(index,distreader.iid_count*distreader.sid_count,100.0*index/(distreader.iid_count*distreader.sid_count)))
                             prob_dist = distdata.val[iid_index,sid_index,:]
                             if not np.isnan(prob_dist).any():
                                 s = ' ' + ' '.join((format_function(num) for num in prob_dist))
@@ -602,16 +602,19 @@ class TestBgen(unittest.TestCase):
         shutil.copy(file_from,file_to)
 
         for loop_index in range(2):
-            iid_function = lambda bgen_sample_id: (bgen_sample_id,bgen_sample_id) #Use the bgen_sample_id for both parts of iid
             bgen = Bgen(file_to)
             assert np.array_equal(bgen.iid[0],['0', 'sample_001'])
             assert bgen.sid[0]=='SNPID_2,RSID_2'
-            bgen = Bgen(file_to,iid_function,sid_function='id')
+
+            iid_function = lambda bgen_sample_id: (bgen_sample_id,bgen_sample_id) #Use the bgen_sample_id for both parts of iid
+            bgen = Bgen(file_to,iid_function=iid_function,sid_function='id')
             assert np.array_equal(bgen.iid[0],['sample_001', 'sample_001'])
             assert bgen.sid[0]=='SNPID_2'
-            bgen = Bgen(file_to,iid_function,sid_function='rsid')
+
+            bgen = Bgen(file_to,iid_function=iid_function,sid_function='rsid')
             assert np.array_equal(bgen.iid[0],['sample_001', 'sample_001'])
             assert bgen.sid[0]=='RSID_2'
+
             sid_function = lambda id,rsid: '{0},{1}'.format(id,rsid)
             bgen = Bgen(file_to,iid_function,sid_function=sid_function)
             assert bgen.sid[0]=='SNPID_2,RSID_2'
@@ -748,29 +751,31 @@ if __name__ == "__main__":
         bgen2 = Bgen(r'M:\deldir\10x5000000.bgen',verbose=True)
         print(bgen2.shape)
 
-    if False: 
-        iid_count = 500*1000 #!!!cmk try fewer than default bytes
-        sid_count = 100
-        bits=8
+    if True: 
+        #iid_count = 500*1000
+        #sid_count = 100
+        #bits=8
         ##iid_count = 1
         ##sid_count = 1*1000*1000
         #iid_count = 2500
         #sid_count = 100
+        iid_count = 1000
+        sid_count = 5*100*1000
+        bits=16
 
         from pysnptools.distreader import DistGen
         from pysnptools.distreader import Bgen
         distgen = DistGen(seed=332,iid_count=iid_count,sid_count=sid_count)
         Bgen.write('M:\deldir\{0}x{1}.bgen'.format(iid_count,sid_count),distgen,bits)
-    if True:
+    if False:
         from pysnptools.distreader import Bgen
         bgen = Bgen(r'M:\deldir\500000x100.bgen')#1x1000000.bgen')
         print(bgen.iid)
         distdata = bgen.read(dtype='float32')
-        print('!!!cmk')
     #!!!cmk22 need test to read many samples to make it fast enough w/o cachweeng
 
     suites = getTestSuite()
-    r = unittest.TextTestRunner(failfast=True)
+    r = unittest.TextTestRunner(failfast=False)
     r.run(suites)
 
     import doctest

@@ -503,3 +503,5 @@ ModelManifest.xml
 /pysnptools/distreader/roundtrip1-0-1.gen
 /pysnptools/snpreader/2500x500000.sample
 /pysnptools/snpreader/2500x500000.gen.temp
+/doc/ipynb/Untitled6-Copy1.ipynb
+*.npz

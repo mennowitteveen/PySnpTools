@@ -177,7 +177,7 @@ class Bgen(DistReader):
         self._ran_once = True
 
         assert os.path.exists(self.filename), "Expect file to exist ('{0}')".format(self.filename)
-        assert os.path.getsize(self.filename)<2**31, "For now, Python cannot access files larger than about 2G bytes (see https://github.com/limix/bgen-reader-py/issues/29)"
+        #!!!cmkassert os.path.getsize(self.filename)<2**31, "For now, Python cannot access files larger than about 2G bytes (see https://github.com/limix/bgen-reader-py/issues/29)"
         verbose = logging.getLogger().level >= logging.INFO
 
         self._row = self._apply_iid_function(get_samples(self.filename,self._sample,verbose))
@@ -368,6 +368,8 @@ class Bgen(DistReader):
         Bgen.genwrite(genfilename,distreader,decimal_places,id_rsid_function,sample_function,block_size)
 
         dir, file = os.path.split(filename)
+        if dir=='':
+            dir='.'
         metadatanpz =  file+'.metadata.npz'
         samplefile =  os.path.splitext(file)[0]+'.sample'
         genfile =  os.path.splitext(file)[0]+'.gen'
@@ -470,9 +472,6 @@ class Bgen(DistReader):
         copier.input(self.filename)
         if self._sample is not None:
             copier.input(self._sample)
-        metadata = self._metadata_file_name()
-        if os.path.exists(metadata):
-            copier.input(metadata)
         metadata2 = self.filename + ".metadata.npz"
         if os.path.exists(metadata2):
             copier.input(metadata2)
@@ -547,7 +546,7 @@ class TestBgen(unittest.TestCase):
         for i,distdata0 in enumerate([distgen0data,exampledata]):
             for bits in list(range(1,33)):
                 logging.info("input#={0},bits={1}".format(i,bits))
-                file1 = 'temp/roundtrip1-{0}-{1}.bgen'.format(i,bits)
+                file1 = 'temp/roundtrip1-{0}-{1}.bgen'.format(i,bits) #!!!cmk22 doesn't seem to be going into temp directory
                 distdata1 = Bgen.write(file1,distdata0,bits=bits,compression='zlib',cleanup_temp_files=False).read()
                 distdata2 = Bgen(file1,).read()
                 assert distdata1.allclose(distdata2,equal_nan=True)

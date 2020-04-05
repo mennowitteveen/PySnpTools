@@ -276,9 +276,6 @@ class Bgen(DistReader):
         #LATER multithread?
         updater_freq = max(1,1000000//self.iid_count) # we use iid_count, not iid_count_out because all iids are read before being filtered
         with log_in_place("Reading genotype data ", logging.INFO) as updater:
-            vg0 = lib.bgen_open_genotype(self._bgen, vaddr_index[0])
-            assert 3 == lib.bgen_ncombs(vg0), "Expect exactly three probabilities for each IID,SID"
-            lib.bgen_close_genotype(vg0)
             #allocating p only once make reading 10x5M data 30% faster
             for sid_i,vaddr in enumerate(vaddr_index):
                 if updater_freq>1 and sid_i > 0 and sid_i % updater_freq == 0:

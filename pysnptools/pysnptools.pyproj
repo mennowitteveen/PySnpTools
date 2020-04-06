@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{60f1cb4a-9da3-47c2-9b89-60ac1ce93347}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>pstreader\test.py</StartupFile>
+    <StartupFile>util\mapreduce1\runner\awsbatch.py</StartupFile>
     <SearchPath>..\</SearchPath>
     <WorkingDirectory>.\snpreader</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -22,7 +22,7 @@
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <IsWindowsApplication>False</IsWindowsApplication>
     <CommandLineArguments>sdist bdist_wininst upload</CommandLineArguments>
-    <InterpreterId>Global|ContinuumAnalytics|Anaconda27-64</InterpreterId>
+    <InterpreterId>Global|ContinuumAnalytics|Anaconda37-64</InterpreterId>
     <TestFramework>unittest</TestFramework>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
@@ -123,6 +123,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="util\mapreduce1\distributable.py" />
+    <Compile Include="util\mapreduce1\runner\awsbatch.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="util\mapreduce1\runner\runner.py">
       <SubType>Code</SubType>
     </Compile>
@@ -224,8 +227,7 @@
     <Content Include="snpreader\wrap_plink_parser.pyx" />
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="Global|ContinuumAnalytics|Anaconda27-64" />
-    <InterpreterReference Include="Global|PythonCore|2.7" />
+    <InterpreterReference Include="Global|ContinuumAnalytics|Anaconda37-64" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
 </Project>

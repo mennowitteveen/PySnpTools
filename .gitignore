@@ -505,3 +505,7 @@ ModelManifest.xml
 /pysnptools/snpreader/2500x500000.gen.temp
 /doc/ipynb/Untitled6-Copy1.ipynb
 *.npz
+/doc/ipynb/Untitled7.ipynb
+/pysnptools/util/mapreduce1/runner/.work_directory.None
+/pysnptools/util/mapreduce1/runner/runs/2020-04-04_18_22_44_7224671168285551
+/pysnptools/util/mapreduce1/runner/runs/2020-04-04_18_23_10_25426947238102615

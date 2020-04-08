@@ -8,7 +8,7 @@ from pysnptools.distreader.distdata import DistData
 from pysnptools.distreader.distnpz import DistNpz
 from pysnptools.distreader.disthdf5 import DistHdf5
 from pysnptools.distreader.distmemmap import DistMemMap
-from pysnptools.distreader.bgen import Bgen
+#!!!cmk from pysnptools.distreader.bgen import Bgen
 from pysnptools.distreader.distgen import DistGen
 from pysnptools.distreader._distmergesids import _DistMergeSIDs
 

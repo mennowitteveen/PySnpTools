@@ -165,13 +165,13 @@ class TestDistReaders(unittest.TestCase):
         result = distreader2.read(view_ok=True)
         self.assertFalse(distreader2 is result)
         result2 = result[:,:].read()
-        self.assertFalse(sp.may_share_memory(result2.val,result.val))
+        self.assertFalse(np.may_share_memory(result2.val,result.val))
         result3 = result[:,:].read(view_ok=True)
-        self.assertTrue(sp.may_share_memory(result3.val,result.val))
+        self.assertTrue(np.may_share_memory(result3.val,result.val))
         result4 = result3.read()
-        self.assertFalse(sp.may_share_memory(result4.val,result3.val))
+        self.assertFalse(np.may_share_memory(result4.val,result3.val))
         result5 = result4.read(view_ok=True)
-        self.assertTrue(sp.may_share_memory(result4.val,result5.val))
+        self.assertTrue(np.may_share_memory(result4.val,result5.val))
 
 
 
@@ -231,7 +231,7 @@ class TestDistReaders(unittest.TestCase):
                             shutil.rmtree(filename)
                         ret = writer(filename,distdata)
                         assert ret is not None
-                        for subsetter in [None, sp.s_[::2,::3]]:
+                        for subsetter in [None, np.s_[::2,::3]]:
                             reader = constructor(filename)
                             _fortesting_JustCheckExists().input(reader)
                             subreader = reader if subsetter is None else reader[subsetter[0],subsetter[1]]
@@ -479,11 +479,11 @@ class TestDistNaNCNC(unittest.TestCase):
 
         for iid_index_list in [range(N_original), range(N_original//2), range(N_original - 1,0,-2)]:
             for snp_index_list in [range(snps_to_read_count), range(snps_to_read_count//2), range(snps_to_read_count - 1,0,-2)]:
-                reference_snps, reference_dtype = TestDistNaNCNC(iid_index_list, snp_index_list, snp_reader_factory_distnpz(), sp.float64, "C", "False", None, None).read_and_standardize()
+                reference_snps, reference_dtype = TestDistNaNCNC(iid_index_list, snp_index_list, snp_reader_factory_distnpz(), np.float64, "C", "False", None, None).read_and_standardize()
                 for distreader_factory in [snp_reader_factory_distnpz, 
                                             snp_reader_factory_snpmajor_hdf5, snp_reader_factory_iidmajor_hdf5
                                             ]:
-                    for dtype in [sp.float64,sp.float32]:
+                    for dtype in [np.float64,np.float32]:
                         for order in ["C", "F"]:
                             for force_python_only in [False, True]:
                                 distreader = distreader_factory()
@@ -529,7 +529,7 @@ class TestDistNaNCNC(unittest.TestCase):
         assert not np.array_equal(snps[0,0],snps[0,0]) #without SnpReader's standardization NaN's stay NaN's
         assert np.allclose(snps[0,1],[.1,.2,.7])
         if self.reference_snps is not None:
-            self.assertTrue(np.allclose(self.reference_snps, snps, rtol=1e-04 if dtype == sp.float32 or self.reference_dtype == sp.float32 else 1e-12,equal_nan=True))
+            self.assertTrue(np.allclose(self.reference_snps, snps, rtol=1e-04 if dtype == np.float32 or self.reference_dtype == np.float32 else 1e-12,equal_nan=True))
 
 
 # We do it this way instead of using doctest.DocTestSuite because doctest.DocTestSuite requires modules to be pickled, which python doesn't allow.
@@ -604,7 +604,7 @@ def getTestSuite():
     return test_suite
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.WARN)
 
     if False:
         from pysnptools.snpreader import Bed

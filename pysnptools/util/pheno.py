@@ -6,6 +6,7 @@
 import logging
 import sys
 import scipy as sp
+import numpy as np
 
 def loadOnePhen(filename,  i_pheno = 0, missing = '-9', vectorize = False):
     '''
@@ -35,7 +36,7 @@ def loadOnePhen(filename,  i_pheno = 0, missing = '-9', vectorize = False):
     allColumns = loadPhen(filename, missing)
     i_present=allColumns['vals'][:,i_pheno]==allColumns['vals'][:,i_pheno]
     valsvector = allColumns['vals'][i_present,i_pheno]
-    vals = sp.reshape(valsvector,(-1,1))
+    vals = np.reshape(valsvector,(-1,1))
     iid = allColumns['iid'][i_present,:]
     #iid = iid.reshape(iid.shape[1], iid.shape[2])
     header = allColumns['header']
@@ -78,7 +79,7 @@ def loadPhen(filename, missing = '-9',famid='FID', sampid='ID'):
     if missing == '-9':
         logging.warning("loadPhen is using default missing value of '-9'.")
 
-    data = sp.loadtxt(filename, dtype='str', comments=None)
+    data = np.loadtxt(filename, dtype='str', comments=None)
     data = data.reshape(-1,data.shape[-1]) #Turns 1-d row into 2-d
     if data[0,0] == sampid: #One column of ids - use the single id as both the family id and the iid
         header = data[0,1::].tolist()
@@ -96,7 +97,7 @@ def loadPhen(filename, missing = '-9',famid='FID', sampid='ID'):
     
     if missing is not None:
         valsStr[valsStr==missing] = "NaN"
-    vals = sp.array(valsStr,dtype = 'float')
+    vals = np.array(valsStr,dtype = 'float')
 
     ret = {
             'header':header,

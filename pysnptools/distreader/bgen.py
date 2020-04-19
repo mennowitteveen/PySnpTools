@@ -145,7 +145,16 @@ class Bgen(DistReader):
         if self._iid_function is not default_iid_function:
             return np.array([self._iid_function(sample) for sample in samples],dtype='str')
         else:
-            samples_np = np.stack(np.core.defchararray.split(samples,',',maxsplit=2))
+            try:
+                samples_np = np.stack(np.core.defchararray.split(samples,',',maxsplit=2))
+            except:
+                def split_and_fill(s):
+                    fields = s.split(',',2)
+                    if len(fields)==1:
+                        return ['0',fields[0]]
+                    else:
+                        return fields
+                samples_np = np.array([split_and_fill(sample) for sample in samples])
             if samples_np.shape[1]==1:
                 samples_np = np.stack([np.full(samples.shape,'0'),samples_np.reshape(-1)],axis=1)
             row = samples_np
@@ -173,14 +182,14 @@ class Bgen(DistReader):
 
         assert os.path.exists(self.filename), "Expect file to exist ('{0}')".format(self.filename)
         #!!!cmkassert os.path.getsize(self.filename)<2**31, "For now, Python cannot access files larger than about 2G bytes (see https://github.com/limix/bgen-reader-py/issues/29)"
-        verbose = logging.getLogger().level >= logging.INFO
+        verbose = logging.getLogger().level <= logging.INFO
 
-        self._bgen = open_bgen(self.filename,self._sample,verbose)
-        self._row = self._apply_iid_function(self._bgen.samples)
-        self._col = self._apply_sid_function(self._bgen.ids,self._bgen.rsids)
+        self._open_bgen = open_bgen(self.filename,self._sample,verbose)
+        self._row = self._apply_iid_function(self._open_bgen.samples)
+        self._col = self._apply_sid_function(self._open_bgen.ids,self._open_bgen.rsids)
         self._col_property = np.zeros((len(self._col),3),dtype='float')
-        self._col_property[:,0] = self._bgen.chromosomes
-        self._col_property[:,2] = self._bgen.positions
+        self._col_property[:,0] = self._open_bgen.chromosomes
+        self._col_property[:,2] = self._open_bgen.positions
 
         self._assert_iid_sid_pos(check_val=False)
 
@@ -191,8 +200,8 @@ class Bgen(DistReader):
         if order=='A':
             order='F'
 
-        #cmk assert self._bgen.nalleles unique is 2, phased is all false, ploidy is 2
-        val = self._bgen.read((iid_index_or_none,sid_index_or_none),dtype=dtype,order=order)
+        #cmk assert self._open_bgen.nalleles unique is 2, phased is all false, ploidy is 2
+        val = self._open_bgen.read((iid_index_or_none,sid_index_or_none),dtype=dtype,order=order)
         return val
 
     def __repr__(self): 
@@ -214,8 +223,8 @@ class Bgen(DistReader):
         '''
         if hasattr(self,'_ran_once') and self._ran_once:
             self._ran_once = False
-            if hasattr(self,'_bgen') and self._bgen is not None:  # we need to test this because Python doesn't guarantee that __init__ was fully run
-                del self._bgen
+            if hasattr(self,'_bgen') and self._open_bgen is not None:  # we need to test this because Python doesn't guarantee that __init__ was fully run
+                del self._open_bgen
 
     @staticmethod
     def write(filename, distreader, bits=16, compression=None, sample_function=default_sample_function, id_rsid_function=default_id_rsid_function, iid_function=default_iid_function, sid_function=default_sid_function, block_size=None, qctool_path=None, cleanup_temp_files=True):
@@ -272,7 +281,7 @@ class Bgen(DistReader):
         dir, file = os.path.split(filename)
         if dir=='':
             dir='.'
-        metadatanpz =  file+'.metadata.npz'
+        metadatanpz =  open_bgen._metadatapath_from_filename(file)
         samplefile =  os.path.splitext(file)[0]+'.sample'
         genfile =  os.path.splitext(file)[0]+'.gen'
         olddir = os.getcwd()
@@ -374,7 +383,7 @@ class Bgen(DistReader):
         copier.input(self.filename)
         if self._sample is not None:
             copier.input(self._sample)
-        metadata2 = self.filename + ".metadata.npz"
+        metadata2 = open_bgen._metadatapath_from_filename(self.filename)
         if os.path.exists(metadata2):
             copier.input(metadata2)
 
@@ -520,8 +529,9 @@ class TestBgen(unittest.TestCase):
         pstutil.create_directory_if_necessary(file_to)
         if os.path.exists(file_to+".metadata"):
             os.remove(file_to+".metadata")
-        if os.path.exists(file_to+".metadata.npz"):
-            os.remove(file_to+".metadata.npz")
+        meta = open_bgen._metadatapath_from_filename(file_to)
+        if os.path.exists(meta):
+            os.remove(meta)
         shutil.copy(file_from,file_to)
 
         for loop_index in range(2):
@@ -542,12 +552,12 @@ class TestBgen(unittest.TestCase):
             bgen = Bgen(file_to,iid_function,sid_function=sid_function)
             assert bgen.sid[0]=='SNPID_2,RSID_2'
 
-        os.remove(file_to+".metadata.npz")
+        os.remove(bgen._open_bgen._metadatapath_from_filename(file_to))
         sid_function = lambda id,rsid: '{0},{1}'.format(id,rsid)
         bgen = Bgen(file_to,iid_function,sid_function=sid_function)
         assert bgen.sid[0]=='SNPID_2,RSID_2'
 
-        os.remove(file_to+".metadata.npz")
+        os.remove(bgen._open_bgen._metadatapath_from_filename(file_to))
         bgen = Bgen(file_to,iid_function,sid_function='rsid')
         assert np.array_equal(bgen.iid[0],['sample_001', 'sample_001'])
         assert bgen.sid[0]=='RSID_2'

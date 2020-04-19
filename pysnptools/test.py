@@ -376,7 +376,7 @@ class TestPySnpTools(unittest.TestCase):
 
         from pysnptools.standardizer.identity import Identity
         from pysnptools.standardizer.diag_K_to_N import DiagKtoN
-        for dtype in [sp.float64,sp.float32]:
+        for dtype in [np.float64,np.float32]:
             for std in [Unit(),Beta(1,25),Identity(),DiagKtoN()]:
                 s = str(std)
                 np.random.seed(0)
@@ -418,7 +418,7 @@ class TestPySnpTools(unittest.TestCase):
         make sure blocked standardize yields same result as regular standardize
         """
 
-        for dtype in [sp.float64,sp.float32]:
+        for dtype in [np.float64,np.float32]:
 
             snps = snpreader.read(order='F',force_python_only=True,dtype=dtype).val
             self.assertEqual(dtype, snps.dtype)
@@ -562,13 +562,13 @@ class TestPySnpTools(unittest.TestCase):
         result = snpreader2.read(view_ok=True)
         self.assertFalse(snpreader2 is result)
         result2 = result[:,:].read()
-        self.assertFalse(sp.may_share_memory(result2.val,result.val))
+        self.assertFalse(np.may_share_memory(result2.val,result.val))
         result3 = result[:,:].read(view_ok=True)
-        self.assertTrue(sp.may_share_memory(result3.val,result.val))
+        self.assertTrue(np.may_share_memory(result3.val,result.val))
         result4 = result3.read()
-        self.assertFalse(sp.may_share_memory(result4.val,result3.val))
+        self.assertFalse(np.may_share_memory(result4.val,result3.val))
         result5 = result4.read(view_ok=True)
-        self.assertTrue(sp.may_share_memory(result4.val,result5.val))
+        self.assertTrue(np.may_share_memory(result4.val,result5.val))
 
     def test_load_and_standardize_hdf5(self):
         snpreader2 = SnpHdf5(self.currentFolder + "/examples/toydata.snpmajor.snp.hdf5")
@@ -610,7 +610,7 @@ class TestPySnpTools(unittest.TestCase):
         iid_index_list = range(N_original - 1,0,-2)
         snpreader3 = snpreader3[iid_index_list,:]
 
-        for dtype in [sp.float64,sp.float32]:
+        for dtype in [np.float64,np.float32]:
 
             G2 = snpreader2.read(order='F',force_python_only=True).val
             G2 = Unit().standardize(G2, block_size=10000, force_python_only=True)
@@ -808,7 +808,7 @@ class TestPySnpTools(unittest.TestCase):
                             shutil.rmtree(filename)
                         ret = writer(filename,snpdata)
                         assert ret is not None
-                        for subsetter in [None, sp.s_[::2,::3]]:
+                        for subsetter in [None, np.s_[::2,::3]]:
                             reader = constructor(filename)
                             _fortesting_JustCheckExists().input(reader)
                             subreader = reader if subsetter is None else reader[subsetter[0],subsetter[1]]
@@ -875,12 +875,12 @@ class NaNCNCTestCases(unittest.TestCase):
         for iid_index_list in [range(N_original), range(N_original//2), range(N_original - 1,0,-2)]:
             for snp_index_list in [range(snps_to_read_count), range(snps_to_read_count//2), range(snps_to_read_count - 1,0,-2)]:
                 for standardizer in [Unit(),Beta(1,25)]:
-                    reference_snps, reference_dtype = NaNCNCTestCases(iid_index_list, snp_index_list, standardizer, snp_reader_factory_bed(), sp.float64, "C", "False", None, None).read_and_standardize()
+                    reference_snps, reference_dtype = NaNCNCTestCases(iid_index_list, snp_index_list, standardizer, snp_reader_factory_bed(), np.float64, "C", "False", None, None).read_and_standardize()
                     for snpreader_factory in [snp_reader_factory_bed, 
                                              snp_reader_factory_snpmajor_hdf5, snp_reader_factory_iidmajor_hdf5,
                                              snp_reader_factory_dat
                                               ]:
-                        for dtype in [sp.float64,sp.float32]:
+                        for dtype in [np.float64,np.float32]:
                             for order in ["C", "F"]:
                                 for force_python_only in [False, True]:
                                     snpreader = snpreader_factory()
@@ -929,7 +929,7 @@ class NaNCNCTestCases(unittest.TestCase):
         self.assertTrue(snps[0,0] == 0)
         self.assertTrue(np.all(snps[:,1] == 0))
         if self.reference_snps is not None:
-            self.assertTrue(np.allclose(self.reference_snps, snps, rtol=1e-04 if dtype == sp.float32 or self.reference_dtype == sp.float32 else 1e-12))
+            self.assertTrue(np.allclose(self.reference_snps, snps, rtol=1e-04 if dtype == np.float32 or self.reference_dtype == np.float32 else 1e-12))
 
 
 

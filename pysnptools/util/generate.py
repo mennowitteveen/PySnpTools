@@ -95,7 +95,7 @@ def snp_gen(fst, dfr, iid_count, sid_count, maf_low=.05, maf_high=.5, seed=0, si
         chr_count = len(sid)
 
     assert len(sid) == 0 or chr_count > 0, "chr_count must be at least 1 (unless sid_count is 0)"
-    sid_per_chrom = int(sp.ceil(float(len(sid))/max(1,chr_count)))
+    sid_per_chrom = int(np.ceil(float(len(sid))/max(1,chr_count)))
     pos = np.array(list([1+sid_index//sid_per_chrom, 1+sid_index%sid_per_chrom, 1+sid_index%sid_per_chrom] for sid_index in range(len(sid))))
     if len(sid) == 0: #make it work when no sids are wanted
         pos = pos.reshape(len(sid),3)
@@ -183,7 +183,7 @@ def _generate_phenotype(snp_data, causals, genetic_var, noise_var, seed=None):
     except:
         num_causal = causals
         #the "if..else" is a work around because the linux version of np.random.choice doesn't like to select zero items from an empty list. We need to call random in either case so that the random seed ends up in the expected state
-        causal_idx = np.random.choice(sp.arange(snp_data.sid_count if num_causal>0 else 1),size=num_causal,replace=False)
+        causal_idx = np.random.choice(np.arange(snp_data.sid_count if num_causal>0 else 1),size=num_causal,replace=False)
 
     num_phenotypes = 1
     mean = 0.0

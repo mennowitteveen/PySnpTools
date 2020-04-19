@@ -204,7 +204,7 @@ def intersect_ids(idslist):
     '''
     id2ind={}    
     L=len(idslist)
-    observed=sp.zeros(L,dtype='bool')
+    observed=np.zeros(L,dtype='bool')
     first = True
     for l, id_list in enumerate(idslist):
         if id_list is not None:
@@ -213,7 +213,7 @@ def intersect_ids(idslist):
                 first = False
                 for i in range(id_list.shape[0]):
                     id=(id_list[i,0], id_list[i,1])
-                    entry=sp.zeros(L)*sp.nan #id_list to contain the index for this id, for all lists provided
+                    entry=np.zeros(L)*np.nan #id_list to contain the index for this id, for all lists provided
                     entry[l]=i                 #index for the first one
                     id2ind[id]=entry
             else:
@@ -222,16 +222,16 @@ def intersect_ids(idslist):
                     if id in id2ind:
                         id2ind[id][l]=i
 
-    indarr=sp.array(list(id2ind.values()),dtype='float')  #need float because may contain NaNs
+    indarr=np.array(list(id2ind.values()),dtype='float')  #need float because may contain NaNs
     indarr[:,~observed]=-1                          #replace all Nan's from empty lists to -1
-    inan = sp.isnan(indarr).any(1)                  #find any rows that contain at least one Nan
+    inan = np.isnan(indarr).any(1)                  #find any rows that contain at least one Nan
     indarr=indarr[~inan]                            #keep only rows that are not NaN
-    indarr=sp.array(indarr,dtype='int')             #convert to int so can slice 
+    indarr=np.array(indarr,dtype='int')             #convert to int so can slice 
     indarr = indarr[indarr[:,0].argsort()]          #make sure Py2 and Py3 return results in the same arbitrary order
     return indarr   
 
 
-def sub_matrix(val, row_index_list, col_index_list, order='A', dtype=sp.float64):
+def sub_matrix(val, row_index_list, col_index_list, order='A', dtype=np.float64):
     """
     Efficiently creates a sub-matrix from a 2-D ndarray.
 
@@ -284,35 +284,35 @@ def sub_matrix(val, row_index_list, col_index_list, order='A', dtype=sp.float64)
     else:
         assert original_dimensions==3, "Expect val dimensions of 2 or 3"
         iid_count, sid_count, val_shape = val.shape
-    sub_val = sp.empty((len(row_index_list), len(col_index_list),val_shape),dtype=dtype,order=effective_order)
-    sub_val.fill(sp.nan) #!!!keep? Replace empty with zeros????
+    sub_val = np.empty((len(row_index_list), len(col_index_list),val_shape),dtype=dtype,order=effective_order)
+    sub_val.fill(np.nan) #!!!keep? Replace empty with zeros????
 
     logging.debug("About to call cython matrixSubset")
     if val.flags['F_CONTIGUOUS']:
-        if val.dtype ==  sp.float64:
-            if dtype == sp.float64:
+        if val.dtype ==  np.float64:
+            if dtype == np.float64:
                 if effective_order=="F":
                     wrap_matrix_subset.matrixSubsetDoubleFToDoubleFAAA(val, iid_count, sid_count, val_shape, row_index_list, col_index_list, sub_val)
                 elif effective_order=="C":
                     wrap_matrix_subset.matrixSubsetDoubleFToDoubleCAAA(val, iid_count, sid_count, val_shape, row_index_list, col_index_list, sub_val)
                 else:
                     raise Exception("order '{0}' not known, only 'F' and 'C'".format(effective_order));
-            elif dtype == sp.float32:
+            elif dtype == np.float32:
                 if effective_order=="F":
                     wrap_matrix_subset.matrixSubsetDoubleFToSingleFAAA(val, iid_count, sid_count, val_shape, row_index_list, col_index_list, sub_val)
                 elif effective_order=="C":
                     wrap_matrix_subset.matrixSubsetDoubleFToSingleCAAA(val, iid_count, sid_count, val_shape, row_index_list, col_index_list, sub_val)
                 else:
                     raise Exception("dtype '{0}' not known, only float64 and float32".format(dtype))
-        elif val.dtype ==  sp.float32:
-            if dtype == sp.float64:
+        elif val.dtype ==  np.float32:
+            if dtype == np.float64:
                 if effective_order=="F":
                     wrap_matrix_subset.matrixSubsetSingleFToDoubleFAAA(val, iid_count, sid_count, val_shape, row_index_list, col_index_list, sub_val)
                 elif effective_order=="C":
                     wrap_matrix_subset.matrixSubsetSingleFToDoubleCAAA(val, iid_count, sid_count, val_shape, row_index_list, col_index_list, sub_val)
                 else:
                     raise Exception("order '{0}' not known, only 'F' and 'C'".format(effective_order));
-            elif dtype == sp.float32:
+            elif dtype == np.float32:
                 if effective_order=="F":
                     wrap_matrix_subset.matrixSubsetSingleFToSingleFAAA(val, iid_count, sid_count, val_shape, row_index_list, col_index_list, sub_val)
                 elif effective_order=="C":
@@ -322,30 +322,30 @@ def sub_matrix(val, row_index_list, col_index_list, order='A', dtype=sp.float64)
         else:
             raise Exception("input dtype '{0}' not known, only float64 and float32".format(val.dtype))
     elif val.flags['C_CONTIGUOUS']:
-        if val.dtype ==  sp.float64:
-            if dtype == sp.float64:
+        if val.dtype ==  np.float64:
+            if dtype == np.float64:
                 if effective_order=="F":
                     wrap_matrix_subset.matrixSubsetDoubleCToDoubleFAAA(val, iid_count, sid_count, val_shape, row_index_list, col_index_list, sub_val)
                 elif effective_order=="C":
                     wrap_matrix_subset.matrixSubsetDoubleCToDoubleCAAA(val, iid_count, sid_count, val_shape, row_index_list, col_index_list, sub_val)
                 else:
                     raise Exception("order '{0}' not known, only 'F' and 'C'".format(effective_order));
-            elif dtype == sp.float32:
+            elif dtype == np.float32:
                 if effective_order=="F":
                     wrap_matrix_subset.matrixSubsetDoubleCToSingleFAAA(val, iid_count, sid_count, val_shape, row_index_list, col_index_list, sub_val)
                 elif effective_order=="C":
                     wrap_matrix_subset.matrixSubsetDoubleCToSingleCAAA(val, iid_count, sid_count, val_shape, row_index_list, col_index_list, sub_val)
                 else:
                     raise Exception("dtype '{0}' not known, only float64 and float32".format(dtype))
-        elif val.dtype ==  sp.float32:
-            if dtype == sp.float64:
+        elif val.dtype ==  np.float32:
+            if dtype == np.float64:
                 if effective_order=="F":
                     wrap_matrix_subset.matrixSubsetSingleCToDoubleFAAA(val, iid_count, sid_count, val_shape, row_index_list, col_index_list, sub_val)
                 elif effective_order=="C":
                     wrap_matrix_subset.matrixSubsetSingleCToDoubleCAAA(val, iid_count, sid_count, val_shape, row_index_list, col_index_list, sub_val)
                 else:
                     raise Exception("order '{0}' not known, only 'F' and 'C'".format(effective_order));
-            elif dtype == sp.float32:
+            elif dtype == np.float32:
                 if effective_order=="F":
                     wrap_matrix_subset.matrixSubsetSingleCToSingleFAAA(val, iid_count, sid_count, val_shape, row_index_list, col_index_list, sub_val)
                 elif effective_order=="C":

@@ -105,7 +105,7 @@ class TestPstReader(unittest.TestCase):
                                 the_class.write(filename,pstdata)
                                 reader = the_class(filename) if suffix!='hdf5' else the_class(filename,block_size=3)
                                 _fortesting_JustCheckExists().input(reader)
-                                for subsetter in [None, sp.s_[::2,::3]]:
+                                for subsetter in [None, np.s_[::2,::3]]:
                                     subreader = reader if subsetter is None else reader[subsetter[0],subsetter[1]]
                                     expected = pstdata if subsetter is None else pstdata[subsetter[0],subsetter[1]].read()
                                     for order in ['C','F','A']:

@@ -173,6 +173,9 @@
     <Folder Include="util\mapreduce1\runner\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\.travis.yml">
+      <Link>setup\.travis.yml</Link>
+    </Content>
     <Content Include="..\AUTHORS.txt">
       <Link>setup\AUTHORS.txt</Link>
     </Content>

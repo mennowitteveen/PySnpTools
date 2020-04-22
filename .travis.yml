@@ -1,4 +1,12 @@
 language: python
+python:
+  - 2.7
+  - 3.6
+os:
+  - linux
+  - osx
+    osx_image: xcode11.2
+  - os: windows
 script:
    - python setup.py build_ext --inplace
    - export PYTHONPATH=/home/travis/build/fastlmm/PySnpTools

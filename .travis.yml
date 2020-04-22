@@ -1,6 +1,6 @@
 language: python
 script:
-   - python setup build_ext --inplace
+   - python setup.py build_ext --inplace
    - export PYTHONPATH=/home/travis/build/fastlmm/PySnpTools
    - python tests/test.py
 notifications:

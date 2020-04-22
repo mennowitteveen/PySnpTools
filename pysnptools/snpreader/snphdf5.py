@@ -10,7 +10,7 @@ class SnpHdf5(PstHdf5,SnpReader):
 
     See :class:`.SnpReader` for general examples of using SnpReaders.
 
-    The general HDF5 format is described `here <http://www.hdfgroup.org/HDF5/>`__. The SnpHdf5 format stores
+    The general HDF5 format is described in http://www.hdfgroup.org/HDF5/. The SnpHdf5 format stores
     val, iid, sid, and pos information in Hdf5 format.
    
     **Constructor:**
@@ -34,18 +34,16 @@ class SnpHdf5(PstHdf5,SnpReader):
     @property
     def row(self):
         self._run_once()
-        if self._row.dtype.type is not np.str_:
+        if self._row.dtype.type is not np.str:
             self._row = np.array(self._row,dtype='str')
         return self._row
 
     @property
     def col(self):
         self._run_once()
-        if self._col.dtype.type is not np.str_:
+        if self._col.dtype.type is not np.str:
             self._col = np.array(self._col,dtype='str')
         return self._col
-
-    #LATER make flush visible here and in other *.hdf5 locations
 
     @staticmethod
     def write(filename, snpdata, hdf5_dtype=None, sid_major=True):
@@ -57,8 +55,8 @@ class SnpHdf5(PstHdf5,SnpReader):
         :type snpdata: :class:`SnpData`
         :param hdf5_dtype: None (use the .val's dtype) or a Hdf5 dtype, e.g. 'f8','f4',etc.
         :type hdf5_dtype: string
-        :param sid_major: Tells if vals should be stored on disk in sid_major (default) or iid_major format.
-        :type sid_major: bool
+        :param col_major: Tells if vals should be stored on disk in sid_major (default) or iid_major format.
+        :type col_major: bool
         :rtype: :class:`.SnpHdf5`
 
         >>> from pysnptools.snpreader import SnpHdf5, Bed

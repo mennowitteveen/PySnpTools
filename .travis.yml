@@ -1,16 +1,4 @@
 language: python
-python:
-    - "2.7"
-    - "3.6"
-matrix:
-  include:
-    - os: linux
-    - os: osx
-      osx_image: xcode11.2
-      language: shell
-    - os: windows
-      language: shell
-      env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
 notifications:
   email:
     recipients:

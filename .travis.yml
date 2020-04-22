@@ -21,7 +21,7 @@ matrix:
 install:
    - python setup.py build_ext --inplace
 script:
-   - export PYTHONPATH={project}
+   - export PYTHONPATH=$TRAVIS_BUILD_DIR
    - python tests/test.py
 notifications:
   email:

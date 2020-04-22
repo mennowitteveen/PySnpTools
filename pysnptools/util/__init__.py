@@ -505,7 +505,6 @@ def log_in_place(name, level, time_lambda=time.time, show_log_diffs=False):
     t_wait = time_lambda()
     last_len = [0] #We have to make this an array so that the value is by reference.
     last_message_hash = [None]
-    line_end = '\r'
     every_printed = [False] #Don't print the final newline if nothing is ever printed
 
     def writer(message):

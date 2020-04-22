@@ -197,6 +197,9 @@
     <Content Include="..\README.md">
       <Link>setup\README.md</Link>
     </Content>
+    <Content Include="..\requirements.txt">
+      <Link>setup\requirements.txt</Link>
+    </Content>
     <Content Include="examples\toydata.fid.phe" />
     <Content Include="examples\toydata.id.phe" />
     <Content Include="examples\toydata.5chrom.bed" />

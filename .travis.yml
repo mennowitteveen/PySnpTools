@@ -1,4 +1,10 @@
 language: python
-python: 
-  - 2.7
-  - 3.6
+script:
+   - pip install .
+   - python tests/test.py
+notifications:
+  email:
+    recipients:
+      - carlk@msn.com
+    on_success: always
+    on_failure: always

@@ -11,7 +11,6 @@ matrix:
     - os: windows
       language: shell
       env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
-install: pip3 install --upgrade pip
 notifications:
   email:
     recipients:

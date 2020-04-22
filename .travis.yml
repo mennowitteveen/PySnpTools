@@ -1,6 +1,7 @@
 language: python
 script:
-   - pip install --no-cache-dir .
+   - python setup build_ext --inplace
+   - export PYTHONPATH=.
    - python tests/test.py
 notifications:
   email:

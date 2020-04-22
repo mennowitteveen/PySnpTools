@@ -1,16 +1,17 @@
 language: python
-python: 2.7
-python: 3.6
+python:
+    - "2.7"
+    - "3.6"
 matrix:
   include:
     - os: linux
     - os: osx
       osx_image: xcode11.2
       language: shell
-      before_install:
-        - python3 -m pip install --upgrade pip setuptools
     - os: windows
       language: shell
+      env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
+install: pip3 install --upgrade pip
 notifications:
   email:
     recipients:

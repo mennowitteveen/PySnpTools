@@ -1,5 +1,7 @@
 language: python
-script: python tests/test.py
+script:
+   - pip install .
+   - python tests/test.py
 notifications:
   email:
     recipients:

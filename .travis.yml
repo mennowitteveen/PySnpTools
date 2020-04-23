@@ -49,7 +49,7 @@ script:
 
 deploy:
   provider: script
-  script: bash -c "ls -las"
+  script: bash -c "ls -las dist"
   skip_cleanup: true
   on:
     branch: dev

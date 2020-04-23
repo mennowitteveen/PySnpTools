@@ -60,6 +60,7 @@ deploy:
     repo: fastlmm/PySnpTools
     all_branches: true
 
+
 #deploy:
 #  provider: script
 # #script: bash -c "ls -las dist"

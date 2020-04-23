@@ -50,7 +50,7 @@ script:
 
 deploy:
   provider: releases
-  name: {$TRAVIS_BRANCH}.{$TRAVIS_COMMIT}.{$TRAVIS_JOB_NAME}
+  name: $TRAVIS_BRANCH.$TRAVIS_COMMIT.$TRAVIS_JOB_NAME
   api_key: $GITHUB_TOKEN
   file_glob: true
   file: dist/*

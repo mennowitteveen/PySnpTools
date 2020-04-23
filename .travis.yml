@@ -50,13 +50,12 @@ script:
 
 deploy:
   provider: releases
-  name: $TRAVIS_BRANCH.$TRAVIS_COMMIT.$TRAVIS_JOB_NAME
+  name: $TRAVIS_BRANCH.$TRAVIS_JOB_NAME.$TRAVIS_COMMIT
   api_key: $GITHUB_TOKEN
   file_glob: true
   file: dist/*
   overwrite: true
   skip_cleanup: true
-  draft: true
   prerelease: true
   on:
     repo: fastlmm/PySnpTools

@@ -49,8 +49,7 @@ script:
 
 deploy:
   provider: releases
-  api_key:
-    secure: "QBOCfV4l8WPHZoOIf/C86V2vBl7mkpHzsdC/NeScCk9TXB3YZmzFgVYGWSboa0vEwMuAm/sgCYswc5Kt+gLxYE7Zd2XT0I1MbKjMyejB1EsCIkcSytaCPJft3lZnCksXOityuPltmZ535LJHkBVsAG5BRC1p8R0h6tRRROWRcuIKU+k0NbQ5awLjaUQMq/OkBWi/8aMl9MS72xJ7iYVvsUYGgeShZtM/lMxCMpEt841rT704T/OvpIUuDzJsrmDIaKl179ODNogLjTANbP19m5g5iJgBHwOrelV6nfvCrd2/abp6K0tv+qFPGpNMHsChwZYjZY1zdtE6BQk59yTebJ/X8Z0uLB3sR/N8pmbURD7koP6oqld3iTU6dkPCrAf6dYAVNVaJmrFPTfelizTpoA/2j0aZdfzAih7q8mGihgKuH7o7yKO9TmTQuXbB0zRZFamEH71BC9xuYiXL8XGeyeUgedD2NJ0eb24rAPuPEy0nfESc13x3snsUVz6tneV6Z5sc7MA+KeqgFmhOrxgcRHO1MQtB35slMgQSc18b0tthjfRW8sIvszMV6yAdNdx0WfoX1YwfSKgDXAgwMUZpPTuKPFb38TM7Q0bgGk7YO0w0TPGflo2mvgOuXeECsE2qSReRuECpqW55YVgyL1rzD+x/FoO/nYuM4msNQFZRiO0="
+  api_key: $GITHUB_TOKEN
   file_glob: true
   file: dist/*
   overwrite: true

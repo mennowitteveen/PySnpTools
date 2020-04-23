@@ -35,9 +35,25 @@ matrix:
 
 install:
    - python setup.py build_ext --inplace
+   - python setup.py sdist bdist_wheel
+
 script:
    - export PYTHONPATH=$TRAVIS_BUILD_DIR
-   - python tests/test.py
+   - #python tests/test.py
+
+deploy:
+  provider: script
+  script: ls -las
+  skip_cleanup: true
+
+
+#deploy:
+#  provider: releases
+#  api_key: "GITHUB OAUTH TOKEN"
+#  file: "FILE TO UPLOAD"
+#  skip_cleanup: true
+#  draft: true
+
 notifications:
   email:
     recipients:

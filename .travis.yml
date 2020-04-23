@@ -6,16 +6,19 @@ matrix:
     os: linux
     before_install:
     - pip install -r requirements.txt
+
   - name: linux 2
     python: 2.7
     os: linux
     before_install:
     - pip install -r requirements.txt
+
   - os: osx
     osx_image: xcode11.2
     language: shell
     before_install:
     - pip install -r requirements.txt
+
   - name: Windows 3
     os: windows
     language: shell
@@ -25,6 +28,7 @@ matrix:
     - cp /c/Python38/python.exe /c/Python38/python3.exe
     - pip install -r requirements.txt
     - pip install wheel
+
   - name: Windows 2
     os: windows
     language: shell
@@ -34,18 +38,14 @@ matrix:
     - export PATH="/c/Python27:/c/Python27/Scripts:$PATH"
     - pip install -r requirements.txt
     - pip install wheel
+
 install:
 - python setup.py build_ext --inplace
 - python setup.py sdist bdist_wheel
+
 script:
 - export PYTHONPATH=$TRAVIS_BUILD_DIR
 - python tests/test.py
-notifications:
-  email:
-    recipients:
-    - carlk@msn.com
-    on_success: always
-    on_failure: always
 
 #deploy:
 #  provider: releases
@@ -63,7 +63,14 @@ notifications:
 deploy:
   provider: script
   #script: bash -c "ls -las dist"
-  script: bash -c echo $NOT_NEEDED
+  script: bash -c "echo $NOT_NEEDED"
   skip_cleanup: true
   on:
     branch: dev
+
+notifications:
+  email:
+    recipients:
+    - carlk@msn.com
+    on_success: always
+    on_failure: always

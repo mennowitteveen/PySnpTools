@@ -46,7 +46,7 @@ install:
 script:
 - export PYTHONPATH=$TRAVIS_BUILD_DIR
 - python tests/test.py
-- set
+
 
 deploy:
   provider: releases
@@ -54,7 +54,7 @@ deploy:
   api_key: $GITHUB_TOKEN
   file_glob: true
   file: dist/*
-  overwrite: true
+  overwrite: false
   skip_cleanup: true
   prerelease: true
   on:

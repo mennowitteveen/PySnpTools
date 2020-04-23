@@ -6,19 +6,16 @@ matrix:
     os: linux
     before_install:
     - pip install -r requirements.txt
-
   - name: linux 2
     python: 2.7
     os: linux
     before_install:
     - pip install -r requirements.txt
-
   - os: osx
     osx_image: xcode11.2
     language: shell
     before_install:
     - pip install -r requirements.txt
-
   - name: Windows 3
     os: windows
     language: shell
@@ -28,7 +25,6 @@ matrix:
     - cp /c/Python38/python.exe /c/Python38/python3.exe
     - pip install -r requirements.txt
     - pip install wheel
-
   - name: Windows 2
     os: windows
     language: shell
@@ -38,40 +34,23 @@ matrix:
     - export PATH="/c/Python27:/c/Python27/Scripts:$PATH"
     - pip install -r requirements.txt
     - pip install wheel
-
 install:
 - python setup.py build_ext --inplace
 - python setup.py sdist bdist_wheel
-
 script:
 - export PYTHONPATH=$TRAVIS_BUILD_DIR
 - python tests/test.py
-
-deploy:
-  provider: releases
-  api_key:
-    secure: IUObYmt2/MGFzjXeLkN89I1w56tuSOPrwVs3YYHxDgOaM/rtWV7sNwxay8oXxhSVILb5P7P6H34WBfg9ma34YefBUJnfDAD9J476CDuGMrKJrYlr637dewEV4HkJKJnLTwdgXEcdY+OLCXj+DKe5LkTVputOgIwO+01HQxd/4M4XBXGIgxBShcekmPnEFhi4pTDxxgV6y6sI3R58DeKJLQTIDh9E7Ej8WbncU/ixtz0ttq7rtPb4AZN2VvKmtCLTjKzkMVXNks3rGbRHWPkMviDNnh745sQ8rvVew0IMqZxcZfDL43Kh8g2zekiBdwPUHTIHnyNtyIE9Nyv/wpBovuLuxla2KJQyYah+1rEPa8FHWPnMY9dJlu6XAL/dQxOM7v5lino+rzhn82JDTtHgLDBrYZmZu1TEpNKOBIPCVNvF9I/XR/rSSVtRtlUv5v97tPBhA4zRe1UabaW17G9lZgoo9oNyUUfD2MWD1P074Hv2Udij0I0oKf+MQI55JbYAn0AF2uGjxSl6sLDc1BpfN2WLMHnKY/d3fSopdY03EvQjN6d/hoKLxtyi6A05ij4CqsuIwEPSHdUQwawz3JToaZU9cnSaK5Mj17Tu69mbZ7mCZ31zgR5MnaPcUInFPRKEO4IevH9ycYDKlGiD4kW9qsxzJPEEDv4L09MXrb77/4Q=
-  file: dist/*
-  overwrite: true
-  skip_cleanup: true
-  draft: true
-  prerelease: true
-  on:
-    repo: fastlmm/PySnpTools
-    all_branches: true
-
-
-#deploy:
-#  provider: script
-# #script: bash -c "ls -las dist"
-#  script: bash -c "echo $NOT_NEEDED"
-#  skip_cleanup: true
-#  on:
-#    branch: dev
-
 notifications:
   email:
     recipients:
     - carlk@msn.com
     on_success: always
     on_failure: always
+deploy:
+  provider: releases
+  api_key:
+    secure: EVTLmxU3MTgRKbrX2P16I/x0lcxPafrXQ4XTNHgywW5mTGlEze9zv5og3frkifAtCH3SOaTACdz2QSh8tlaoTvcnQlkcBG+FPdRUfvyTaWV3nE/x0zw6jGHrD5MxeIMecP+AaNKN5SQ/uN55petruRNZz/PFQnpjm9JL4GEGv92GyeqkXigv4eWtomBtFuD0c9AH3QhGFI1vsPBSp39wyKbX03b7KqstyC24giIzNpcY7Hsz8vxthDYm8PV9JALzYlhvPTVPo7ZdhLohtBkvLeo+P+TCSKzBV4QgH7LF17K0hQAONBk0+HXz2swxQQdqa0KUskqjDt2C3peoiHxP0BkBOsrYGiHSJaKDuurhdQsapTGjKsGyL7cWUHtYr0uNVqcz0q0eK/VJwNMdczerU227Hpjqe1ciTBFb0vCWA6cYem5Pd6Lt4QLe658SQLoKmNFmYmB5I97Guyc3D0xaFGHIU+cqd1akcZXuxKzEpYl6eIkay9+ol2u7BKcFjwSdKT58RQlBZbGv6kBnG4fLDcQmPr9mHiX++InhP0sRi5mFSUMSBWIRwKOrMknvK3hmDMV/0/c+584dK7pYFN5jJ9CqNPtUhNWzvJVKKG6mPFdNIvdWD6Z0HbTU60h06hIyqORoZKKaasYIjzjJSf8wGXjjdz/ib2uvdgD9dSnMm4U=
+  file: dist/*
+  on:
+    repo: fastlmm/PySnpTools
+    branch: dev

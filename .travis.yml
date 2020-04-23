@@ -60,13 +60,13 @@ deploy:
     repo: fastlmm/PySnpTools
     all_branches: true
 
-deploy:
-  provider: script
-  #script: bash -c "ls -las dist"
-  script: bash -c "echo $NOT_NEEDED"
-  skip_cleanup: true
-  on:
-    branch: dev
+#deploy:
+#  provider: script
+# #script: bash -c "ls -las dist"
+#  script: bash -c "echo $NOT_NEEDED"
+#  skip_cleanup: true
+#  on:
+#    branch: dev
 
 notifications:
   email:

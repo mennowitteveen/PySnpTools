@@ -45,11 +45,11 @@ install:
 
 script:
    - export PYTHONPATH=$TRAVIS_BUILD_DIR
-   - #python tests/test.py
+   - python tests/test.py
 
 deploy:
   provider: script
-  script: ls -las
+  script: bash -c "ls -las"
   skip_cleanup: true
   on:
     branch: dev

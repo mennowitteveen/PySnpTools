@@ -6,16 +6,19 @@ matrix:
       os : linux
       before_install:
         - pip install -r requirements.txt
+
     - name: "linux 2"
       python: 2.7
       os : linux
       before_install:
         - pip install -r requirements.txt
+
     - os: osx
       osx_image: xcode11.2
       language: shell
       before_install:
         - pip install -r requirements.txt
+
     - name: "Windows 3"
       os : windows
       language: shell
@@ -24,6 +27,8 @@ matrix:
         - export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
         - cp /c/Python38/python.exe /c/Python38/python3.exe
         - pip install -r requirements.txt
+        - pip install wheel
+
     - name: "Windows 2"
       os : windows
       language: shell
@@ -32,6 +37,7 @@ matrix:
         - choco install --ignore-dependencies vcpython27
         - export PATH="/c/Python27:/c/Python27/Scripts:$PATH"
         - pip install -r requirements.txt
+        - pip install wheel
 
 install:
    - python setup.py build_ext --inplace
@@ -45,7 +51,8 @@ deploy:
   provider: script
   script: ls -las
   skip_cleanup: true
-
+  on:
+    branch: dev
 
 #deploy:
 #  provider: releases

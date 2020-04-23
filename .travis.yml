@@ -1,25 +1,25 @@
 language: python
 matrix:
   include:
-  - name: linux 3
+  - name: linux_py3
     python: 3.6
     os: linux
     before_install:
     - pip install -r requirements.txt
 
-  - name: linux 2
+  - name: linux_py2
     python: 2.7
     os: linux
     before_install:
     - pip install -r requirements.txt
 
-  - os: osx
+  - os: macosx_py2
     osx_image: xcode11.2
     language: shell
     before_install:
     - pip install -r requirements.txt
 
-  - name: Windows 3
+  - name: win_py3
     os: windows
     language: shell
     before_install:
@@ -29,7 +29,7 @@ matrix:
     - pip install -r requirements.txt
     - pip install wheel
 
-  - name: Windows 2
+  - name: win_py2
     os: windows
     language: shell
     before_install:
@@ -46,9 +46,11 @@ install:
 script:
 - export PYTHONPATH=$TRAVIS_BUILD_DIR
 - python tests/test.py
+- set
 
 deploy:
   provider: releases
+  name: {$TRAVIS_BRANCH}.{$TRAVIS_COMMIT}.{$TRAVIS_JOB_NAME}
   api_key: $GITHUB_TOKEN
   file_glob: true
   file: dist/*

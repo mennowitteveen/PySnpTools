@@ -1,10 +1,14 @@
 language: python
-python:
-  - 3.6
-  - 2.7
 matrix:
   include:
-    - os : linux
+    - name: "linux 3"
+      python: 3.6
+      os : linux
+      before_install:
+        - pip install -r requirements.txt
+    - name: "linux 2"
+      python: 2.7
+      os : linux
       before_install:
         - pip install -r requirements.txt
     - os: osx
@@ -12,14 +16,16 @@ matrix:
       language: shell
       before_install:
         - pip install -r requirements.txt
-    - os : windows
+    - name: "Windows 3"
+      os : windows
       language: shell
       before_install:
         - choco install python --version 3.8.1 --no-progress
         - export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
         - cp /c/Python38/python.exe /c/Python38/python3.exe
         - pip install -r requirements.txt
-    - os : windows
+    - name: "Windows 2"
+      os : windows
       language: shell
       before_install:
         - choco install python2 --no-progress
@@ -29,6 +35,7 @@ matrix:
 install:
    - python setup.py build_ext --inplace
 script:
+   - echo $TRAVIS_BUILD_DIR
    - export PYTHONPATH=$TRAVIS_BUILD_DIR
    - python tests/test.py
 notifications:

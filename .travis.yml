@@ -28,8 +28,6 @@ matrix:
     - cp /c/Python38/python.exe /c/Python38/python3.exe
     - pip install -r requirements.txt
     - pip install wheel
-    deploy:
-      glob: dist/*
 
   - name: win_py2
     os: windows
@@ -40,8 +38,6 @@ matrix:
     - export PATH="/c/Python27:/c/Python27/Scripts:$PATH"
     - pip install -r requirements.txt
     - pip install wheel
-    deploy:
-      glob: dist/*cp27*.whl
 
 install:
 - python setup.py build_ext --inplace
@@ -56,7 +52,8 @@ deploy:
   access_key_id: AKIAIJGTUJPG2US6OIOQ
   secret_access_key: $AWS_SECRET_KEY
   bucket: "traviscibucket"
-  upload-dir: $TRAVIS_BRANCH/$TRAVIS_COMMIT
+  upload-dir: $TRAVIS_BRANCH/$TRAVIS_COMMIT/$TRAVIS_JOB_NAME
+  glob: dist/*
   skip_cleanup: true
   on:
     repo: fastlmm/PySnpTools

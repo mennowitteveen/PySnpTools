@@ -59,7 +59,6 @@ deploy:
   file_glob: true
   overwrite: false
   skip_cleanup: true
-  draft: true
   prerelease: true
   on:
     repo: fastlmm/PySnpTools

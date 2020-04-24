@@ -10,6 +10,7 @@ from pysnptools.pstreader import PstData, PstNpz, PstHdf5, PstMemMap
 from pysnptools.util import create_directory_if_necessary
 from pysnptools.kernelreader.test import _fortesting_JustCheckExists
 from six.moves import range
+from backports import tempfile
 
 class TestPstReader(unittest.TestCase):     
 
@@ -80,10 +81,6 @@ class TestPstReader(unittest.TestCase):
         #===================================
         logging.info("starting 'test_writes'")
         np.random.seed(0)
-        if sys.version_info[0] >= 3:
-            import tempfile
-        else:
-            from backports import tempfile
         temp_dir = tempfile.TemporaryDirectory("pstreader")
         output_template = temp_dir.name + '/writes.{0}.{1}'
         i = 0

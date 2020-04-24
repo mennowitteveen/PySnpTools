@@ -6,6 +6,7 @@ matrix:
     os: linux
     before_install:
     - pip install -r requirements.txt
+    - pip install https://github.com/fastlmm/PySnpTools/releases/download/v4.0.4/bgen_reader-4.0.4-cp37-cp37m-manylinux1_x86_64.whl
 
   - name: linux_py2
     python: 2.7
@@ -57,7 +58,6 @@ deploy:
   local_dir: $TRAVIS_BUILD_DIR/dist
   skip_cleanup: true
   on:
-    repo: fastlmm/PySnpTools
     all_branches: true
 
 #deploy:

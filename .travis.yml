@@ -13,7 +13,8 @@ matrix:
     before_install:
     - pip install -r requirements.txt
 
-  - os: macosx_py2
+  - name: macosx_py2
+    os: osx
     osx_image: xcode11.2
     language: shell
     before_install:
@@ -52,39 +53,12 @@ deploy:
   access_key_id: AKIAIJGTUJPG2US6OIOQ
   secret_access_key: $AWS_SECRET_KEY
   bucket: "traviscibucket"
-  upload-dir: $TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/$TRAVIS_COMMIT/$TRAVIS_JOB_NAME
-  glob: dist/*
+  upload_dir: $TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/$TRAVIS_COMMIT/$TRAVIS_JOB_NAME
+  local_dir: $TRAVIS_BUILD_DIR/dist
   skip_cleanup: true
   on:
     repo: fastlmm/PySnpTools
     all_branches: true
-
-
-#deploy:
-#  provider: releases
-#  name: $TRAVIS_BRANCH.$TRAVIS_COMMIT
-#  api_key: $GITHUB_TOKEN
-#  file_glob: true
-#  overwrite: false
-#  skip_cleanup: true
-#  prerelease: true
-#  on:
-#    repo: fastlmm/PySnpTools
-#    all_branches: true
-
-#deploy:
-#  provider: releases
-#  api_key:
-#    secure: 
-#  file: dist/*
-#  overwrite: true
-#  skip_cleanup: true
-#  draft: true
-#  prerelease: true
-#  on:
-#    repo: fastlmm/PySnpTools
-#    all_branches: true
-
 
 #deploy:
 #  provider: script

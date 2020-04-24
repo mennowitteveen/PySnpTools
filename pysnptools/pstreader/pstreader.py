@@ -590,9 +590,9 @@ class PstReader(object):
     def _array_properties_are_ok(val, order, dtype):
         if val.dtype != dtype:
             return False
-        if order is 'F': #!!!cmk == not is? Why did a test not catch this?
+        if order=='F':
             return val.flags['F_CONTIGUOUS']
-        elif order is 'C': #!!!cmk == not is? Why did a test not catch this?
+        elif order=='C':
             return val.flags['C_CONTIGUOUS']
 
         return True

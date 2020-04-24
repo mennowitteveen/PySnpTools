@@ -592,9 +592,9 @@ class PstReader(object):
 
         if val.dtype != dtype:
             return False
-        if order is 'F':
+        if order=='F':
             return val.flags['F_CONTIGUOUS']
-        elif order is 'C':
+        elif order=='C':
             return val.flags['C_CONTIGUOUS']
 
         return True

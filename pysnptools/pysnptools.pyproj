@@ -138,6 +138,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="util\mapreduce1\distributable.py" />
+    <Compile Include="util\mapreduce1\runner\awsbatch.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="util\mapreduce1\runner\runner.py">
       <SubType>Code</SubType>
     </Compile>

@@ -52,7 +52,7 @@ deploy:
   access_key_id: AKIAIJGTUJPG2US6OIOQ
   secret_access_key: $AWS_SECRET_KEY
   bucket: "traviscibucket"
-  upload-dir: $TRAVIS_BRANCH/$TRAVIS_COMMIT/$TRAVIS_JOB_NAME
+  upload-dir: $TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/$TRAVIS_COMMIT/$TRAVIS_JOB_NAME
   glob: dist/*
   skip_cleanup: true
   on:

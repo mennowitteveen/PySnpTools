@@ -279,7 +279,9 @@ if __name__ == "__main__":
 
     suites = getTestSuite()
     r = unittest.TextTestRunner(failfast=True)
-    r.run(suites)
+    ret = r.run(suites)
+    assert ret.wasSuccessful()
+
 
     result = doctest.testmod(optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)
     assert result.failed == 0, "failed doc test: " + __file__

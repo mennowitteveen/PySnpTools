@@ -18,6 +18,67 @@ class TestFileCache(unittest.TestCase):
         self._write_and_read(storage_closure())
         self._distribute(storage_closure)
     
+    def test_hashdown(self):
+        logging.info("test_hashdown")
+
+        url='https://github.com/fastlmm/PySnpTools/tree/9de8e93a91b330b064b482c918a38104904b45c0/pysnptools'
+        hashdown_setup = HashDown(url,
+                            #file_to_hash_file ='' #!!!cmk a text file
+                            #!!!cmk option to specify folder -- otherwise temp + hash of URL
+                            #!!!cmk don't let it go above local folder
+                            #!!!cmk do support folders
+                            allow_unhash_files=True #!!!cmk .create_file_to_hash_file
+                            )
+        for file in ['examples/toydata.bed','examples/toydata.bim','examples/toydata.bam','util/util.py']:
+            hashdown_setup.file_exists(file)
+        file_to_hash = hashdown_setup.file_to_hash
+
+        hashdown_setup = HashDown(url, file_to_hash = file_to_hash)
+
+
+        #Clear the directory
+        hashdown.rmtree() #!!!cmk raise error because this is read-only
+        #Rule: After you clear a directory, nothing is in it
+        assert 4 == self._len(hashdown.walk()) #returns the files in the file_to_hash_file
+        assert not hashdown.file_exists("test.txt")
+        assert not hashdown.file_exists("main.txt/test.txt")
+        assert not hashdown.file_exists(r"main.txt\test.txt")
+        assert self._is_error(lambda : hashdown.file_exists("test.txt/")) #Can't query something that can't be a file name
+        assert self._is_error(lambda : hashdown.file_exists("../test.txt")) #Can't leave the current directory
+        if os.name == 'nt':
+            assert self._is_error(lambda : hashdown.file_exists(r"c:\test.txt")) #Can't leave the current directory
+
+        #Rule: '/' and '\' are both OK, but you can't use ':' or '..' to leave the current root.
+        assert self._is_error(lambda : 0 == self._len(hashdown.walk("..")))
+        assert 0 == self._len(hashdown.walk("..x"))
+        assert 0 == self._len(hashdown.walk("test.txt")) #This is ok, because test.txt doesn't exist and therefore isn't a file
+        assert 0 == self._len(hashdown.walk("a/b"))
+        assert 0 == self._len(hashdown.walk("a\\b")) #Backslash or forward is fine
+        assert self._is_error(lambda : len(hashdown.walk("/"))) #Can't start with '/'
+        assert self._is_error(lambda : len(hashdown.walk(r"\\"))) #Can't start with '\'
+        assert self._is_error(lambda : len(hashdown.walk(r"\\computer1\share\3"))) #Can't start with UNC
+
+
+        #It should be there and be a file
+        assert hashdown.file_exists('examples/toydata.bim')
+        file_list = list(hashdown.walk())
+        assert len(file_list)==4 and 'examples/toydata.bim' in file_list
+        file_list2 = list(hashdown.walk("examples"))
+        assert len(file_list2)==3 and 'examples/toydata.bim' in file_list2
+        assert self._is_error(lambda : hashdown.join('examples/toydata.bim')) #Can't create a directory where a file exists
+        assert self._is_error(lambda : list(hashdown.walk('examples/toydata.bim'))) #Can't create a directory where a file exists
+
+        #Read it
+        assert hashdown.load('examples/toydata.bim').split('\n')[0] =="1\tnull_0\t0\t1\tL\tH\n"
+        assert hashdown.file_exists('examples/toydata.bim')
+        assert self._is_error(lambda : hashdown.load("examples"))  #This is an error because examples is actually a directory and they can't be opened for reading
+
+
+        #Can query modified time of file. It will be later, later.
+        assert self._is_error(lambda : hashdown.getmtime("a/b/c.txt")), "Can't get mod time from file that doesn't exist"
+        assert self._is_error(lambda : hashdown.getmtime("examples")), "Can't get mod time from directory"
+        assert hashdown.getmtime('examples/toydata.bim') == hashdown.fixed_mtime, "expect all mod times to be the same"
+
     def test_peer_to_peer(self):
         from pysnptools.util.filecache import ip_address_pid
         logging.info("test_peer_to_peer")
@@ -57,7 +118,8 @@ class TestFileCache(unittest.TestCase):
     def tearDownClass(self):
         not os.path.exists(self.temp_parent) or shutil.rmtree(self.temp_parent)
 
-    def _is_error(self,lambda0):
+    @staticmethod
+    def _is_error(lambda0):
         try:
             lambda0()
         except Exception as e:
@@ -65,7 +127,8 @@ class TestFileCache(unittest.TestCase):
             return True
         return False
 
-    def _len(self,sequence):
+    @staticmethod
+    def _len(sequence):
         len = 0
         for item in sequence:
             len += 1

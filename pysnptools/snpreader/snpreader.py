@@ -1,5 +1,4 @@
 import numpy as np
-import subprocess, sys
 import os.path
 from itertools import *
 import pandas as pd
@@ -15,12 +14,12 @@ from six.moves import range
 class SnpReader(PstReader):
     """A SnpReader is one of three things:
 
-    * A class such as :class:`.Bed` for you to specify data in a file. For example,
+    * A class such as :class:`.Bed` for you to specify a file with data. For example,
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.snpreader import Bed
         >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
-        >>> print(snp_on_disk) # prints specification for reading from file
+        >>> print(snp_on_disk) # prints the name of the file reader
         Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
         >>> snp_on_disk.sid_count # prints the number of SNPS (but doesn't read any SNP values)
         1015
@@ -31,7 +30,7 @@ class SnpReader(PstReader):
         >>> snpdata1 = snp_on_disk.read() #reads the SNP values
         >>> type(snpdata1.val).__name__ # The val property is an ndarray of SNP values
         'ndarray'
-        >>> print(snpdata1) # prints the specification of the in-memory SNP information
+        >>> print(snpdata1) # prints the name of the file reader
         SnpData(Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False))
         >>> snpdata1.iid_count #prints the number of iids (number of individuals) in this in-memory data
         300
@@ -46,11 +45,10 @@ class SnpReader(PstReader):
         >>> print(subset_on_disk) #prints a specification of 'subset_on_disk'
         Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)[[3,4],::2]
         >>> snpdata_subset = subset_on_disk.read() # efficiently reads the specified subset of values from the disk
-        >>> print(snpdata_subset) # prints the specification of the in-memory SNP information
+        >>> print(snpdata_subset) # prints the name of the file reader
         SnpData(Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)[[3,4],::2])
         >>> print((int(snpdata_subset.val.shape[0]), int(snpdata_subset.val.shape[1]))) # The dimensions of the ndarray of SNP values
         (2, 508)
-
 
     The SnpReaders Classes
 
@@ -91,7 +89,7 @@ class SnpReader(PstReader):
 
     iids and sids:
 
-        Individuals are identified with an iid, which is a ndarray of two strings: a family ID and a case ID.
+        Individuals are identified with an iid, which is a ndarray of two strings: a family ID and a individual ID.
         SNP locations are identified with an sid string in a ndarray. For example:
 
         >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
@@ -141,7 +139,7 @@ class SnpReader(PstReader):
             (1, 1015)
 
         Indexing is also useful when you have SNP values in memory via a :class:`SnpData` index and want to copy a subset of those values.
-        While you could instead index directly on the `.SnpData.val` ndarray, by indexing on the :class:`SnpData` instance you
+        While you could instead index directly on the :attr:`SnpData.val` ndarray, by indexing on the :class:`SnpData` instance you
         also get iid and cid information.
 
             >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Specify some data on disk in Bed format
@@ -260,7 +258,7 @@ class SnpReader(PstReader):
         the others. Also keep in mind that :meth:`read` relies on ndarray's mechanisms to decide whether to actually
         share memory and so it may ignore your suggestion and allocate a new ndarray anyway.
 
-            >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Construct a Bed SnpReader. No data is read.
+snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) # Construct a Bed SnpReader. No data is read.
             >>> snpdata1 = snp_on_disk.read() # read all data from disk into a SnpData with a new ndarray
             >>> column01 = snpdata1[:,0:1].read(view_ok=True,order='A') #create SnpData with the data from just the first two SNPs. Sharing memory is OK. The memory may be laid out in any order (that is sid-major and iid-major are both OK).
             >>> import numpy as np
@@ -271,8 +269,8 @@ class SnpReader(PstReader):
 
     The :meth:`read` Method
   
-        By default the :meth:`read` returns a ndarray of scipy.float64 laid out in memory in F-contiguous order (iid-index varies the fastest). You may, instead,
-        ask for scipy.float32 or for C-contiguous order or any order. See :meth:`read` for details.
+        By default the :meth:`read` returns a ndarray of numpy.float64 laid out in memory in F-contiguous order (iid-index varies the fastest). You may, instead,
+        ask for numpy.float32 or for C-contiguous order or any order. See :meth:`read` for details.
 
     The :meth:`.SnpData.standardize` Method
         The :meth:`.SnpData.standardize` method, available only on :class:`.SnpData`, does in-place standardization of the in-memory
@@ -311,7 +309,6 @@ class SnpReader(PstReader):
             >>> print('{0:.6f}'.format(kerneldata2.val[0,0]))
             901.421836
 
-
     Details of Methods & Properties:
     """
 
@@ -320,7 +317,7 @@ class SnpReader(PstReader):
 
     @property
     def iid(self):
-        """A ndarray of the iids. Each iid is a ndarray of two strings (a family ID and a case ID) that identifies an individual.
+        """A ndarray of the iids. Each iid is a ndarray of two strings (a family ID and a individual ID) that identifies an individual.
 
         :rtype: ndarray of strings with shape [:attr:`.iid_count`,2]
 
@@ -381,7 +378,7 @@ class SnpReader(PstReader):
     #!!Also what about telling the ref and alt allele? Also, what about tri and quad alleles, etc?
     @property
     def pos(self):
-        """A ndarray of the position information for each sid. Each element is a ndarray of three scipy.numbers's (chromosome, genetic distance, basepair distance).
+        """A ndarray of the position information for each sid. Each element is a ndarray of three numpy.numbers (chromosome, genetic distance, basepair distance).
 
         :rtype: ndarray of float64 with shape [:attr:`.sid_count`, 3]
 
@@ -421,14 +418,14 @@ class SnpReader(PstReader):
             ndarray may be in any order (either C-, Fortran-contiguous).
         :type order: string or None
 
-        :param dtype: {scipy.float64 (default), scipy.float32}, optional -- The data-type for the :attr:`.SnpData.val` ndarray.
+        :param dtype: {numpy.float64 (default), numpy.float32}, optional -- The data-type for the :attr:`SnpData.val` ndarray.
         :type dtype: data-type
 
         :param force_python_only: optional -- If False (default), may use outside library code. If True, requests that the read
             be done without outside library code.
         :type force_python_only: bool
 
-        :param view_ok: optional -- If False (default), allocates new memory for the :attr:`.SnpData.val`'s ndarray. If True,
+        :param view_ok: optional -- If False (default), allocates new memory for the :attr:`SnpData.val`'s ndarray. If True,
             if practical and reading from a :class:`SnpData`, will return a new 
             :class:`SnpData` with a ndarray shares memory with the original :class:`SnpData`.
             Typically, you'll also wish to use "order='A'" to increase the chance that sharing will be possible.
@@ -457,6 +454,7 @@ class SnpReader(PstReader):
         >>> import numpy as np
         >>> # print np.may_share_memory(subset_snpdata.val, subsub_snpdata.val) # Do the two ndarray's share memory? They could. Currently they won't.       
         """
+        dtype = np.dtype(dtype)
         val = self._read(None, None, order, dtype, force_python_only, view_ok)
         from pysnptools.snpreader import SnpData
         ret = SnpData(self.iid,self.sid,val,pos=self.pos,name=str(self))
@@ -532,6 +530,7 @@ class SnpReader(PstReader):
         (300, '901.421836')
         """
         assert standardizer is not None, "'standardizer' must be provided"
+        dtype = np.dtype(dtype)
 
         from pysnptools.kernelreader import SnpKernel
         snpkernel = SnpKernel(self,standardizer=standardizer,block_size=block_size)
@@ -573,21 +572,56 @@ class SnpReader(PstReader):
             block_size = blocksize
         return self._read_kernel(standardizer, block_size=block_size)
 
+    def as_dist(self, max_weight=2.0, block_size=None):
+        """Returns a :class:`pysnptools.distreader.DistReader` such that turns the an allele count of 0,1, or 2 into a probability distribution of
+        [1,0,0],[0,1,0], or [0,0,1], respectively. Any other values produce a distribution of [NaN,NaN,NaN].
+
+        :param max_weight: optional -- Tells the maximum allele count. Default of 2.
+        :type max_weight: number
+
+        :param block_size: optional -- Default of None (meaning to load all). Suggested number of sids to read into memory at a time.
+        :type block_size: int or None
+
+        :rtype: class:`DistReader`
+
+        :Example:
+
+        >>> from pysnptools.snpreader import Bed
+        >>> snpreader = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
+        >>> print(snpreader[0,0].read().val)
+        [[2.]]
+        >>> distreader = snpreader.as_dist(max_weight=2)
+        >>> print(distreader[0,0].read().val)
+        [[[0. 0. 1.]]]
+        """
+        from pysnptools.distreader._snp2dist import _Snp2Dist
+        snp2dist = _Snp2Dist(self,max_weight=max_weight,block_size=block_size)
+        return snp2dist
+
+
     @staticmethod
-    def _as_snpdata(snpreader, standardizer, force_python_only, dtype):
+    def _as_snpdata(snpreader, standardizer, force_python_only, order, dtype):
         '''
         Like 'read' except (1) won't read if already a snpdata and (2) returns the standardizer
         '''
         from pysnptools.snpreader import SnpData
-        if isinstance(snpreader,SnpData) and snpreader.val.dtype==dtype and isinstance(standardizer,stdizer.Identity):
+        dtype = np.dtype(dtype)
+
+        if (hasattr(snpreader,'val') and
+            snpreader.val.dtype==dtype and 
+            isinstance(standardizer,stdizer.Identity) and
+            (order=="A" or (order=="C" and snpreader.val.flags["C_CONTIGUOUS"]) or (order=="F" and snpreader.val.flags["F_CONTIGUOUS"]))
+             ):
             return snpreader, stdizer.Identity()
         else:
-            return snpreader.read(order='A',dtype=dtype).standardize(standardizer,return_trained=True,force_python_only=force_python_only)
+            return snpreader.read(order=order,dtype=dtype).standardize(standardizer,return_trained=True,force_python_only=force_python_only)
     
     def _read_kernel(self, standardizer, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False, return_trained=False):
+        dtype = np.dtype(dtype)
+
         #Do all-at-once (not in blocks) if 1. No block size is given or 2. The #ofSNPs < Min(block_size,iid_count)
         if block_size is None or (self.sid_count <= block_size or self.sid_count <= self.iid_count):
-            train_data,trained_standardizer  = SnpReader._as_snpdata(self,standardizer=standardizer,dtype=dtype,force_python_only=force_python_only)
+            train_data,trained_standardizer  = SnpReader._as_snpdata(self,standardizer=standardizer,dtype=dtype,order='A',force_python_only=force_python_only)
             kernel = train_data._read_kernel(stdizer.Identity(), order=order,dtype=dtype,force_python_only=force_python_only,view_ok=False)
             if return_trained:
                 return kernel, trained_standardizer
@@ -609,7 +643,7 @@ class SnpReader(PstReader):
 
             for start in range(0, self.sid_count, block_size):
                 ct += block_size
-                train_data,trained_standardizer = SnpReader._as_snpdata(self[:,start:start+block_size],standardizer=standardizer,dtype=dtype,force_python_only=force_python_only)
+                train_data,trained_standardizer = SnpReader._as_snpdata(self[:,start:start+block_size],standardizer=standardizer,dtype=dtype,order='A',force_python_only=force_python_only)
                 trained_standardizer_list.append(trained_standardizer)
                 K += train_data._read_kernel(stdizer.Identity(),block_size=None,order=order,dtype=dtype,force_python_only=force_python_only,view_ok=False)
                 if ct % block_size==0:
@@ -624,10 +658,16 @@ class SnpReader(PstReader):
             else:
                 return K
 
+
+
     def copyinputs(self, copier):
         raise NotImplementedError
 
-    def _assert_iid_sid_pos(self):
+    def _assert_iid_sid_pos(self,check_val):
+        if check_val:
+            assert len(self._val.shape)==2, "val should have two dimensions"
+            assert self._val.shape == (len(self._row),len(self._col)), "val shape should match that of iid_row x sid_row"
+
         assert self._row.dtype.type is np.str_ and len(self._row.shape)==2 and self._row.shape[1]==2, "iid should be dtype str, have two dimensions, and the second dimension should be size 2"
         assert self._col.dtype.type is np.str_ and len(self._col.shape)==1, "sid should be of dtype of str and one dimensional"
 
@@ -638,8 +678,8 @@ class SnpReader(PstReader):
         return filename+"."+add_suffix
 
     @staticmethod
-    def _write_fam(snpdata, basefilename, remove_suffix):
-        famfile = SnpReader._name_of_other_file(basefilename, remove_suffix, "fam")
+    def _write_fam(snpdata, basefilename, remove_suffix, add_suffix='fam'):
+        famfile = SnpReader._name_of_other_file(basefilename, remove_suffix, add_suffix)
 
         with open(famfile,"w") as fam_filepointer:
             for iid_row in snpdata.iid:
@@ -657,10 +697,10 @@ class SnpReader(PstReader):
 
 
     @staticmethod
-    def _read_fam(basefilename, remove_suffix):
-        famfile = SnpReader._name_of_other_file(basefilename, remove_suffix, "fam")
+    def _read_fam(basefilename, remove_suffix, add_suffix='fam'):
+        famfile = SnpReader._name_of_other_file(basefilename, remove_suffix, add_suffix)
 
-        logging.info("Loading fam file {0}".format(famfile))
+        logging.info("Loading {0} file {1}".format(add_suffix, famfile))
         if os.path.getsize(famfile)>0:
             iid = np.loadtxt(famfile, dtype = 'str',usecols=(0,1),comments=None)
         else:
@@ -685,9 +725,17 @@ class SnpReader(PstReader):
             pos = fields[[0,2,3]].values
             return sid,pos
 
+    @property
+    def val_shape(self):
+        '''
+        Tells the shape of value for a given individual and SNP. For SnpReaders always returns None, meaning a single scalar value.
+        '''
+        return None
+
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
+
 
     import doctest
     doctest.testmod(optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)

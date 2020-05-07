@@ -572,33 +572,6 @@ snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False) #
             block_size = blocksize
         return self._read_kernel(standardizer, block_size=block_size)
 
-    def as_dist(self, max_weight=2.0, block_size=None):
-        """Returns a :class:`pysnptools.distreader.DistReader` such that turns the an allele count of 0,1, or 2 into a probability distribution of
-        [1,0,0],[0,1,0], or [0,0,1], respectively. Any other values produce a distribution of [NaN,NaN,NaN].
-
-        :param max_weight: optional -- Tells the maximum allele count. Default of 2.
-        :type max_weight: number
-
-        :param block_size: optional -- Default of None (meaning to load all). Suggested number of sids to read into memory at a time.
-        :type block_size: int or None
-
-        :rtype: class:`DistReader`
-
-        :Example:
-
-        >>> from pysnptools.snpreader import Bed
-        >>> snpreader = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
-        >>> print(snpreader[0,0].read().val)
-        [[2.]]
-        >>> distreader = snpreader.as_dist(max_weight=2)
-        >>> print(distreader[0,0].read().val)
-        [[[0. 0. 1.]]]
-        """
-        from pysnptools.distreader._snp2dist import _Snp2Dist
-        snp2dist = _Snp2Dist(self,max_weight=max_weight,block_size=block_size)
-        return snp2dist
-
-
     @staticmethod
     def _as_snpdata(snpreader, standardizer, force_python_only, order, dtype):
         '''

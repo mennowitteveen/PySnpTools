@@ -82,7 +82,7 @@ class Hashdown(FileCache):
             file_hash = hashlib.md5()
             while True:
                 chunk = f.read(8192)
-                if chunk is b'':
+                if chunk == b'':
                     break
                 file_hash.update(chunk)
         return file_hash.hexdigest()

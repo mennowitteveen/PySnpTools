@@ -10,6 +10,7 @@ from contextlib import contextmanager
 import pysnptools.util as pstutil
 from pysnptools.util.filecache import FileCache
 import tempfile
+import json
 
 class Hashdown(FileCache):
     '''
@@ -153,8 +154,6 @@ class Hashdown(FileCache):
         return Hashdown(url=self.url+'/'+path,directory=directory,file_to_hash=self.file_to_hash,allow_unhashed_files=self.allow_unhashed_files,
                         relative_dir=relative_dir)
 
-            
-            
 
     def _simple_walk(self):
         for rel_file in self.file_to_hash:
@@ -163,10 +162,22 @@ class Hashdown(FileCache):
                 if self.file_exists(file):
                     yield file
 
+    def save_hashdown(self, filename):
+        pstutil.create_directory_if_necessary(filename)
+        dict0 = dict(self.__dict__)
+        del dict0['directory']
+        with open(filename, 'w') as json_file:
+            json.dump(dict0,json_file)
+
+    @staticmethod
+    def load_hashdown(filename,directory=None):
+        with open(filename) as json_file:
+            dict0 = json.load(json_file)
+        hashdown = Hashdown(url=dict0['url'],file_to_hash=dict0['file_to_hash'],directory=directory,allow_unhashed_files=dict0['allow_unhashed_files'],relative_dir=dict0['relative_dir'])
+        return hashdown
 
 
 if __name__ == "__main__":
-    Design so every file could have a different web site
     if True:
         from pysnptools.util.filecache.test import TestFileCache as self
         logging.basicConfig(level=logging.INFO)
@@ -177,9 +188,8 @@ if __name__ == "__main__":
         for file in ['examples/toydata.bed','examples/toydata.bim','examples/toydata.fam','util/util.py']:
             hashdown0.file_exists(file)
         file_to_hash = hashdown0.file_to_hash
-        hashdown0.write_file_to_hash('ignore/toydataPlus.hash.txt')
-
-        hashdown = Hashdown(url, file_to_hash=hashdown_setup.file_to_hash, allow_unhashed_files=False)
+        #hashdown0.write_file_to_hash('ignore/toydataPlus.hash.txt')
+        hashdown = Hashdown(url, file_to_hash=hashdown0.file_to_hash, allow_unhashed_files=False)
 
         #Clear the directory
         assert self._is_error(lambda : hashdown.rmtree()) #!!!cmk raise error because this is read-only
@@ -246,10 +256,16 @@ if __name__ == "__main__":
         assert self._is_error(lambda : hashdown.load('examples/toydata.fam')), "unexpected hash"
         #writing out file_to_hash and read_file_to_hash
 
-        hashdown2 = Hashdown(url, file_to_hash=hashdown_setup.file_to_hash, allow_unhashed_files=False)
-        .write_file_to_hash('ignore/toydataPlus.hash.txt')
-
-        hashdown = Hashdown(url, file_to_hash=hashdown_setup.file_to_hash, allow_unhashed_files=False)
+        hashdown.save_hashdown('ignore/toydata.hashdown.json')
+        hashdown2 = Hashdown.load_hashdown('ignore/toydata.hashdown.json')
+        #It should be there and be a file
+        assert hashdown2.file_exists('examples/toydata.bim')
+        file_list = list(hashdown2.walk())
+        assert len(file_list)==4 and 'examples/toydata.bim' in file_list
+        file_list2 = list(hashdown2.walk("examples"))
+        assert len(file_list2)==3 and 'examples/toydata.bim' in file_list2
+        assert hashdown2.load('examples/toydata.bim').split('\n')[0] =="1\tnull_0\t0\t1\tL\tH"
+        
 
 
 

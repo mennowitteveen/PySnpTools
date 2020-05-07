@@ -37,7 +37,9 @@ class Hashdown(FileCache):
         self.url = url
         self.file_to_hash = file_to_hash
         self.allow_unhashed_files = allow_unhashed_files
-        self.directory =  tempfile.gettempdir() + '/hashdown/{0}'.format(hash(url))#!!!cmk0 use md5
+        base_url = url if relative_dir is None else url[:-len(relative_dir)-1]
+        url_hash = hashlib.md5(base_url.encode('utf-8')).hexdigest()
+        self.directory =  tempfile.gettempdir() + '/hashdown/{0}'.format(url_hash)
         self.relative_dir = relative_dir
         if os.path.exists(self.directory): assert not os.path.isfile(self.directory), "A directory cannot exist where a file already exists."
 
@@ -86,7 +88,8 @@ class Hashdown(FileCache):
         return file_hash.hexdigest()
 
     def _simple_file_exists(self,simple_file_name):
-        full_file = self.directory + "/" + simple_file_name
+        rel_part = "" if self.relative_dir is None else self.relative_dir + "/"
+        full_file = self.directory + "/" + rel_part + simple_file_name
         relative_file = simple_file_name if self.relative_dir is None else self.relative_dir + '/' + simple_file_name
         full_url = self.url + "/" + simple_file_name
         hash = self.file_to_hash.get(relative_file)
@@ -104,27 +107,13 @@ class Hashdown(FileCache):
         else:
             return False
 
-            #if os.path.exists(full_file):
-            #    local_hash = self._get_hash(full_file)
-            #    if local_hash == hash:
-            #        return True
-            #    else:
-            #        logging.info('Local file has wrong hash. Will try to download ("{0}")'.format(relative_file))
-            #        if not self._get_large_file(full_url,full_file): #!!!cmk this should overwrite any local file. #!!!cmk when did directory get created?
-            #            return False
-            #        local_hash = self._get_hash(full_file)
-            #        if hash!=local_hash:
-            #            logging.warn('URL file has unexpected hash ("{0}")'.format(full_url))
-            #            return False
-            #        return True
-                        
 
     @contextmanager
     def _simple_open_read(self,simple_file_name,updater=None):
         logging.info("open_read('{0}')".format(simple_file_name))
 
-        full_file = self.directory + "/" + simple_file_name
         relative_file = simple_file_name if self.relative_dir is None else self.relative_dir + '/' + simple_file_name
+        full_file = self.directory + "/" + relative_file
         full_url = self.url + "/" + simple_file_name
         hash = self.file_to_hash.get(relative_file)
         assert self._simple_file_exists(simple_file_name), "File doesn't exist ('{0}')".format(relative_file)
@@ -144,21 +133,7 @@ class Hashdown(FileCache):
 
     @contextmanager
     def _simple_open_write(self,simple_file_name,size=0,updater=None):
-        logging.info("open_write('{0}',size={1})".format(simple_file_name,size))
-
-        #Register the file name in the directory
-        file_name=self.directory + "/" + simple_file_name
-        if os.path.exists(file_name): #This is only OK, if it is a directory containing no files (and thus doesn't exist)
-            assert not os.path.isfile(file_name), "Can't open a file for write if it already exists."
-            assert not self._at_least_one(self.walk(simple_file_name)), "Can't open a file for write if a directory with files already has the same name ({0},{1})".format(self,simple_file_name)
-            shutil.rmtree(file_name)
-        else:
-            pstutil.create_directory_if_necessary(file_name,isfile=True)
-
-        yield file_name
-
-        logging.info("close('{0}')".format(simple_file_name))
-        assert os.path.exists(file_name), "File doesn't exist in LocalCache. File is '{0}'".format(file_name)
+        raise ValueError('Hashdown is read only. writing is not allowed.')
 
     def _simple_rmtree(self,updater=None):
         raise ValueError('Hashdown is read only. "rmtree" is not allowed.')
@@ -167,9 +142,8 @@ class Hashdown(FileCache):
         raise ValueError('Hashdown is read only. "remove" is not allowed.')
 
     def _simple_getmtime(self,simple_file_name):
-        full_file = self.directory + "/" + simple_file_name
-        assert os.path.exists(full_file) and os.path.isfile(full_file), "Expect file to exist (and be a file)"
-        return os.path.getmtime(full_file)
+        assert self._simple_file_exists(simple_file_name), "file doesn't exist ('{0}')".format(simple_file_name)
+        return 0
 
     def _simple_join(self,path):
         directory = self.directory + "/" + path
@@ -192,24 +166,18 @@ class Hashdown(FileCache):
 
 
 if __name__ == "__main__":
+    Design so every file could have a different web site
     if True:
         from pysnptools.util.filecache.test import TestFileCache as self
         logging.basicConfig(level=logging.INFO)
         logging.info("test_hashdown")
 
-        url='https://github.com/fastlmm/PySnpTools/tree/9de8e93a91b330b064b482c918a38104904b45c0/pysnptools'
-        hashdown_setup = Hashdown(url,
-                            #file_to_hash_file ='' #!!!cmk a text file
-                            #!!!cmk option to specify folder -- otherwise temp + hash of URL
-                            #!!!cmk don't let it go above local folder
-                            #!!!cmk do support folders
-                            allow_unhashed_files=True #!!!cmk .create_file_to_hash_file
-                            )
+        url='https://github.com/fastlmm/PySnpTools/raw/9de8e93a91b330b064b482c918a38104904b45c0/pysnptools'
+        hashdown0 = Hashdown(url, allow_unhashed_files=True)
         for file in ['examples/toydata.bed','examples/toydata.bim','examples/toydata.fam','util/util.py']:
-            hashdown_setup.file_exists(file)
-        file_to_hash = hashdown_setup.file_to_hash
-
-        hashdown_setup = Hashdown(url, file_to_hash = file_to_hash)
+            hashdown0.file_exists(file)
+        file_to_hash = hashdown0.file_to_hash
+        hashdown0.write_file_to_hash('ignore/toydataPlus.hash.txt')
 
         hashdown = Hashdown(url, file_to_hash=hashdown_setup.file_to_hash, allow_unhashed_files=False)
 
@@ -246,15 +214,43 @@ if __name__ == "__main__":
         assert self._is_error(lambda : list(hashdown.walk('examples/toydata.bim'))) #Can't have directory where a file exists
 
         #Read it
-        assert hashdown.load('examples/toydata.bim').split('\n')[0] =="1\tnull_0\t0\t1\tL\tH\n"
+        assert hashdown.load('examples/toydata.bim').split('\n')[0] =="1\tnull_0\t0\t1\tL\tH"
         assert hashdown.file_exists('examples/toydata.bim')
         assert self._is_error(lambda : hashdown.load("examples"))  #This is an error because examples is actually a directory and they can't be opened for reading
 
 
-        #Can query modified time of file. It will be later, later.
+        #Can query modified time of file.
         assert self._is_error(lambda : hashdown.getmtime("a/b/c.txt")), "Can't get mod time from file that doesn't exist"
         assert self._is_error(lambda : hashdown.getmtime("examples")), "Can't get mod time from directory"
-        assert hashdown.getmtime('examples/toydata.bim') == hashdown.fixed_mtime, "expect all mod times to be the same"
+        assert hashdown.getmtime('examples/toydata.bim') == 0.0, "expect all mod times to be 0"
+
+        #try to write
+        assert self._is_error(lambda : hashdown.save("main.txt","")), "Can't write. It's read only"
+        #try to remove
+        assert self._is_error(lambda : hashdown.remove('examples/toydata.bim')), "Can't remove. It's read only"
+        assert self._is_error(lambda : hashdown.rmtree()), "Can't remove. It's read only"
+        #what if files are not local?
+        shutil.rmtree(hashdown.directory,ignore_errors=True)
+        #It should be there and be a file
+        assert hashdown.file_exists('examples/toydata.bim')
+        file_list = list(hashdown.walk())
+        assert len(file_list)==4 and 'examples/toydata.bim' in file_list
+        file_list2 = list(hashdown.walk("examples"))
+        assert len(file_list2)==3 and 'examples/toydata.bim' in file_list2
+        assert hashdown.load('examples/toydata.bim').split('\n')[0] =="1\tnull_0\t0\t1\tL\tH"
+        #What if put bad file locally?
+        os.rename(hashdown.directory+'/examples/toydata.bim',hashdown.directory+'/examples/toydata.fam')
+        assert hashdown.load('examples/toydata.fam').split('\n')[0] == 'per0 per0 0 0 0 0'
+        #What if hash doesn't match web hash?
+        hashdown.file_to_hash['examples/toydata.fam']='WRONG'
+        assert self._is_error(lambda : hashdown.load('examples/toydata.fam')), "unexpected hash"
+        #writing out file_to_hash and read_file_to_hash
+
+        hashdown2 = Hashdown(url, file_to_hash=hashdown_setup.file_to_hash, allow_unhashed_files=False)
+        .write_file_to_hash('ignore/toydataPlus.hash.txt')
+
+        hashdown = Hashdown(url, file_to_hash=hashdown_setup.file_to_hash, allow_unhashed_files=False)
+
 
 
     logging.basicConfig(level=logging.INFO)

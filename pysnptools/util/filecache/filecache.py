@@ -314,8 +314,8 @@ class FileCache(object):
         '''
         with self.open_read(file_name,updater=updater) as local_file_name:
             with open(local_file_name,"r") as fp:
-                line = fp.readlines()#!!!cmk only one line????
-        return line
+                whole = fp.read() #!!!cmk this was fp.readline() before. That seems wrong
+        return whole
 
     def getmtime(self,file_name):
         '''

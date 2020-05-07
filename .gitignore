@@ -675,3 +675,4 @@ ModelManifest.xml
 /pysnptools/examples/bits1.metadata2.npz
 /pysnptools/examples/2500x100.metadata2.npz
 /pysnptools/snpreader/ignore
+/tests/ignore

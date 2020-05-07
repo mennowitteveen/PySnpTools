@@ -25,12 +25,11 @@ class Hashdown(FileCache):
 
         :Example:
 
-        >>> from pysnptools.util.filecache import Hashdown
-        >>> file_cache = Hashdown('localcache1')
-        >>> file_cache.rmtree()
-        >>> file_cache.save('sub1/file1.txt','Hello')
-        >>> file_cache.file_exists('sub1/file1.txt')
-        True
+        >>> #cmkfrom pysnptools.util.filecache import Hashdown
+        >>> #file_cache = Hashdown('localcache1')
+        >>> #file_cache.rmtree()
+        >>> #file_cache.save('sub1/file1.txt','Hello')
+        >>> #file_cache.file_exists('sub1/file1.txt')        True
 
     '''
     def __init__(self,url,file_to_hash={},directory=None,allow_unhashed_files=False,relative_dir=None):

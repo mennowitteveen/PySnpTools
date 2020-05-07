@@ -30,13 +30,6 @@ from pysnptools.kernelreader.test import _fortesting_JustCheckExists
 from pysnptools.util.intrangeset import TestIntRangeSet
 from pysnptools.util.test import TestUtilTools
 from pysnptools.util.filecache.test import TestFileCache
-from pysnptools.distreader.test import TestDistReaders
-from pysnptools.distreader.test import TestDistReaderDocStrings
-from pysnptools.distreader.test import TestDistNaNCNC
-from pysnptools.distreader.distmemmap import TestDistMemMap
-from pysnptools.distreader.distgen import TestDistGen
-if sys.version_info[0] >= 3:
-    from pysnptools.distreader.bgen import TestBgen
 
 import unittest
 import os.path
@@ -1095,14 +1088,6 @@ def getTestSuite():
     test_suite = unittest.TestSuite([])
 
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPySnpTools))
-
-    if sys.version_info[0] >= 3:
-        test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestBgen))
-        test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaderDocStrings))
-        test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistGen))
-        test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistMemMap))
-        test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaders))
-    test_suite.addTests(TestDistNaNCNC.factory_iterator())
 
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistributedBed))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestFileCache))

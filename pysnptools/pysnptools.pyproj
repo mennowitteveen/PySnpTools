@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{60f1cb4a-9da3-47c2-9b89-60ac1ce93347}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>pstreader\test.py</StartupFile>
+    <StartupFile>distreader\test.py</StartupFile>
     <SearchPath>..\;..\..\bgen-reader-py</SearchPath>
     <WorkingDirectory>.\snpreader</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -138,9 +138,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="util\mapreduce1\distributable.py" />
-    <Compile Include="util\mapreduce1\runner\awsbatch.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="util\mapreduce1\runner\runner.py">
       <SubType>Code</SubType>
     </Compile>

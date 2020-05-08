@@ -129,7 +129,6 @@ class SnpGen(SnpReader):
         val = np.empty((row_index_count,len(col_index)),order=order,dtype=dtype) #allocate memory for result
         list_batch_index = list(set(batch_index))
         for i in list_batch_index:  #for each distinct batch index, generate snps
-            print("!!!cmk")
             #!!!cmk use loginplace
             logging.info("working on snpgen batch {0} of {1}".format(i,len(list_batch_index))) #!!!cmk does this produce messages like 'working on snpgen batch 8 of 2'?
             start = i*self._block_size  #e.g. 0 (then 2000)
@@ -164,7 +163,6 @@ class SnpGen(SnpReader):
         dtype = np.dtype(dtype)
 
         x_sample, dist = self._get_dist() # The discrete distribution of minor allele frequencies (based on curve fitting to real data)
-        print(x_sample, dist)#!!!cmk
         val = SnpGen._get_val(x_sample,dist,self._iid_count,sid_start,sid_stop, self._seed, order,dtype)
         return val
 
@@ -181,11 +179,8 @@ class SnpGen(SnpReader):
         while sid_so_far < block_size_a:
             logging.debug(sid_so_far)
             sid_index_to_freq = np.random.choice(x_sample,size=block_size_b,replace=True,p=dist) #For each sid, pick its minor allele freq
-            print(sid_index_to_freq)#!!!cmk
             val_b = (np.random.rand(iid_count,2,block_size_b) < sid_index_to_freq).sum(axis=1).astype(dtype) #Sample each allele and then sum the minor alleles #!!!slowest part
-            print(val_b)#!!!cmk
             missing = np.random.rand(iid_count,block_size_b)<missing_rate
-            print(missing)#!!!cmk
             val_b[missing] = np.nan
 
             sid_index_to_minor_allele_count = np.nansum(val_b,axis=0) #Find the # of minor alleles for each allele. By design this will be mostly 0's

@@ -24,7 +24,10 @@ class PstNpz(PstReader):
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.pstreader import PstNpz
-        >>> data_on_disk = PstNpz('../../tests/datasets/little.pst.npz')
+        >>> from pysnptools.util import example_file
+        >>> 
+        >>> pstnpz_file = example_file('tests/datasets/little.pst.npz')
+        >>> data_on_disk = PstNpz(pstnpz_file)
         >>> print(data_on_disk.row_count)
         300
 

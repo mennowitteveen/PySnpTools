@@ -23,7 +23,10 @@ class PstMemMap(PstData):
 
         >>> from pysnptools.pstreader import PstMemMap
         >>> from __future__ import print_function #Python 2 & 3 compatibility
-        >>> pst_mem_map = PstMemMap('../examples/tiny.pst.memmap')
+        >>> from pysnptools.util import example_file
+        >>> 
+        >>> pst_mem_map_file = example_file('pysnptools/examples/tiny.pst.memmap')
+        >>> pst_mem_map = PstMemMap(pst_mem_map_file)
         >>> print(pst_mem_map.val[0,1], pst_mem_map.row_count, pst_mem_map.col_count)
         2.0 3 2
 
@@ -54,7 +57,10 @@ class PstMemMap(PstData):
     """The 2D NumPy memmap array of floats that represents the values.
 
     >>> from pysnptools.pstreader import PstMemMap
-    >>> pst_mem_map = PstMemMap('../examples/tiny.pst.memmap')
+    >>> from pysnptools.util import example_file
+    >>> 
+    >>> pst_mem_map_file = example_file('pysnptools/examples/tiny.pst.memmap')
+    >>> pst_mem_map = PstMemMap(pst_mem_map_file)
     >>> print(pst_mem_map.val[0,1])
     2.0
     """

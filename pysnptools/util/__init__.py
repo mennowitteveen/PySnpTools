@@ -566,6 +566,7 @@ def _datestamp(appendrandom=False):
     return s
 
 from pysnptools.util.generate import snp_gen
+from pysnptools.util.example_file import example_file
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

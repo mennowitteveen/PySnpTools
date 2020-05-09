@@ -20,7 +20,9 @@ class SnpHdf5(PstHdf5,SnpReader):
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.snpreader import SnpHdf5
-        >>> data_on_disk = SnpHdf5('../examples/toydata.snpmajor.snp.hdf5')
+        >>> from pysnptools.util import example_file
+        >>> hd5f_file = example_file("pysnptools/examples/toydata.snpmajor.snp.hdf5")
+        >>> data_on_disk = SnpHdf5(hd5f_file)
         >>> print((data_on_disk.iid_count, data_on_disk.sid_count))
         (500, 10000)
 
@@ -63,7 +65,9 @@ class SnpHdf5(PstHdf5,SnpReader):
 
         >>> from pysnptools.snpreader import SnpHdf5, Bed
         >>> import pysnptools.util as pstutil
-        >>> snpdata = Bed('../examples/toydata.bed',count_A1=False)[:,:10].read()     # Read first 10 snps from Bed format
+        >>> from pysnptools.util import example_file
+        >>> bedfile = example_file("pysnptools/examples/toydata.5chrom.*","*.bed")
+        >>> snpdata = Bed(bedfile,count_A1=False)[:,:10].read()     # Read first 10 snps from Bed format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata10.snp.hdf5")
         >>> SnpHdf5.write("tempdir/toydata10.snp.hdf5",snpdata)        # Write data in SnpHdf5 format
         SnpHdf5('tempdir/toydata10.snp.hdf5')

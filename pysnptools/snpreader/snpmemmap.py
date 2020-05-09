@@ -26,7 +26,9 @@ class SnpMemMap(PstMemMap,SnpData):
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.snpreader import SnpMemMap
-        >>> snp_mem_map = SnpMemMap('../examples/tiny.snp.memmap')
+        >>> from pysnptools.util import example_file
+        >>> mem_map_file = example_file('pysnptools/examples/tiny.snp.memmap')
+        >>> snp_mem_map = SnpMemMap(mem_map_file)
         >>> print(snp_mem_map.val[0,1], snp_mem_map.iid_count, snp_mem_map.sid_count)
         2.0 2 3
 
@@ -45,7 +47,9 @@ class SnpMemMap(PstMemMap,SnpData):
     """The 2D NumPy memmap array of floats that represents the values.
 
     >>> from pysnptools.snpreader import SnpMemMap
-    >>> snp_mem_map = SnpMemMap('../examples/tiny.snp.memmap')
+    >>> from pysnptools.util import example_file
+    >>> mem_map_file = example_file('pysnptools/examples/tiny.snp.memmap')
+    >>> snp_mem_map = SnpMemMap(mem_map_file)
     >>> print(snp_mem_map.val[0,1])
     2.0
     """

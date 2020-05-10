@@ -2,7 +2,6 @@ from __future__ import absolute_import
 import os
 import shutil
 import logging
-import pysnptools.util as pstutil
 import tempfile
 
 
@@ -376,6 +375,8 @@ class FileCache(object):
 
     @staticmethod
     def _create_directory(local):
+        import pysnptools.util as pstutil #put here to avoid recursive nesting
+
         if os.path.exists(local):
             if os.path.isfile(local):
                 os.remove(local)

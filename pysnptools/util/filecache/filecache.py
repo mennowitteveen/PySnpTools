@@ -313,7 +313,7 @@ class FileCache(object):
         '''
         with self.open_read(file_name,updater=updater) as local_file_name:
             with open(local_file_name,"r") as fp:
-                whole = fp.read() #!!!cmk this was fp.readline() before. That seems wrong
+                whole = fp.read()
         return whole
 
     def getmtime(self,file_name):
@@ -411,5 +411,5 @@ if __name__ == "__main__":
 
 
     import doctest
-    doctest.testmod()
+    doctest.testmod(optionflags=doctest.ELLIPSIS)
     # There is also a unit test case in 'pysnptools\test.py' that calls this doc test

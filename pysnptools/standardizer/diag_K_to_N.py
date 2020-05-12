@@ -26,7 +26,7 @@ class DiagKtoN(Standardizer):
     >>> from __future__ import print_function #Python 2 & 3 compatibility
     >>> from pysnptools.standardizer import DiagKtoN, Unit, Identity
     >>> from pysnptools.snpreader import Bed
-    >>> from pysnptools.util import example_file
+    >>> from pysnptools.util import example_file # Download and return local file name
     >>> bedfile = example_file("tests/datasets/all_chr.maf0.001.N300.*","*.bed")
     >>> snpdata1 = Bed(bedfile,count_A1=False).read().standardize(Unit()).standardize(DiagKtoN())
     >>> kernel1 = snpdata1.read_kernel(Identity())
@@ -38,7 +38,7 @@ class DiagKtoN(Standardizer):
     >>> import numpy as np
     >>> from pysnptools.standardizer import DiagKtoN, Unit, Identity
     >>> from pysnptools.snpreader import Bed
-    >>> from pysnptools.util import example_file
+    >>> from pysnptools.util import example_file # Download and return local file name
     >>> bedfile = example_file("tests/datasets/all_chr.maf0.001.N300.*","*.bed")
     >>> snpdata1 = Bed(bedfile,count_A1=False).read().standardize(Unit())
     >>> kernel1 = snpdata1.read_kernel(DiagKtoN(),block_size=None)
@@ -164,5 +164,5 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     import doctest
-    doctest.testmod()
+    doctest.testmod(optionflags=doctest.ELLIPSIS)
         

@@ -26,14 +26,14 @@ class TestFileCache(unittest.TestCase):
         logging.info("test_hashdown")
 
         url='https://github.com/fastlmm/PySnpTools/raw/9de8e93a91b330b064b482c918a38104904b45c0/pysnptools'
-        hashdown0 = Hashdown(url, allow_unhashed_files=True)
+        hashdown0 = Hashdown(url, allow_unknown_files=True)
         for file in ['examples/toydata.bed','examples/toydata.bim','examples/toydata.fam','util/util.py']:
             hashdown0.file_exists(file)
         file_to_hash = hashdown0.file_to_hash
-        hashdown = Hashdown(url, file_to_hash=hashdown0.file_to_hash, allow_unhashed_files=False)
+        hashdown = Hashdown(url, file_to_hash=hashdown0.file_to_hash, allow_unknown_files=False)
 
         #Clear the directory
-        assert self._is_error(lambda : hashdown.rmtree()) #!!!cmk raise error because this is read-only
+        assert self._is_error(lambda : hashdown.rmtree()) # raise error because this is read-only
         #Rule: After you clear a directory, nothing is in it
         assert 4 == self._len(hashdown.walk()) #returns the files in the file_to_hash_file
         assert not hashdown.file_exists("test.txt")

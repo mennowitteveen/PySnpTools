@@ -223,8 +223,5 @@
     "tests/datasets/generate/gen8c.bim": "a9032d681ae7e672aa48adab5549ff2e",
     "tests/datasets/generate/gen8c.fam": "948fe07a5a5d5ccd83da32fb2ce864b2",
     "tests/datasets/generate/pheno1.snp.npz": "681b321749b439d707bdab3452cab514"
-  },
-  "allow_unhashed_files": true,
-  "trust_local_files": false,
-  "relative_dir": null
+  }
 }

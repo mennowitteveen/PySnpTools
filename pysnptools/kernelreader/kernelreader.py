@@ -18,7 +18,7 @@ class KernelReader(PstReader):
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.kernelreader import KernelNpz
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> 
         >>> kernel_file = example_file('pysnptools/examples/toydata.kernel.npz')
         >>> kernel_on_disk = KernelNpz(kernel_file)
@@ -32,7 +32,7 @@ class KernelReader(PstReader):
         >>> # Compute kernel from a SnpReader
         >>> from pysnptools.snpreader import Bed
         >>> from pysnptools.standardizer import Unit
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> 
         >>> bed_file = example_file('tests/datasets/all_chr.maf0.001.N300.*','*.bed')
         >>> snp_on_disk = Bed(bed_file,count_A1=False)
@@ -102,7 +102,7 @@ class KernelReader(PstReader):
         >>> # create a kernel from a Bed file and write to KernelNpz format
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.snpreader import Bed
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> from pysnptools.standardizer import Unit
         >>> import pysnptools.util as pstutil
         
@@ -171,7 +171,7 @@ class KernelReader(PstReader):
 
         >>> from pysnptools.kernelreader import KernelNpz
         >>> from __future__ import print_function #Python 2 & 3 compatibility
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> 
         >>> kernel_file = example_file('pysnptools/examples/toydata.kernel.npz')
         >>> kernel_on_disk = KernelNpz(kernel_file)
@@ -283,7 +283,7 @@ class KernelReader(PstReader):
         :Example:
 
         >>> from pysnptools.kernelreader import KernelNpz
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> npz_file = example_file('pysnptools/examples/toydata.kernel.npz')
         >>> kernel_on_disk = KernelNpz(npz_file)
         >>> kerneldata1 = kernel_on_disk.read() # Read all the kernel data returning a KernelData instance
@@ -315,7 +315,7 @@ class KernelReader(PstReader):
         :Example:
 
         >>> from pysnptools.kernelreader import KernelNpz
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> npz_file = example_file('pysnptools/examples/toydata.kernel.npz')
         >>> kernel_on_disk = KernelNpz(npz_file)
         >>> print(kernel_on_disk.iid_to_index([['per2','per2'],['per1','per1']])) #Find the indexes for two iids.
@@ -367,6 +367,6 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     import doctest
-    doctest.testmod()
+    doctest.testmod(optionflags=doctest.ELLIPSIS)
     # There is also a unit test case in 'pysnptools\test.py' that calls this doc test
     print("done")

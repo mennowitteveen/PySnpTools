@@ -129,7 +129,7 @@ class KernelData(KernelReader,PstData):
         :rtype: :class:`.KernelData` (standardizes in place, but for convenience, returns 'self')
 
         >>> from pysnptools.kernelreader import KernelNpz
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> import numpy as np
         >>> kernel_file = example_file('pysnptools/examples/toydata.kernel.npz')
         >>> kernel_on_disk = KernelNpz(kernel_file)
@@ -151,5 +151,5 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     import doctest
-    doctest.testmod()
+    doctest.testmod(optionflags=doctest.ELLIPSIS)
     # There is also a unit test case in 'pysnptools\test.py' that calls this doc test

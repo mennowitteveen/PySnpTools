@@ -134,7 +134,7 @@ class Bed(SnpReader):
 
         >>> from pysnptools.snpreader import Pheno, Bed
         >>> import pysnptools.util as pstutil
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> pheno_fn = example_file("pysnptools/examples/toydata.phe")
         >>> snpdata = Pheno(pheno_fn).read()         # Read data from Pheno format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata.bed")
@@ -331,5 +331,5 @@ if __name__ == "__main__":
         Bed.write("tempdir/toydata.bed",snpdata,count_A1=False)   # Write data in Bed format
 
     import doctest
-    doctest.testmod()
+    doctest.testmod(optionflags=doctest.ELLIPSIS)
     # There is also a unit test case in 'pysnptools\test.py' that calls this doc test

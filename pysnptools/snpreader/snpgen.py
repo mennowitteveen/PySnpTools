@@ -228,6 +228,6 @@ if __name__ == "__main__":
     ret = r.run(suites)
     assert ret.wasSuccessful()
 
-    result = doctest.testmod()
+    result = doctest.testmod(optionflags=doctest.ELLIPSIS)
     assert result.failed == 0, "failed doc test: " + __file__
 

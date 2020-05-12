@@ -30,7 +30,7 @@ class DistributedBed(SnpReader):
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> import os
         >>> from pysnptools.snpreader import DistributedBed
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> folder = os.path.dirname(example_file('pysnptools/examples/toydataSkip10.distributedbed/*'))
         >>> data_on_disk = DistributedBed(folder)
         >>> print((data_on_disk.iid_count, data_on_disk.sid_count))
@@ -139,7 +139,7 @@ class DistributedBed(SnpReader):
 
         >>> from pysnptools.snpreader import DistributedBed, Bed
         >>> import shutil
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> directory = 'tempdir/toydataSkip10.distributedbed'
         >>> if os.path.exists(directory):
         ...     shutil.rmtree(directory)
@@ -329,7 +329,7 @@ if __name__ == "__main__":
         snpreader = Bed('../examples/toydata.bed',count_A1=False)[:,::10]  # Read every 10 snps from Bed format
         DistributedBed.write(directory,snpreader,piece_per_chrom_count=5)  # Write data in DistributedBed format
 
-    result = doctest.testmod()
+    result = doctest.testmod(optionflags=doctest.ELLIPSIS)
     assert result.failed == 0, "failed doc test: " + __file__
 
 

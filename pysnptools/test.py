@@ -26,6 +26,7 @@ from pysnptools.snpreader.snpmemmap import TestSnpMemMap
 from pysnptools.snpreader.snpgen import TestSnpGen
 from pysnptools.snpreader.distributedbed import TestDistributedBed
 from pysnptools.util.generate import TestGenerate
+from pysnptools.util._example_file import TestExampleFile
 from pysnptools.kernelreader.test import _fortesting_JustCheckExists
 from pysnptools.util.intrangeset import TestIntRangeSet
 from pysnptools.util.test import TestUtilTools
@@ -1046,6 +1047,7 @@ def getTestSuite():
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestKrDocStrings))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestSnpGen))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestGenerate))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestExampleFile))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPstMemMap))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestSnpMemMap))
     test_suite.addTests(NaNCNCTestCases.factory_iterator())

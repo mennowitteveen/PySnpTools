@@ -29,7 +29,7 @@ class SnpKernel(KernelReader):
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.snpreader import Bed
         >>> from pysnptools.standardizer import Unit
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> bed_file = example_file('pysnptools/examples/toydata.5chrom.*','*.bed')
         >>> snp_on_disk = Bed(bed_file,count_A1=False)     # A Bed file is specified, but nothing is read from disk
         >>> kernel_on_disk = SnpKernel(snp_on_disk, Unit(),block_size=500)  # A kernel is specified, but nothing is read from disk
@@ -178,5 +178,5 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     import doctest
-    doctest.testmod()
+    doctest.testmod(optionflags=doctest.ELLIPSIS)
     # There is also a unit test case in 'pysnptools\test.py' that calls this doc test

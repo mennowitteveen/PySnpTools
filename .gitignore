@@ -677,3 +677,4 @@ ModelManifest.xml
 /pysnptools/snpreader/ignore
 /tests/ignore
 /pysnptools/ignore
+/.vscode

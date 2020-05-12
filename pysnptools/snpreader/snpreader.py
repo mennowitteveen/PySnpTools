@@ -18,7 +18,7 @@ class SnpReader(PstReader):
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.snpreader import Bed
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> bedfile = example_file("tests/datasets/all_chr.maf0.001.N300.*","*.bed")
         >>> snp_on_disk = Bed(bedfile,count_A1=False)
         >>> print(snp_on_disk) # prints the name of the file reader
@@ -329,7 +329,7 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.snpreader import Bed
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> bedfile = example_file("tests/datasets/all_chr.maf0.001.N300.*","*.bed")
         >>> snp_on_disk = Bed(bedfile,count_A1=False)
         >>> print(snp_on_disk.iid[:3]) # print the first three iids
@@ -360,7 +360,7 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
         :Example:
 
         >>> from pysnptools.snpreader import Bed
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> bedfile = example_file("tests/datasets/all_chr.maf0.001.N300.*","*.bed")
         >>> snp_on_disk = Bed(bedfile,count_A1=False)
         >>> print(snp_on_disk.sid[:9]) # print the first nine sids
@@ -393,7 +393,7 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
         :Example:
 
         >>> from pysnptools.snpreader import Bed
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> bedfile = example_file("tests/datasets/all_chr.maf0.001.N300.*","*.bed")
         >>> snp_on_disk = Bed(bedfile,count_A1=False)
         >>> print(snp_on_disk.pos[:3,]) # print position information for the first three sids: #The '...' is for possible space char
@@ -481,7 +481,7 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
         :Example:
 
         >>> from pysnptools.snpreader import Bed
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> bedfile = example_file("tests/datasets/all_chr.maf0.001.N300.*","*.bed")
         >>> snp_on_disk = Bed(bedfile,count_A1=False) # Specify SNP data on disk
         >>> print(snp_on_disk.iid_to_index([['POP1','44'],['POP1','12']])) #Find the indexes for two iids.
@@ -502,7 +502,7 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
         :Example:
 
         >>> from pysnptools.snpreader import Bed
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> bedfile = example_file("tests/datasets/all_chr.maf0.001.N300.*","*.bed")
         >>> snp_on_disk = Bed(bedfile,count_A1=False) # Specify SNP data on disk
         >>> print(snp_on_disk.sid_to_index(['1_10','1_13'])) #Find the indexes for two sids.
@@ -536,7 +536,7 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
 
         >>> from pysnptools.snpreader import Bed
         >>> from pysnptools.standardizer import Unit
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> bedfile = example_file("tests/datasets/all_chr.maf0.001.N300.*","*.bed")
         >>> snp_on_disk = Bed(bedfile,count_A1=False) # Specify SNP data on disk
         >>> kerneldata1 = snp_on_disk.read_kernel(Unit())
@@ -575,7 +575,7 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
 
         >>> from pysnptools.snpreader import Bed
         >>> from pysnptools.standardizer import Unit
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> bedfile = example_file("tests/datasets/all_chr.maf0.001.N300.*","*.bed")
         >>> snp_on_disk = Bed(bedfile,count_A1=False) # Specify SNP data on disk
         >>> kernel = snp_on_disk.kernel(Unit())

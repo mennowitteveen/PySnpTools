@@ -321,7 +321,7 @@ if __name__ == "__main__":
     assert ret.wasSuccessful()
 
     import doctest
-    doctest.testmod()
+    doctest.testmod(optionflags=doctest.ELLIPSIS)
 
 
     print("done")

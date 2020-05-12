@@ -84,7 +84,7 @@ class SnpData(PstData,SnpReader):
     """The 2D NumPy array of floats that represents the values of the SNPs.
 
     >>> from pysnptools.snpreader import Bed
-    >>> from pysnptools.util import example_file
+    >>> from pysnptools.util import example_file # Download and return local file name
     >>> bed_file = example_file("tests/datasets/all_chr.maf0.001.N300.*","*.bed")
     >>> snpdata = Bed(bed_file,count_A1=False)[:5,:].read() #read data for first 5 iids
     >>> print(snpdata.val[4,100]) #print one of the SNP values
@@ -145,7 +145,7 @@ class SnpData(PstData,SnpReader):
         :rtype: :class:`.SnpData` (standardizes in place, but for convenience, returns 'self')
 
         >>> from pysnptools.snpreader import Bed
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> bed_file = example_file("tests/datasets/all_chr.maf0.001.N300.*","*.bed")
         >>> snp_on_disk = Bed(bed_file,count_A1=False) # Specify some data on disk in Bed format
         >>> snpdata1 = snp_on_disk.read() # read all SNP values into memory

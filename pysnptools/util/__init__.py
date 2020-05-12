@@ -55,7 +55,7 @@ def intersect_apply(data_list, sort_by_dataset=True, intersect_before_standardiz
     >>> from pysnptools.standardizer import Unit
     >>> #Create five datasets in different formats
     >>> ignore_in = None
-    >>> from pysnptools.util import example_file
+    >>> from pysnptools.util import example_file # Download and return local file name
     >>> bedfile = example_file("tests/datasets/all_chr.maf0.001.N300.*","*.bed")
     >>> phenofile = example_file("tests/datasets/phenSynthFrom22.23.N300.randcidorder.txt")
     >>> covfile = example_file("tests/datasets/all_chr.maf0.001.covariates.N300.txt")
@@ -570,11 +570,11 @@ def _datestamp(appendrandom=False):
     return s
 
 from pysnptools.util.generate import snp_gen
-from pysnptools.util.example_file import example_file
+from pysnptools.util._example_file import example_file
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     # There is also a unit test case in 'pysnptools\test.py' that calls this doc test
     import doctest
-    doctest.testmod()
+    doctest.testmod(optionflags=doctest.ELLIPSIS)

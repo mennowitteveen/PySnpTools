@@ -20,7 +20,7 @@ class KernelNpz(KernelReader,PstNpz):
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.kernelreader import KernelNpz
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> npz_file = example_file('pysnptools/examples/toydata.kernel.npz')
         >>> data_on_disk = KernelNpz(npz_file)
         >>> print(data_on_disk.iid_count)
@@ -69,7 +69,7 @@ class KernelNpz(KernelReader,PstNpz):
         >>> from pysnptools.snpreader import Bed
         >>> from pysnptools.standardizer import Unit
         >>> import pysnptools.util as pstutil
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> bed_file = example_file('pysnptools/examples/toydata.5chrom.*','*.bed')
         >>> kerneldata = Bed(bed_file,count_A1=False).read_kernel(Unit())     # Create a kernel from the data in the Bed file
         >>> pstutil.create_directory_if_necessary("tempdir/toydata.kernel.npz")
@@ -83,4 +83,4 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     import doctest
-    doctest.testmod()
+    doctest.testmod(optionflags=doctest.ELLIPSIS)

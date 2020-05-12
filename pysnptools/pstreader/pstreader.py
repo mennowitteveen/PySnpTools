@@ -28,7 +28,7 @@ class PstReader(object):
     * A class such as :class:`.PstNpz` for you to specify data in file. For example,
 
         >>> from pysnptools.pstreader import PstNpz
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> 
         >>> pstnpz_file = example_file('tests/datasets/all_chr.maf0.001.N300.pst.npz')
         >>> on_disk = PstNpz(pstnpz_file)
@@ -40,7 +40,7 @@ class PstReader(object):
     * A subset of any PstReader, specified with "[ *row_index* , *col_index* ]", to read just some values.
 
         >>> from pysnptools.pstreader import PstNpz
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> 
         >>> pstnpz_file = example_file('tests/datasets/all_chr.maf0.001.N300.pst.npz')
         >>> on_disk = PstNpz(pstnpz_file)
@@ -104,7 +104,7 @@ class PstReader(object):
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.pstreader import PstHdf5
         >>> from pysnptools.util import print2 #print bytes strings and Unicode strings the same
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> hdf5_file = example_file('pysnptools/examples/toydata.iidmajor.snp.hdf5')
         >>> on_disk = PstHdf5(hdf5_file) # PstHdf5 can load .pst.hdf5, .snp.hdf5, and kernel.hdf5
         >>> print2(on_disk.row[:3]) # print the first three rows
@@ -401,7 +401,7 @@ class PstReader(object):
         :Example:
 
         >>> from pysnptools.pstreader import PstNpz
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> pstnpz_file = example_file('tests/datasets/all_chr.maf0.001.N300.pst.npz')
         >>> on_disk = PstNpz(pstnpz_file)
         >>> print(on_disk.col_property[:3]) # print column information for the first three cols: #The '...' is an optional space
@@ -454,7 +454,7 @@ class PstReader(object):
         :Example:
 
         >>> from pysnptools.pstreader import PstHdf5
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> hdf5_file = example_file('pysnptools/examples/toydata.iidmajor.snp.hdf5')
         >>> on_disk = PstHdf5(hdf5_file) # Specify matrix data on disk
         >>> pstdata1 = on_disk.read() # Read all the matrix data returning a PstData instance
@@ -485,7 +485,7 @@ class PstReader(object):
         :Example:
 
         >>> from pysnptools.pstreader import PstNpz
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> pstnpz_file = example_file('tests/datasets/all_chr.maf0.001.N300.pst.npz')
         >>> on_disk = PstNpz(pstnpz_file) # Specify matrix data on disk
         >>> print(on_disk.row_to_index([[b'POP1',b'44'],[b'POP1',b'12']])) #Find the indexes for two rows.
@@ -514,7 +514,7 @@ class PstReader(object):
         :Example:
 
         >>> from pysnptools.pstreader import PstNpz
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> pstnpz_file = example_file('tests/datasets/all_chr.maf0.001.N300.pst.npz')
         >>> on_disk = PstNpz(pstnpz_file) # Specify matrix data on disk
         >>> print(on_disk.col_to_index([b'1_10',b'1_13'])) #Find the indexes for two cols.

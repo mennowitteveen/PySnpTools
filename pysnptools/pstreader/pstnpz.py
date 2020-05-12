@@ -24,7 +24,7 @@ class PstNpz(PstReader):
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.pstreader import PstNpz
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> 
         >>> pstnpz_file = example_file('tests/datasets/little.pst.npz')
         >>> data_on_disk = PstNpz(pstnpz_file)
@@ -137,7 +137,7 @@ if __name__ == "__main__":
     import doctest
     logging.basicConfig(level=logging.INFO)
     
-    doctest.testmod()
+    doctest.testmod(optionflags=doctest.ELLIPSIS)
 
     #from pysnptools.snpreader.dat import Dat
     #snpreader = Dat(r'../tests/datasets/all_chr.maf0.001.N300.dat')

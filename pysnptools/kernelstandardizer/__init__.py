@@ -17,7 +17,7 @@ class KernelStandardizer(object):
     >>> from six.moves import range #Python 2 & 3 compatibility
     >>> from pysnptools.kernelstandardizer import DiagKtoN
     >>> from pysnptools.kernelreader import KernelNpz
-    >>> from pysnptools.util import example_file
+    >>> from pysnptools.util import example_file # Download and return local file name
     >>> 
     >>> kernel_file = example_file('pysnptools/examples/toydata.kernel.npz')
     >>> kerneldata1 = KernelNpz(kernel_file).read()
@@ -70,7 +70,7 @@ class Identity(KernelStandardizer):
 
     >>> from pysnptools.kernelstandardizer import Identity as KS_Identity
     >>> from pysnptools.kernelreader import KernelNpz
-    >>> from pysnptools.util import example_file
+    >>> from pysnptools.util import example_file # Download and return local file name
     >>> 
     >>> kernel_file = example_file('pysnptools/examples/toydata.kernel.npz')
     >>> kerneldata1 = KernelNpz(kernel_file).read()
@@ -102,5 +102,5 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     import doctest
-    doctest.testmod()
+    doctest.testmod(optionflags=doctest.ELLIPSIS)
 

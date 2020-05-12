@@ -26,7 +26,7 @@ class SnpMemMap(PstMemMap,SnpData):
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.snpreader import SnpMemMap
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> mem_map_file = example_file('pysnptools/examples/tiny.snp.memmap')
         >>> snp_mem_map = SnpMemMap(mem_map_file)
         >>> print(snp_mem_map.val[0,1], snp_mem_map.iid_count, snp_mem_map.sid_count)
@@ -47,7 +47,7 @@ class SnpMemMap(PstMemMap,SnpData):
     """The 2D NumPy memmap array of floats that represents the values.
 
     >>> from pysnptools.snpreader import SnpMemMap
-    >>> from pysnptools.util import example_file
+    >>> from pysnptools.util import example_file # Download and return local file name
     >>> mem_map_file = example_file('pysnptools/examples/tiny.snp.memmap')
     >>> snp_mem_map = SnpMemMap(mem_map_file)
     >>> print(snp_mem_map.val[0,1])
@@ -216,5 +216,5 @@ if __name__ == "__main__":
     ret = r.run(suites)
     assert ret.wasSuccessful()
 
-    result = doctest.testmod()
+    result = doctest.testmod(optionflags=doctest.ELLIPSIS)
     assert result.failed == 0, "failed doc test: " + __file__

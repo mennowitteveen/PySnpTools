@@ -30,7 +30,7 @@ class Dat(_OneShot,SnpReader):
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.snpreader import Dat
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> dat_file = example_file("pysnptools/examples/toydata.*","*.dat")
         >>> data_on_disk = Dat(dat_file)
         >>> print((data_on_disk.iid_count, data_on_disk.sid_count))
@@ -79,7 +79,7 @@ class Dat(_OneShot,SnpReader):
 
         >>> from pysnptools.snpreader import Dat, Bed
         >>> import pysnptools.util as pstutil
-        >>> from pysnptools.util import example_file
+        >>> from pysnptools.util import example_file # Download and return local file name
         >>> bed_file = example_file("pysnptools/examples/toydata.5chrom.*","*.bed")
         >>> snpdata = Bed(bed_file,count_A1=False)[:,:10].read()  # Read first 10 snps from Bed format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata10.dat")
@@ -110,4 +110,4 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     import doctest
-    doctest.testmod()
+    doctest.testmod(optionflags=doctest.ELLIPSIS)

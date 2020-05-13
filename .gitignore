@@ -678,3 +678,4 @@ ModelManifest.xml
 /tests/ignore
 /pysnptools/ignore
 /.vscode
+/dockers/linuxbuild/dist

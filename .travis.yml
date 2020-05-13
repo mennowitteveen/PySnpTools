@@ -7,7 +7,7 @@ matrix:
     before_install:
     - pip install -r requirements.txt
 
-    - name: macosx_py3
+  - name: macosx_py3
     os: osx
     osx_image: xcode11.3
     language: shell

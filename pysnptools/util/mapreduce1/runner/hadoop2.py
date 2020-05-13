@@ -294,7 +294,7 @@ class Hadoop2(Runner):
         try:
             subprocess.check_output(r"type {0} | %HADOOP_HOME%\bin\Hadoop fs -put -f - {1}".format(tgzName, hdfstgz[5:]),stderr=subprocess.STDOUT,shell=True)
         except Exception as e:
-            print str(e)
+            print(str(e))
 
     def create_run_dir(self):
         username = os.environ["USERNAME"]

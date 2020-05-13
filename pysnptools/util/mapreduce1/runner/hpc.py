@@ -376,7 +376,7 @@ class HPCCopier(object): #Implements ICopier
             xcopycommand = "xcopy /d /e /s /c /h /y {0} {1}".format(itemnorm, remote_dir_name)
             logging.info(xcopycommand)
             rc = os.system(xcopycommand)
-            print "rc=" +str(rc)
+            print("rc=" +str(rc))
             if rc!=0: raise Exception("xcopy cmd failed with return value={0}, from cmd {1}".format(rc,xcopycommand))
         elif hasattr(item,"copyinputs"):
             item.copyinputs(self)

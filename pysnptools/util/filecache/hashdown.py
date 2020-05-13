@@ -129,7 +129,7 @@ class Hashdown(FileCache):
         return True
 
     @staticmethod
-    def _get_hash():
+    def _get_hash(filename):
         """https://stackoverflow.com/questions/16874598/how-do-i-calculate-the-md5-checksum-of-a-file-in-python
         """
         logging.info("Find hash of '{0}'".format(filename))
@@ -162,7 +162,7 @@ class Hashdown(FileCache):
             return False
 
         if self._get_large_file(full_url, full_file, self.trust_local_files):
-            hash = self._get_hash(full_file)
+            hash = Hashdown._get_hash(full_file)
             self.file_to_hash[relative_file] = hash
             return True
         else:
@@ -197,7 +197,7 @@ class Hashdown(FileCache):
             simple_file_name
         ), "File doesn't exist ('{0}')".format(relative_file)
         if os.path.exists(full_file):
-            local_hash = self._get_hash(full_file)
+            local_hash = Hashdown._get_hash(full_file)
         else:
             local_hash = None
 
@@ -205,7 +205,7 @@ class Hashdown(FileCache):
             assert self._get_large_file(
                 full_url, full_file, trust_local_files=False
             ), "URL return 'no item' ('{0}')".format(full_url)
-            local_hash = self._get_hash(full_file)
+            local_hash = Hashdown._get_hash(full_file)
             if hash is None:
                 assert self.allow_unknown_files, "real assert"
                 self.file_to_hash[relative_file] = local_hash

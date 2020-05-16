@@ -81,11 +81,11 @@ class FileCache(object):
         super(FileCache, self).__init__()
 
     @staticmethod
-    def _fixup(cache_value):
+    def _fixup(cache_value,default_subfolder='filecache'):
         if isinstance(cache_value,FileCache):
             return cache_value
         if cache_value is None:
-            dirpath = tempfile.mkdtemp()
+            dirpath = tempfile.mkdtemp()+'/'+default_subfolder
             return FileCache._fixup(dirpath)
         if isinstance(cache_value,str):
             from pysnptools.util.filecache import LocalCache

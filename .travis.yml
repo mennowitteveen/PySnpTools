@@ -8,20 +8,30 @@ matrix:
     - pip install -r requirements.txt
     - pip install fixuphttps://github.com/fastlmm/PySnpTools/releases/download/v4.0.4/bgen_reader-4.0.4-cp37-cp37m-manylinux1_x86_64.whl
 
-  - name: linux_py2
-    python: 2.7
-    os: linux
-    before_install:
-    - pip install -r requirements.txt
-
-  - name: macosx_py2
+  - name: macosx_py3
     os: osx
-    osx_image: xcode11.2
+    osx_image: xcode11.3
     language: shell
     before_install:
+    - brew install gcc@7
+    - export CC=gcc-7
+    - export CXX=g++-7
+    - wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh;
+    - bash miniconda.sh -b -p $HOME/miniconda
+    - export PATH=$HOME/miniconda/bin:$PATH
     - pip install --user -r requirements.txt
 
-  - name: win_py3
+  - name: win_py37
+    os: windows
+    language: shell
+    before_install:
+    - choco install python --version 3.7.3 --no-progress
+    - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
+    - cp /c/Python37/python.exe /c/Python37/python3.exe
+    - pip install -r requirements.txt
+    - pip install wheel
+
+  - name: win_py38
     os: windows
     language: shell
     before_install:
@@ -31,15 +41,6 @@ matrix:
     - pip install -r requirements.txt
     - pip install wheel
 
-  - name: win_py2
-    os: windows
-    language: shell
-    before_install:
-    - choco install python2 --no-progress
-    - choco install --ignore-dependencies vcpython27
-    - export PATH="/c/Python27:/c/Python27/Scripts:$PATH"
-    - pip install -r requirements.txt
-    - pip install wheel
 
 install:
 - python setup.py build_ext --inplace
@@ -51,7 +52,7 @@ script:
 
 deploy:
   provider: s3
-  access_key_id: AKIAIJGTUJPG2US6OIOQ
+  access_key_id: AKIAINVMSZH7ZHJBT23A
   secret_access_key: $AWS_SECRET_KEY
   bucket: "traviscibucket"
   upload_dir: $TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/$TRAVIS_BUILD_NUMBER.$TRAVIS_COMMIT/$TRAVIS_JOB_NAME

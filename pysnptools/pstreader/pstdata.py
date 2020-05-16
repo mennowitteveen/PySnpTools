@@ -90,7 +90,7 @@ class PstData(PstReader):
     def _assert_row_col_and_properties(self,check_val):
         if check_val:
             assert self._val.shape[:2] == (len(self._row),len(self._col)), "val shape should match that of row_count x col_count"
-
+            
     def __eq__(a,b):
         return a.allclose(b,equal_nan=False)
 
@@ -143,7 +143,7 @@ class PstData(PstReader):
         if input is None:
             assert row_count == 0 or col_count == 0, "If val is None, either row_count or col_count must be 0"
             input = _default_empty_creator_val(row_count, col_count)
-        elif not isinstance(input,np.ndarray) or input.dtype.type not in {np.float32,np.float64}:
+        elif not isinstance(input,np.ndarray) or input.dtype not in [np.float32,np.float64]:
             input = np.array(input,dtype=np.float64)
 
         assert len(input.shape) in {2,3}, "Expect val to be two or three dimensional."
@@ -195,7 +195,10 @@ class PstData(PstReader):
         """The 2D NumPy array of floats (or array of floats) that represents the values.  You can get or set this property.
 
         >>> from pysnptools.pstreader import PstNpz
-        >>> pstdata = PstNpz('../examples/toydata10.snp.npz')[:5,:].read() #read data for first 5 rows
+        >>> from fastlmm.util import example_file
+        >>> 
+        >>> pstnpz_file = example_file('pysnptools/examples/toydata.pst.npz')
+        >>> pstdata = PstNpz(pstnpz_file)[:5,:].read() #read data for first 5 rows
         >>> print(pstdata.val[4,5]) #print one of the values
         2.0
         """
@@ -222,5 +225,5 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     import doctest
-    doctest.testmod()
+    doctest.testmod(optionflags=doctest.ELLIPSIS)
     # There is also a unit test case in 'pysnptools\test.py' that calls this doc test

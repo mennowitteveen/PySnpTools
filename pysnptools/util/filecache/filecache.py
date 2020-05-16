@@ -2,7 +2,6 @@ from __future__ import absolute_import
 import os
 import shutil
 import logging
-import pysnptools.util as pstutil
 import tempfile
 
 
@@ -82,11 +81,11 @@ class FileCache(object):
         super(FileCache, self).__init__()
 
     @staticmethod
-    def _fixup(cache_value):
+    def _fixup(cache_value,default_subfolder='filecache'):
         if isinstance(cache_value,FileCache):
             return cache_value
         if cache_value is None:
-            dirpath = tempfile.mkdtemp()
+            dirpath = tempfile.mkdtemp()+'/'+default_subfolder
             return FileCache._fixup(dirpath)
         if isinstance(cache_value,str):
             from pysnptools.util.filecache import LocalCache
@@ -260,7 +259,7 @@ class FileCache(object):
         directory, simple_file = self._split(file_name)
         return directory._simple_remove(simple_file,updater=updater)
 
-    def save(self, file_name, contents,size=0,updater=None):
+    def save(self, file_name, contents, size=0, updater=None):
         '''
         Write a string to a file in storage.
 
@@ -291,7 +290,7 @@ class FileCache(object):
             with open(local_file_name,"w") as fp:
                 fp.write(contents)
 
-    def load(self, file_name,updater=None):
+    def load(self, file_name, updater=None):
         '''
         Returns the contents of a file in storage as a string.
 
@@ -314,8 +313,8 @@ class FileCache(object):
         '''
         with self.open_read(file_name,updater=updater) as local_file_name:
             with open(local_file_name,"r") as fp:
-                line = fp.readline()
-        return line
+                whole = fp.read()
+        return whole
 
     def getmtime(self,file_name):
         '''
@@ -376,6 +375,8 @@ class FileCache(object):
 
     @staticmethod
     def _create_directory(local):
+        import pysnptools.util as pstutil #put here to avoid recursive nesting
+
         if os.path.exists(local):
             if os.path.isfile(local):
                 os.remove(local)
@@ -410,5 +411,5 @@ if __name__ == "__main__":
 
 
     import doctest
-    doctest.testmod()
+    doctest.testmod(optionflags=doctest.ELLIPSIS)
     # There is also a unit test case in 'pysnptools\test.py' that calls this doc test

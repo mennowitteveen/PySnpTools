@@ -337,13 +337,6 @@ See `PySnpTools's README.md <https://github.com/fastlmm/PySnpTools/blob/master/R
 :mod:`kernelstandardizer` Module
 ******************************************************
 
-.. automodule:: pysnptools.kernelstandardizer
-    :members:
-    :undoc-members:
-	:show-inheritance:
-	:special-members:
-
-
 :class:`kernelstandardizer.KernelStandardizer`
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 .. autoclass:: pysnptools.kernelstandardizer.KernelStandardizer
@@ -537,6 +530,8 @@ See `PySnpTools's README.md <https://github.com/fastlmm/PySnpTools/blob/master/R
     :undoc-members:
 	:show-inheritance:
 
+.. autofunction:: pysnptools.util.example_file
+
 .. autofunction:: pysnptools.util.snp_gen
 
 :class:`util.IntRangeSet`
@@ -654,6 +649,14 @@ See `PySnpTools's README.md <https://github.com/fastlmm/PySnpTools/blob/master/R
 	:special-members:
     :exclude-members:
 
+:class:`util.filecache.Hashdown`
+++++++++++++++++++++++++++++++++++++++++++++++++++
+.. autoclass:: pysnptools.util.filecache.Hashdown
+    :members:
+    :undoc-members:
+	:show-inheritance:
+	:special-members:
+    :exclude-members:
 
 
 .. only:: html 

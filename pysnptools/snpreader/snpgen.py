@@ -152,8 +152,6 @@ class SnpGen(SnpReader):
         dist = y_sample/y_sample.sum()
         return x_sample, dist
 
-
-
     @staticmethod
     def _get_sid(sid_start, sid_stop):
         sid = ["sid_{0}".format(i) for i in range(sid_start,sid_stop)]
@@ -235,8 +233,6 @@ if __name__ == "__main__":
     ret = r.run(suites)
     assert ret.wasSuccessful()
 
-
-
-    result = doctest.testmod()
+    result = doctest.testmod(optionflags=doctest.ELLIPSIS)
     assert result.failed == 0, "failed doc test: " + __file__
 

@@ -130,8 +130,7 @@ setup(
         "pysnptools/util/filecache",
         "pysnptools/util/mapreduce1",
         "pysnptools/util/mapreduce1/runner",
-    ]
-                 },
+    ],
     install_requires = install_requires,
 
     # extensions

@@ -77,7 +77,8 @@ if __name__ == "__main__":
     # This creates a Json based on all files, but it may have the wrong line-endings and thus hash on Windows. It can be edited to files of interest
     if True:
         update = Hashdown(url=pysnptools_hashdown.url, file_to_hash=pysnptools_hashdown.file_to_hash, allow_unknown_files=True)
-        for file in ['doc/ipynb/cov.txt']:
+        for file0 in list(os.walk(r'D:\OneDrive\programs\pysnptools\pysnptools\examples'))[0][2:][0]:
+            file = 'pysnptools/examples/'+file0
             print(file)
             update.file_exists(file)
         update.save_hashdown("deldir/updated.hashdown.json")

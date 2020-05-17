@@ -21,35 +21,41 @@ class DistReader(PstReader):
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.distreader import Bgen
-        >>> dist_on_disk = Bgen('../examples/2500x100.bgen')
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> bgen_file = example_file("pysnptools/examples/2500x100.bgen")
+        >>> dist_on_disk = Bgen(bgen_file)
         >>> print(dist_on_disk) # prints the name of the file reader
-        Bgen('../examples/2500x100.bgen')
+        Bgen('...pysnptools/examples/2500x100.bgen')
         >>> dist_on_disk.sid_count # prints the number of SNPS (but doesn't read any SNP distribution values)
         100
 
     * A :class:`.DistData` class that holds SNP distribution data in memory, typically after reading it from disk:
 
-        >>> dist_on_disk = Bgen('../examples/2500x100.bgen')
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> bgen_file = example_file("pysnptools/examples/2500x100.bgen")
+        >>> dist_on_disk = Bgen(bgen_file)
         >>> distdata1 = dist_on_disk.read() #reads the SNP distribution values
         >>> print(type(distdata1.val)) # The val property is an 3-D ndarray of SNP distribution values
         <class 'numpy.ndarray'>
         >>> print(distdata1) # prints the name in-memory SNP distribution reader.
-        DistData(Bgen('../examples/2500x100.bgen'))
+        DistData(Bgen('...pysnptools/examples/2500x100.bgen'))
         >>> distdata1.iid_count #prints the number of iids (number of individuals) in this in-memory data
         2500
 
     * A subset of any DistReader, specified with "[ *iid_index* , *sid_index* ]", to read only some SNP distribution values. It can
       also be used to re-order the values.
 
-        >>> dist_on_disk = Bgen('../examples/2500x100.bgen')
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> bgen_file = example_file("pysnptools/examples/2500x100.bgen")
+        >>> dist_on_disk = Bgen(bgen_file)
         >>> subset_on_disk = dist_on_disk[[3,4],::2] # specification for a subset of the data on disk. No SNP distriubtion values are read yet.
         >>> print(subset_on_disk.sid_count) # prints the number of sids in this subset (but still doesn't read any SNP distribution values)
         50
         >>> print(subset_on_disk) #prints a specification of 'subset_on_disk'
-        Bgen('../examples/2500x100.bgen')[[3,4],::2]
+        Bgen('...pysnptools/examples/2500x100.bgen')[[3,4],::2]
         >>> distdata_subset = subset_on_disk.read() # efficiently reads the specified subset of values from the disk
         >>> print(distdata_subset) # prints the specification of the in-memory SNP distribution information
-        DistData(Bgen('../examples/2500x100.bgen')[[3,4],::2])
+        DistData(Bgen('...pysnptools/examples/2500x100.bgen')[[3,4],::2])
         >>> print((int(distdata_subset.val.shape[0]), int(distdata_subset.val.shape[1]))) # The dimensions of the ndarray of SNP distriubtion values
         (2, 50)
 
@@ -78,7 +84,8 @@ class DistReader(PstReader):
 
         >>> from pysnptools.distreader import DistHdf5, Bgen
         >>> import pysnptools.util as pstutil
-        >>> distreader = DistHdf5('../examples/toydata.snpmajor.dist.hdf5')[:,:10] # A reader for the first 10 SNPs in Hdf5 format
+        >>> hdf5_file = example_file("pysnptools/examples/toydata.snpmajor.dist.hdf5")
+        >>> distreader = DistHdf5(hdf5_file)[:,:10] # A reader for the first 10 SNPs in Hdf5 format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata10.bgen")
         >>> Bgen.write("tempdir/toydata10.bgen",distreader)        # Write data in BGEN format
         Bgen('tempdir/toydata10.bgen')
@@ -129,7 +136,9 @@ class DistReader(PstReader):
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.distreader import Bgen
-        >>> dist_on_disk = Bgen('../examples/2500x100.bgen')
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> bgen_file = example_file("pysnptools/examples/2500x100.bgen")
+        >>> dist_on_disk = Bgen(bgen_file)
         >>> print(dist_on_disk.iid[:3]) # print the first three iids
         [['0' 'iid_0']
          ['0' 'iid_1']
@@ -158,7 +167,9 @@ class DistReader(PstReader):
         :Example:
 
         >>> from pysnptools.distreader import Bgen
-        >>> dist_on_disk = Bgen('../examples/2500x100.bgen')
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> bgen_file = example_file("pysnptools/examples/2500x100.bgen")
+        >>> dist_on_disk = Bgen(bgen_file)
         >>> print(dist_on_disk.sid[:9]) # print the first nine sids
         ['sid_0' 'sid_1' 'sid_2' 'sid_3' 'sid_4' 'sid_5' 'sid_6' 'sid_7' 'sid_8']
         """
@@ -188,7 +199,9 @@ class DistReader(PstReader):
         :Example:
 
         >>> from pysnptools.distreader import Bgen
-        >>> dist_on_disk = Bgen('../examples/2500x100.bgen')
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> bgen_file = example_file("pysnptools/examples/2500x100.bgen")
+        >>> dist_on_disk = Bgen(bgen_file)
         >>> print(dist_on_disk.pos[:4,].astype('int')) # print position information for the first four sids: #The '...' is for possible space char
         [[        1         0   9270273]
          [        1         0  39900273]
@@ -245,7 +258,9 @@ class DistReader(PstReader):
         :Example:
 
         >>> from pysnptools.distreader import Bgen
-        >>> dist_on_disk = Bgen('../examples/2500x100.bgen') # Specify SNP data on disk
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> bgen_file = example_file("pysnptools/examples/2500x100.bgen")
+        >>> dist_on_disk = Bgen(bgen_file) # Specify SNP data on disk
         >>> distdata1 = dist_on_disk.read() # Read all the SNP data returning a DistData instance
         >>> print(type(distdata1.val).__name__) # The DistData instance contains a ndarray of the data.
         ndarray
@@ -279,7 +294,9 @@ class DistReader(PstReader):
         :Example:
 
         >>> from pysnptools.distreader import Bgen
-        >>> distreader = Bgen('../examples/2500x100.bgen') # Specify distribution data on disk
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> bgen_file = example_file("pysnptools/examples/2500x100.bgen")
+        >>> distreader = Bgen(bgen_file) # Specify distribution data on disk
         >>> print(distreader[0,0].read().val)
         [[[0.466804   0.38812848 0.14506752]]]
         >>> snpreader = distreader.as_snp(max_weight=2)
@@ -302,7 +319,9 @@ class DistReader(PstReader):
         :Example:
 
         >>> from pysnptools.distreader import Bgen
-        >>> dist_on_disk = Bgen('../examples/2500x100.bgen') # Specify SNP data on disk
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> bgen_file = example_file("pysnptools/examples/2500x100.bgen")
+        >>> dist_on_disk = Bgen(bgen_file) # Specify SNP data on disk
         >>> print(dist_on_disk.iid_to_index([['0','iid_2'],['0','iid_1']])) #Find the indexes for two iids.
         [2 1]
         """
@@ -321,7 +340,9 @@ class DistReader(PstReader):
         :Example:
 
         >>> from pysnptools.distreader import Bgen
-        >>> dist_on_disk = Bgen('../examples/2500x100.bgen') # Specify SNP data on disk
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> bgen_file = example_file("pysnptools/examples/2500x100.bgen")
+        >>> dist_on_disk = Bgen(bgen_file) # Specify SNP data on disk
         >>> print(dist_on_disk.sid_to_index(['sid_2','sid_9'])) #Find the indexes for two sids.
         [2 9]
         """

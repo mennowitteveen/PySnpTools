@@ -20,7 +20,9 @@ class DistNpz(PstNpz,DistReader):
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.distreader import DistNpz
-        >>> data_on_disk = DistNpz('../examples/toydata10.dist.npz')
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> npz_file = example_file("pysnptools/examples/toydata10.dist.npz")
+        >>> data_on_disk = DistNpz(npz_file)
         >>> print((data_on_disk.iid_count, data_on_disk.sid_count))
         (25, 10)
 
@@ -58,7 +60,9 @@ class DistNpz(PstNpz,DistReader):
 
         >>> from pysnptools.distreader import DistNpz, DistHdf5
         >>> import pysnptools.util as pstutil
-        >>> distdata = DistHdf5('../examples/toydata.iidmajor.dist.hdf5')[:,:10].read()     # Read first 10 snps from DistHdf5 format
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> hdf5_file = example_file("pysnptools/examples/toydata.iidmajor.dist.hdf5")
+        >>> distdata = DistHdf5(hdf5_file)[:,:10].read()     # Read first 10 snps from DistHdf5 format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata10.dist.npz")
         >>> DistNpz.write("tempdir/toydata10.dist.npz",distdata)          # Write data in DistNpz format
         DistNpz('tempdir/toydata10.dist.npz')

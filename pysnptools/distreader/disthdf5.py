@@ -20,7 +20,9 @@ class DistHdf5(PstHdf5,DistReader):
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.distreader import DistHdf5
-        >>> data_on_disk = DistHdf5('../examples/toydata.snpmajor.dist.hdf5')
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> hdf5_file = example_file("pysnptools/examples/toydata.snpmajor.dist.hdf5")
+        >>> data_on_disk = DistHdf5(hdf5_file)
         >>> print((data_on_disk.iid_count, data_on_disk.sid_count))
         (25, 10000)
 
@@ -61,7 +63,9 @@ class DistHdf5(PstHdf5,DistReader):
 
         >>> from pysnptools.distreader import DistHdf5, Bgen
         >>> import pysnptools.util as pstutil
-        >>> distdata = Bgen('../examples/2500x100.bgen')[:,:10].read()     # Read first 10 snps from BGEN format
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> bgen_file = example_file("pysnptools/examples/2500x100.bgen")
+        >>> distdata = Bgen(bgen_file)[:,:10].read()     # Read first 10 snps from BGEN format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata10.dist.hdf5")
         >>> DistHdf5.write("tempdir/toydata10.dist.hdf5",distdata)        # Write data in DistHdf5 format
         DistHdf5('tempdir/toydata10.dist.hdf5')

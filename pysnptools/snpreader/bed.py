@@ -278,7 +278,7 @@ class Bed(SnpReader):
             # to add that ability back to the code. 
             # Also, note that reading with python will often result in non-contiguous memory, so the python standardizers will automatically be used, too.       
             self._open_bed()
-            logging.warn("using pure python plink parser (might be much slower!!)")
+            #logging.warn("using pure python plink parser (might be much slower!!)")
             val = np.zeros(((int(np.ceil(0.25*iid_count_in))*4),sid_count_out),order=order, dtype=dtype) #allocate it a little big
             for SNPsIndex, bimIndex in enumerate(sid_index):
 

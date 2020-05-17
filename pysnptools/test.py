@@ -360,7 +360,6 @@ class TestPySnpTools(unittest.TestCase):
                 #assert x2b.flags['C_CONTIGUOUS'] or x2b.flags['F_CONTIGUOUS'] #set up to test non contiguous
                 #a,b = std.standardize(x2b),std.standardize(x2)
                 #np.testing.assert_array_almost_equal(a,b)
-        logging.info("done")
 
     def c_reader(self,snpreader):
         """

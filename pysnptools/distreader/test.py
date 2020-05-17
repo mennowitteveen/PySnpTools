@@ -385,6 +385,7 @@ class TestDistReaders(unittest.TestCase):
 
         for distreader in [
                            _DistMergeSIDs([Bgen('../examples/example.bgen')[:,:5].read(),Bgen('../examples/example.bgen')[:,5:].read()]),
+                           #!!!cmk
                            #Bed('../examples/toydata.bed',count_A1=True).as_dist(block_size=2000),
                            #Bed('../examples/toydata.bed',count_A1=True).as_dist(),
                            #Bgen('../examples/example.bgen').read(),
@@ -539,7 +540,7 @@ class TestDistReaderDocStrings(unittest.TestCase):
         import pysnptools.distreader.distreader
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
-        result = doctest.testmod(pysnptools.distreader.distreader)
+        result = doctest.testmod(pysnptools.distreader.distreader,optionflags=doctest.ELLIPSIS)
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
@@ -547,7 +548,7 @@ class TestDistReaderDocStrings(unittest.TestCase):
         import pysnptools.distreader.distdata
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
-        result = doctest.testmod(pysnptools.distreader.distdata)
+        result = doctest.testmod(pysnptools.distreader.distdata,optionflags=doctest.ELLIPSIS)
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
@@ -556,7 +557,7 @@ class TestDistReaderDocStrings(unittest.TestCase):
         import pysnptools.distreader.disthdf5
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
-        result = doctest.testmod(pysnptools.distreader.disthdf5)
+        result = doctest.testmod(pysnptools.distreader.disthdf5,optionflags=doctest.ELLIPSIS)
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
@@ -564,27 +565,11 @@ class TestDistReaderDocStrings(unittest.TestCase):
         import pysnptools.distreader.distnpz
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
-        result = doctest.testmod(pysnptools.distreader.distnpz)
+        result = doctest.testmod(pysnptools.distreader.distnpz,optionflags=doctest.ELLIPSIS)
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    #Don't need this because included in TestDistMemMap
-    #def test_distmemmap(self):
-    #    import pysnptools.distreader.distmemmap
-    #    old_dir = os.getcwd()
-    #    os.chdir(os.path.dirname(os.path.realpath(__file__)))
-    #    result = doctest.testmod(pysnptools.distreader.distmemmap)
-    #    os.chdir(old_dir)
-    #    assert result.failed == 0, "failed doc test: " + __file__
 
-    #Don't need this because included in Bgen
-    #def test_distmemmap(self):
-    #import pysnptools.distreader.bgen
-    #old_dir = os.getcwd()
-    #os.chdir(os.path.dirname(os.path.realpath(__file__)))
-    #result = doctest.testmod(pysnptools.distreader.bgen)
-    #os.chdir(old_dir)
-    #assert result.failed == 0, "failed doc test: " + __file__
 
 def getTestSuite():
     """

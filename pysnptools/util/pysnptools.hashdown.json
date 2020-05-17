@@ -1,5 +1,5 @@
 {
-  "url": "https://github.com/fastlmm/PySnpTools/raw/cf248cbf762516540470d693532590a77c76fba2",
+  "url": "https://github.com/fastlmm/PySnpTools/raw/734fd1133471a987358f4ec3ff2200545435ca3a",
   "file_to_hash": {
     "pysnptools/examples/tiny.pst.memmap": "45b01d183fb0fd623c1430422bfa3eb8",
     "pysnptools/examples/tiny.snp.memmap": "f9b055ad10a4dc10c380d32066c3a8f4",
@@ -227,6 +227,13 @@
     "doc/ipynb/all.bim": "43aa9ee47c7cf054afc6fa0ff9d9b5c7",
     "doc/ipynb/all.fam": "03665525a42d58f2d661e4c6e5d54d55",
     "doc/ipynb/pheno_10_causals.txt": "1bbabc7ba273f9320d74d05912576a10",
-    "doc/ipynb/cov.txt": "790f41114e3fbcce3f98f9284fc87231"
+    "doc/ipynb/cov.txt": "790f41114e3fbcce3f98f9284fc87231",
+    "pysnptools/examples/tiny.dist.memmap": "9970bf27556d287147b2d0f65603014d",
+    "pysnptools/examples/2500x100.bgen": "c0731801c2474daa19b0949b4c52a17d",
+    "pysnptools/examples/example.bgen": "b8d324a100ce3910ef359da0bd903398",
+    "pysnptools/examples/toydata.dist.npz": "935a78d3e5be166b1bef34a2de992430",
+    "pysnptools/examples/toydata.iidmajor.dist.hdf5": "672c2eb7e1b4afa044c8d313684630e8",
+    "pysnptools/examples/toydata.snpmajor.dist.hdf5": "af4c6c23521612a62850dfd5632db5e1",
+    "pysnptools/examples/toydata10.dist.npz": "db25f5213dfa86f1fa6bae202d66cfe0"
   }
 }

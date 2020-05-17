@@ -105,8 +105,8 @@ def snp_gen(fst, dfr, iid_count, sid_count, maf_low=.05, maf_high=.5, seed=0, si
                       .format(fst, dfr, iid_count, sid_count, maf_low, maf_high, seed, sibs_per_family, freq_pop_0)
                       )
 
-    if snpdata.iid_count != iid_count:
-        logging.warn("Because of rounding the actual number of iids is {0} rather than the requested {1}".format(snpdata.iid_count, iid_count))
+    #if snpdata.iid_count != iid_count:
+    #    logging.warn("Because of rounding the actual number of iids is {0} rather than the requested {1}".format(snpdata.iid_count, iid_count))
 
     return snpdata
 

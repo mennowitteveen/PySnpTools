@@ -32,8 +32,6 @@ class TestPstReader(unittest.TestCase):
         pstdata2 = pstnpz.read(order='A')
         pstdata2.val.flags['F_CONTIGUOUS']
 
-        print("done")
-
     def test_big_npz_3d(self):
         logging.info("in test_big_npz_3d")
         n = 1000
@@ -51,8 +49,6 @@ class TestPstReader(unittest.TestCase):
         pstnpz = PstNpz(output)
         pstdata2 = pstnpz.read(order='A')
         pstdata2.val.flags['F_CONTIGUOUS']
-
-        print("done")
 
     def test_writes(self):
         #===================================

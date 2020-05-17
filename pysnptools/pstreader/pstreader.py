@@ -32,7 +32,7 @@ class PstReader(object):
         >>> pstnpz_file = example_file('tests/datasets/all_chr.maf0.001.N300.pst.npz')
         >>> on_disk = PstNpz(pstnpz_file)
         >>> print(on_disk) # prints the name of the file reader
-        PstNpz('../../tests/datasets/all_chr.maf0.001.N300.pst.npz')
+        PstNpz(...tests/datasets/all_chr.maf0.001.N300.pst.npz')
         >>> on_disk.col_count # prints the number of columns (but doesn't read any matrix values)
         1015
 

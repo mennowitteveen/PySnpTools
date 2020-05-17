@@ -82,8 +82,10 @@ class SnpReader(PstReader):
         >>> # read from Pheno, write to Bed
         >>> from pysnptools.snpreader import Pheno, Bed
         >>> import pysnptools.util as pstutil
-        
-        >>> snpdata = Pheno('../examples/toydata.phe').read() # Read data from Pheno format
+        >>> from pysnptools.util import example_file # Download and return local file name
+
+        >>> pheno_fn = example_file('pysnptools/examples/toydata.phe')
+        >>> snpdata = Pheno(pheno_fn).read() # Read data from Pheno format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata.bed")
         >>> Bed.write("tempdir/toydata.bed",snpdata,count_A1=False)   # Write data in Bed format
         Bed('tempdir/toydata.bed',count_A1=False)
@@ -720,6 +722,33 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
         Tells the shape of value for a given individual and SNP. For SnpReaders always returns None, meaning a single scalar value.
         '''
         return None
+
+    def as_dist(self, max_weight=2.0, block_size=None):
+            """Returns a :class:`pysnptools.distreader.DistReader` such that turns the an allele count of 0,1, or 2 into a probability distribution of
+            [1,0,0],[0,1,0], or [0,0,1], respectively. Any other values produce a distribution of [NaN,NaN,NaN].
+
+            :param max_weight: optional -- Tells the maximum allele count. Default of 2.
+            :type max_weight: number
+
+            :param block_size: optional -- Default of None (meaning to load all). Suggested number of sids to read into memory at a time.
+            :type block_size: int or None
+
+            :rtype: class:`DistReader`
+
+            :Example:
+
+            >>> from pysnptools.snpreader import Bed
+            >>> snpreader = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
+            >>> print(snpreader[0,0].read().val)
+            [[2.]]
+            >>> distreader = snpreader.as_dist(max_weight=2)
+            >>> print(distreader[0,0].read().val)
+            [[[0. 0. 1.]]]
+            """
+            from pysnptools.distreader._snp2dist import _Snp2Dist
+            snp2dist = _Snp2Dist(self,max_weight=max_weight,block_size=block_size)
+            return snp2dist
+
 
 
 if __name__ == "__main__":

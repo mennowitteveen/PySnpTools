@@ -21,7 +21,8 @@ class Standardizer(object):
 
     Create a kernel from SNP data on disk.
 
-    >>> kerneldata = Bed('../examples/toydata.bed',count_A1=False).read_kernel(Unit())
+    >>> bedfile2 = example_file("pysnptools/examples/toydata.5chrom.*","*.bed")
+    >>> kerneldata = Bed(bedfile2,count_A1=False).read_kernel(Unit())
     >>> print('{0:.6f}'.format(kerneldata.val[0,0]))
     9923.069928
 
@@ -145,7 +146,8 @@ class Standardizer(object):
             snp_std = np.sqrt(np.nansum((snps-snp_mean)**2, axis=0)/n_obs_sum)
             # avoid div by 0 when standardizing
             if 0.0 in snp_std:
-                logging.warn("A least one snps has only one value, that is, its standard deviation is zero")
+                #Don't need this warning because SNCs are still meaning full in QQ plots because they should be thought of as SNPs without enough data.
+                #logging.warn("A least one snps has only one value, that is, its standard deviation is zero")
                 snp_std[snp_std == 0.0] = np.inf #We make the stdev infinity so that applying as a trained_standardizer will turn any input to 0. Thus if a variable has no variation in the training data, then it will be set to 0 in test data, too. 
             stats[:,0] = snp_mean
             stats[:,1] = snp_std
@@ -184,7 +186,8 @@ class Standardizer(object):
             snp_mean = (snp_sum*1.0)/n_obs_sum
             snp_std = np.sqrt(np.nansum((snps-snp_mean)**2, axis=0)/n_obs_sum)
             if 0.0 in snp_std:
-                logging.warn("A least one snps has only one value, that is, its standard deviation is zero")
+                #Don't need this warning because SNCs are still meaning full in QQ plots because they should be thought of as SNPs without enough data.
+                #logging.warn("A least one snps has only one value, that is, its standard deviation is zero")
                 snp_std[snp_std==0] = np.inf
             stats[:,0] = snp_mean
             stats[:,1] = snp_std

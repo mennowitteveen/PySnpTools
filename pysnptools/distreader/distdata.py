@@ -105,7 +105,9 @@ class DistData(PstData,DistReader):
         """The 3D NumPy array of floats that represents the distribution of SNP values. You can get or set this property.
 
         >>> from pysnptools.distreader import Bgen
-        >>> distdata = Bgen('../examples/2500x100.bgen')[:5,:].read() #read data for first 5 iids
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> bgen_file = example_file("pysnptools/examples/2500x100.bgen")
+        >>> distdata = Bgen(bgen_file)[:5,:].read() #read data for first 5 iids
         >>> print(distdata.val[4,55]) #print one of the SNP values
         [0.23137255 0.65342184 0.11520562]
         """

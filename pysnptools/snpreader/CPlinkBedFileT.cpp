@@ -404,7 +404,8 @@ void SUFFIX(ImputeAndZeroMeanSNPs)(
 				if (!seenSNC)
 				{
 					seenSNC = true;
-					fprintf(stderr, "std=.%2f has illegal value for SNPs[:][%i]\n", std, iSnp);
+					//#Don't need this warning because SNCs are still meaning full in QQ plots because they should be thought of as SNPs without enough data.
+					//fprintf(stderr, "std=.%2f has illegal value for SNPs[:][%i]\n", std, iSnp);
 				}
 				std = std::numeric_limits<REAL>::infinity();
 
@@ -521,7 +522,8 @@ void SUFFIX(ImputeAndZeroMeanSNPs)(
 				if (!seenSNC)
 				{
 					seenSNC = true;
-					fprintf(stderr, "std=.%2f has illegal value for SNPs[:][%i]\n", std[iSnp], iSnp);
+					// Don't need this warning because SNCs are still meaning full in QQ plots because they should be thought of as SNPs without enough data.
+					// fprintf(stderr, "std=.%2f has illegal value for SNPs[:][%i]\n", std[iSnp], iSnp);
 				}
 			}
 			stats[iSnp*2] = mean_s[iSnp];

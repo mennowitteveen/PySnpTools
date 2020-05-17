@@ -135,7 +135,9 @@ class PstHdf5(PstReader):
 
         >>> import pysnptools.util as pstutil
         >>> from pysnptools.pstreader import PstHdf5
-        >>> reader = PstHdf5('../examples/toydata.kernel.hdf5')
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> hdf5_file = example_file("pysnptools/examples/toydata.kernel.hdf5")
+        >>> reader = PstHdf5(hdf5_file)
         >>> val1 = reader[0,0].read()
         >>> reader.flush()
 

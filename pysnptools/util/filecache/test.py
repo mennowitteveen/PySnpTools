@@ -257,8 +257,6 @@ class TestFileCache(unittest.TestCase):
         assert test_storage.getmtime("a/b/d.txt") > m1, "A file created later (after a pause) will have a later mod time"
         assert test_storage.getmtime("a/b/d.txt") >= test_storage.getmtime("a/b/c.txt"), "A file created later (with no pause) will have a later or equal mod time"
 
-        logging.info("done")
-
     # Look for code that isn't covered and make test cases for it
     #Distributed testing
     # What happens if you don't close an open_write? Undefined

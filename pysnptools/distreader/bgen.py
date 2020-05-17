@@ -7,7 +7,8 @@ import sys
 from numpy import asarray, float64, full, nan
 
 if sys.version_info[0] >= 3:
-    from bgen_reader import example_filepath, open_bgen
+    from bgen_reader import example_filepath
+    from pysnptools.distreader._bgen2 import open_bgen
 from tempfile import mkdtemp
 from pysnptools.util import log_in_place
 import shutil
@@ -107,7 +108,9 @@ class Bgen(DistReader):
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.distreader import Bgen
-        >>> data_on_disk = Bgen('../examples/example.bgen')
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> bgen_file = example_file("pysnptools/examples/example.bgen")
+        >>> data_on_disk = Bgen(bgen_file)
         >>> print((data_on_disk.iid_count, data_on_disk.sid_count))
         (500, 199)
 
@@ -181,7 +184,6 @@ class Bgen(DistReader):
         self._ran_once = True
 
         assert os.path.exists(self.filename), "Expect file to exist ('{0}')".format(self.filename)
-        #!!!cmkassert os.path.getsize(self.filename)<2**31, "For now, Python cannot access files larger than about 2G bytes (see https://github.com/limix/bgen-reader-py/issues/29)"
         verbose = logging.getLogger().level <= logging.INFO
 
         self._open_bgen = open_bgen(self.filename,self._sample,verbose)
@@ -215,7 +217,9 @@ class Bgen(DistReader):
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.distreader import Bgen
-        >>> data_on_disk = Bgen('../examples/example.bgen')
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> bgen_file = example_file("pysnptools/examples/example.bgen")
+        >>> data_on_disk = Bgen(bgen_file)
         >>> print((data_on_disk.iid_count, data_on_disk.sid_count))
         (500, 199)
         >>> data_on_disk.flush()
@@ -264,7 +268,9 @@ class Bgen(DistReader):
 
         >>> from pysnptools.distreader import DistHdf5, Bgen
         >>> import pysnptools.util as pstutil
-        >>> distreader = DistHdf5('../examples/toydata.snpmajor.dist.hdf5')[:,:10] # A reader for the first 10 SNPs in Hdf5 format
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> hdf5_file = example_file("pysnptools/examples/toydata.snpmajor.dist.hdf5")
+        >>> distreader = DistHdf5(hdf5_file)[:,:10] # A reader for the first 10 SNPs in Hdf5 format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata10.bgen")
         >>> Bgen.write("tempdir/toydata10.bgen",distreader)        # Write data in BGEN format
         Bgen('tempdir/toydata10.bgen')
@@ -328,7 +334,9 @@ class Bgen(DistReader):
 
         >>> from pysnptools.distreader import DistHdf5, Bgen
         >>> import pysnptools.util as pstutil
-        >>> distreader = DistHdf5('../examples/toydata.snpmajor.dist.hdf5')[:,:10] # A reader for the first 10 SNPs in Hdf5 format
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> hdf5_file = example_file("pysnptools/examples/toydata.snpmajor.dist.hdf5")
+        >>> distreader = DistHdf5(hdf5_file)[:,:10] # A reader for the first 10 SNPs in Hdf5 format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata10.bgen")
         >>> Bgen.genwrite("tempdir/toydata10.gen",distreader)        # Write data in GEN format
         """
@@ -656,9 +664,10 @@ def getTestSuite():
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
+
     if False:
         from pysnptools.distreader import Bgen
-        bgen = Bgen(r'M:\deldir\2500x100.bgen',verbose=True)
+        bgen = Bgen(r'M:\deldir\2500x100.bgen')
         bgen.read()
         print(bgen.shape)
         print("")
@@ -720,6 +729,6 @@ if __name__ == "__main__":
 
     import doctest
     logging.getLogger().setLevel(logging.WARN)
-    result = doctest.testmod()
+    result = doctest.testmod(optionflags=doctest.ELLIPSIS)
     logging.getLogger().setLevel(logging.INFO)
     assert result.failed == 0, "failed doc test: " + __file__

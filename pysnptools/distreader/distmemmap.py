@@ -28,7 +28,9 @@ class DistMemMap(PstMemMap,DistData):
 
         >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.distreader import DistMemMap
-        >>> dist_mem_map = DistMemMap('../examples/tiny.dist.memmap')
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> mem_map_file = example_file("pysnptools/examples/tiny.dist.memmap")
+        >>> dist_mem_map = DistMemMap(mem_map_file)
         >>> print(dist_mem_map.val[0,1], dist_mem_map.iid_count, dist_mem_map.sid_count)
         [0.43403135 0.28289911 0.28306954] 25 10
 
@@ -49,7 +51,9 @@ class DistMemMap(PstMemMap,DistData):
 
 
         >>> from pysnptools.distreader import DistMemMap
-        >>> dist_mem_map = DistMemMap('../examples/tiny.dist.memmap')
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> mem_map_file = example_file("pysnptools/examples/tiny.dist.memmap")
+        >>> dist_mem_map = DistMemMap(mem_map_file)
         >>> print(dist_mem_map.val[0,1])
         [0.43403135 0.28289911 0.28306954]
         """
@@ -161,7 +165,9 @@ class DistMemMap(PstMemMap,DistData):
 
         >>> import pysnptools.util as pstutil
         >>> from pysnptools.distreader import Bgen, DistMemMap
-        >>> distreader = Bgen('../examples/2500x100.bgen')[:,:10] #Create a reader for the first 10 SNPs
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> bgen_file = example_file("pysnptools/examples/2500x100.bgen")
+        >>> distreader = Bgen(bgen_file)[:,:10] #Create a reader for the first 10 SNPs
         >>> pstutil.create_directory_if_necessary("tempdir/tiny.dist.memmap")
         >>> DistMemMap.write("tempdir/tiny.dist.memmap",distreader)      # Write distreader in DistMemMap format
         DistMemMap('tempdir/tiny.dist.memmap')

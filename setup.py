@@ -76,7 +76,8 @@ else:
                             define_macros=macros)]
     cmdclass = {}
 
-install_requires = ['scipy>=1.1.0', 'numpy>=1.11.3', 'pandas>=0.19.0', 'psutil>=5.6.3', 'h5py>=2.10.0', 'dill>=0.2.9', 'backports.tempfile>=1.0']
+install_requires = ['scipy>=1.1.0', 'numpy>=1.11.3', 'pandas>=0.19.0', 'psutil>=5.6.3', 'h5py>=2.10.0', 'dill>=0.2.9',
+                   'backports.tempfile>=1.0', 'bgen-reader>=4.0.4']
 if sys.version_info[0] >= 3:
     install_requires += ['bgen-reader>=3.0.7']
 
@@ -112,7 +113,8 @@ setup(
     author_email='fastlmm-dev@python.org',
     license='Apache 2.0',
     classifiers = [
-            "Programming Language :: Python :: 2.7",
+            "Programming Language :: Python :: 3.7",
+            "Programming Language :: Python :: 3.8",
             "Programming Language :: Python :: 3",
             "Programming Language :: Python",
             ],
@@ -128,17 +130,7 @@ setup(
         "pysnptools/util/filecache",
         "pysnptools/util/mapreduce1",
         "pysnptools/util/mapreduce1/runner",
-    ],
-    package_data={"pysnptools" : [
-        "test/datasets/all_chr.maf0.001.N300.bed",
-        "test/datasets/all_chr.maf0.001.N300.bim",
-        "test/datasets/all_chr.maf0.001.N300.fam",
-        "tests/datasets/all_chr.maf0.001.covariates.N300.txt",
-        "test/datasets/phenSynthFrom22.23.N300.randcidorder.txt",
-        "tests/datasets/snpgen.bed",
-        "tests/datasets/snpgen.bim",
-        "tests/datasets/snpgen.fam",
-        ]
+    ]
                  },
     install_requires = install_requires,
 

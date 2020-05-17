@@ -385,16 +385,15 @@ class TestDistReaders(unittest.TestCase):
 
         for distreader in [
                            _DistMergeSIDs([Bgen('../examples/example.bgen')[:,:5].read(),Bgen('../examples/example.bgen')[:,5:].read()]),
-                           #!!!cmk
-                           #Bed('../examples/toydata.bed',count_A1=True).as_dist(block_size=2000),
-                           #Bed('../examples/toydata.bed',count_A1=True).as_dist(),
-                           #Bgen('../examples/example.bgen').read(),
-                           #Bgen('../examples/bits1.bgen'),                          
-                           #DistGen(seed=0,iid_count=500,sid_count=50),
-                           #DistGen(seed=0,iid_count=500,sid_count=50)[::2,::2],
-                           #DistHdf5('../examples/toydata.snpmajor.dist.hdf5'),
-                           #DistMemMap('../examples/tiny.dist.memmap'),
-                           #DistNpz('../examples/toydata10.dist.npz')
+                           Bed('../examples/toydata.bed',count_A1=True).as_dist(block_size=2000),
+                           Bed('../examples/toydata.bed',count_A1=True).as_dist(),
+                           Bgen('../examples/example.bgen').read(),
+                           Bgen('../examples/bits1.bgen'),                          
+                           DistGen(seed=0,iid_count=500,sid_count=50),
+                           DistGen(seed=0,iid_count=500,sid_count=50)[::2,::2],
+                           DistHdf5('../examples/toydata.snpmajor.dist.hdf5'),
+                           DistMemMap('../examples/tiny.dist.memmap'),
+                           DistNpz('../examples/toydata10.dist.npz')
                           ]:
             logging.info(str(distreader))
             for order in ['F','C','A']:

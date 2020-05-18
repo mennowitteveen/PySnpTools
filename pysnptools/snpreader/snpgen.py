@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 from __future__ import print_function
+from pysnptools.util import log_in_place
 import numpy as np
 import logging
 import os
@@ -128,15 +129,15 @@ class SnpGen(SnpReader):
         batch_index = col_index // self._block_size  #find the batch index of each index position, e.g. 0,0,0,2,0
         val = np.empty((row_index_count,len(col_index)),order=order,dtype=dtype) #allocate memory for result
         list_batch_index = list(set(batch_index))
-        for i in list_batch_index:  #for each distinct batch index, generate snps
-            #!!!cmk use loginplace
-            logging.info("working on snpgen batch {0} of {1}".format(i,len(list_batch_index))) #!!!cmk does this produce messages like 'working on snpgen batch 8 of 2'?
-            start = i*self._block_size  #e.g. 0 (then 2000)
-            stop = start + self._block_size #e.g. 1000, then 3000
-            batch_val = self._get_val2(start,stop,order=order,dtype=dtype) # generate whole batch
-            a = (batch_index==i) #e.g. [True,True,True,False,True], then [False,False,False,True,False]
-            b = col_index[a]-start #e.g.  0,1,200,10, then 200
-            val[:,a] = batch_val[:,b] if row_index_or_none is None else pstutil.sub_matrix(batch_val, row_index_or_none, b)
+        with log_in_place("working on snpgen batch", logging.INFO) as updater:
+            for ii,i in enumerate(list_batch_index):  #for each distinct batch index, generate snps
+                updater("{0} of {1}".format(ii,len(list_batch_index)))
+                start = i*self._block_size  #e.g. 0 (then 2000)
+                stop = start + self._block_size #e.g. 1000, then 3000
+                batch_val = self._get_val2(start,stop,order=order,dtype=dtype) # generate whole batch
+                a = (batch_index==i) #e.g. [True,True,True,False,True], then [False,False,False,True,False]
+                b = col_index[a]-start #e.g.  0,1,200,10, then 200
+                val[:,a] = batch_val[:,b] if row_index_or_none is None else pstutil.sub_matrix(batch_val, row_index_or_none, b)
 
         return val
 

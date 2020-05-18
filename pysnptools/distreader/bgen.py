@@ -202,8 +202,10 @@ class Bgen(DistReader):
         if order=='A':
             order='F'
 
-        #cmk assert self._open_bgen.nalleles unique is 2, phased is all false, ploidy is 2
+        assert set(self._open_bgen.nalleles)=={2}, "expect number of alleles to be 2"
+        assert set(self._open_bgen.phased)=={False}, "expect data to be unphased"
         val = self._open_bgen.read((iid_index_or_none,sid_index_or_none),dtype=dtype,order=order)
+        assert val.shape[-1]==3, "Expect ploidy to be 2"
         return val
 
     def __repr__(self): 

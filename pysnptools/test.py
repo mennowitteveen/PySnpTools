@@ -42,7 +42,7 @@ class TestPySnpTools(unittest.TestCase):
 
     def xtest_aaa_hdf5_speed(self): #!!too slow to use all the time
 
-        #currentFolder + "/examples/toydata"
+        #currentFolder + "/examples/toydata.5chrom.bed"
         #currentFolder + "/examples/delme.hdf5"
         bedFileName = r"c:\Source\carlk\fastlmm\tests\datasets\all_chr.maf0.001.N300" #!! local paths
         hdf5Pattern = r"c:\Source\carlk\fastlmm\tests\datasets\del.{0}.hdf5"#!!
@@ -85,7 +85,7 @@ class TestPySnpTools(unittest.TestCase):
     def setUpClass(self):
         self.currentFolder = os.path.dirname(os.path.realpath(__file__))
         #TODO: get data set with NANs!
-        snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
+        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
         self.pheno_fn = self.currentFolder + "/examples/toydata.phe"
         self.snpdata = snpreader.read(order='F',force_python_only=True)
         self.snps = self.snpdata.val
@@ -151,27 +151,27 @@ class TestPySnpTools(unittest.TestCase):
         np.testing.assert_almost_equal(100, sum_diag)
         
     def test_c_reader_bed(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
+        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
         self.c_reader(snpreader)
 
     def test_c_reader_bed_count_A1(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=True)
+        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=True)
         snpdata = snpreader.read()
         snpdata.val = 2 - snpdata.val
         self.c_reader(snpdata)
 
     def test_p_reader_bed(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=False).read(force_python_only=True)
+        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False).read(force_python_only=True)
         self.c_reader(snpreader)
 
     def test_p_reader_bed_count_A1(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=True)
+        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=True)
         snpdata = snpreader.read(force_python_only=True)
         snpdata.val = 2 - snpdata.val
         self.c_reader(snpdata)
 
     def test_scalar_index(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
+        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
         arr=np.int64(1)
         snpreader[arr,arr]
 
@@ -181,7 +181,7 @@ class TestPySnpTools(unittest.TestCase):
 
     def test_hdf5_case3(self):
         snpreader1 = SnpHdf5(self.currentFolder + "/examples/toydata.snpmajor.snp.hdf5")[::2,:]
-        snpreader2 = Bed(self.currentFolder + "/examples/toydata",count_A1=False)[::2,:]
+        snpreader2 = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)[::2,:]
         self.assertTrue(np.allclose(snpreader1.read().val, snpreader2.read().val, rtol=1e-05, atol=1e-05))
 
     def test_standardize_hdf5(self):
@@ -198,7 +198,7 @@ class TestPySnpTools(unittest.TestCase):
         self.assertTrue(np.allclose(self.snps[:,:10], snp_c, rtol=1e-05, atol=1e-05))
 
         snpreader1 = SnpNpz(self.currentFolder + "/examples/toydata10.snp.npz")
-        snpreader2 = Bed(self.currentFolder + "/examples/toydata",count_A1=False)[:,:10]
+        snpreader2 = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)[:,:10]
         self.assertTrue(np.allclose(snpreader1.read().val, snpreader2.read().val, rtol=1e-05, atol=1e-05))
 
 
@@ -342,7 +342,7 @@ class TestPySnpTools(unittest.TestCase):
         snpdata2.standardize()
         s = str(snpdata2)
 
-        snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
+        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
         k2 = snpreader.read_kernel(standardizer=Unit(),block_size=500).val
         np.testing.assert_array_almost_equal(k0, k2, decimal=10)
 
@@ -373,7 +373,7 @@ class TestPySnpTools(unittest.TestCase):
         return snpdata
 
     def test_standardize_bed(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
+        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
         self.standardize(snpreader)
 
     def test_standardize_dat(self):
@@ -429,7 +429,7 @@ class TestPySnpTools(unittest.TestCase):
             self.assertTrue(np.allclose(snp_beta1, snp_beta3, rtol=1e-05, atol=1e-05))
 
     def test_load_and_standardize_bed(self):
-        snpreader2 = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
+        snpreader2 = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
         self.load_and_standardize(snpreader2, snpreader2)
 
     def too_slow_test_write_bedbig(self):
@@ -448,7 +448,7 @@ class TestPySnpTools(unittest.TestCase):
         np.testing.assert_array_almost_equal(snpdata.val, snpdata2.val, decimal=10)
 
     def test_write_bed_f64cpp_0(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
+        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
         iid_index = 0
         logging.info("iid={0}".format(iid_index))
         #if snpreader.iid_count % 4 == 0: # divisible by 4 isn't a good test
@@ -464,7 +464,7 @@ class TestPySnpTools(unittest.TestCase):
         np.testing.assert_array_almost_equal(snpdata.val, snpdata2.val, decimal=10)
 
     def test_write_bed_f64cpp_1(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
+        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
         iid_index = 1
         logging.info("iid={0}".format(iid_index))
         #if snpreader.iid_count % 4 == 0: # divisible by 4 isn't a good test
@@ -480,7 +480,7 @@ class TestPySnpTools(unittest.TestCase):
         np.testing.assert_array_almost_equal(snpdata.val, snpdata2.val, decimal=10)
 
     def test_write_bed_f64cpp_5(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
+        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
 
         from pysnptools.kernelreader.test import _fortesting_JustCheckExists
         _fortesting_JustCheckExists().input(snpreader)
@@ -500,7 +500,7 @@ class TestPySnpTools(unittest.TestCase):
         np.testing.assert_array_almost_equal(snpdata.val, snpdata2.val, decimal=10)
 
     def test_write_bed_f64cpp_5_python(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
+        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
         iid_index = 5
         logging.info("iid={0}".format(iid_index))
         #if snpreader.iid_count % 4 == 0: # divisible by 4 isn't a good test
@@ -517,7 +517,7 @@ class TestPySnpTools(unittest.TestCase):
 
     def test_write_x_x_cpp(self):
         for count_A1 in [False, True]:
-            snpreader = Bed(self.currentFolder + "/examples/toydata",count_A1=count_A1)
+            snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=count_A1)
             for order in ['C','F']:
                 for dtype in [np.float32,np.float64]:
                     snpdata = snpreader.read(order=order,dtype=dtype)
@@ -529,7 +529,7 @@ class TestPySnpTools(unittest.TestCase):
                     np.testing.assert_array_almost_equal(snpdata.val, snpdata2.val, decimal=10)
 
     def test_subset_view(self):
-        snpreader2 = Bed(self.currentFolder + "/examples/toydata",count_A1=False)[:,:]
+        snpreader2 = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)[:,:]
         result = snpreader2.read(view_ok=True)
         self.assertFalse(snpreader2 is result)
         result2 = result[:,:].read()
@@ -545,13 +545,13 @@ class TestPySnpTools(unittest.TestCase):
         snpreader2 = SnpHdf5(self.currentFolder + "/examples/toydata.snpmajor.snp.hdf5")
         snpreader3 = SnpHdf5(self.currentFolder + "/examples/toydata.iidmajor.snp.hdf5")
         self.load_and_standardize(snpreader2, snpreader3)
-        snpreaderref = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
+        snpreaderref = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
         self.load_and_standardize(snpreader2, snpreaderref)
 
     def test_load_and_standardize_dat(self):
         snpreader2 = Dat(self.currentFolder + "/examples/toydata.dat")
         self.load_and_standardize(snpreader2, snpreader2)
-        #snpreaderref = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
+        #snpreaderref = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
         #self.load_and_standardize(snpreader2, snpreaderref)
 
     def test_load_and_standardize_ped(self):
@@ -559,7 +559,7 @@ class TestPySnpTools(unittest.TestCase):
         #!!Ped columns can be ambiguous
         ###Creating Ped data ...
         #currentFolder = os.path.dirname(os.path.realpath(__file__))
-        #snpData = Bed(currentFolder + "/examples/toydata",count_A1=False).read()
+        #snpData = Bed(currentFolder + "/examples/toydata.5chrom.bed",count_A1=False).read()
         ##Ped.write(snpData, currentFolder + "/examples/toydata.ped")
         #fromPed = Ped(currentFolder + "/examples/toydata").read()
         #self.assertTrue(np.allclose(snpData.val, fromPed.val, rtol=1e-05, atol=1e-05))
@@ -567,7 +567,7 @@ class TestPySnpTools(unittest.TestCase):
 
         snpreader2 = Ped(self.currentFolder + "/examples/toydata")
         self.load_and_standardize(snpreader2, snpreader2)
-        #snpreaderref = Bed(self.currentFolder + "/examples/toydata",count_A1=False)
+        #snpreaderref = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
         #self.load_and_standardize(snpreader2, snpreaderref)
 
     def load_and_standardize(self, snpreader2, snpreader3):
@@ -651,7 +651,7 @@ class TestPySnpTools(unittest.TestCase):
         previous_wd = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
-        bed = Bed('examples/toydata.bed',count_A1=True)
+        bed = Bed('examples/toydata.5chrom.bed',count_A1=True)
         bed[:3,:2].read(dtype='float32').val
 
         os.chdir(previous_wd)
@@ -663,20 +663,20 @@ class TestPySnpTools(unittest.TestCase):
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
         snpreader_list = [
-                           _MergeIIDs([Bed('examples/toydata.bed',count_A1=True)[:5,:].read(),Bed('examples/toydata.bed',count_A1=True)[5:,:].read()]),
+                           _MergeIIDs([Bed('examples/toydata.5chrom.bed',count_A1=True)[:5,:].read(),Bed('examples/toydata.5chrom.bed',count_A1=True)[5:,:].read()]),
                            SnpGen(seed=0,iid_count=500,sid_count=50),
                            SnpHdf5('examples/toydata.snpmajor.snp.hdf5'),
                            SnpMemMap('examples/tiny.snp.memmap'),
                            SnpNpz('examples/toydata10.snp.npz'),
-                           Bed('examples/toydata.bed',count_A1=True)[::2,::2],
-                           _MergeSIDs([Bed('examples/toydata.bed',count_A1=True)[:,:5].read(),Bed('examples/toydata.bed',count_A1=True)[:,5:].read()]),
-                           Bed('examples/toydata.bed',count_A1=True),
+                           Bed('examples/toydata.5chrom.bed',count_A1=True)[::2,::2],
+                           _MergeSIDs([Bed('examples/toydata.5chrom.bed',count_A1=True)[:,:5].read(),Bed('examples/toydata.5chrom.bed',count_A1=True)[:,5:].read()]),
+                           Bed('examples/toydata.5chrom.bed',count_A1=True),
                            Dat('examples/toydata.dat'),
                            Dense('examples/toydata100.dense.txt'),
                            DistributedBed('examples/toydataSkip10.distributedbed'),
                            Ped('examples/toydata.ped'),
                            Pheno('examples/toydata.phe'),
-                           Bed('examples/toydata.bed',count_A1=True).read()
+                           Bed('examples/toydata.5chrom.bed',count_A1=True).read()
                           ]
 
 
@@ -808,7 +808,7 @@ class NaNCNCTestCases(unittest.TestCase):
     @staticmethod
     def factory_iterator():
 
-        snp_reader_factory_bed = lambda : Bed("examples/toydata",count_A1=False)
+        snp_reader_factory_bed = lambda : Bed("examples/toydata.5chrom.bed",count_A1=False)
         snp_reader_factory_snpmajor_hdf5 = lambda : SnpHdf5("examples/toydata.snpmajor.snp.hdf5")
         snp_reader_factory_iidmajor_hdf5 = lambda : SnpHdf5("examples/toydata.iidmajor.snp.hdf5")
         snp_reader_factory_dat = lambda : Dat("examples/toydata.dat")

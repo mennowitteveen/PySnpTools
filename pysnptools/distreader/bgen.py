@@ -467,7 +467,7 @@ class TestBgen(unittest.TestCase):
         for i,distdata0 in enumerate([distgen0data,exampledata]):
             for bits in list(range(1,33)):
                 logging.info("input#={0},bits={1}".format(i,bits))
-                file1 = 'temp/roundtrip1-{0}-{1}.bgen'.format(i,bits) #!!!cmk22 doesn't seem to be going into temp directory
+                file1 = 'temp/roundtrip1-{0}-{1}.bgen'.format(i,bits)
                 distdata1 = Bgen.write(file1,distdata0,bits=bits,compression='zlib',cleanup_temp_files=False).read()
                 distdata2 = Bgen(file1,).read()
                 assert distdata1.allclose(distdata2,equal_nan=True)

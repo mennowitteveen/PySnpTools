@@ -27,7 +27,7 @@ class TestFileCache(unittest.TestCase):
 
         url='https://github.com/fastlmm/PySnpTools/raw/9de8e93a91b330b064b482c918a38104904b45c0/pysnptools'
         hashdown0 = Hashdown(url, allow_unknown_files=True)
-        for file in ['examples/toydata.bed','examples/toydata.bim','examples/toydata.fam','util/util.py']:
+        for file in ['examples/toydata.5chrom.bed','examples/toydata.bim','examples/toydata.fam','util/util.py']:
             hashdown0.file_exists(file)
         file_to_hash = hashdown0.file_to_hash
         hashdown = Hashdown(url, file_to_hash=hashdown0.file_to_hash, allow_unknown_files=False)

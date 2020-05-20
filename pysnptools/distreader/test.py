@@ -315,7 +315,7 @@ class TestDistReaders(unittest.TestCase):
         from pysnptools.snpreader._subset import _SnpSubset
         from pysnptools.util import intersect_apply
 
-        snp_all = Bed(self.currentFolder + "/../examples/toydata.bed",count_A1=True)
+        snp_all = Bed(self.currentFolder + "/../examples/toydata.5chrom.bed",count_A1=True)
         k = snp_all.as_dist(max_weight=2)
 
         pheno = Pheno(self.currentFolder + "/../examples/toydata.phe")
@@ -332,7 +332,7 @@ class TestDistReaders(unittest.TestCase):
 
     def test_roundtrip(self):
         max_weight = 2
-        snpreader1 = Bed(self.currentFolder + "/../examples/toydata.bed",count_A1=True)
+        snpreader1 = Bed(self.currentFolder + "/../examples/toydata.5chrom.bed",count_A1=True)
         snpdata1 = snpreader1.read()
         distreader1 = snpreader1.as_dist(max_weight)
         snpreader2 = distreader1.as_snp(max_weight)
@@ -349,7 +349,7 @@ class TestDistReaders(unittest.TestCase):
 
     def test_snp_dist2(self):
         logging.info("in test_snp_dist2")
-        snpreader = Bed(self.currentFolder + "/../examples/toydata.bed",count_A1=False)
+        snpreader = Bed(self.currentFolder + "/../examples/toydata.5chrom.bed",count_A1=False)
         snp2dist = snpreader.as_dist(max_weight=2)
         s = str(snp2dist)
         _fortesting_JustCheckExists().input(snp2dist)
@@ -367,7 +367,7 @@ class TestDistReaders(unittest.TestCase):
 
     def test_subset_Snp2Dist(self): #!!!move these to another test class
         logging.info("in test_subset")
-        snpreader = Bed(self.currentFolder + "/../examples/toydata.bed",count_A1=False)
+        snpreader = Bed(self.currentFolder + "/../examples/toydata.5chrom.bed",count_A1=False)
         snp2dist = snpreader.as_dist(max_weight=2)
         sub = snp2dist[::2,::2]
         distdata1 = sub.read()
@@ -385,8 +385,8 @@ class TestDistReaders(unittest.TestCase):
 
         for distreader in [
                            _DistMergeSIDs([Bgen('../examples/example.bgen')[:,:5].read(),Bgen('../examples/example.bgen')[:,5:].read()]),
-                           Bed('../examples/toydata.bed',count_A1=True).as_dist(block_size=2000),
-                           Bed('../examples/toydata.bed',count_A1=True).as_dist(),
+                           Bed('../examples/toydata.5chrom.bed',count_A1=True).as_dist(block_size=2000),
+                           Bed('../examples/toydata.5chrom.bed',count_A1=True).as_dist(),
                            Bgen('../examples/example.bgen').read(),
                            Bgen('../examples/bits1.bgen'),                          
                            DistGen(seed=0,iid_count=500,sid_count=50),
@@ -596,7 +596,7 @@ if __name__ == '__main__':
         # Create toydata.dist.npz
         currentFolder = os.path.dirname(os.path.realpath(__file__))
         if True:
-            snpreader = Bed(currentFolder + "/../examples/toydata.bed",count_A1=True)[:25,:]
+            snpreader = Bed(currentFolder + "/../examples/toydata.5chrom.bed",count_A1=True)[:25,:]
             np.random.seed(392)
             val = np.random.random((snpreader.iid_count,snpreader.sid_count,3))
             val /= val.sum(axis=2,keepdims=True)  #make probabilities sum to 1

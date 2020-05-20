@@ -912,3 +912,4 @@ ModelManifest.xml
 /pysnptools/ignore
 /pysnptools/snpreader/ignore
 /tests/ignore
+/doc/ipynb/example2.dist.memmap

@@ -133,6 +133,7 @@ setup(
     ],
     package_data={"pysnptools" : [
         "util/pysnptools.hashdown.json",
+        "tests/mintest.py",
         ]
                  },
     install_requires = install_requires,

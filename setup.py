@@ -131,6 +131,10 @@ setup(
         "pysnptools/util/mapreduce1",
         "pysnptools/util/mapreduce1/runner",
     ],
+    package_data={"pysnptools" : [
+        "util/pysnptools.hashdown.json",
+        ]
+                 },
     install_requires = install_requires,
 
     # extensions

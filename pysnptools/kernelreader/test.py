@@ -215,7 +215,7 @@ class TestKernelReader(unittest.TestCase):
 
     def test_snp_kernel2(self):
         logging.info("in test_snp_kernel2")
-        snpreader = Bed(self.currentFolder + "/../examples/toydata.5chrom.bed",count_A1=False)#!!!cmk change all to 5chrom and remove unneeded files
+        snpreader = Bed(self.currentFolder + "/../examples/toydata.5chrom.bed",count_A1=False)
         snpkernel = SnpKernel(snpreader,standardizer=stdizer.Beta(1,25))
         s  = str(snpkernel)
         _fortesting_JustCheckExists().input(snpkernel)

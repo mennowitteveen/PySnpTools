@@ -48,7 +48,7 @@
 <li><dl class="field-list simple">
 <dt class="field-odd">new</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#module-pysnptools.distreader" title="pysnptools.distreader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">distreader</span></code></a>: Efficiently work with unphased BGEN format and other diploid, biallelic distribution data. Also, efficiently read <em>parts</em> of files.
-See <a class="reference external" href="https://nbviewer.jupyter.org/github/fastlmm/PySnpTools/blob/master/doc/ipynb/dist.ipynb">Distribution IPython Notebook</a></p>
+See <a class="reference external" href="https://nbviewer.jupyter.org/github/fastlmm/PySnpTools/blob/master/doc/ipynb/Dist.ipynb">Distribution IPython Notebook</a></p>
 </dd>
 </dl>
 </li>
@@ -76,7 +76,7 @@ union, intersection, and set difference.</p></li>
 <li><dl class="simple">
 <dt>IPython Notebooks</dt><dd><ul>
 <li><p><a class="reference external" href="https://nbviewer.jupyter.org/github/fastlmm/PySnpTools/blob/master/doc/ipynb/tutorial.ipynb">General Notebook</a></p></li>
-<li><p><a class="reference external" href="https://nbviewer.jupyter.org/github/fastlmm/PySnpTools/blob/master/doc/ipynb/dist.ipynb">Distribution Notebook</a></p></li>
+<li><p><a class="reference external" href="https://nbviewer.jupyter.org/github/fastlmm/PySnpTools/blob/master/doc/ipynb/Dist.ipynb">Distribution Notebook</a></p></li>
 </ul>
 </dd>
 </dl>
@@ -249,9 +249,9 @@ See below for details.</p>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_fn</span> <span class="o">=</span> <span class="n">example_file</span><span class="p">(</span><span class="s1">&#39;pysnptools/examples/toydata.phe&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata</span> <span class="o">=</span> <span class="n">Pheno</span><span class="p">(</span><span class="n">pheno_fn</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="c1"># Read data from Pheno format</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pstutil</span><span class="o">.</span><span class="n">create_directory_if_necessary</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata.bed&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Bed</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata.bed&quot;</span><span class="p">,</span><span class="n">snpdata</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>   <span class="c1"># Write data in Bed format</span>
-<span class="go">Bed(&#39;tempdir/toydata.bed&#39;,count_A1=False)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pstutil</span><span class="o">.</span><span class="n">create_directory_if_necessary</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata.5chrom.bed&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Bed</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata.5chrom.bed&quot;</span><span class="p">,</span><span class="n">snpdata</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>   <span class="c1"># Write data in Bed format</span>
+<span class="go">Bed(&#39;tempdir/toydata.5chrom.bed&#39;,count_A1=False)</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -858,9 +858,9 @@ share memory and so it may ignore your suggestion and allocate a new ndarray any
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util</span> <span class="k">import</span> <span class="n">example_file</span> <span class="c1"># Download and return local file name</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pheno_fn</span> <span class="o">=</span> <span class="n">example_file</span><span class="p">(</span><span class="s2">&quot;pysnptools/examples/toydata.phe&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">snpdata</span> <span class="o">=</span> <span class="n">Pheno</span><span class="p">(</span><span class="n">pheno_fn</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>         <span class="c1"># Read data from Pheno format</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pstutil</span><span class="o">.</span><span class="n">create_directory_if_necessary</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata.bed&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">Bed</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata.bed&quot;</span><span class="p">,</span><span class="n">snpdata</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>   <span class="c1"># Write data in Bed format</span>
-<span class="go">Bed(&#39;tempdir/toydata.bed&#39;,count_A1=False)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pstutil</span><span class="o">.</span><span class="n">create_directory_if_necessary</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata.5chrom.bed&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Bed</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;tempdir/toydata.5chrom.bed&quot;</span><span class="p">,</span><span class="n">snpdata</span><span class="p">,</span><span class="n">count_A1</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>   <span class="c1"># Write data in Bed format</span>
+<span class="go">Bed(&#39;tempdir/toydata.5chrom.bed&#39;,count_A1=False)</span>
 </pre></div>
 </div>
 </dd></dl>

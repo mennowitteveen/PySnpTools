@@ -11,7 +11,7 @@ See `PySnpTools's README.md <https://github.com/fastlmm/PySnpTools/blob/master/R
 * :mod:`.snpreader`: Efficiently read genetic PLINK formats including \*.bed/bim/fam and phenotype files. Also, efficiently read *parts* of files and standardize data.
 
 * :new: :mod:`.distreader`: Efficiently work with unphased BGEN format and other diploid, biallelic distribution data. Also, efficiently read *parts* of files.
-    See `Distribution IPython Notebook <https://nbviewer.jupyter.org/github/fastlmm/PySnpTools/blob/master/doc/ipynb/dist.ipynb>`_
+    See `Distribution IPython Notebook <https://nbviewer.jupyter.org/github/fastlmm/PySnpTools/blob/master/doc/ipynb/Dist.ipynb>`_
 
 * :mod:`.kernelreader`: Efficiently create, read, and manipulate kernel data.
 
@@ -42,7 +42,7 @@ See `PySnpTools's README.md <https://github.com/fastlmm/PySnpTools/blob/master/R
 * `Video <https://www.youtube.com/watch?v=KPI6479ctAQ>`_
 * IPython Notebooks
    * `General Notebook <https://nbviewer.jupyter.org/github/fastlmm/PySnpTools/blob/master/doc/ipynb/tutorial.ipynb>`_
-   * `Distribution Notebook <https://nbviewer.jupyter.org/github/fastlmm/PySnpTools/blob/master/doc/ipynb/dist.ipynb>`_
+   * `Distribution Notebook <https://nbviewer.jupyter.org/github/fastlmm/PySnpTools/blob/master/doc/ipynb/Dist.ipynb>`_
 
 :Code:
 

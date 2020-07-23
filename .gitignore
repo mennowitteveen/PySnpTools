@@ -914,3 +914,5 @@ ModelManifest.xml
 /tests/ignore
 /doc/ipynb/example2.dist.memmap
 /pysnptools/distreader/.coverage
+/delv.cpp
+/del.cpp

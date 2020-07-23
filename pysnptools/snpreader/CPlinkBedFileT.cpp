@@ -45,8 +45,6 @@
 #define isinf(x) (!isfinite(x))
 #endif
 
-
-REAL SUFFIX(unknownOrMissing) = std::numeric_limits<REAL>::quiet_NaN();  // now used by SnpInfo
 REAL SUFFIX(homozygousPrimaryAllele) = 0;                // Major Allele
 REAL SUFFIX(heterozygousAllele) = 1;                     
 REAL SUFFIX(homozygousSecondaryAllele) = 2;              // Minor Allele ()

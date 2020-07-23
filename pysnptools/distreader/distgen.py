@@ -38,7 +38,7 @@ class DistGen(DistReader):
 
     '''
 
-    def __init__(self, seed, iid_count, sid_count, chrom_count=22, cache_file=None, block_size=None):
+    def __init__(self, seed, iid_count, sid_count, chrom_count=22, cache_file=None, block_size=None):#!!!cmk fails on 450000x1
         self._ran_once = False
         self._cache_file = cache_file
 

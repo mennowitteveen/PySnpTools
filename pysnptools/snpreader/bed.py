@@ -264,6 +264,13 @@ class Bed(SnpReader):
                         wrap_plink_parser.readPlinkBedFile2floatCAAA(bed_fn.encode('ascii'), iid_count_in, sid_count_in, self.count_A1, iid_index, sid_index, val)
                     else:
                         raise Exception("order '{0}' not known, only 'F' and 'C'".format(order));
+                elif dtype == np.int8:
+                    if order=="F":
+                        wrap_plink_parser.readPlinkBedFile2int8FAAA(bed_fn.encode('ascii'), iid_count_in, sid_count_in, self.count_A1, iid_index, sid_index, val)
+                    elif order=="C":
+                        wrap_plink_parser.readPlinkBedFile2int8CAAA(bed_fn.encode('ascii'), iid_count_in, sid_count_in, self.count_A1, iid_index, sid_index, val)
+                    else:
+                        raise Exception("order '{0}' not known, only 'F' and 'C'".format(order));
                 else:
                     raise Exception("dtype '{0}' not known, only float64 and float32".format(dtype))
             
@@ -316,8 +323,52 @@ class Bed(SnpReader):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
+    import os
 
-    if True:
+    if True: #!!!cmk need test cases
+        from pysnptools.snpreader import Bed
+        from pysnptools.util import example_file # Download and return local file name
+        #bed_file = example_file('doc/ipynb/all.*','*.bed')
+        bed_file = r'F:\backup\carlk4d\data\carlk\cachebio\genetics\onemil\id1000000.sid_1000000.seed0.byiid\iid990000to1000000.bed'
+        bed = Bed(bed_file,count_A1=False)
+        snpdata1 = bed[:,:1000].read()
+        snpdata2 = bed[:,:1000].read(dtype='int8',_require_float32_64=False)
+        print(snpdata2)
+        snpdata3 = bed[:,:1000].read(dtype='int8',order='C',_require_float32_64=False)
+        print(snpdata3)
+        snpdata3.val=snpdata3.val.astype('float32')
+        snpdata3.val.dtype
+
+    if False: #!!!cmk
+        from pysnptools.snpreader import Bed, SnpGen
+        iid_count = 487409
+        sid_count = 5000
+        sid_count_max =  5765294 
+        sid_batch_size = 50
+
+        sid_batch_count = -(sid_count//-sid_batch_size)
+        sid_batch_count_max = -(sid_count_max//-sid_batch_size)
+        snpgen = SnpGen(seed=234,iid_count=iid_count,sid_count=sid_count_max)
+
+        for batch_index in range(sid_batch_count):
+            sid_index_start = batch_index*sid_batch_size
+            sid_index_end = (batch_index+1)*sid_batch_size #what about rounding
+            filename = r'd:\deldir\rand\fakeukC{0}x{1}-{2}.bed'.format(iid_count,sid_index_start,sid_index_end)
+            if not os.path.exists(filename):
+                Bed.write(filename+".temp",snpgen[:,sid_index_start:sid_index_end].read())
+                os.rename(filename+".temp",filename)
+
+
+    if False:
+        from pysnptools.snpreader import Pheno, Bed
+
+        filename = r'm:\deldir\New folder (4)\all_chr.maf0.001.N300.bed'
+        iid_count = 300
+        iid = [['0', 'iid_{0}'.format(iid_index)] for iid_index in range(iid_count)]
+        bed = Bed(filename, iid=iid,count_A1=False)
+        print(bed.iid_count)
+
+    if False:
         from pysnptools.util import example_file
         pheno_fn = example_file("pysnptools/examples/toydata.phe")
 

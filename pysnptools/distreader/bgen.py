@@ -245,7 +245,7 @@ class Bgen(DistReader):
             An np.float32 needs 23 bits. A np.float64 would need 52 bits, which the BGEN format doesn't offer, so use 32.
         :type bits: int
         :param compression: How to compress the file. Can be None (default), 'zlib', or 'zstd'.
-        :type compression: bool
+        :type compression: string
         :param sample_function: Function to turn a :attr:`DistReader.iid` into a BGEN sample.
            (Default: :meth:`bgen.default_sample_function`.)
         :type sample_function: function
@@ -305,8 +305,11 @@ class Bgen(DistReader):
         try:
             output = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
         except subprocess.CalledProcessError as exc:
-            print("Status : FAIL", exc.returncode, exc.output)
-            raise Exception("qctool command failed")
+            print("Status : FAIL", exc.returncode, exc.output)#!!!cmk this doesn't seem to work when called from VS
+            if cleanup_temp_files:
+                raise Exception("qctool command failed")
+            else:
+                print("qctool command failed\n{0}".format(cmd))
         if cleanup_temp_files:
             os.remove(genfile)
             os.remove(samplefile)
@@ -367,7 +370,7 @@ class Bgen(DistReader):
                         for iid_index in range(distdata.iid_count):
                             index += 1
                             if updater_freq>1 and index>0 and index % updater_freq == 0:
-                                updater('{0:,} of {1:,} ({2:2}%)'.format(index,distreader.iid_count*distreader.sid_count,100.0*index/(distreader.iid_count*distreader.sid_count)))
+                                updater('{0:,} of {1:,} ({2:.2%})'.format(index,distreader.iid_count*distreader.sid_count,1.0*index/(distreader.iid_count*distreader.sid_count)))
                             prob_dist = distdata.val[iid_index,sid_index,:]
                             if not np.isnan(prob_dist).any():
                                 s = ' ' + ' '.join((format_function(num) for num in prob_dist))
@@ -638,6 +641,10 @@ class TestBgen(unittest.TestCase):
                 got_error = True
             assert got_error
 
+    def test_bgen_reader_no_sample(self):
+        with example_filepath("complex.23bits.no.samples.bgen") as filepath:
+            bgen = Bgen(filepath)
+            assert bgen.sid_count == 10
 
     def test_doctest(self):
         import pysnptools.distreader.bgen
@@ -666,6 +673,22 @@ def getTestSuite():
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
+    if False:
+        logging.info("test info")
+        from pysnptools.distreader import Bgen, DistGen
+
+        for iid_count,sid_count in [(50,5765294)]:
+            print("iid_count=,sid_count=",iid_count,sid_count)
+            dist_gen = DistGen(seed=332,iid_count=iid_count,sid_count=sid_count)
+            filename = r'm:\deldir\fakeuk{0}x{1}.bgen'.format(iid_count,sid_count)
+            Bgen.write(filename, dist_gen, bits=8, compression='zlib', cleanup_temp_files=False)
+            #print(os.path.getsize(filename))
+
+
+    if False: #!!!c,l
+        from pysnptools.distreader import Bgen
+        bgen = Bgen(r'D:\OneDrive\programs\hide\bgen-reader-py\bgen_reader\_example\complex.23bits.no.samples.bgen')
+        print(bgen.sid_count)
 
     if False:
         from pysnptools.distreader import Bgen
@@ -734,3 +757,5 @@ if __name__ == "__main__":
     result = doctest.testmod(optionflags=doctest.ELLIPSIS)
     logging.getLogger().setLevel(logging.INFO)
     assert result.failed == 0, "failed doc test: " + __file__
+
+

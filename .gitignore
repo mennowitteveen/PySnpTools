@@ -913,3 +913,4 @@ ModelManifest.xml
 /pysnptools/snpreader/ignore
 /tests/ignore
 /doc/ipynb/example2.dist.memmap
+/pysnptools/distreader/.coverage

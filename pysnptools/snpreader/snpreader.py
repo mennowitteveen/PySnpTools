@@ -418,7 +418,7 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
         raise NotImplementedError
     
     #!!check that views always return contiguous memory by default
-    def read(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False):
+    def read(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False, _require_float32_64=True): #!!!cmk _require_float32_64 not documented
         """Reads the SNP values and returns a :class:`.SnpData` (with :attr:`.SnpData.val` property containing a new ndarray of the SNP values).
 
         :param order: {'F' (default), 'C', 'A'}, optional -- Specify the order of the ndarray. If order is 'F' (default),
@@ -467,7 +467,7 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
         dtype = np.dtype(dtype)
         val = self._read(None, None, order, dtype, force_python_only, view_ok)
         from pysnptools.snpreader import SnpData
-        ret = SnpData(self.iid,self.sid,val,pos=self.pos,name=str(self))
+        ret = SnpData(self.iid,self.sid,val,pos=self.pos,name=str(self),_require_float32_64=_require_float32_64)
         return ret
 
     def iid_to_index(self, list):

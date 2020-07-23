@@ -61,7 +61,7 @@ class SnpData(PstData,SnpReader):
 
     **Methods beyond** :class:`.SnpReader`
     """
-    def __init__(self, iid, sid, val, pos=None, name=None, parent_string=None, copyinputs_function=None):
+    def __init__(self, iid, sid, val, pos=None, name=None, parent_string=None, copyinputs_function=None, _require_float32_64=True): #!!!cmk _require_float32_64 not documented
 
         #We don't have a 'super(SnpData, self).__init__()' here because SnpData takes full responsibility for initializing both its superclasses
 
@@ -73,7 +73,7 @@ class SnpData(PstData,SnpReader):
         self._col = PstData._fixup_input(sid,empty_creator=lambda ignore:np.empty([0],dtype='str'),dtype='str')
         self._row_property = PstData._fixup_input(None,count=len(self._row),empty_creator=lambda count:np.empty([count,0],dtype='str'),dtype='str')
         self._col_property = PstData._fixup_input(pos,count=len(self._col),empty_creator=lambda count:np.full([count, 3], np.nan))
-        self._val = PstData._fixup_input_val(val,row_count=len(self._row),col_count=len(self._col),empty_creator=lambda row_count,col_count:np.empty([row_count,col_count],dtype=np.float64))
+        self._val = PstData._fixup_input_val(val,row_count=len(self._row),col_count=len(self._col),empty_creator=lambda row_count,col_count:np.empty([row_count,col_count],dtype=np.float64),_require_float32_64=_require_float32_64)
         self._assert_iid_sid_pos(check_val=True)
         self._name = name or parent_string or ""
         self._std_string_list = []

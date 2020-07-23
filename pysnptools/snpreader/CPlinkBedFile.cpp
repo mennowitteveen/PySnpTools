@@ -22,3 +22,15 @@
 #define SUFFIX(NAME) NAME ## floatFAAA
 #include "CPlinkBedFileT.cpp"
 
+#define REAL signed char
+#define ORDERF
+#undef ORDERC
+#define SUFFIX(NAME) NAME ## int8FAAA
+#include "CPlinkBedFileT.cpp"
+
+#define REAL signed char
+#define ORDERC
+#undef ORDERF
+#define SUFFIX(NAME) NAME ## int8CAAA
+#include "CPlinkBedFileT.cpp"
+

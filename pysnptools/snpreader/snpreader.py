@@ -418,7 +418,7 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
         raise NotImplementedError
     
     #!!check that views always return contiguous memory by default
-    def read(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False, _require_float32_64=True): #!!!cmk _require_float32_64 not documented
+    def read(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False, _require_float32_64=True):
         """Reads the SNP values and returns a :class:`.SnpData` (with :attr:`.SnpData.val` property containing a new ndarray of the SNP values).
 
         :param order: {'F' (default), 'C', 'A'}, optional -- Specify the order of the ndarray. If order is 'F' (default),
@@ -453,7 +453,9 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
         :Example:
 
         >>> from pysnptools.snpreader import Bed
-        >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300.bed',count_A1=False) # Specify SNP data on disk
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> bedfile = example_file("tests/datasets/all_chr.maf0.001.N300.*","*.bed")
+        >>> snp_on_disk = Bed(bedfile, count_A1=False) # Specify SNP data on disk
         >>> snpdata1 = snp_on_disk.read() # Read all the SNP data returning a SnpData instance
         >>> print(type(snpdata1.val).__name__) # The SnpData instance contains a ndarray of the data.
         ndarray
@@ -738,7 +740,9 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
             :Example:
 
             >>> from pysnptools.snpreader import Bed
-            >>> snpreader = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
+            >>> from pysnptools.util import example_file # Download and return local file name
+            >>> bedfile = example_file("tests/datasets/all_chr.maf0.001.N300.*","*.bed")
+            >>> snpreader = Bed(bedfile, count_A1=False)
             >>> print(snpreader[0,0].read().val)
             [[2.]]
             >>> distreader = snpreader.as_dist(max_weight=2)

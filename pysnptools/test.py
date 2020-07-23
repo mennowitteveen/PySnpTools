@@ -170,6 +170,17 @@ class TestPySnpTools(unittest.TestCase):
         snpdata.val = 2 - snpdata.val
         self.c_reader(snpdata)
 
+    def test_bed_int8(self):
+        snpreader = Bed(self.currentFolder + "/../tests/datasets/distributed_bed_test1_X.bed",count_A1=True)
+        ref = snpreader.read()
+        ref.val[ref.val!=ref.val]=-127
+        ref.val = ref.val.astype('int8')
+        for force_python_only in [False,True]:
+            for order in ['F','C']:
+                snpdata = snpreader.read(dtype='int8',_require_float32_64=False,force_python_only=force_python_only,order=order)
+                assert snpdata.val.dtype == 'int8'
+                assert np.allclose(snpdata.val, ref.val, equal_nan=True)
+
     def test_scalar_index(self):
         snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
         arr=np.int64(1)

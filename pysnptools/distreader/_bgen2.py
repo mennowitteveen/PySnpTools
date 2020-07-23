@@ -84,7 +84,7 @@ def _get_samples(bgen, sample_file, verbose):
         if bgen.contain_samples:
             return bgen.read_samples()
         else:
-            return generate_samples(bgen.nsamples) #!!!cmk to a coverage report for distreader to find similar untested paths
+            return generate_samples(bgen.nsamples) #LATER do a coverage report for distreader to find similar untested paths
     else:
         samples_filepath = Path(sample_file)
         assert_file_exist(samples_filepath)

@@ -305,7 +305,7 @@ class Bgen(DistReader):
         try:
             output = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True, universal_newlines=True)
         except subprocess.CalledProcessError as exc:
-            print("Status : FAIL", exc.returncode, exc.output)#!!!cmk this doesn't seem to work when called from VS
+            print("Status : FAIL", exc.returncode, exc.output)#LATER this doesn't seem to work when called from VS
             if cleanup_temp_files:
                 raise Exception("qctool command failed")
             else:

@@ -31,6 +31,24 @@ class Bed(SnpReader):
                      * **skip_format_check** (*bool*) -- If False (default), will check that '.bed' file has expected starting bytes.
 
     **Methods beyond** :class:`.SnpReader`
+
+        The :meth:`.SnpReader.read` returns a :class:`SnpData` with a :attr:`SnpData.val`'s ndarray. By default, this ndarray is
+        numpy.float32. Optionally, it can be numpy.float16. For :class:`Bed` only, it can also be numpy.int8 with missing values
+        represented by -127.
+
+        :Example:
+
+        >>> from pysnptools.snpreader import Bed
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> bedfile = example_file("tests/datasets/distributed_bed_test1_X.*","*.bed")
+        >>> snp_on_disk = Bed(bedfile, count_A1=False)
+        >>> snpdata1 = snp_on_disk.read() # Read into the default, an float64 ndarray
+        >>> snpdata1.val.dtype
+        dtype('float64')
+        >>> snpdata1 = snp_on_disk.read(dtype='int8',_require_float32_64=False) #Read into an 'int8' ndarray.
+        >>> snpdata1.val.dtype
+        dtype('int8')
+
     '''
 
     def __init__(self, filename, count_A1=None, iid=None, sid=None, pos=None, skip_format_check=False): #!!!document these new optionals. they are here
@@ -281,6 +299,10 @@ class Bed(SnpReader):
             else:
                 byteZero = 2
                 byteThree = 0
+            if dtype == np.int8:
+                missing = -127
+            else:
+                missing = np.nan
             # An earlier version of this code had a way to read consecutive SNPs of code in one read. May want
             # to add that ability back to the code. 
             # Also, note that reading with python will often result in non-contiguous memory, so the python standardizers will automatically be used, too.       
@@ -295,22 +317,22 @@ class Bed(SnpReader):
                 bytes = np.array(bytearray(self._filepointer.read(nbyte))).reshape((int(np.ceil(0.25*iid_count_in)),1),order='F')
 
                 val[3::4,SNPsIndex:SNPsIndex+1]=byteZero
-                val[3::4,SNPsIndex:SNPsIndex+1][bytes>=64]=np.nan
+                val[3::4,SNPsIndex:SNPsIndex+1][bytes>=64]=missing
                 val[3::4,SNPsIndex:SNPsIndex+1][bytes>=128]=1
                 val[3::4,SNPsIndex:SNPsIndex+1][bytes>=192]=byteThree
                 bytes=np.mod(bytes,64)
                 val[2::4,SNPsIndex:SNPsIndex+1]=byteZero
-                val[2::4,SNPsIndex:SNPsIndex+1][bytes>=16]=np.nan
+                val[2::4,SNPsIndex:SNPsIndex+1][bytes>=16]=missing
                 val[2::4,SNPsIndex:SNPsIndex+1][bytes>=32]=1
                 val[2::4,SNPsIndex:SNPsIndex+1][bytes>=48]=byteThree
                 bytes=np.mod(bytes,16)
                 val[1::4,SNPsIndex:SNPsIndex+1]=byteZero
-                val[1::4,SNPsIndex:SNPsIndex+1][bytes>=4]=np.nan
+                val[1::4,SNPsIndex:SNPsIndex+1][bytes>=4]=missing
                 val[1::4,SNPsIndex:SNPsIndex+1][bytes>=8]=1
                 val[1::4,SNPsIndex:SNPsIndex+1][bytes>=12]=byteThree
                 bytes=np.mod(bytes,4)
                 val[0::4,SNPsIndex:SNPsIndex+1]=byteZero
-                val[0::4,SNPsIndex:SNPsIndex+1][bytes>=1]=np.nan
+                val[0::4,SNPsIndex:SNPsIndex+1][bytes>=1]=missing
                 val[0::4,SNPsIndex:SNPsIndex+1][bytes>=2]=1
                 val[0::4,SNPsIndex:SNPsIndex+1][bytes>=3]=byteThree
             val = val[iid_index,:] #reorder or trim any extra allocation
@@ -325,7 +347,19 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     import os
 
-    if True: #!!!cmk need test cases
+    if False: #Look for example Bed files with missing data
+        from pysnptools.util._example_file import pysnptools_hashdown
+        from pysnptools.util import example_file
+        for file in pysnptools_hashdown.walk():
+            if file.endswith('.bed'):
+                print(file+"?")
+                bed_file = example_file(file[:-4]+'.*','*.bed')
+                bed = Bed(bed_file)
+                snpdata = bed[:1000,:1000].read()
+                if not np.all(snpdata.val==snpdata.val):
+                    print(bed_file+"!")
+
+    if False:
         from pysnptools.snpreader import Bed
         from pysnptools.util import example_file # Download and return local file name
         #bed_file = example_file('doc/ipynb/all.*','*.bed')
@@ -339,7 +373,7 @@ if __name__ == "__main__":
         snpdata3.val=snpdata3.val.astype('float32')
         snpdata3.val.dtype
 
-    if False: #!!!cmk
+    if False:
         from pysnptools.snpreader import Bed, SnpGen
         iid_count = 487409
         sid_count = 5000

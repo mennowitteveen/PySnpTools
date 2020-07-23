@@ -61,7 +61,7 @@ class SnpData(PstData,SnpReader):
 
     **Methods beyond** :class:`.SnpReader`
     """
-    def __init__(self, iid, sid, val, pos=None, name=None, parent_string=None, copyinputs_function=None, _require_float32_64=True): #!!!cmk _require_float32_64 not documented
+    def __init__(self, iid, sid, val, pos=None, name=None, parent_string=None, copyinputs_function=None, _require_float32_64=True):
 
         #We don't have a 'super(SnpData, self).__init__()' here because SnpData takes full responsibility for initializing both its superclasses
 

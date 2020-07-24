@@ -428,8 +428,10 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
             ndarray may be in any order (either C-, Fortran-contiguous).
         :type order: string or None
 
-        :param dtype: {numpy.float64 (default), numpy.float32}, optional -- The data-type for the :attr:`SnpData.val` ndarray.
-        :type dtype: data-type
+        :param dtype: {numpy.float64 (default), numpy.float32}, optional -- The data-type for the :attr:`SnpData.val` ndarray. 
+             (For :class:`Bed`, only, it can also be numpy.int8. Hidden option _require_float32_64 must be set 
+             to False. See :class:`Bed` for an example.)
+        :type dtype: data-type. 
 
         :param force_python_only: optional -- If False (default), may use outside library code. If True, requests that the read
             be done without outside library code.

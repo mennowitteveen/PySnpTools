@@ -32,8 +32,8 @@ class Bed(SnpReader):
 
     **Methods beyond** :class:`.SnpReader`
 
-        The :meth:`.SnpReader.read` returns a :class:`SnpData` with a :attr:`SnpData.val`'s ndarray. By default, this ndarray is
-        numpy.float32. Optionally, it can be numpy.float16. For :class:`Bed` only, it can also be numpy.int8 with missing values
+        The :meth:`.SnpReader.read` method returns a :class:`SnpData` with a :attr:`SnpData.val` ndarray. By default, this ndarray is
+        numpy.float32. Optionally, it can be numpy.float16. For :class:`Bed`, however, it can also be numpy.int8 with missing values
         represented by -127.
 
         :Example:

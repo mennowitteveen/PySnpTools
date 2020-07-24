@@ -347,6 +347,25 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     import os
 
+    if False:
+
+        filename = 'M:/deldir/genbgen/good/merged_487400x4840000.bgen'
+
+        import tracemalloc
+        import logging
+        import os
+        logging.basicConfig(level=logging.INFO)
+        from pysnptools.distreader import Bgen
+        tracemalloc.start()
+        print(os.path.getsize(filename))
+        bgen = Bgen(filename)
+        print(bgen.shape)
+        current, peak = tracemalloc.get_traced_memory()
+        print(f"Current memory usage is {current / 10**6}MB; Peak was {peak / 10**6}MB")
+        tracemalloc.stop()
+
+
+
     if False: #Look for example Bed files with missing data
         from pysnptools.util._example_file import pysnptools_hashdown
         from pysnptools.util import example_file

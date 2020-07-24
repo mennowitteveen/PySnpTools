@@ -55,7 +55,7 @@ Detailed Package Install Instructions:
 
 pysnptools has the following dependencies:
 
-python 3.7+ or python 2.7+
+python 3.7 or 3.8 (on MacOS, just 3.7)
 
 Packages:
 

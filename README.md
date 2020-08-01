@@ -10,6 +10,10 @@ Main Features:
           New features include on-the-fly SNP generation, larger in-memory data, and
           cluster-ready BED data.
 
+* [DistReader](https://fastlmm.github.io/PySnpTools/#module-pysnptools.distreader): Efficiently work with
+         unphased BGEN format and other diploid, biallelic distribution data.
+          Also, efficiently read parts of files. See [Distribution IPython Notebook](https://nbviewer.jupyter.org/github/fastlmm/PySnpTools/blob/master/doc/ipynb/Dist.ipynb).
+
 * [util](https://fastlmm.github.io/PySnpTools/#module-pysnptools.util): In one line, intersect and re-order IIDs from snpreader and other sources.
           Also, efficiently extract a submatrix from an ndarray. 
 
@@ -51,7 +55,7 @@ Detailed Package Install Instructions:
 
 pysnptools has the following dependencies:
 
-python 3.7+ or python 2.7+
+python 3.7 or 3.8 (on MacOS, just 3.7)
 
 Packages:
 

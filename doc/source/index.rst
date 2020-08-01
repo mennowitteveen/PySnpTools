@@ -10,9 +10,8 @@ See `PySnpTools's README.md <https://github.com/fastlmm/PySnpTools/blob/master/R
 
 * :mod:`.snpreader`: Efficiently read genetic PLINK formats including \*.bed/bim/fam and phenotype files. Also, efficiently read *parts* of files and standardize data.
 
-	:new: :class:`.snpreader.SnpGen`: Generate synthetic SNP data on the fly.
-	:new: :class:`.snpreader.SnpMemMap`: Support larger in-memory data via on-disk memory mapping.
-	:new: :class:`.snpreader.DistributedBed`: Split :class:`.Bed`-like data into multiple files for more efficient cluster use.
+* :new: :mod:`.distreader`: Efficiently work with unphased BGEN format and other diploid, biallelic distribution data. Also, efficiently read *parts* of files.
+    See `Distribution IPython Notebook <https://nbviewer.jupyter.org/github/fastlmm/PySnpTools/blob/master/doc/ipynb/Dist.ipynb>`_
 
 * :mod:`.kernelreader`: Efficiently create, read, and manipulate kernel data.
 
@@ -27,7 +26,6 @@ See `PySnpTools's README.md <https://github.com/fastlmm/PySnpTools/blob/master/R
 * :class:`.util.IntRangeSet`: Efficiently manipulate ranges of integers -- for example, genetic position -- with set operators including
   union, intersection, and set difference. 
 
-:new:
 
 * :mod:`.util.mapreduce1`: Run loops in parallel on multiple processes, threads, or clusters.
 
@@ -42,8 +40,9 @@ See `PySnpTools's README.md <https://github.com/fastlmm/PySnpTools/blob/master/R
 
 * `Slides <https://1drv.ms/p/s!AkoPP4cC5J64jOc15JXgDsXmD9EEaw>`_
 * `Video <https://www.youtube.com/watch?v=KPI6479ctAQ>`_
-* `IPython Notebook <https://nbviewer.jupyter.org/github/fastlmm/PySnpTools/blob/master/doc/ipynb/tutorial.ipynb>`_
-* `Data file <https://1drv.ms/u/s!AkoPP4cC5J64qrkHOEE77OWHJm1W4g?e=FHiLzf>`_
+* IPython Notebooks
+   * `General Notebook <https://nbviewer.jupyter.org/github/fastlmm/PySnpTools/blob/master/doc/ipynb/tutorial.ipynb>`_
+   * `Distribution Notebook <https://nbviewer.jupyter.org/github/fastlmm/PySnpTools/blob/master/doc/ipynb/Dist.ipynb>`_
 
 :Code:
 

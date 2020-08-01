@@ -330,7 +330,7 @@ if __name__ == "__main__":
         directory = 'tempdir/toydataSkip10.distributedbed'
         if os.path.exists(directory):
             shutil.rmtree(directory)
-        snpreader = Bed('../examples/toydata.bed',count_A1=False)[:,::10]  # Read every 10 snps from Bed format
+        snpreader = Bed('../examples/toydata.5chrom.bed',count_A1=False)[:,::10]  # Read every 10 snps from Bed format
         DistributedBed.write(directory,snpreader,piece_per_chrom_count=5)  # Write data in DistributedBed format
 
     result = doctest.testmod(optionflags=doctest.ELLIPSIS)

@@ -10,8 +10,9 @@ See `PySnpTools's README.md <https://github.com/fastlmm/PySnpTools/blob/master/R
 
 * :mod:`.snpreader`: Efficiently read genetic PLINK formats including \*.bed/bim/fam and phenotype files. Also, efficiently read *parts* of files and standardize data.
 
-* :new: :mod:`.distreader`: Efficiently work with unphased BGEN format and other diploid, biallelic distribution data. Also, efficiently read *parts* of files.
-    See `Distribution IPython Notebook <https://nbviewer.jupyter.org/github/fastlmm/PySnpTools/blob/master/doc/ipynb/Dist.ipynb>`_
+	:new: :class:`.snpreader.SnpGen`: Generate synthetic SNP data on the fly.
+	:new: :class:`.snpreader.SnpMemMap`: Support larger in-memory data via on-disk memory mapping.
+	:new: :class:`.snpreader.DistributedBed`: Split :class:`.Bed`-like data into multiple files for more efficient cluster use.
 
 * :mod:`.kernelreader`: Efficiently create, read, and manipulate kernel data.
 
@@ -26,6 +27,7 @@ See `PySnpTools's README.md <https://github.com/fastlmm/PySnpTools/blob/master/R
 * :class:`.util.IntRangeSet`: Efficiently manipulate ranges of integers -- for example, genetic position -- with set operators including
   union, intersection, and set difference. 
 
+:new:
 
 * :mod:`.util.mapreduce1`: Run loops in parallel on multiple processes, threads, or clusters.
 
@@ -34,15 +36,14 @@ See `PySnpTools's README.md <https://github.com/fastlmm/PySnpTools/blob/master/R
 
 :Tutorial:
 
-* `White Paper <https://fastlmm.github.io/KadiePySnpTools.pdf>`_
+* `Short Overview Paper <https://www.biorxiv.org/search/PySnpTools>`_
 
 *From PyData Conference, Seattle*
 
 * `Slides <https://1drv.ms/p/s!AkoPP4cC5J64jOc15JXgDsXmD9EEaw>`_
 * `Video <https://www.youtube.com/watch?v=KPI6479ctAQ>`_
-* IPython Notebooks
-   * `General Notebook <https://nbviewer.jupyter.org/github/fastlmm/PySnpTools/blob/master/doc/ipynb/tutorial.ipynb>`_
-   * `Distribution Notebook <https://nbviewer.jupyter.org/github/fastlmm/PySnpTools/blob/master/doc/ipynb/Dist.ipynb>`_
+* `IPython Notebook <https://nbviewer.jupyter.org/github/fastlmm/PySnpTools/blob/master/doc/ipynb/tutorial.ipynb>`_
+* `Data file <https://1drv.ms/u/s!AkoPP4cC5J64qrkHOEE77OWHJm1W4g?e=FHiLzf>`_
 
 :Code:
 
@@ -371,91 +372,6 @@ See `PySnpTools's README.md <https://github.com/fastlmm/PySnpTools/blob/master/R
 	:show-inheritance:
 	:special-members: __getitem__
     :exclude-members: copyinputs,standardize
-
-**************************
-:mod:`distreader` Module
-**************************
-
-.. automodule:: pysnptools.distreader
-    :members:
-    :undoc-members:
-	:show-inheritance:
-	:special-members:
-
-
-:class:`distreader.DistReader`
-++++++++++++++++++++++++++++++++++
-.. autoclass:: pysnptools.distreader.DistReader
-    :members:
-    :undoc-members:
-	:show-inheritance:
-	:special-members: __getitem__
-    :exclude-members: copyinputs
-
-
-:class:`distreader.Bgen`
-+++++++++++++++++++++++++++++++++
-.. autoclass:: pysnptools.distreader.Bgen
-    :members:
-    :undoc-members:
-	:show-inheritance:
-	:special-members:
-    :exclude-members: copyinputs, col, col_property, row
-
-.. autofunction:: pysnptools.distreader.bgen.default_iid_function
-
-.. autofunction:: pysnptools.distreader.bgen.default_sid_function
-
-.. autofunction:: pysnptools.distreader.bgen.default_sample_function
-
-.. autofunction:: pysnptools.distreader.bgen.default_id_rsid_function
-
-:class:`distreader.DistData`
-+++++++++++++++++++++++++++++++++++
-.. autoclass:: pysnptools.distreader.DistData
-    :members:
-    :undoc-members:
-	:show-inheritance:
-	:special-members:
-    :exclude-members: copyinputs, col, col_property, row
-
-
-:class:`distreader.DistHdf5`
-++++++++++++++++++++++++++++++++++++
-.. autoclass:: pysnptools.distreader.DistHdf5
-    :members:
-    :undoc-members:
-	:show-inheritance:
-	:special-members:
-    :exclude-members: copyinputs, col, col_property, row, row_property
-
-:class:`distreader.DistNpz`
-++++++++++++++++++++++++++++++++++
-.. autoclass:: pysnptools.distreader.DistNpz
-    :members:
-    :undoc-members:
-	:show-inheritance:
-	:special-members:
-    :exclude-members: copyinputs, col, col_property, row, row_property
-
-
-:class:`distreader.DistMemMap`
-++++++++++++++++++++++++++++++++++
-.. autoclass:: pysnptools.distreader.DistMemMap
-    :members:
-    :undoc-members:
-	:show-inheritance:
-	:special-members:
-    :exclude-members: copyinputs, col, col_property, row, row_property
-
-:class:`distreader.DistGen`
-++++++++++++++++++++++++++++++++++
-.. autoclass:: pysnptools.distreader.DistGen
-    :members:
-    :undoc-members:
-	:show-inheritance:
-	:special-members:
-    :exclude-members: copyinputs, col, col_property, row, row_property
 
 
 ***********************

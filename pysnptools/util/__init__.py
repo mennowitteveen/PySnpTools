@@ -533,9 +533,9 @@ def log_in_place(name, level, time_lambda=time.time, show_log_diffs=False):
             if message_hash !=  last_message_hash[0] and last_message_hash[0] is not None:
                 sys.stdout.write('\n')
             last_message_hash[0] = message_hash
-            #Pad with spaces to cover up previous message
-            sys.stdout.write("{0}{1}\r".format(s," "*max(0,last_len[0]-len(s))))
-            sys.stdout.flush()
+        #Pad with spaces to cover up previous message
+        sys.stdout.write("{0}{1}\r".format(s," "*max(0,last_len[0]-len(s))))
+        sys.stdout.flush()
 
         every_printed[0] = True
         last_len[0] = len(s)

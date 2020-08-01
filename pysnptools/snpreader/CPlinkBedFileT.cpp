@@ -45,8 +45,13 @@
 #define isinf(x) (!isfinite(x))
 #endif
 
-
+#ifdef MISSING_VALUE
+REAL SUFFIX(unknownOrMissing) = MISSING_VALUE;
+#else
 REAL SUFFIX(unknownOrMissing) = std::numeric_limits<REAL>::quiet_NaN();  // now used by SnpInfo
+#endif
+
+
 REAL SUFFIX(homozygousPrimaryAllele) = 0;                // Major Allele
 REAL SUFFIX(heterozygousAllele) = 1;                     
 REAL SUFFIX(homozygousSecondaryAllele) = 2;              // Minor Allele ()
@@ -234,6 +239,30 @@ void SUFFIX(CBedFile)::ReadGenotypes(size_t iSnp, bool count_A1, const vector< s
 	}
 }
 
+// wrapper to be used from cython
+void SUFFIX(readPlinkBedFile)(std::string bed_fn, int inputNumIndividuals, int inputNumSNPs, bool count_A1, std::vector<size_t> individuals_idx, std::vector<int> snpIdxList, REAL* out)
+{
+	uint64_t_ outputNumSNPs = snpIdxList.size();
+
+	SUFFIX(CBedFile) bedFile = SUFFIX(CBedFile)();
+	bedFile.Open(bed_fn, inputNumIndividuals, inputNumSNPs);
+
+	for (size_t i = 0; i != snpIdxList.size(); i++) {
+		int idx = snpIdxList[i];
+
+#ifdef ORDERF
+		uint64_t_ startpos = ((uint64_t_)i) * individuals_idx.size();
+#else
+		uint64_t_ startpos = ((uint64_t_)i);
+#endif
+		bedFile.ReadGenotypes(idx, count_A1, individuals_idx, out, startpos, outputNumSNPs);
+	}
+}
+
+
+
+#ifndef MISSING_VALUE
+
 const REAL SUFFIX(_PI) = 2.0*acos(0.0);
 const REAL SUFFIX(_halflog2pi)=(REAL)0.5*log((REAL)2.0*SUFFIX(_PI));
 const REAL SUFFIX(coeffsForLogGamma)[] = { 12.0, -360.0, 1260.0, -1680.0, 1188.0 };
@@ -344,7 +373,6 @@ void SUFFIX(ImputeAndZeroMeanSNPs)(
 	{
 		REAL mean_s;
 		REAL std;
-		REAL freq = 0;
 		size_t end = nIndividuals;
 		size_t delta = 1;
 		bool isSNC;
@@ -382,12 +410,12 @@ void SUFFIX(ImputeAndZeroMeanSNPs)(
 			mean_s = sum_s / n_observed;    //compute the mean over observed individuals for the current SNP
 			REAL mean2_s = sum2_s / n_observed;    //compute the mean of the squared SNP
 
-			if ((mean_s != mean_s) || betaNotUnitVariance && ((mean_s > (REAL)2.0) || (mean_s < (REAL)0.0)))
+			if ((mean_s != mean_s) || (betaNotUnitVariance && ((mean_s > (REAL)2.0) || (mean_s < (REAL)0.0))))
 			{
 				if (!seenSNC)
 				{
 					seenSNC = true;
-					fprintf(stderr, "Illegal SNP mean: %.2f for SNPs[:][%i]\n", mean_s, iSnp);
+					fprintf(stderr, "Illegal SNP mean: %.2f for SNPs[:][%zu]\n", mean_s, iSnp);
 				}
 			}
 
@@ -405,7 +433,7 @@ void SUFFIX(ImputeAndZeroMeanSNPs)(
 				{
 					seenSNC = true;
 					//#Don't need this warning because SNCs are still meaning full in QQ plots because they should be thought of as SNPs without enough data.
-					//fprintf(stderr, "std=.%2f has illegal value for SNPs[:][%i]\n", std, iSnp);
+					//fprintf(stderr, "std=.%2f has illegal value for SNPs[:][%zu]\n", std, iSnp);
 				}
 				std = std::numeric_limits<REAL>::infinity();
 
@@ -499,12 +527,12 @@ void SUFFIX(ImputeAndZeroMeanSNPs)(
 			mean_s[iSnp] = sum_s[iSnp] / n_observed[iSnp];    //compute the mean over observed individuals for the current SNP
 			mean2_s[iSnp] = sum2_s[iSnp] / n_observed[iSnp];    //compute the mean of the squared SNP
 
-			if ((mean_s[iSnp] != mean_s[iSnp]) || betaNotUnitVariance && ((mean_s[iSnp] > (REAL)2.0) || (mean_s[iSnp] < (REAL)0.0)))
+			if ((mean_s[iSnp] != mean_s[iSnp]) || (betaNotUnitVariance && ((mean_s[iSnp] > (REAL)2.0) || (mean_s[iSnp] < (REAL)0.0))))
 			{
 				if (!seenSNC)
 				{
 					seenSNC = true;
-					fprintf(stderr, "Illegal SNP mean: %.2f for SNPs[:][%i]\n", mean_s[iSnp], iSnp);
+					fprintf(stderr, "Illegal SNP mean: %.2f for SNPs[:][%zu]\n", mean_s[iSnp], iSnp);
 				}
 			}
 
@@ -523,7 +551,7 @@ void SUFFIX(ImputeAndZeroMeanSNPs)(
 				{
 					seenSNC = true;
 					// Don't need this warning because SNCs are still meaning full in QQ plots because they should be thought of as SNPs without enough data.
-					// fprintf(stderr, "std=.%2f has illegal value for SNPs[:][%i]\n", std[iSnp], iSnp);
+					// fprintf(stderr, "std=.%2f has illegal value for SNPs[:][%zu]\n", std[iSnp], iSnp);
 				}
 			}
 			stats[iSnp*2] = mean_s[iSnp];
@@ -570,27 +598,6 @@ void SUFFIX(ImputeAndZeroMeanSNPs)(
 		}
 	}
 #endif
-}
-
-// wrapper to be used from cython
-void SUFFIX(readPlinkBedFile)(std::string bed_fn, int inputNumIndividuals, int inputNumSNPs, bool count_A1, std::vector<size_t> individuals_idx, std::vector<int> snpIdxList, REAL* out)
-{
-	uint64_t_ N = inputNumIndividuals;
-	uint64_t_ outputNumSNPs = snpIdxList.size();
-
-	SUFFIX(CBedFile) bedFile = SUFFIX(CBedFile)();
-	bedFile.Open(bed_fn, inputNumIndividuals, inputNumSNPs);
-
-	for (size_t i = 0; i != snpIdxList.size(); i++){
-		int idx = snpIdxList[i];
-
-#ifdef ORDERF
-		uint64_t_ startpos = ((uint64_t_)i) * individuals_idx.size();
-#else
-		uint64_t_ startpos = ((uint64_t_)i);
-#endif
-		bedFile.ReadGenotypes(idx, count_A1, individuals_idx, out, startpos, outputNumSNPs);
-	}
 }
 
 
@@ -651,7 +658,7 @@ void SUFFIX(writePlinkBedFile)(std::string bed_fn, int iid_count, int sid_count,
 					code = 2; //0b10 backwards on purpose
 				else if (val == 2)
 					code = twoCode;
-				else if (val != val) //So NaN
+				else if (val != val)
 					code = 1; //0b01 #backwards on purpose
 				else
 				{
@@ -674,3 +681,4 @@ void SUFFIX(writePlinkBedFile)(std::string bed_fn, int iid_count, int sid_count,
 	//printf("b \n");
 }
 
+#endif

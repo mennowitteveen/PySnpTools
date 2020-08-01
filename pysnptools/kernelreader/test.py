@@ -120,7 +120,7 @@ class TestKernelReader(unittest.TestCase):
         from pysnptools.snpreader._subset import _SnpSubset
         from pysnptools.util import intersect_apply
 
-        snps_all = Bed(self.currentFolder + "/../examples/toydata",count_A1=False)
+        snps_all = Bed(self.currentFolder + "/../examples/toydata.5chrom.bed",count_A1=False)
         k = SnpKernel(snps_all,stdizer.Identity())
 
         pheno = Pheno(self.currentFolder + "/../examples/toydata.phe")
@@ -147,16 +147,16 @@ class TestKernelReader(unittest.TestCase):
         iidref = KernelNpz('../examples/toydata.kernel.npz').iid
 
         for kernelreader in [
-                           SnpKernel(Bed('../examples/toydata.bed',count_A1=True),StdIdentity())[::2,::2],
-                           Bed('../examples/toydata.bed',count_A1=True)[::2,::2].read_kernel(StdIdentity()),
+                           SnpKernel(Bed('../examples/toydata.5chrom.bed',count_A1=True),StdIdentity())[::2,::2],
+                           Bed('../examples/toydata.5chrom.bed',count_A1=True)[::2,::2].read_kernel(StdIdentity()),
                            KernelHdf5('../examples/toydata.kernel.hdf5'),
                            Identity(iidref,test=[('0','x'),('0','y')]),
                            Identity(iidref),
                            KernelNpz('../examples/toydata.kernel.npz'),
                            KernelNpz('../examples/toydata.kernel.npz').read(),
                            KernelNpz('../examples/toydata.kernel.npz')[::2,::2],
-                           Bed('../examples/toydata.bed',count_A1=True).read_kernel(Unit()),
-                           SnpKernel(Bed('../examples/toydata.bed',count_A1=True),Unit())
+                           Bed('../examples/toydata.5chrom.bed',count_A1=True).read_kernel(Unit()),
+                           SnpKernel(Bed('../examples/toydata.5chrom.bed',count_A1=True),Unit())
                           ]:
             logging.info(str(kernelreader))
             for order in ['F','C','A']:
@@ -215,14 +215,14 @@ class TestKernelReader(unittest.TestCase):
 
     def test_snp_kernel2(self):
         logging.info("in test_snp_kernel2")
-        snpreader = Bed(self.currentFolder + "/../examples/toydata",count_A1=False)
+        snpreader = Bed(self.currentFolder + "/../examples/toydata.5chrom.bed",count_A1=False)
         snpkernel = SnpKernel(snpreader,standardizer=stdizer.Beta(1,25))
         s  = str(snpkernel)
         _fortesting_JustCheckExists().input(snpkernel)
         
     def test_npz(self):
         logging.info("in test_npz")
-        snpreader = Bed(self.currentFolder + "/../examples/toydata",count_A1=False)
+        snpreader = Bed(self.currentFolder + "/../examples/toydata.5chrom.bed",count_A1=False)
         kerneldata1 = snpreader.read_kernel(standardizer=stdizer.Unit())
         s = str(kerneldata1)
         output = "tempdir/kernelreader/toydata.kernel.npz"
@@ -235,7 +235,7 @@ class TestKernelReader(unittest.TestCase):
 
     def test_subset(self):
         logging.info("in test_subset")
-        snpreader = Bed(self.currentFolder + "/../examples/toydata",count_A1=False)
+        snpreader = Bed(self.currentFolder + "/../examples/toydata.5chrom.bed",count_A1=False)
         snpkernel = SnpKernel(snpreader,stdizer.Unit())
         krsub = snpkernel[::2,::2]
         kerneldata1 = krsub.read()
@@ -249,7 +249,7 @@ class TestKernelReader(unittest.TestCase):
 
     def test_identity(self):
         logging.info("in test_identity")
-        snpreader = Bed(self.currentFolder + "/../examples/toydata",count_A1=False)
+        snpreader = Bed(self.currentFolder + "/../examples/toydata.5chrom.bed",count_A1=False)
         assert snpreader.iid is snpreader.row
         kid = Identity(snpreader.row)
         assert np.array_equal(kid.row,kid.iid) and np.array_equal(kid.iid,kid.iid0) and np.array_equal(kid.iid0,kid.iid1) and np.array_equal(kid.iid1, kid.col)
@@ -265,7 +265,7 @@ class TestKernelReader(unittest.TestCase):
 
     def test_identity_sub(self):
         logging.info("in test_identity_sub")
-        snpreader = Bed(self.currentFolder + "/../examples/toydata",count_A1=False)
+        snpreader = Bed(self.currentFolder + "/../examples/toydata.5chrom.bed",count_A1=False)
         assert snpreader.iid is snpreader.row
         kid = Identity(snpreader.row)
         sub3 = kid[::2,1:5]
@@ -276,7 +276,7 @@ class TestKernelReader(unittest.TestCase):
 
     def test_underscore_read1(self):
         logging.info("in test_underscore_read1")
-        snpreader = Bed(self.currentFolder + "/../examples/toydata",count_A1=False)
+        snpreader = Bed(self.currentFolder + "/../examples/toydata.5chrom.bed",count_A1=False)
         assert snpreader.iid is snpreader.row
         kid = Identity(snpreader.row)
         sub3 = kid[::2,::2]
@@ -287,7 +287,7 @@ class TestKernelReader(unittest.TestCase):
 
     def test_underscore_read2(self):
         logging.info("in test_underscore_read2")
-        snpreader = Bed(self.currentFolder + "/../examples/toydata",count_A1=False)
+        snpreader = Bed(self.currentFolder + "/../examples/toydata.5chrom.bed",count_A1=False)
         assert snpreader.iid is snpreader.row
         kid = Identity(snpreader.row)
         sub3 = kid[::2,::2]

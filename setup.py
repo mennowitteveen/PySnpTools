@@ -7,7 +7,7 @@ from distutils.command.clean import clean as Clean
 import numpy
 
 # Version number
-version = '0.4.17'
+version = '0.4.21'
 
 def readme():
     with open('README.md') as f:
@@ -77,7 +77,7 @@ else:
     cmdclass = {}
 
 install_requires = ['scipy>=1.1.0', 'numpy>=1.11.3', 'pandas>=0.19.0', 'psutil>=5.6.3', 'h5py>=2.10.0', 'dill>=0.2.9',
-                   'backports.tempfile>=1.0', 'bgen-reader>=4.0.4']
+                   'backports.tempfile>=1.0', 'bgen-reader>=4.0.4', 'wheel>=0.34.2']
 if sys.version_info[0] >= 3:
     install_requires += ['bgen-reader>=3.0.7']
 
@@ -131,6 +131,11 @@ setup(
         "pysnptools/util/mapreduce1",
         "pysnptools/util/mapreduce1/runner",
     ],
+    package_data={"pysnptools" : [
+        "util/pysnptools.hashdown.json",
+        "tests/mintest.py",
+        ]
+                 },
     install_requires = install_requires,
 
     # extensions

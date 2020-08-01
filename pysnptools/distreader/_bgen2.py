@@ -84,12 +84,15 @@ def _get_samples(bgen, sample_file, verbose):
         if bgen.contain_samples:
             return bgen.read_samples()
         else:
-            return generate_samples(bgen.nsamples)
+            return generate_samples(bgen.nsamples) #LATER do a coverage report for distreader to find similar untested paths
     else:
         samples_filepath = Path(sample_file)
         assert_file_exist(samples_filepath)
         assert_file_readable(samples_filepath)
         return read_samples_file(samples_filepath, verbose)
+
+def generate_samples(nsamples: int):
+    return Series([f"sample_{i}" for i in range(nsamples)], dtype=str, name="id")
 
 def read_samples_file(sample_filepath: Path, verbose: bool):
     if verbose:

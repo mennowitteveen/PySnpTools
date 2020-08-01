@@ -31,6 +31,24 @@ class Bed(SnpReader):
                      * **skip_format_check** (*bool*) -- If False (default), will check that '.bed' file has expected starting bytes.
 
     **Methods beyond** :class:`.SnpReader`
+
+        The :meth:`.SnpReader.read` method returns a :class:`SnpData` with a :attr:`SnpData.val` ndarray. By default, this ndarray is
+        numpy.float32. Optionally, it can be numpy.float16. For :class:`Bed`, however, it can also be numpy.int8 with missing values
+        represented by -127.
+
+        :Example:
+
+        >>> from pysnptools.snpreader import Bed
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> bedfile = example_file("tests/datasets/distributed_bed_test1_X.*","*.bed")
+        >>> snp_on_disk = Bed(bedfile, count_A1=False)
+        >>> snpdata1 = snp_on_disk.read() # Read into the default, an float64 ndarray
+        >>> snpdata1.val.dtype
+        dtype('float64')
+        >>> snpdata1 = snp_on_disk.read(dtype='int8',_require_float32_64=False) #Read into an 'int8' ndarray.
+        >>> snpdata1.val.dtype
+        dtype('int8')
+
     '''
 
     def __init__(self, filename, count_A1=None, iid=None, sid=None, pos=None, skip_format_check=False): #!!!document these new optionals. they are here
@@ -138,9 +156,9 @@ class Bed(SnpReader):
         >>> from pysnptools.util import example_file # Download and return local file name
         >>> pheno_fn = example_file("pysnptools/examples/toydata.phe")
         >>> snpdata = Pheno(pheno_fn).read()         # Read data from Pheno format
-        >>> pstutil.create_directory_if_necessary("tempdir/toydata.bed")
-        >>> Bed.write("tempdir/toydata.bed",snpdata,count_A1=False)   # Write data in Bed format
-        Bed('tempdir/toydata.bed',count_A1=False)
+        >>> pstutil.create_directory_if_necessary("tempdir/toydata.5chrom.bed")
+        >>> Bed.write("tempdir/toydata.5chrom.bed",snpdata,count_A1=False)   # Write data in Bed format
+        Bed('tempdir/toydata.5chrom.bed',count_A1=False)
         """
 
         if isinstance(filename,SnpData) and isinstance(snpdata,str): #For backwards compatibility, reverse inputs if necessary
@@ -264,6 +282,13 @@ class Bed(SnpReader):
                         wrap_plink_parser.readPlinkBedFile2floatCAAA(bed_fn.encode('ascii'), iid_count_in, sid_count_in, self.count_A1, iid_index, sid_index, val)
                     else:
                         raise Exception("order '{0}' not known, only 'F' and 'C'".format(order));
+                elif dtype == np.int8:
+                    if order=="F":
+                        wrap_plink_parser.readPlinkBedFile2int8FAAA(bed_fn.encode('ascii'), iid_count_in, sid_count_in, self.count_A1, iid_index, sid_index, val)
+                    elif order=="C":
+                        wrap_plink_parser.readPlinkBedFile2int8CAAA(bed_fn.encode('ascii'), iid_count_in, sid_count_in, self.count_A1, iid_index, sid_index, val)
+                    else:
+                        raise Exception("order '{0}' not known, only 'F' and 'C'".format(order));
                 else:
                     raise Exception("dtype '{0}' not known, only float64 and float32".format(dtype))
             
@@ -274,6 +299,10 @@ class Bed(SnpReader):
             else:
                 byteZero = 2
                 byteThree = 0
+            if dtype == np.int8:
+                missing = -127
+            else:
+                missing = np.nan
             # An earlier version of this code had a way to read consecutive SNPs of code in one read. May want
             # to add that ability back to the code. 
             # Also, note that reading with python will often result in non-contiguous memory, so the python standardizers will automatically be used, too.       
@@ -288,22 +317,22 @@ class Bed(SnpReader):
                 bytes = np.array(bytearray(self._filepointer.read(nbyte))).reshape((int(np.ceil(0.25*iid_count_in)),1),order='F')
 
                 val[3::4,SNPsIndex:SNPsIndex+1]=byteZero
-                val[3::4,SNPsIndex:SNPsIndex+1][bytes>=64]=np.nan
+                val[3::4,SNPsIndex:SNPsIndex+1][bytes>=64]=missing
                 val[3::4,SNPsIndex:SNPsIndex+1][bytes>=128]=1
                 val[3::4,SNPsIndex:SNPsIndex+1][bytes>=192]=byteThree
                 bytes=np.mod(bytes,64)
                 val[2::4,SNPsIndex:SNPsIndex+1]=byteZero
-                val[2::4,SNPsIndex:SNPsIndex+1][bytes>=16]=np.nan
+                val[2::4,SNPsIndex:SNPsIndex+1][bytes>=16]=missing
                 val[2::4,SNPsIndex:SNPsIndex+1][bytes>=32]=1
                 val[2::4,SNPsIndex:SNPsIndex+1][bytes>=48]=byteThree
                 bytes=np.mod(bytes,16)
                 val[1::4,SNPsIndex:SNPsIndex+1]=byteZero
-                val[1::4,SNPsIndex:SNPsIndex+1][bytes>=4]=np.nan
+                val[1::4,SNPsIndex:SNPsIndex+1][bytes>=4]=missing
                 val[1::4,SNPsIndex:SNPsIndex+1][bytes>=8]=1
                 val[1::4,SNPsIndex:SNPsIndex+1][bytes>=12]=byteThree
                 bytes=np.mod(bytes,4)
                 val[0::4,SNPsIndex:SNPsIndex+1]=byteZero
-                val[0::4,SNPsIndex:SNPsIndex+1][bytes>=1]=np.nan
+                val[0::4,SNPsIndex:SNPsIndex+1][bytes>=1]=missing
                 val[0::4,SNPsIndex:SNPsIndex+1][bytes>=2]=1
                 val[0::4,SNPsIndex:SNPsIndex+1][bytes>=3]=byteThree
             val = val[iid_index,:] #reorder or trim any extra allocation
@@ -316,8 +345,83 @@ class Bed(SnpReader):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
+    import os
 
-    if True:
+    if False:
+
+        filename = 'M:/deldir/genbgen/good/merged_487400x4840000.bgen'
+
+        import tracemalloc
+        import logging
+        import os
+        logging.basicConfig(level=logging.INFO)
+        from pysnptools.distreader import Bgen
+        tracemalloc.start()
+        print(os.path.getsize(filename))
+        bgen = Bgen(filename)
+        print(bgen.shape)
+        current, peak = tracemalloc.get_traced_memory()
+        print(f"Current memory usage is {current / 10**6}MB; Peak was {peak / 10**6}MB")
+        tracemalloc.stop()
+
+
+
+    if False: #Look for example Bed files with missing data
+        from pysnptools.util._example_file import pysnptools_hashdown
+        from pysnptools.util import example_file
+        for file in pysnptools_hashdown.walk():
+            if file.endswith('.bed'):
+                print(file+"?")
+                bed_file = example_file(file[:-4]+'.*','*.bed')
+                bed = Bed(bed_file)
+                snpdata = bed[:1000,:1000].read()
+                if not np.all(snpdata.val==snpdata.val):
+                    print(bed_file+"!")
+
+    if False:
+        from pysnptools.snpreader import Bed
+        from pysnptools.util import example_file # Download and return local file name
+        #bed_file = example_file('doc/ipynb/all.*','*.bed')
+        bed_file = r'F:\backup\carlk4d\data\carlk\cachebio\genetics\onemil\id1000000.sid_1000000.seed0.byiid\iid990000to1000000.bed'
+        bed = Bed(bed_file,count_A1=False)
+        snpdata1 = bed[:,:1000].read()
+        snpdata2 = bed[:,:1000].read(dtype='int8',_require_float32_64=False)
+        print(snpdata2)
+        snpdata3 = bed[:,:1000].read(dtype='int8',order='C',_require_float32_64=False)
+        print(snpdata3)
+        snpdata3.val=snpdata3.val.astype('float32')
+        snpdata3.val.dtype
+
+    if False:
+        from pysnptools.snpreader import Bed, SnpGen
+        iid_count = 487409
+        sid_count = 5000
+        sid_count_max =  5765294 
+        sid_batch_size = 50
+
+        sid_batch_count = -(sid_count//-sid_batch_size)
+        sid_batch_count_max = -(sid_count_max//-sid_batch_size)
+        snpgen = SnpGen(seed=234,iid_count=iid_count,sid_count=sid_count_max)
+
+        for batch_index in range(sid_batch_count):
+            sid_index_start = batch_index*sid_batch_size
+            sid_index_end = (batch_index+1)*sid_batch_size #what about rounding
+            filename = r'd:\deldir\rand\fakeukC{0}x{1}-{2}.bed'.format(iid_count,sid_index_start,sid_index_end)
+            if not os.path.exists(filename):
+                Bed.write(filename+".temp",snpgen[:,sid_index_start:sid_index_end].read())
+                os.rename(filename+".temp",filename)
+
+
+    if False:
+        from pysnptools.snpreader import Pheno, Bed
+
+        filename = r'm:\deldir\New folder (4)\all_chr.maf0.001.N300.bed'
+        iid_count = 300
+        iid = [['0', 'iid_{0}'.format(iid_index)] for iid_index in range(iid_count)]
+        bed = Bed(filename, iid=iid,count_A1=False)
+        print(bed.iid_count)
+
+    if False:
         from pysnptools.util import example_file
         pheno_fn = example_file("pysnptools/examples/toydata.phe")
 
@@ -327,8 +431,8 @@ if __name__ == "__main__":
         import os
         print(os.getcwd())
         snpdata = Pheno('../examples/toydata.phe').read()         # Read data from Pheno format
-        pstutil.create_directory_if_necessary("tempdir/toydata.bed")
-        Bed.write("tempdir/toydata.bed",snpdata,count_A1=False)   # Write data in Bed format
+        pstutil.create_directory_if_necessary("tempdir/toydata.5chrom.bed")
+        Bed.write("tempdir/toydata.5chrom.bed",snpdata,count_A1=False)   # Write data in Bed format
 
     import doctest
     doctest.testmod(optionflags=doctest.ELLIPSIS)

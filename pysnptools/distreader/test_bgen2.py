@@ -16,7 +16,7 @@ from bgen_reader.test.test_bgen_reader import nowrite_permission, noread_permiss
 
 def example_filepath2(filename):
     filepath = example_filepath(filename)
-    metadata2_path = open_bgen._metadatapath_from_filename(filepath)
+    metadata2_path = open_bgen._metadata_path_from_filename(filepath,samples_filepath=None,assume_simple=True)
     if metadata2_path.exists():
         metadata2_path.unlink()
     return filepath
@@ -183,7 +183,7 @@ def test_to_improve_coverage():
         assert_allclose(g[2, 1, :], b)
 
     # confirm that out-of-date metadata2 file will be updated
-    metadata2 = open_bgen._metadatapath_from_filename(filepath)
+    metadata2 = open_bgen._metadata_path_from_filename(filepath,samples_filepath=None,assume_simple=True)
     assert os.path.getmtime(metadata2) >= os.path.getmtime(filepath)
     filepath.touch()
     assert os.path.getmtime(metadata2) <= os.path.getmtime(filepath)
@@ -224,7 +224,7 @@ def random_file_tests(nsamples, nvariants, bits, verbose=False, overwrite=False)
             verbose=verbose,
             cleanup_temp_files=True,
         )
-    metadata2_path = open_bgen._metadatapath_from_filename(filepath)
+    metadata2_path = open_bgen._metadata_path_from_filename(filepath,samples_filepath=None,assume_simple=True)
     if metadata2_path.exists():
         metadata2_path.unlink()
 

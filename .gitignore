@@ -916,3 +916,6 @@ ModelManifest.xml
 /pysnptools/distreader/.coverage
 /del.cpp
 /delv.cpp
+/pysnptools/examples/example.bgen.simple.metadata2.mmm
+/pysnptools/examples/example.bgen.Sf3ea79.simple.metadata2.mmm
+/pysnptools/examples/bits1.bgen.simple.metadata2.mmm

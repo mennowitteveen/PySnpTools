@@ -756,7 +756,7 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
             return snp2dist
 
 
-
+#!!!cmk look at Eric's push related to Docker, etc from May
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 

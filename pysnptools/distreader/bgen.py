@@ -143,49 +143,29 @@ class Bgen(DistReader):
         self._run_once()
         return self._col_property
 
-    def _apply_iid_function(self,samples,metadata2_temp):
+    def _apply_iid_function(self,samples):
         assert len(samples) > 0, "Expect at least one sample"
         if self._iid_function is not default_iid_function:
             logging.info("Allocating memory for non-default iid_function")
             return np.array([self._iid_function(sample) for sample in samples],dtype='str')
         else:
-            default_iid_key = '_pysnptools_default_iid'
-            if default_iid_key in self._open_bgen._metadata2_memmaps:
-                logging.info("Reading default iids from extended metadata file")
-                return self._open_bgen._metadata2_memmaps[default_iid_key]
-            else:
-                if not metadata2_temp.exists():
-                    shutil.copy(self._open_bgen._metadata2_path,metadata2_temp)
-                metadata2_memmaps = MultiMemMap(metadata2_temp, mode="r+")
-                row = metadata2_memmaps.append_empty(default_iid_key,shape=(len(samples),2),dtype=str(samples.dtype))
-                if len(samples)==0 or ',' not in samples[0]:
-                    logging.info("Extending metadata file with 'no-comma' default iids")
-                    row[:,0]='0'
-                    row[:,1]=samples
-                    return row
-                else:
-                    #Later: Do this in chunks of size about len(samples) using old np.stack(np.core.defchararray.split(samples,',',maxsplit=2)) code (see pre 8/1/2020 code)
-                    with log_in_place("splitting samples on commas ", logging.INFO) as updater:
-                        for i, val in samples:
-                            if i % 1000 == 0:
-                                updater(f"{i,} of {len(samples),}")
-                            row[i,:] = default_iid_function(sample)
-                        return row
+            return self._open_bgen._metadata2_memmaps[self._default_iid_key]
 
 
-    def _apply_sid_function(self,id_list,rsid_list,metadata2_temp):
+    def _apply_sid_function(self,id_list,rsid_list):
         if self._sid_function == 'id':
             return id_list
         elif self._sid_function == 'rsid':
             return rsid_list
         elif self._sid_function is default_sid_function:
-            if np.all(rsid_list=='0') or np.all(rsid_list==''):
-               return id_list
-            else:
-               return np.char.add(np.char.add(id_list,','),rsid_list)
+            return self._open_bgen._metadata2_memmaps[self._default_sid_key]
         else:
+            logging.info("Allocating memory for non-default sid_function")
             return np.array([self._sid_function(id,rsid) for id,rsid in zip(id_list,rsid_list)],dtype='str')
 
+    _col_property_key = '_pysnptools_col_property'
+    _default_iid_key = '_pysnptools_default_iid'
+    _default_sid_key = '_pysnptools_default_sid'
 
     def _run_once(self):
         if self._ran_once:
@@ -196,42 +176,64 @@ class Bgen(DistReader):
         verbose = logging.getLogger().level <= logging.INFO
 
         self._open_bgen = open_bgen(self.filename,self._sample,verbose)
-        metadata2_temp = self._open_bgen._metadata2_path.parent / (self._open_bgen._metadata2_path.name + ".temp")
-        if metadata2_temp.exists():
-            metadata2_temp.unlink()
-        self._row = self._apply_iid_function(self._open_bgen.samples, metadata2_temp)
-        self._col = self._apply_sid_function(self._open_bgen.ids,self._open_bgen.rsids, metadata2_temp)
-        self._set_chrom(metadata2_temp)
-        self._assert_iid_sid_pos(check_val=False)
-        if metadata2_temp.exists():
+        if self._col_property_key not in self._open_bgen._metadata2_memmaps:
+            logging.info("Extending metadata with PySnpTools memmaps")
+            assert self._default_iid_key not in self._open_bgen._metadata2_memmaps, "real assert"
+            assert self._default_sid_key not in self._open_bgen._metadata2_memmaps, "real assert"
+            metadata2_temp = self._open_bgen._metadata2_path.parent / (self._open_bgen._metadata2_path.name + ".temp")
+            if metadata2_temp.exists():
+                metadata2_temp.unlink()
+            metadata2_path = self._open_bgen._metadata2_path
+            shutil.copy(metadata2_path,metadata2_temp)
+            with MultiMemMap(metadata2_temp, mode="r+") as metadata2_memmaps:
+
+                samples = self._open_bgen.samples
+                row = metadata2_memmaps.append_empty(self._default_iid_key,shape=(len(samples),2),dtype=str(samples.dtype))
+                if len(samples)==0 or ',' not in samples[0]:
+                    logging.info("No comma in first sample, so extending metadata file with 'no-comma' default iids")
+                    row[:,0]='0'
+                    row[:,1]=samples
+                else:
+                    #Later: Do this in chunks of size about len(samples) using old np.stack(np.core.defchararray.split(samples,',',maxsplit=2)) code (see pre 8/1/2020 code)
+                    with log_in_place("splitting samples on commas ", logging.INFO) as updater:
+                        for i, val in samples:
+                            if i % 1000 == 0:
+                                updater(f"{i,} of {len(samples),}")
+                            row[i,:] = default_iid_function(sample)
+                col_property = metadata2_memmaps.append_empty(self._col_property_key,shape=(self._open_bgen.nvariants,3),dtype='float')
+                col_property[:,2] = self._open_bgen.positions
+                # Do something fast if all numbers
+                try:
+                    col_property[:,0] = self._open_bgen.chromosomes
+                except:
+                    # If that doesn't work, do something slow
+                    for i, val in enumerate(self._open_bgen.chromosomes):#!!!cmk need a logging message
+                        try:
+                            col_property[i,0] = int(val)
+                        except:
+                            col_property[i,0] = 0
+
+                rsid_list = self._open_bgen.rsids
+                id_list = self._open_bgen.ids
+                assert str(rsid_list.dtype).startswith('<U') and str(id_list.dtype).startswith('<U'), "real assert"
+                if _all_equal_in_parts(rsid_list,'0') or _all_equal_in_parts(rsid_list,''):
+                   col = metadata2_memmaps.append_empty(self._default_sid_key,shape=self._open_bgen.nvariants,dtype=str(id_list.dtype))
+                   col[:] = id_list
+                else:
+                    max_length = int(str(rsid_list.dtype)[2:]) + 1 + int(str(id_list.dtype)[2:])
+                    col = metadata2_memmaps.append_empty(self._default_sid_key,shape=self._open_bgen.nvariants,dtype=f'<U{max_length}')
+                    for _, _, start, end in _parts(len(col)):
+                        col[start:end]=np.char.add(np.char.add(id_list[start:end],','),rsid_list[start:end])
+
             self._open_bgen.close()
-            self._open_bgen._metadata2_path.unlink()
-            shutil.copy(metadata2_temp,self._open_bgen._metadata2_path)
+            metadata2_path.unlink()
+            shutil.copy(metadata2_temp,metadata2_path)
             self._open_bgen = open_bgen(self.filename,self._sample,verbose)
 
-
-    def _set_chrom(self, metadata2_temp):
-        col_property_key = '_pysnptools_col_property'
-        if col_property_key in self._open_bgen._metadata2_memmaps:
-            logging.info("Reading column properties from extended metadata file")
-            self._col_property = self._open_bgen._metadata2_memmaps[col_property_key]
-        else:
-            if not metadata2_temp.exists():
-                shutil.copy(self._open_bgen._metadata2_path,metadata2_temp)
-            metadata2_memmaps = MultiMemMap(metadata2_temp, mode="r+")
-            self._col_property = metadata2_memmaps.append_empty(col_property_key,shape=(self._open_bgen.nvariants,3),dtype='float')
-            self._col_property[:,2] = self._open_bgen.positions
-            # Do something fast if all numbers
-            try:
-                self._col_property[:,0] = self._open_bgen.chromosomes
-            except:
-                # Do something slow, if needed #!!!cmk test
-                for i, val in enumerate(self._open_bgen.chromosomes):#!!!cmk need a logging message
-                    try:
-                        self._col_property[i,0] = int(val)
-                    except:
-                        self._col_property[i,0] = 0
-                
+        self._row = self._apply_iid_function(self._open_bgen.samples)
+        self._col = self._apply_sid_function(self._open_bgen.ids,self._open_bgen.rsids)
+        self._col_property = self._open_bgen._metadata2_memmaps[self._col_property_key]
+        self._assert_iid_sid_pos(check_val=False)
 
     def _read(self, iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok):
         self._run_once()
@@ -436,6 +438,25 @@ class Bgen(DistReader):
         metadata2 = open_bgen._metadata_path_from_filename(self.filename,samples_filepath=None,assume_simple=True)
         if os.path.exists(metadata2):
             copier.input(metadata2)
+
+def _parts(item_count):
+    if item_count==0:
+        return
+    part_sqrt = int(math.ceil(item_count/math.sqrt(item_count)))
+    start = 0
+    for part_index in range(part_sqrt):
+        end = min(start + part_sqrt,item_count)
+        yield part_index, part_sqrt, start, end
+        start = end
+    assert end==item_count, "real assert"
+
+def _all_equal_in_parts(array, val):
+    for _, _, start, end in _parts(len(array)):
+        if not np.all(array[start:end]==val):
+            return False
+    return True
+
+
 
 
 class TestBgen(unittest.TestCase):
@@ -712,10 +733,10 @@ if __name__ == "__main__":
 
     if True:
 
-        filename = r"M:\deldir\fakeuk450000x1000.bgen"
-        #filename = "M:/deldir/genbgen/good/merged_487400x220000.bgen"
-        # filename = 'M:/deldir/genbgen/good/merged_487400x1100000.bgen'
-        #filename = 'M:/deldir/genbgen/good/merged_487400x4840000.bgen'
+        # filename = r"M:\deldir\fakeuk450000x1000.bgen"
+        # filename = "M:/deldir/genbgen/good/merged_487400x220000.bgen"
+        filename = 'M:/deldir/genbgen/good/merged_487400x1100000.bgen'
+        # filename = 'M:/deldir/genbgen/good/merged_487400x4840000.bgen'
 
         import tracemalloc
         import logging

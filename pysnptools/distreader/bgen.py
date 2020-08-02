@@ -175,9 +175,12 @@ class Bgen(DistReader):
         assert os.path.exists(self.filename), "Expect file to exist ('{0}')".format(self.filename)
         verbose = logging.getLogger().level <= logging.INFO
 
-        self._open_bgen = open_bgen(self.filename,self._sample,verbose)
+        self._open_bgen = open_bgen(self.filename,self._sample,assume_simple=True,verbose=verbose)
+        assert self._open_bgen.nvariants==0 or self._open_bgen.nalleles[0]==2, "expect number of alleles to be 2"
+        assert self._open_bgen.nvariants==0 or not self._open_bgen.phased[0], "expect data to be unphased"
+
         if self._col_property_key not in self._open_bgen._metadata2_memmaps:
-            logging.info("Extending metadata with PySnpTools memmaps")
+            logging.info("Extending metadata file with PySnpTools metadata")
             assert self._default_iid_key not in self._open_bgen._metadata2_memmaps, "real assert"
             assert self._default_sid_key not in self._open_bgen._metadata2_memmaps, "real assert"
             metadata2_temp = self._open_bgen._metadata2_path.parent / (self._open_bgen._metadata2_path.name + ".temp")
@@ -228,7 +231,7 @@ class Bgen(DistReader):
             self._open_bgen.close()
             metadata2_path.unlink()
             shutil.copy(metadata2_temp,metadata2_path)
-            self._open_bgen = open_bgen(self.filename,self._sample,verbose)
+            self._open_bgen = open_bgen(self.filename,self._sample,assume_simple=True,verbose=verbose)
 
         self._row = self._apply_iid_function(self._open_bgen.samples)
         self._col = self._apply_sid_function(self._open_bgen.ids,self._open_bgen.rsids)
@@ -241,8 +244,6 @@ class Bgen(DistReader):
         if order=='A':
             order='F'
 
-        assert set(self._open_bgen.nalleles)=={2}, "expect number of alleles to be 2"
-        assert set(self._open_bgen.phased)=={False}, "expect data to be unphased"
         val = self._open_bgen.read((iid_index_or_none,sid_index_or_none),dtype=dtype,order=order)
         assert val.shape[-1]==3, "Expect ploidy to be 2"
         return val
@@ -732,6 +733,32 @@ if __name__ == "__main__":
     logging.getLogger().setLevel(logging.INFO)
 
     if True:
+
+        import tracemalloc
+        import logging
+        import os
+        import time
+
+        logging.basicConfig(level=logging.INFO)
+        tracemalloc.start()
+
+        start = time.time()
+
+        filename = "M:/deldir/genbgen/good/merged_487400x220000.bgen"
+        #filename = 'M:/deldir/genbgen/good/merged_487400x1100000.bgen'
+        bgen = Bgen(filename)
+        #val = bgen[:,1000000:1000031].read().val
+        val = bgen[200000:200031,100000:100031].read().val
+        print('{0},{1:,}'.format(val.shape,val.shape[0]*val.shape[1]))
+
+        current, peak = tracemalloc.get_traced_memory()
+        print(
+            f"Current memory usage is {current / 10**6}MB; Peak was {peak / 10**6}MB"
+        )
+        print("Time = {0} seconds".format(time.time() - start))
+        tracemalloc.stop()
+
+    if False:
 
         # filename = r"M:\deldir\fakeuk450000x1000.bgen"
         # filename = "M:/deldir/genbgen/good/merged_487400x220000.bgen"

@@ -170,12 +170,11 @@ class Bgen(DistReader):
     def _run_once(self):
         if self._ran_once:
             return
-        self._ran_once = True
 
         assert os.path.exists(self.filename), "Expect file to exist ('{0}')".format(self.filename)
         verbose = logging.getLogger().level <= logging.INFO
 
-        self._open_bgen = open_bgen(self.filename,self._sample,assume_simple=True,verbose=verbose)
+        self._open_bgen = open_bgen(self.filename,self._sample,verbose=verbose)
         assert self._open_bgen.nvariants==0 or self._open_bgen.nalleles[0]==2, "expect number of alleles to be 2"
         assert self._open_bgen.nvariants==0 or not self._open_bgen.phased[0], "expect data to be unphased"
 
@@ -187,10 +186,10 @@ class Bgen(DistReader):
             if metadata2_temp.exists():
                 metadata2_temp.unlink()
             metadata2_path = self._open_bgen._metadata2_path
+            del self._open_bgen
             shutil.copy(metadata2_path,metadata2_temp)
             with MultiMemMap(metadata2_temp, mode="r+") as metadata2_memmaps:
-
-                samples = self._open_bgen.samples
+                samples = metadata2_memmaps['samples']
                 row = metadata2_memmaps.append_empty(self._default_iid_key,shape=(len(samples),2),dtype=str(samples.dtype))
                 if len(samples)==0 or ',' not in samples[0]:
                     logging.info("No comma in first sample, so extending metadata file with 'no-comma' default iids")
@@ -203,40 +202,40 @@ class Bgen(DistReader):
                             if i % 1000 == 0:
                                 updater(f"{i,} of {len(samples),}")
                             row[i,:] = default_iid_function(sample)
-                col_property = metadata2_memmaps.append_empty(self._col_property_key,shape=(self._open_bgen.nvariants,3),dtype='float')
-                col_property[:,2] = self._open_bgen.positions
+                col_property = metadata2_memmaps.append_empty(self._col_property_key,shape=(len(metadata2_memmaps['ids']),3),dtype='float')
+                col_property[:,2] = metadata2_memmaps['positions']
                 # Do something fast if all numbers
                 try:
-                    col_property[:,0] = self._open_bgen.chromosomes
+                    col_property[:,0] = metadata2_memmaps['chromosomes']
                 except:
                     # If that doesn't work, do something slow
-                    for i, val in enumerate(self._open_bgen.chromosomes):#!!!cmk need a logging message
+                    for i, val in enumerate(metadata2_memmaps['chromosomes']):#!!!cmk need a logging message
                         try:
                             col_property[i,0] = int(val)
                         except:
                             col_property[i,0] = 0
 
-                rsid_list = self._open_bgen.rsids
-                id_list = self._open_bgen.ids
+                rsid_list = metadata2_memmaps['rsids']
+                id_list = metadata2_memmaps['ids']
                 assert str(rsid_list.dtype).startswith('<U') and str(id_list.dtype).startswith('<U'), "real assert"
                 if _all_equal_in_parts(rsid_list,'0') or _all_equal_in_parts(rsid_list,''):
-                   col = metadata2_memmaps.append_empty(self._default_sid_key,shape=self._open_bgen.nvariants,dtype=str(id_list.dtype))
+                   col = metadata2_memmaps.append_empty(self._default_sid_key,shape=len(metadata2_memmaps['ids']),dtype=str(id_list.dtype))
                    col[:] = id_list
                 else:
                     max_length = int(str(rsid_list.dtype)[2:]) + 1 + int(str(id_list.dtype)[2:])
-                    col = metadata2_memmaps.append_empty(self._default_sid_key,shape=self._open_bgen.nvariants,dtype=f'<U{max_length}')
+                    col = metadata2_memmaps.append_empty(self._default_sid_key,shape=len(metadata2_memmaps['ids']),dtype=f'<U{max_length}')
                     for _, _, start, end in _parts(len(col)):
                         col[start:end]=np.char.add(np.char.add(id_list[start:end],','),rsid_list[start:end])
 
-            self._open_bgen.close()
             metadata2_path.unlink()
             shutil.copy(metadata2_temp,metadata2_path)
-            self._open_bgen = open_bgen(self.filename,self._sample,assume_simple=True,verbose=verbose)
+            self._open_bgen = open_bgen(self.filename,self._sample,verbose=verbose)
 
         self._row = self._apply_iid_function(self._open_bgen.samples)
         self._col = self._apply_sid_function(self._open_bgen.ids,self._open_bgen.rsids)
         self._col_property = self._open_bgen._metadata2_memmaps[self._col_property_key]
         self._assert_iid_sid_pos(check_val=False)
+        self._ran_once = True
 
     def _read(self, iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok):
         self._run_once()
@@ -329,7 +328,7 @@ class Bgen(DistReader):
         dir, file = os.path.split(filename)
         if dir=='':
             dir='.'
-        metadata_mmm =  open_bgen._metadata_path_from_filename(file,samples_filepath=None,assume_simple=True)
+        metadata_mmm =  open_bgen._metadata_path_from_filename(file,samples_filepath=None)
         samplefile =  os.path.splitext(file)[0]+'.sample'
         genfile =  os.path.splitext(file)[0]+'.gen'
         olddir = os.getcwd()
@@ -354,7 +353,8 @@ class Bgen(DistReader):
             os.remove(genfile)
             os.remove(samplefile)
         os.chdir(olddir)
-        return Bgen(filename, iid_function=iid_function, sid_function=sid_function)
+        new_bgen = Bgen(filename, iid_function=iid_function, sid_function=sid_function)
+        return new_bgen
 
     @staticmethod
     def genwrite(filename, distreader, decimal_places=None, id_rsid_function=default_id_rsid_function, sample_function=default_sample_function, block_size=None):
@@ -436,7 +436,7 @@ class Bgen(DistReader):
         copier.input(self.filename)
         if self._sample is not None:
             copier.input(self._sample)
-        metadata2 = open_bgen._metadata_path_from_filename(self.filename,samples_filepath=None,assume_simple=True)
+        metadata2 = open_bgen._metadata_path_from_filename(self.filename,samples_filepath=None)
         if os.path.exists(metadata2):
             copier.input(metadata2)
 
@@ -473,7 +473,7 @@ class TestBgen(unittest.TestCase):
         np.testing.assert_allclose(distdata0.val,distdata1.val,atol=atol,equal_nan=True,verbose=True)
 
 
-    def test1(self):
+    def cmktest1(self):
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -484,7 +484,7 @@ class TestBgen(unittest.TestCase):
         distdata2 = bgen2.read()
         os.chdir(old_dir)
 
-    def test_other(self):
+    def cmktest_other(self):
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -493,7 +493,7 @@ class TestBgen(unittest.TestCase):
         assert np.all(bgen.iid[0] == ('0','other_001'))
         os.chdir(old_dir)
 
-    def test_zero(self):
+    def cmktest_zero(self):
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -504,7 +504,7 @@ class TestBgen(unittest.TestCase):
         os.chdir(old_dir)
 
 
-    def test2(self):
+    def cmktest2(self):
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -515,7 +515,19 @@ class TestBgen(unittest.TestCase):
         distdata2 = bgen2.read()
         os.chdir(old_dir)
 
-    def test_read_write_round_trip(self):
+    def test_memmap(self):
+        from pysnptools.distreader import DistGen
+
+        old_dir = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+        assert 'QCTOOLPATH' in os.environ, "To run test_read_write_round_trip, QCTOOLPATH environment variable must be set. (On Windows, install QcTools in 'Ubuntu on Windows' and set to 'ubuntu run <qctoolLinuxPath>')."
+
+        distgen0data = DistGen(seed=332,iid_count=50,sid_count=5).read()
+        file1x = 'temp/roundtrip1-{0}-{1}x.bgen'.format(0,1)#!!!cmk
+        assert Bgen.write(file1x,distgen0data,bits=1,compression='zlib',cleanup_temp_files=False).iid[0,0]=='0'
+        os.chdir(old_dir)
+
+    def cmktest_read_write_round_trip(self):
         from pysnptools.distreader import DistGen
 
         old_dir = os.getcwd()
@@ -529,9 +541,12 @@ class TestBgen(unittest.TestCase):
         for i,distdata0 in enumerate([distgen0data,exampledata]):
             for bits in list(range(1,33)):
                 logging.info("input#={0},bits={1}".format(i,bits))
+                file1x = 'temp/roundtrip1-{0}-{1}x.bgen'.format(i,bits)#!!!cmk
+                assert Bgen.write(file1x,distdata0,bits=bits,compression='zlib',cleanup_temp_files=False).iid[0,0]=='0'
                 file1 = 'temp/roundtrip1-{0}-{1}.bgen'.format(i,bits)
                 distdata1 = Bgen.write(file1,distdata0,bits=bits,compression='zlib',cleanup_temp_files=False).read()
-                distdata2 = Bgen(file1,).read()
+                assert distdata1.iid[0,0]=='0'
+                distdata2 = Bgen(file1).read()
                 assert distdata1.allclose(distdata2,equal_nan=True)
                 atol=1.0/(2**(bits or 16))
                 if (bits or 16) == 1:
@@ -539,7 +554,7 @@ class TestBgen(unittest.TestCase):
                 TestBgen.assert_approx_equal(distdata0,distdata1,atol=atol)
         os.chdir(old_dir)
 
-    def test_bad_sum(self):
+    def cmktest_bad_sum(self):
         from pysnptools.distreader import DistGen
 
         old_dir = os.getcwd()
@@ -591,7 +606,7 @@ class TestBgen(unittest.TestCase):
         
 
 
-    def test_read1(self):
+    def cmktest_read1(self):
 
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -601,7 +616,7 @@ class TestBgen(unittest.TestCase):
         pstutil.create_directory_if_necessary(file_to)
         if os.path.exists(file_to+".metadata"):
             os.remove(file_to+".metadata")
-        meta = open_bgen._metadata_path_from_filename(file_to,samples_filepath=None,assume_simple=True)
+        meta = open_bgen._metadata_path_from_filename(file_to,samples_filepath=None)
         if os.path.exists(meta):
             os.remove(meta)
         shutil.copy(file_from,file_to)
@@ -624,12 +639,16 @@ class TestBgen(unittest.TestCase):
             bgen = Bgen(file_to,iid_function,sid_function=sid_function)
             assert bgen.sid[0]=='SNPID_2,RSID_2'
 
-        os.remove(bgen._open_bgen._metadata_path_from_filename(file_to,samples_filepath=None,assume_simple=True))
+        metafile = bgen._open_bgen._metadata_path_from_filename(file_to,samples_filepath=None)
+        del bgen
+        os.remove(metafile)
         sid_function = lambda id,rsid: '{0},{1}'.format(id,rsid)
         bgen = Bgen(file_to,iid_function,sid_function=sid_function)
         assert bgen.sid[0]=='SNPID_2,RSID_2'
 
-        os.remove(bgen._open_bgen._metadata_path_from_filename(file_to,samples_filepath=None,assume_simple=True))
+        metafile = bgen._open_bgen._metadata_path_from_filename(file_to,samples_filepath=None)
+        del bgen
+        os.remove(metafile)
         bgen = Bgen(file_to,iid_function,sid_function='rsid')
         assert np.array_equal(bgen.iid[0],['sample_001', 'sample_001'])
         assert bgen.sid[0]=='RSID_2'
@@ -639,13 +658,13 @@ class TestBgen(unittest.TestCase):
 
 
         #This and many of the tests based on bgen-reader-py\bgen_reader\test
-    def test_bgen_samples_inside_bgen(self):
-        with example_filepath("haplotypes.bgen") as filepath:
+    def cmktest_bgen_samples_inside_bgen(self):
+        with example_filepath("example.32bits.bgen") as filepath:
             data = Bgen(filepath)
-            samples = [("0","sample_0"), ("0","sample_1"), ("0","sample_2"), ("0","sample_3")]
-            assert (data.iid == samples).all()
+            samples = [("0","sample_001"), ("0","sample_002"), ("0","sample_003"), ("0","sample_004")]
+            assert (data.iid[:4] == samples).all()
 
-    def test_bgen_reader_variants_info(self):
+    def cmktest_bgen_reader_variants_info(self):
         with example_filepath("example.32bits.bgen") as filepath:
             bgen = Bgen(filepath,sid_function='id')
 
@@ -683,7 +702,7 @@ class TestBgen(unittest.TestCase):
 
     
 
-    def test_bgen_reader_without_metadata(self):
+    def cmktest_bgen_reader_without_metadata(self):
         with example_filepath("example.32bits.bgen") as filepath:
             bgen = Bgen(filepath)
             variants = bgen.read()
@@ -691,7 +710,7 @@ class TestBgen(unittest.TestCase):
             assert samples[-1,1]=="sample_500"
 
 
-    def test_bgen_reader_file_notfound(self):
+    def cmktest_bgen_reader_file_notfound(self):
             bgen = Bgen("/1/2/3/example.32bits.bgen")
             try:
                 bgen.iid # expect error
@@ -700,12 +719,12 @@ class TestBgen(unittest.TestCase):
                 got_error = True
             assert got_error
 
-    def test_bgen_reader_no_sample(self):
-        with example_filepath("complex.23bits.no.samples.bgen") as filepath:
+    def cmktest_bgen_reader_no_sample(self):
+        with example_filepath("example.32bits.bgen") as filepath:
             bgen = Bgen(filepath)
-            assert bgen.sid_count == 10
+            assert bgen.sid_count == 199
 
-    def test_doctest(self):
+    def cmktest_doctest(self):
         import pysnptools.distreader.bgen
         import doctest
 
@@ -732,7 +751,7 @@ def getTestSuite():
 if __name__ == "__main__":
     logging.getLogger().setLevel(logging.INFO)
 
-    if True:
+    if False:
 
         import tracemalloc
         import logging
@@ -790,10 +809,10 @@ if __name__ == "__main__":
             #print(os.path.getsize(filename))
 
 
-    if False: #!!!c,l
-        from pysnptools.distreader import Bgen
-        bgen = Bgen(r'D:\OneDrive\programs\hide\bgen-reader-py\bgen_reader\_example\complex.23bits.no.samples.bgen')
-        print(bgen.sid_count)
+    #if False: #!!!c,l
+    #    from pysnptools.distreader import Bgen
+    #    bgen = Bgen(r'D:\OneDrive\programs\hide\bgen-reader-py\bgen_reader\_example\complex.23bits.no.samples.bgen',allow_complex=True)
+    #    print(bgen.sid_count)
 
     if False:
         from pysnptools.distreader import Bgen
@@ -853,7 +872,7 @@ if __name__ == "__main__":
 
 
     suites = getTestSuite()
-    r = unittest.TextTestRunner(failfast=False)
+    r = unittest.TextTestRunner(failfast=True)
     ret = r.run(suites)
     assert ret.wasSuccessful()
 

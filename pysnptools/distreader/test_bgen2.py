@@ -16,7 +16,7 @@ from bgen_reader.test.test_bgen_reader import nowrite_permission, noread_permiss
 
 def example_filepath2(filename):
     filepath = example_filepath(filename)
-    metadata2_path = open_bgen._metadata_path_from_filename(filepath,samples_filepath=None,assume_simple=True)
+    metadata2_path = open_bgen._metadata_path_from_filename(filepath,samples_filepath=None)
     if metadata2_path.exists():
         metadata2_path.unlink()
     return filepath
@@ -35,7 +35,7 @@ def test_typing():
 
 
 def test_bgen_samples_not_present():
-    data = open_bgen(example_filepath2("complex.23bits.no.samples.bgen"), verbose=False)
+    data = open_bgen(example_filepath2("complex.23bits.no.samples.bgen"),allow_complex=True, verbose=False)
     samples = ["sample_0", "sample_1", "sample_2", "sample_3"]
     assert all(data.samples == samples)
 
@@ -44,6 +44,7 @@ def test_bgen_samples_specify_samples_file():
     data = open_bgen(
         example_filepath2("complex.23bits.bgen"),
         samples_filepath=example_filepath("complex.sample"),
+        allow_complex=True,
         verbose=False,
     )
     samples = ["sample_0", "sample_1", "sample_2", "sample_3"]
@@ -57,7 +58,7 @@ def test_bgen_samples_outside_bgen_unreadable(tmp_path):
     copyfile(example_filepath("complex.sample"), samples_filepath)
     with noread_permission(samples_filepath):
         with pytest.raises(PermissionError):
-            open_bgen(bgen_filepath, samples_filepath=samples_filepath, verbose=False)
+            open_bgen(bgen_filepath, samples_filepath=samples_filepath, allow_complex=True, verbose=False)
 
 
 @pytest.mark.skipif(platform.system() != "Darwin", reason="only reliable on macos")
@@ -183,7 +184,7 @@ def test_to_improve_coverage():
         assert_allclose(g[2, 1, :], b)
 
     # confirm that out-of-date metadata2 file will be updated
-    metadata2 = open_bgen._metadata_path_from_filename(filepath,samples_filepath=None,assume_simple=True)
+    metadata2 = open_bgen._metadata_path_from_filename(filepath,samples_filepath=None)
     assert os.path.getmtime(metadata2) >= os.path.getmtime(filepath)
     filepath.touch()
     assert os.path.getmtime(metadata2) <= os.path.getmtime(filepath)
@@ -224,7 +225,7 @@ def random_file_tests(nsamples, nvariants, bits, verbose=False, overwrite=False)
             verbose=verbose,
             cleanup_temp_files=True,
         )
-    metadata2_path = open_bgen._metadata_path_from_filename(filepath,samples_filepath=None,assume_simple=True)
+    metadata2_path = open_bgen._metadata_path_from_filename(filepath,samples_filepath=None)
     if metadata2_path.exists():
         metadata2_path.unlink()
 
@@ -251,7 +252,7 @@ def test_open_bgen_file_notfound():
 
 def test_open_bgen_complex():
     filepath = example_filepath2("complex.23bits.bgen")
-    bgen2 = open_bgen(filepath, verbose=False)
+    bgen2 = open_bgen(filepath,allow_complex=True, verbose=False)
 
     assert_equal(bgen2.chromosomes[0], "01")
     assert_equal(bgen2.ids[0], "")
@@ -301,6 +302,7 @@ def test_open_bgen_complex_sample_file():
     bgen2 = open_bgen(
         example_filepath2("complex.23bits.bgen"),
         samples_filepath=example_filepath("complex.sample"),
+        allow_complex=True,
         verbose=False,
     )
 

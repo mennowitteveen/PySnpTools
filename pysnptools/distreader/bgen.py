@@ -4,8 +4,8 @@ import numpy as np
 import unittest
 
 from bgen_reader import example_filepath
-from bgen_reader import open_bgen
-from bgen_reader._multimemmap import MultiMemMap
+from pysnptools.distreader._bgen2 import open_bgen
+from pysnptools.distreader._multimemmap import MultiMemMap
 from pysnptools.util import log_in_place
 import shutil
 import math
@@ -970,7 +970,7 @@ def getTestSuite():
 if __name__ == "__main__":
     logging.getLogger().setLevel(logging.INFO)
 
-    if False:
+    if True:
 
         import tracemalloc
         import logging

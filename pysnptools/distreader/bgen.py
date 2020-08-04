@@ -1,15 +1,11 @@
 import os
 import logging
 import numpy as np
-import warnings
 import unittest
-import sys
-from numpy import asarray, float64, full, nan
 
 from bgen_reader import example_filepath
 from bgen_reader import open_bgen
 from bgen_reader._multimemmap import MultiMemMap
-from tempfile import mkdtemp
 from pysnptools.util import log_in_place
 import shutil
 import math
@@ -20,8 +16,10 @@ from pysnptools.distreader import DistReader
 
 def default_iid_function(sample):
     """
-    The default function for turning a Bgen sample into a two-part :attr:`pysnptools.distreader.DistReader.iid`.
-    If the Bgen sample contains a single comma, we split on the comma to create the iid.
+    The default function for turning a Bgen sample into a
+    two-part :attr:`pysnptools.distreader.DistReader.iid`.
+    If the Bgen sample contains a single comma, we split on the comma to
+    create the iid.
     Otherwise, the iid will be ('0',sample)
 
     >>> default_iid_function('fam0,ind0')
@@ -38,7 +36,8 @@ def default_iid_function(sample):
 
 def default_sid_function(id, rsid):
     """
-    The default function for turning a Bgen (SNP) id and rsid into a :attr:`pysnptools.distreader.DistReader.sid`.
+    The default function for turning a Bgen (SNP) id and rsid into a
+    :attr:`pysnptools.distreader.DistReader.sid`.
     If the Bgen rsid is '' or '0', the sid will be the (SNP) id.
     Otherwise, the sid will be 'ID,RSID'
 
@@ -108,7 +107,6 @@ class Bgen(DistReader):
 
         :Example:
 
-        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.distreader import Bgen
         >>> from pysnptools.util import example_file # Download and return local file name
         >>> bgen_file = example_file("pysnptools/examples/example.bgen")
@@ -126,7 +124,7 @@ class Bgen(DistReader):
         iid_function=default_iid_function,
         sid_function=default_sid_function,
         sample=None,
-        fresh_properties = True, #!!!cmk doc this
+        fresh_properties=True,  # !!!cmk doc this
     ):
         super(Bgen, self).__init__()
         self._ran_once = False
@@ -140,14 +138,14 @@ class Bgen(DistReader):
     @property
     def row(self):
         self._run_once()
-        if self._fresh_properties and not self._row.flags['OWNDATA']:
+        if self._fresh_properties and not self._row.flags["OWNDATA"]:
             self._row = self._row.copy()
         return self._row
 
     @property
     def col(self):
         self._run_once()
-        if self._fresh_properties and not self._col.flags['OWNDATA']:
+        if self._fresh_properties and not self._col.flags["OWNDATA"]:
             self._col = self._col.copy()
         return self._col
 
@@ -156,7 +154,7 @@ class Bgen(DistReader):
         """*same as* :attr:`pos`
         """
         self._run_once()
-        if self._fresh_properties and not self._col_property.flags['OWNDATA']:
+        if self._fresh_properties and not self._col_property.flags["OWNDATA"]:
             self._col_property = self._col_property.copy()
         return self._col_property
 
@@ -240,7 +238,7 @@ class Bgen(DistReader):
                         for i, val in samples:
                             if i % 1000 == 0:
                                 updater(f"{i,} of {len(samples),}")
-                            row[i, :] = default_iid_function(sample)
+                            row[i, :] = default_iid_function(samples)
                 col_property = metadata2_memmaps.append_empty(
                     self._col_property_key,
                     shape=(len(metadata2_memmaps["ids"]), 3),
@@ -250,14 +248,14 @@ class Bgen(DistReader):
                 # Do something fast if all numbers
                 try:
                     col_property[:, 0] = metadata2_memmaps["chromosomes"]
-                except:
+                except Exception:
                     # If that doesn't work, do something slow
                     for i, val in enumerate(
                         metadata2_memmaps["chromosomes"]
-                    ):  #!!!cmk need a logging message
+                    ):  # !!!cmk need a logging message
                         try:
                             col_property[i, 0] = int(val)
-                        except:
+                        except Exception:
                             col_property[i, 0] = 0
 
                 rsid_list = metadata2_memmaps["rsids"]
@@ -328,7 +326,6 @@ class Bgen(DistReader):
     def flush(self):
         """Close the \*.bgen file for reading. (If values or properties are accessed again, the file will be reopened.)
 
-        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.distreader import Bgen
         >>> from pysnptools.util import example_file # Download and return local file name
         >>> bgen_file = example_file("pysnptools/examples/example.bgen")
@@ -446,7 +443,7 @@ class Bgen(DistReader):
             else "",
         )
         try:
-            output = subprocess.check_output(
+            _ = subprocess.check_output(
                 cmd, stderr=subprocess.STDOUT, shell=True, universal_newlines=True
             )
         except subprocess.CalledProcessError as exc:
@@ -506,11 +503,17 @@ class Bgen(DistReader):
         block_size = block_size or max((100 * 1000) // max(1, distreader.row_count), 1)
 
         if decimal_places is None:
-            format_function = lambda num: "{0}".format(num)
+
+            def format(num):
+                return f"{num}"
+
+            format_function = format
         else:
-            format_function = lambda num: ("{0:." + str(decimal_places) + "f}").format(
-                num
-            )
+
+            def format(num):
+                return ("{0:." + str(decimal_places) + "f}").format(num)
+
+            format_function = format
 
         start = 0
         updater_freq = 10000
@@ -625,9 +628,9 @@ class TestBgen(unittest.TestCase):
 
         logging.info("in TestBgen test1")
         bgen = Bgen("../examples/example.bgen")
-        distdata = bgen.read()
+        bgen.read()
         bgen2 = bgen[:2, ::3]
-        distdata2 = bgen2.read()
+        bgen2.read()
         os.chdir(old_dir)
 
     def test_other(self):
@@ -655,14 +658,12 @@ class TestBgen(unittest.TestCase):
 
         logging.info("in TestBgen test2")
         bgen = Bgen("../examples/bits1.bgen")
-        distdata = bgen.read()
+        bgen.read()
         bgen2 = bgen[:2, ::3]
-        distdata2 = bgen2.read()
+        bgen2.read()
         os.chdir(old_dir)
 
     def test_memmap(self):
-        from pysnptools.distreader import DistGen
-
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
         assert (
@@ -672,11 +673,11 @@ class TestBgen(unittest.TestCase):
         distgen0data = Bgen("../examples/example.bgen")[:, 10].read()
         assert distgen0data.iid[0, 0] == "0"
         # distgen0data = DistGen(seed=332,iid_count=50,sid_count=5).read()
-        file1y = "temp/roundtrip1-{0}-{1}y.bgen".format(0, 1)  #!!!cmk
+        file1y = "temp/roundtrip1-{0}-{1}y.bgen".format(0, 1)  # !!!cmk
         bgen = Bgen.write(file1y, distgen0data)
         assert bgen.iid is not None
-        file1x = "temp/roundtrip1-{0}-{1}x.bgen".format(0, 1)  #!!!cmk
-        # assert Bgen.write(file1x,distgen0data).iid[0,0]=='0'
+        file1x = "temp/roundtrip1-{0}-{1}x.bgen".format(0, 1)  # !!!cmk
+        assert Bgen.write(file1x, distgen0data).iid[0, 0] == "0"
         os.chdir(old_dir)
 
     def test_read_write_round_trip(self):
@@ -713,8 +714,6 @@ class TestBgen(unittest.TestCase):
         os.chdir(old_dir)
 
     def test_bad_sum(self):
-        from pysnptools.distreader import DistGen
-
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -739,7 +738,7 @@ class TestBgen(unittest.TestCase):
         failed = False
         try:
             bgen = Bgen.write("temp/should_fail.bgen", distdata)
-        except:
+        except Exception:
             failed = True
         assert failed
 
@@ -748,7 +747,7 @@ class TestBgen(unittest.TestCase):
         failed = False
         try:
             bgen = Bgen.write("temp/should_fail.bgen", distdata)
-        except:
+        except Exception:
             failed = True
         assert failed
 
@@ -757,7 +756,7 @@ class TestBgen(unittest.TestCase):
         failed = False
         try:
             bgen = Bgen.write("temp/should_fail.bgen", distdata)
-        except:
+        except Exception:
             failed = True
         assert failed
         os.chdir(old_dir)
@@ -782,10 +781,11 @@ class TestBgen(unittest.TestCase):
             assert np.array_equal(bgen.iid[0], ["0", "sample_001"])
             assert bgen.sid[0] == "SNPID_2,RSID_2"
 
-            iid_function = lambda bgen_sample_id: (
-                bgen_sample_id,
-                bgen_sample_id,
-            )  # Use the bgen_sample_id for both parts of iid
+            # Use the bgen_sample_id for both parts of iid
+            def iid_dup(bgen_sample_id):
+                return (bgen_sample_id, bgen_sample_id)
+
+            iid_function = iid_dup
             bgen = Bgen(file_to, iid_function=iid_function, sid_function="id")
             assert np.array_equal(bgen.iid[0], ["sample_001", "sample_001"])
             assert bgen.sid[0] == "SNPID_2"
@@ -873,7 +873,7 @@ class TestBgen(unittest.TestCase):
     def test_bgen_reader_without_metadata(self):
         with example_filepath("example.32bits.bgen") as filepath:
             bgen = Bgen(filepath)
-            variants = bgen.read()
+            bgen.read()
             samples = bgen.iid
             assert samples[-1, 1] == "sample_500"
 
@@ -882,7 +882,7 @@ class TestBgen(unittest.TestCase):
         try:
             bgen.iid  # expect error
             got_error = False
-        except Exception as e:
+        except Exception:
             got_error = True
         assert got_error
 
@@ -895,11 +895,26 @@ class TestBgen(unittest.TestCase):
         import pysnptools.distreader.bgen
         import doctest
 
+        old_level = logging.getLogger().level
+        logging.getLogger().setLevel(logging.WARN)
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
         result = doctest.testmod(pysnptools.distreader.bgen)
         os.chdir(old_dir)
+        logging.getLogger().setLevel(old_level)
         assert result.failed == 0, "failed doc test: " + __file__
+
+
+    #def test_verbose(self):#!!!cmk remove
+    #    old_level = logging.getLogger().level
+    #    logging.getLogger().setLevel(logging.WARN)
+    #    from pysnptools.distreader import Bgen
+    #    from pysnptools.util import example_file # Download and return local file name
+    #    bgen_file = example_file("pysnptools/examples/example.bgen")
+    #    data_on_disk = Bgen(bgen_file)
+    #    print((data_on_disk.iid_count, data_on_disk.sid_count))
+    #    #(500, 199)
+    #    logging.getLogger().setLevel(old_level)
 
 
 def getTestSuite():
@@ -915,11 +930,10 @@ def getTestSuite():
 if __name__ == "__main__":
     logging.getLogger().setLevel(logging.INFO)
 
-    if False:
+    if False:#!!!cmk
 
         import tracemalloc
         import logging
-        import os
         import time
 
         logging.basicConfig(level=logging.INFO)
@@ -927,11 +941,11 @@ if __name__ == "__main__":
 
         start = time.time()
 
-        filename = "M:/deldir/genbgen/good/merged_487400x220000.bgen"
-        # filename = 'M:/deldir/genbgen/good/merged_487400x1100000.bgen'
-        bgen = Bgen(filename)
-        # val = bgen[:,1000000:1000031].read().val
-        val = bgen[200000:200031, 100000:100031].read().val
+        # filename = "M:/deldir/genbgen/good/merged_487400x220000.bgen"
+        filename = "M:/deldir/genbgen/good/merged_487400x1100000.bgen"
+        bgen = Bgen(filename, fresh_properties=False)
+        val = bgen[:, 1000000:1000031].read().val
+        # val = bgen[200000:200031, 100000:100031].read().val
         print("{0},{1:,}".format(val.shape, val.shape[0] * val.shape[1]))
 
         current, peak = tracemalloc.get_traced_memory()
@@ -948,7 +962,6 @@ if __name__ == "__main__":
 
         import tracemalloc
         import logging
-        import os
 
         logging.basicConfig(level=logging.INFO)
         from pysnptools.distreader import Bgen
@@ -1004,8 +1017,8 @@ if __name__ == "__main__":
         # iid_count = 500*1000
         # sid_count = 100
         # bits=8
-        ##iid_count = 1
-        ##sid_count = 1*1000*1000
+        # #iid_count = 1
+        # #sid_count = 1*1000*1000
         # iid_count = 2500
         # sid_count = 100
         # iid_count = 2500
@@ -1036,13 +1049,13 @@ if __name__ == "__main__":
         print(distdata.val)
     if False:
         from pysnptools.distreader import DistHdf5, Bgen
-        import pysnptools.util as pstutil
 
         distreader = DistHdf5("../examples/toydata.snpmajor.dist.hdf5")[
             :, :10
         ]  # A reader for the first 10 SNPs in Hdf5 format
         pstutil.create_directory_if_necessary("tempdir/toydata10.bgen")
-        Bgen.write("tempdir/toydata10.bgen", distreader)  # Write data in BGEN format
+        # Write data in BGEN format
+        Bgen.write("tempdir/toydata10.bgen", distreader)
 
     suites = getTestSuite()
     r = unittest.TextTestRunner(failfast=True)
@@ -1055,3 +1068,4 @@ if __name__ == "__main__":
     result = doctest.testmod(optionflags=doctest.ELLIPSIS)
     logging.getLogger().setLevel(logging.INFO)
     assert result.failed == 0, "failed doc test: " + __file__
+#!!!cmk coverage test

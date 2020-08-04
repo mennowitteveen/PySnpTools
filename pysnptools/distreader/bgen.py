@@ -104,6 +104,9 @@ class Bgen(DistReader):
                      * **sid_function** (optional, function or string) -- Function to turn a BGEN (SNP) id and rsid into a :attr:`DistReader.sid`.
                        (Default: :meth:`bgen.default_sid_function`.) Can also be the string 'id' or 'rsid', which is faster than using a function.
                      * **sample** (optional, string) -- A GEN sample file. If given, overrides information in \*.bgen file.
+                     * **fresh_properties** (optional, bool) -- When true (default), memory will be allocated for the iid, sid, and
+                       pos properties. This is safe. When false, the properties will use the Bgen's on-disk 'memmap'. That saves
+                       memory, but is only safe if the Bgen object is still around when the properties are used.
 
         :Example:
 
@@ -124,7 +127,7 @@ class Bgen(DistReader):
         iid_function=default_iid_function,
         sid_function=default_sid_function,
         sample=None,
-        fresh_properties=True,  # !!!cmk doc this
+        fresh_properties=True,
     ):
         super(Bgen, self).__init__()
         self._ran_once = False
@@ -161,7 +164,8 @@ class Bgen(DistReader):
     def _apply_iid_function(self, samples):
         assert len(samples) > 0, "Expect at least one sample"
         if self._iid_function is not default_iid_function:
-            logging.info("Allocating memory for non-default iid_function")
+            if not self._fresh_properties:
+                logging.info("'fresh_properties' is False, but non-default iid_function is given, so allocating memory")
             return np.array(
                 [self._iid_function(sample) for sample in samples], dtype="str"
             )
@@ -206,18 +210,18 @@ class Bgen(DistReader):
         if self._col_property_key not in self._open_bgen._metadata2_memmaps:
             logging.info("Extending metadata file with PySnpTools metadata")
             assert (
-                self._default_iid_key not in self._open_bgen._metadata2_memmaps
-            ), "real assert"
-            assert (
+                self._default_iid_key not in self._open_bgen._metadata2_memmaps and 
                 self._default_sid_key not in self._open_bgen._metadata2_memmaps
             ), "real assert"
-            # metadata2_temp = self._open_bgen._metadata2_path.parent / (self._open_bgen._metadata2_path.name + ".temp")
-            # if metadata2_temp.exists():
-            #    metadata2_temp.unlink()
+            metadata2_temp = self._open_bgen._metadata2_path.parent / (
+                self._open_bgen._metadata2_path.name + ".temp"
+            )
+            if metadata2_temp.exists():
+                metadata2_temp.unlink()
             metadata2_path = self._open_bgen._metadata2_path
-            # del self._open_bgen
-            # shutil.copy(metadata2_path,metadata2_temp)
-            with MultiMemMap(metadata2_path, mode="r+") as metadata2_memmaps:
+            del self._open_bgen
+            shutil.copy(metadata2_path, metadata2_temp)
+            with MultiMemMap(metadata2_temp, mode="r+") as metadata2_memmaps:
                 samples = metadata2_memmaps["samples"]
                 row = metadata2_memmaps.append_empty(
                     self._default_iid_key,
@@ -233,12 +237,12 @@ class Bgen(DistReader):
                 else:
                     # Later: Do this in chunks of size about len(samples) using old np.stack(np.core.defchararray.split(samples,',',maxsplit=2)) code (see pre 8/1/2020 code)
                     with log_in_place(
-                        "splitting samples on commas ", logging.INFO
+                        "splitting samples on commas", logging.INFO
                     ) as updater:
-                        for i, val in samples:
+                        for i, val in enumerate(samples):
                             if i % 1000 == 0:
-                                updater(f"{i,} of {len(samples),}")
-                            row[i, :] = default_iid_function(samples)
+                                updater(f"{i:,} of {len(samples):,}")
+                            row[i, :] = default_iid_function(val)
                 col_property = metadata2_memmaps.append_empty(
                     self._col_property_key,
                     shape=(len(metadata2_memmaps["ids"]), 3),
@@ -250,13 +254,18 @@ class Bgen(DistReader):
                     col_property[:, 0] = metadata2_memmaps["chromosomes"]
                 except Exception:
                     # If that doesn't work, do something slow
-                    for i, val in enumerate(
-                        metadata2_memmaps["chromosomes"]
-                    ):  # !!!cmk need a logging message
-                        try:
-                            col_property[i, 0] = int(val)
-                        except Exception:
-                            col_property[i, 0] = 0
+                    with log_in_place(
+                        "converting chromosomes strings to numbers, one at a time", logging.INFO
+                    ) as updater:
+                        for i, val in enumerate(
+                            metadata2_memmaps["chromosomes"]
+                        ):
+                            if i % 1000 == 0:
+                                updater(f"{i:,} of {len(col_property):,}")
+                            try:
+                                col_property[i, 0] = int(val)
+                            except Exception:
+                                col_property[i, 0] = 0
 
                 rsid_list = metadata2_memmaps["rsids"]
                 id_list = metadata2_memmaps["ids"]
@@ -286,10 +295,15 @@ class Bgen(DistReader):
                             np.char.add(id_list[start:end], ","), rsid_list[start:end]
                         )
 
-            # metadata2_path.unlink()
-            # shutil.copy(metadata2_temp,metadata2_path)
-            del self._open_bgen
+            metadata2_path.unlink()
+            shutil.copy(metadata2_temp, metadata2_path)
             self._open_bgen = open_bgen(self.filename, self._sample, verbose=verbose)
+        else:
+            assert (
+                self._default_iid_key in self._open_bgen._metadata2_memmaps and 
+                self._default_sid_key in self._open_bgen._metadata2_memmaps
+            ), "real assert"
+
 
         self._row = self._apply_iid_function(self._open_bgen.samples)
         self._col = self._apply_sid_function(self._open_bgen.ids, self._open_bgen.rsids)
@@ -338,7 +352,7 @@ class Bgen(DistReader):
         if hasattr(self, "_ran_once") and self._ran_once:
             self._ran_once = False
             if (
-                hasattr(self, "_bgen") and self._open_bgen is not None
+                hasattr(self, "_open_bgen") and self._open_bgen is not None
             ):  # we need to test this because Python doesn't guarantee that __init__ was fully run
                 del self._open_bgen
 
@@ -580,7 +594,7 @@ class Bgen(DistReader):
         if self._sample is not None:
             copier.input(self._sample)
         metadata2 = open_bgen._metadata_path_from_filename(
-            self.filename, samples_filepath=None
+            self.filename, samples_filepath=self._sample
         )
         if os.path.exists(metadata2):
             copier.input(metadata2)
@@ -673,10 +687,10 @@ class TestBgen(unittest.TestCase):
         distgen0data = Bgen("../examples/example.bgen")[:, 10].read()
         assert distgen0data.iid[0, 0] == "0"
         # distgen0data = DistGen(seed=332,iid_count=50,sid_count=5).read()
-        file1y = "temp/roundtrip1-{0}-{1}y.bgen".format(0, 1)  # !!!cmk
+        file1y = "temp/roundtrip1-{0}-{1}y.bgen".format(0, 1)
         bgen = Bgen.write(file1y, distgen0data)
         assert bgen.iid is not None
-        file1x = "temp/roundtrip1-{0}-{1}x.bgen".format(0, 1)  # !!!cmk
+        file1x = "temp/roundtrip1-{0}-{1}x.bgen".format(0, 1)
         assert Bgen.write(file1x, distgen0data).iid[0, 0] == "0"
         os.chdir(old_dir)
 
@@ -904,17 +918,43 @@ class TestBgen(unittest.TestCase):
         logging.getLogger().setLevel(old_level)
         assert result.failed == 0, "failed doc test: " + __file__
 
+    def test_coverage(self):
+        from pysnptools.distreader import DistGen
 
-    #def test_verbose(self):#!!!cmk remove
-    #    old_level = logging.getLogger().level
-    #    logging.getLogger().setLevel(logging.WARN)
-    #    from pysnptools.distreader import Bgen
-    #    from pysnptools.util import example_file # Download and return local file name
-    #    bgen_file = example_file("pysnptools/examples/example.bgen")
-    #    data_on_disk = Bgen(bgen_file)
-    #    print((data_on_disk.iid_count, data_on_disk.sid_count))
-    #    #(500, 199)
-    #    logging.getLogger().setLevel(old_level)
+        with example_filepath("example.32bits.bgen") as filepath:
+            bgen = Bgen(filepath,fresh_properties=False,iid_function=lambda sam:("X",sam))
+            assert bgen.iid[0,0]=="X"
+            metadata_filepath = bgen._open_bgen._metadata2_path
+            metadata2_temp = metadata_filepath.parent / (
+                metadata_filepath.name + ".temp"
+            )
+            del bgen
+            if metadata2_temp.exists():
+                metadata2_temp.unlink()
+            os.rename(metadata_filepath,metadata2_temp)
+            bgen = Bgen(filepath)
+            assert bgen.iid[0,0]=="0"
+            bgen[0,0].read(order='A')
+            if not os.path.exists("temp"):
+                os.mkdir("temp")
+            os.chdir("temp")
+            file1x = "coverage.bgen"
+            Bgen.write(file1x, bgen[:100,:100])
+            Bgen.write(file1x, bgen[:100,:100])
+            os.chdir("..")
+
+        distgen0data = DistGen(seed=332, iid_count=10010, sid_count=5).read()
+        file1 = "temp/roundtrip1-big.bgen"
+        bed3 = Bgen.write(
+            file1,
+            distgen0data,
+            bits=8,
+            compression="zlib",
+            cleanup_temp_files=False,
+            sample_function = lambda fam,ind: f'{fam},{ind}'
+        )
+        bed3.iid[0,0]='0'
+
 
 
 def getTestSuite():
@@ -930,7 +970,7 @@ def getTestSuite():
 if __name__ == "__main__":
     logging.getLogger().setLevel(logging.INFO)
 
-    if False:#!!!cmk
+    if False:
 
         import tracemalloc
         import logging
@@ -941,8 +981,8 @@ if __name__ == "__main__":
 
         start = time.time()
 
-        # filename = "M:/deldir/genbgen/good/merged_487400x220000.bgen"
-        filename = "M:/deldir/genbgen/good/merged_487400x1100000.bgen"
+        filename = "M:/deldir/genbgen/good/merged_487400x220000.bgen"
+        #filename = "M:/deldir/genbgen/good/merged_487400x1100000.bgen"
         bgen = Bgen(filename, fresh_properties=False)
         val = bgen[:, 1000000:1000031].read().val
         # val = bgen[200000:200031, 100000:100031].read().val
@@ -1068,4 +1108,3 @@ if __name__ == "__main__":
     result = doctest.testmod(optionflags=doctest.ELLIPSIS)
     logging.getLogger().setLevel(logging.INFO)
     assert result.failed == 0, "failed doc test: " + __file__
-#!!!cmk coverage test

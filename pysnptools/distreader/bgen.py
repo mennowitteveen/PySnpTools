@@ -129,7 +129,7 @@ class Bgen(DistReader):
     @property
     def row(self):
         self._run_once()
-        return self._row
+        return self._row.copy()
 
     @property
     def col(self):
@@ -182,13 +182,13 @@ class Bgen(DistReader):
             logging.info("Extending metadata file with PySnpTools metadata")
             assert self._default_iid_key not in self._open_bgen._metadata2_memmaps, "real assert"
             assert self._default_sid_key not in self._open_bgen._metadata2_memmaps, "real assert"
-            metadata2_temp = self._open_bgen._metadata2_path.parent / (self._open_bgen._metadata2_path.name + ".temp")
-            if metadata2_temp.exists():
-                metadata2_temp.unlink()
+            #metadata2_temp = self._open_bgen._metadata2_path.parent / (self._open_bgen._metadata2_path.name + ".temp")
+            #if metadata2_temp.exists():
+            #    metadata2_temp.unlink()
             metadata2_path = self._open_bgen._metadata2_path
-            del self._open_bgen
-            shutil.copy(metadata2_path,metadata2_temp)
-            with MultiMemMap(metadata2_temp, mode="r+") as metadata2_memmaps:
+            #del self._open_bgen
+            #shutil.copy(metadata2_path,metadata2_temp)
+            with MultiMemMap(metadata2_path, mode="r+") as metadata2_memmaps:
                 samples = metadata2_memmaps['samples']
                 row = metadata2_memmaps.append_empty(self._default_iid_key,shape=(len(samples),2),dtype=str(samples.dtype))
                 if len(samples)==0 or ',' not in samples[0]:
@@ -227,8 +227,9 @@ class Bgen(DistReader):
                     for _, _, start, end in _parts(len(col)):
                         col[start:end]=np.char.add(np.char.add(id_list[start:end],','),rsid_list[start:end])
 
-            metadata2_path.unlink()
-            shutil.copy(metadata2_temp,metadata2_path)
+            #metadata2_path.unlink()
+            #shutil.copy(metadata2_temp,metadata2_path)
+            del self._open_bgen
             self._open_bgen = open_bgen(self.filename,self._sample,verbose=verbose)
 
         self._row = self._apply_iid_function(self._open_bgen.samples)
@@ -424,7 +425,9 @@ class Bgen(DistReader):
         with open(sample_filename,'w',newline='\n') as samplefp:
             samplefp.write('ID\n')
             samplefp.write('0\n')
+            print("cmkgw40")
             for f,i in distreader.iid:
+                print("cmkgw60")
                 samplefp.write('{0}\n'.format(sample_function(f,i)))
 
         if os.path.exists(filename):
@@ -517,15 +520,28 @@ class TestBgen(unittest.TestCase):
 
     def test_memmap(self):
         from pysnptools.distreader import DistGen
+        print('cmk1')
 
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
         assert 'QCTOOLPATH' in os.environ, "To run test_read_write_round_trip, QCTOOLPATH environment variable must be set. (On Windows, install QcTools in 'Ubuntu on Windows' and set to 'ubuntu run <qctoolLinuxPath>')."
 
-        distgen0data = DistGen(seed=332,iid_count=50,sid_count=5).read()
+        print('cmk1.1')
+        distgen0data = Bgen('../examples/example.bgen')[:,10].read()
+        print('cmk1.3')
+        assert distgen0data.iid[0,0]=='0'
+        print('cmk1.7')
+        #distgen0data = DistGen(seed=332,iid_count=50,sid_count=5).read()
+        file1y = 'temp/roundtrip1-{0}-{1}y.bgen'.format(0,1)#!!!cmk
+        print('cmk2')
+        bgen = Bgen.write(file1y,distgen0data)
+        print('cmk2.5')
+        assert bgen.iid is not None
+        print('cmk3')
         file1x = 'temp/roundtrip1-{0}-{1}x.bgen'.format(0,1)#!!!cmk
-        assert Bgen.write(file1x,distgen0data,bits=1,compression='zlib',cleanup_temp_files=False).iid[0,0]=='0'
+        #assert Bgen.write(file1x,distgen0data).iid[0,0]=='0'
         os.chdir(old_dir)
+        print('cmk4')
 
     def cmktest_read_write_round_trip(self):
         from pysnptools.distreader import DistGen

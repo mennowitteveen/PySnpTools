@@ -126,6 +126,7 @@ class Bgen(DistReader):
         iid_function=default_iid_function,
         sid_function=default_sid_function,
         sample=None,
+        fresh_properties = True, #!!!cmk doc this
     ):
         super(Bgen, self).__init__()
         self._ran_once = False
@@ -134,15 +135,20 @@ class Bgen(DistReader):
         self._iid_function = iid_function
         self._sid_function = sid_function
         self._sample = sample
+        self._fresh_properties = fresh_properties
 
     @property
     def row(self):
         self._run_once()
-        return self._row.copy()
+        if self._fresh_properties and not self._row.flags['OWNDATA']:
+            self._row = self._row.copy()
+        return self._row
 
     @property
     def col(self):
         self._run_once()
+        if self._fresh_properties and not self._col.flags['OWNDATA']:
+            self._col = self._col.copy()
         return self._col
 
     @property
@@ -150,6 +156,8 @@ class Bgen(DistReader):
         """*same as* :attr:`pos`
         """
         self._run_once()
+        if self._fresh_properties and not self._col_property.flags['OWNDATA']:
+            self._col_property = self._col_property.copy()
         return self._col_property
 
     def _apply_iid_function(self, samples):
@@ -556,9 +564,7 @@ class Bgen(DistReader):
         with open(sample_filename, "w", newline="\n") as samplefp:
             samplefp.write("ID\n")
             samplefp.write("0\n")
-            print("cmkgw40")
             for f, i in distreader.iid:
-                print("cmkgw60")
                 samplefp.write("{0}\n".format(sample_function(f, i)))
 
         if os.path.exists(filename):
@@ -613,7 +619,7 @@ class TestBgen(unittest.TestCase):
             distdata0.val, distdata1.val, atol=atol, equal_nan=True, verbose=True
         )
 
-    def cmktest1(self):
+    def test1(self):
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -624,7 +630,7 @@ class TestBgen(unittest.TestCase):
         distdata2 = bgen2.read()
         os.chdir(old_dir)
 
-    def cmktest_other(self):
+    def test_other(self):
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -633,7 +639,7 @@ class TestBgen(unittest.TestCase):
         assert np.all(bgen.iid[0] == ("0", "other_001"))
         os.chdir(old_dir)
 
-    def cmktest_zero(self):
+    def test_zero(self):
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -643,7 +649,7 @@ class TestBgen(unittest.TestCase):
         assert bgen[[], []].read().val.shape == (0, 0, 3)
         os.chdir(old_dir)
 
-    def cmktest2(self):
+    def test2(self):
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -657,32 +663,23 @@ class TestBgen(unittest.TestCase):
     def test_memmap(self):
         from pysnptools.distreader import DistGen
 
-        print("cmk1")
-
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
         assert (
             "QCTOOLPATH" in os.environ
         ), "To run test_read_write_round_trip, QCTOOLPATH environment variable must be set. (On Windows, install QcTools in 'Ubuntu on Windows' and set to 'ubuntu run <qctoolLinuxPath>')."
 
-        print("cmk1.1")
         distgen0data = Bgen("../examples/example.bgen")[:, 10].read()
-        print("cmk1.3")
         assert distgen0data.iid[0, 0] == "0"
-        print("cmk1.7")
         # distgen0data = DistGen(seed=332,iid_count=50,sid_count=5).read()
         file1y = "temp/roundtrip1-{0}-{1}y.bgen".format(0, 1)  #!!!cmk
-        print("cmk2")
         bgen = Bgen.write(file1y, distgen0data)
-        print("cmk2.5")
         assert bgen.iid is not None
-        print("cmk3")
         file1x = "temp/roundtrip1-{0}-{1}x.bgen".format(0, 1)  #!!!cmk
         # assert Bgen.write(file1x,distgen0data).iid[0,0]=='0'
         os.chdir(old_dir)
-        print("cmk4")
 
-    def cmktest_read_write_round_trip(self):
+    def test_read_write_round_trip(self):
         from pysnptools.distreader import DistGen
 
         old_dir = os.getcwd()
@@ -698,17 +695,6 @@ class TestBgen(unittest.TestCase):
         for i, distdata0 in enumerate([distgen0data, exampledata]):
             for bits in list(range(1, 33)):
                 logging.info("input#={0},bits={1}".format(i, bits))
-                file1x = "temp/roundtrip1-{0}-{1}x.bgen".format(i, bits)  #!!!cmk
-                assert (
-                    Bgen.write(
-                        file1x,
-                        distdata0,
-                        bits=bits,
-                        compression="zlib",
-                        cleanup_temp_files=False,
-                    ).iid[0, 0]
-                    == "0"
-                )
                 file1 = "temp/roundtrip1-{0}-{1}.bgen".format(i, bits)
                 distdata1 = Bgen.write(
                     file1,
@@ -726,7 +712,7 @@ class TestBgen(unittest.TestCase):
                 TestBgen.assert_approx_equal(distdata0, distdata1, atol=atol)
         os.chdir(old_dir)
 
-    def cmktest_bad_sum(self):
+    def test_bad_sum(self):
         from pysnptools.distreader import DistGen
 
         old_dir = os.getcwd()
@@ -776,7 +762,7 @@ class TestBgen(unittest.TestCase):
         assert failed
         os.chdir(old_dir)
 
-    def cmktest_read1(self):
+    def test_read1(self):
 
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -834,7 +820,7 @@ class TestBgen(unittest.TestCase):
 
         # This and many of the tests based on bgen-reader-py\bgen_reader\test
 
-    def cmktest_bgen_samples_inside_bgen(self):
+    def test_bgen_samples_inside_bgen(self):
         with example_filepath("example.32bits.bgen") as filepath:
             data = Bgen(filepath)
             samples = [
@@ -845,7 +831,7 @@ class TestBgen(unittest.TestCase):
             ]
             assert (data.iid[:4] == samples).all()
 
-    def cmktest_bgen_reader_variants_info(self):
+    def test_bgen_reader_variants_info(self):
         with example_filepath("example.32bits.bgen") as filepath:
             bgen = Bgen(filepath, sid_function="id")
 
@@ -884,14 +870,14 @@ class TestBgen(unittest.TestCase):
             g = bgen[2, 1].read()
             np.testing.assert_array_almost_equal(g.val, b)
 
-    def cmktest_bgen_reader_without_metadata(self):
+    def test_bgen_reader_without_metadata(self):
         with example_filepath("example.32bits.bgen") as filepath:
             bgen = Bgen(filepath)
             variants = bgen.read()
             samples = bgen.iid
             assert samples[-1, 1] == "sample_500"
 
-    def cmktest_bgen_reader_file_notfound(self):
+    def test_bgen_reader_file_notfound(self):
         bgen = Bgen("/1/2/3/example.32bits.bgen")
         try:
             bgen.iid  # expect error
@@ -900,12 +886,12 @@ class TestBgen(unittest.TestCase):
             got_error = True
         assert got_error
 
-    def cmktest_bgen_reader_no_sample(self):
+    def test_bgen_reader_no_sample(self):
         with example_filepath("example.32bits.bgen") as filepath:
             bgen = Bgen(filepath)
             assert bgen.sid_count == 199
 
-    def cmktest_doctest(self):
+    def test_doctest(self):
         import pysnptools.distreader.bgen
         import doctest
 

@@ -144,8 +144,7 @@ class DistReader(PstReader):
          ['0' 'iid_1']
          ['0' 'iid_2']]
         """
-        result = self.row #!!!cmk put back as one line
-        return result
+        return self.row
 
     @property
     def iid_count(self):

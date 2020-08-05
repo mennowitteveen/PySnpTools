@@ -140,7 +140,7 @@ class Bed(SnpReader):
 
 
     @staticmethod
-    def write(filename, snpdata, count_A1=False, force_python_only=False):
+    def write(filename, snpdata, count_A1=False, force_python_only=False, _require_float32_64=True):
         """Writes a :class:`SnpData` to Bed format and returns the :class:`.Bed`.
 
         :param filename: the name of the file to create
@@ -158,6 +158,12 @@ class Bed(SnpReader):
         >>> snpdata = Pheno(pheno_fn).read()         # Read data from Pheno format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata.5chrom.bed")
         >>> Bed.write("tempdir/toydata.5chrom.bed",snpdata,count_A1=False)   # Write data in Bed format
+        Bed('tempdir/toydata.5chrom.bed',count_A1=False)
+        >>> # Can write from an int8 array, too.
+        >>> snpdata_int = SnpData(val=np.int_(snpdata.val).astype('int8'),iid=snpdata.iid,sid=snpdata.sid,pos=snpdata.pos,_require_float32_64=False)
+        >>> snpdata_int.val.dtype
+        dtype('int8')
+        >>> Bed.write("tempdir/toydata.5chrom.bed",snpdata_int,count_A1=False,_require_float32_64=False)
         Bed('tempdir/toydata.5chrom.bed',count_A1=False)
         """
 
@@ -194,8 +200,13 @@ class Bed(SnpReader):
                     wrap_plink_parser.writePlinkBedFile2floatFAAA(bedfile.encode('ascii'), snpdata.iid_count, snpdata.sid_count, count_A1, snpdata.val)
                 else:
                     wrap_plink_parser.writePlinkBedFile2floatCAAA(bedfile.encode('ascii'), snpdata.iid_count, snpdata.sid_count, count_A1, snpdata.val)
+            elif not _require_float32_64 and snpdata.val.dtype == np.int8:
+                if order=="F":
+                    wrap_plink_parser.writePlinkBedFile2int8FAAA(bedfile.encode('ascii'), snpdata.iid_count, snpdata.sid_count, count_A1, snpdata.val)
+                else:
+                    wrap_plink_parser.writePlinkBedFile2int8CAAA(bedfile.encode('ascii'), snpdata.iid_count, snpdata.sid_count, count_A1, snpdata.val)
             else:
-                raise Exception("dtype '{0}' not known, only float64 and float32".format(snpdata.val.dtype))
+                raise Exception("dtype '{0}' not known, only float64 and float32 (and sometimes int8)".format(snpdata.val.dtype))
             
         else:
             if not count_A1:
@@ -227,10 +238,10 @@ class Bed(SnpReader):
                                 code = 0b10 #backwards on purpose
                             elif val == 2:
                                 code = two_code
-                            elif np.isnan(val):
+                            elif np.isnan(val) or (not _require_float32_64 and snpdata.val.dtype == np.int8 and val==-127):
                                 code = 0b01 #backwards on purpose
                             else:
-                                raise Exception("Can't convert value '{0}' to BED format (only 0,1,2,NAN allowed)".format(val))
+                                raise Exception("Can't convert value '{0}' to BED format (only 0,1,2,NAN [or sometimes -127] allowed)".format(val))
                             byte |= (code << (val_index*2))
                         bed_filepointer.write(bytes(bytearray([byte])))
         logging.info("Done writing " + filename)
@@ -290,7 +301,7 @@ class Bed(SnpReader):
                     else:
                         raise Exception("order '{0}' not known, only 'F' and 'C'".format(order));
                 else:
-                    raise Exception("dtype '{0}' not known, only float64 and float32".format(dtype))
+                    raise Exception("dtype '{0}' not known, only float64 and float32 (and sometimes int8)".format(dtype))
             
         else:
             if not self.count_A1:

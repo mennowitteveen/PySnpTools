@@ -17,8 +17,10 @@ cdef extern from "./CPlinkBedFile.h":
 
 	void _writePlinkBedFilefloatFAAA "writePlinkBedFilefloatFAAA"(string bed_fn, int input_num_ind, int input_num_snps, bool count_A1, float* inx)
 	void _writePlinkBedFiledoubleFAAA "writePlinkBedFiledoubleFAAA"(string bed_fn, int input_num_ind, int input_num_snps, bool count_A1, double* inx)
+	void _writePlinkBedFileint8FAAA "writePlinkBedFileint8FAAA"(string bed_fn, int input_num_ind, int input_num_snps, bool count_A1, signed char* inx)
 	void _writePlinkBedFilefloatCAAA "writePlinkBedFilefloatCAAA"(string bed_fn, int input_num_ind, int input_num_snps, bool count_A1, float* inx)
 	void _writePlinkBedFiledoubleCAAA "writePlinkBedFiledoubleCAAA"(string bed_fn, int input_num_ind, int input_num_snps, bool count_A1, double* inx)
+	void _writePlinkBedFileint8CAAA "writePlinkBedFileint8CAAA"(string bed_fn, int input_num_ind, int input_num_snps, bool count_A1, signed char* inx)
 
 
 	void _ImputeAndZeroMeanSNPsfloatFAAA "ImputeAndZeroMeanSNPsfloatFAAA"( 
@@ -179,6 +181,12 @@ def writePlinkBedFile2doubleFAAA(bed_fn, input_num_ind, input_num_snps, count_A1
 
 def writePlinkBedFile2doubleCAAA(bed_fn, input_num_ind, input_num_snps, count_A1, np.ndarray[np.float64_t, ndim=2] inx):
 	_writePlinkBedFiledoubleCAAA(bed_fn, input_num_ind, input_num_snps, count_A1, <double*> inx.data)
+
+def writePlinkBedFile2int8FAAA(bed_fn, input_num_ind, input_num_snps, count_A1, np.ndarray[np.int8_t, ndim=2] inx):
+	_writePlinkBedFileint8FAAA(bed_fn, input_num_ind, input_num_snps, count_A1, <signed char*> inx.data)
+
+def writePlinkBedFile2int8CAAA(bed_fn, input_num_ind, input_num_snps, count_A1, np.ndarray[np.int8_t, ndim=2] inx):
+	_writePlinkBedFileint8CAAA(bed_fn, input_num_ind, input_num_snps, count_A1, <signed char*> inx.data)
 
 #Old
 def readPlinkBedFilefloatFAAA(bed_fn, input_num_ind, input_num_snps, iidIdxList, snpIdxList, np.ndarray[np.float32_t, ndim=2] out):

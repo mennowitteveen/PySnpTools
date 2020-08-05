@@ -151,7 +151,8 @@ class Bed(SnpReader):
         :type count_A1: bool
         :rtype: :class:`.Bed`
 
-        >>> from pysnptools.snpreader import Pheno, Bed
+        >>> import numpy as np
+        >>> from pysnptools.snpreader import Pheno, Bed, SnpData
         >>> import pysnptools.util as pstutil
         >>> from pysnptools.util import example_file # Download and return local file name
         >>> pheno_fn = example_file("pysnptools/examples/toydata.phe")

@@ -44,7 +44,7 @@ matrix:
 
 install:
 - python setup.py build_ext --inplace
-- python setup.py sdist bdist_wheel
+#!!!cmk- python setup.py sdist bdist_wheel
 
 script:
 - export PYTHONPATH=$TRAVIS_BUILD_DIR

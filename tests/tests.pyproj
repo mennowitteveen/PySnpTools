@@ -7,7 +7,7 @@
     <ProjectHome>
     </ProjectHome>
     <StartupFile>test.py</StartupFile>
-    <SearchPath>..\;..\..\bgen-reader-py</SearchPath>
+    <SearchPath>..\;..\..\sgkit-plink</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>tests</Name>

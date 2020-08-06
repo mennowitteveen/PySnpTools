@@ -52,7 +52,7 @@ else:
 
 #see http://stackoverflow.com/questions/4505747/how-should-i-structure-a-python-package-that-contains-cython-code
 if use_cython:
-    ext_modules = [Extension(name="pysnptools.snpreader.wrap_plink_parser",
+    ext_modules = [Extension(name="pysnptools.snpreader.wrap_plink_parser",#!!!the plink*cpp,etc files still contain the standardizer, but misleading names now
                              language="c++",
                              sources=["pysnptools/snpreader/wrap_plink_parser.pyx", "pysnptools/snpreader/CPlinkBedFile.cpp"],
                              include_dirs = [numpy.get_include()],

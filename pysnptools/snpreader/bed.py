@@ -1,15 +1,13 @@
-from __future__ import absolute_import
-from __future__ import print_function
 import numpy as np
 from itertools import *
 import pandas as pd
 import logging
+from sgkit_plink._open_bed import open_bed
 from pysnptools.snpreader import SnpReader
 from pysnptools.snpreader import SnpData
 import math
 import warnings
 from pysnptools.pstreader import PstData
-from six.moves import range
 
 class Bed(SnpReader):
     '''
@@ -55,7 +53,6 @@ class Bed(SnpReader):
         super(Bed, self).__init__()
 
         self._ran_once = False
-        self._file_pointer = None
 
         self.filename = filename
         if count_A1 is None:
@@ -97,19 +94,6 @@ class Bed(SnpReader):
             self._col, self._col_property = SnpReader._read_map_or_bim(self.filename,remove_suffix="bed", add_suffix="bim")
         return self._col_property
 
-    def _open_bed(self):
-        bedfile = SnpReader._name_of_other_file(self.filename,"bed","bed")
-        self._filepointer = open(bedfile, 'rb')
-        mode = self._filepointer.read(2)
-        if mode != b'l\x1b': raise Exception('No valid binary BED file')
-        mode = self._filepointer.read(1) #\x01 = SNP major \x00 = individual major
-        if mode != b'\x01': raise Exception('only SNP-major is implemented')
-        logging.info("bed file is open {0}".format(bedfile))
-
-    def _close_bed(self):
-        self.__del__()
-        self.file_pointer = None
-
     def _run_once(self):
         if self._ran_once:
             return
@@ -123,14 +107,8 @@ class Bed(SnpReader):
         self._assert_iid_sid_pos(check_val=False)
 
         if not self.skip_format_check:
-            self._open_bed()
-            self._close_bed()
-
-    #LATER should Bed have a "flush"?
-    def __del__(self):
-        if hasattr(self,'_filepointer') and self._filepointer is not None:  # we need to test this because Python doesn't guarantee that __init__ was fully run
-            self._filepointer.close()
-            self._filepointer = None
+            with open_bed(self.filename,skip_format_check=False) as ob:
+                pass
 
     def copyinputs(self, copier):
         # doesn't need to self.run_once() because only uses original inputs
@@ -169,71 +147,10 @@ class Bed(SnpReader):
              warnings.warn("'count_A1' was not set. For now it will default to 'False', but in the future it will default to 'True'", FutureWarning)
              count_A1 = False
 
-        SnpReader._write_fam(snpdata, filename, remove_suffix="bed")
-        SnpReader._write_map_or_bim(snpdata, filename, remove_suffix="bed", add_suffix="bim")
-
+        #!!!cmk understand when and why the filepointer might be left open                
         bedfile = SnpReader._name_of_other_file(filename,remove_suffix="bed", add_suffix="bed")
+        open_bed.write(bedfile,val=snpdata.val,iid=snpdata.iid,sid=snpdata.sid,pos=snpdata.pos,count_A1=count_A1,force_python_only=True) #!!!cmk change force_python_only
 
-        if not force_python_only:
-            from pysnptools.snpreader import wrap_plink_parser
-
-            if snpdata.val.flags["C_CONTIGUOUS"]:
-                order = "C"
-            elif snpdata.val.flags["F_CONTIGUOUS"]:
-                order = "F"
-            else:
-                raise Exception("order not known (not 'F' or 'C')")
-
-            if snpdata.val.dtype == np.float64:
-                if order=="F":
-                    wrap_plink_parser.writePlinkBedFile2doubleFAAA(bedfile.encode('ascii'), snpdata.iid_count, snpdata.sid_count, count_A1, snpdata.val)
-                else:
-                    wrap_plink_parser.writePlinkBedFile2doubleCAAA(bedfile.encode('ascii'), snpdata.iid_count, snpdata.sid_count, count_A1, snpdata.val)
-            elif snpdata.val.dtype == np.float32:
-                if order=="F":
-                    wrap_plink_parser.writePlinkBedFile2floatFAAA(bedfile.encode('ascii'), snpdata.iid_count, snpdata.sid_count, count_A1, snpdata.val)
-                else:
-                    wrap_plink_parser.writePlinkBedFile2floatCAAA(bedfile.encode('ascii'), snpdata.iid_count, snpdata.sid_count, count_A1, snpdata.val)
-            else:
-                raise Exception("dtype '{0}' not known, only float64 and float32".format(snpdata.val.dtype))
-            
-        else:
-            if not count_A1:
-                zero_code = 0b00
-                two_code = 0b11
-            else:
-                zero_code = 0b11
-                two_code = 0b00
-
-            with open(bedfile,"wb") as bed_filepointer:
-                #see http://zzz.bwh.harvard.edu/plink/binary.shtml
-                bed_filepointer.write(bytes(bytearray([0b01101100]))) #magic numbers
-                bed_filepointer.write(bytes(bytearray([0b00011011]))) #magic numbers
-                bed_filepointer.write(bytes(bytearray([0b00000001]))) #snp major
-
-                for sid_index in range(snpdata.sid_count):
-                    if sid_index % 1 == 0:
-                        logging.info("Writing snp # {0} to file '{1}'".format(sid_index, filename))
-
-                    col = snpdata.val[:, sid_index]
-                    for iid_by_four in range(0,snpdata.iid_count,4):
-                        vals_for_this_byte = col[iid_by_four:iid_by_four+4]
-                        byte = 0b00000000
-                        for val_index in range(len(vals_for_this_byte)):
-                            val = vals_for_this_byte[val_index]
-                            if val == 0:
-                                code = zero_code
-                            elif val == 1:
-                                code = 0b10 #backwards on purpose
-                            elif val == 2:
-                                code = two_code
-                            elif np.isnan(val):
-                                code = 0b01 #backwards on purpose
-                            else:
-                                raise Exception("Can't convert value '{0}' to BED format (only 0,1,2,NAN allowed)".format(val))
-                            byte |= (code << (val_index*2))
-                        bed_filepointer.write(bytes(bytearray([byte])))
-        logging.info("Done writing " + filename)
         return Bed(filename,count_A1=count_A1)
 
     def _read(self, iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok):
@@ -244,101 +161,13 @@ class Bed(SnpReader):
         dtype = np.dtype(dtype)
 
         assert not hasattr(self, 'ind_used'), "A SnpReader should not have a 'ind_used' attribute"
+        with open_bed(self.filename, 
+                      #!!!cmk need a way to override iid, sid, and pos),
+                    count_A1=self.count_A1,
+                    skip_format_check=False,
+                      ) as ob:
+            val = ob.read(index=(iid_index_or_none,sid_index_or_none),order=order,dtype=dtype,force_python_only=True) #!!!cmk change force_python_only
 
-        iid_count_in = self.iid_count
-        sid_count_in = self.sid_count
-
-        if iid_index_or_none is not None:
-            iid_count_out = len(iid_index_or_none)
-            iid_index = iid_index_or_none
-        else:
-            iid_count_out = iid_count_in
-            iid_index = list(range(iid_count_in))
-
-        if sid_index_or_none is not None:
-            sid_count_out = len(sid_index_or_none)
-            sid_index = sid_index_or_none
-        else:
-            sid_count_out = sid_count_in
-            sid_index = list(range(sid_count_in))
-
-        if not force_python_only:
-            from pysnptools.snpreader import wrap_plink_parser
-            val = np.zeros((iid_count_out, sid_count_out), order=order, dtype=dtype)
-            bed_fn = SnpReader._name_of_other_file(self.filename,"bed","bed")
-
-            if iid_count_in > 0 and sid_count_in > 0:
-                if dtype == np.float64:
-                    if order=="F":
-                        wrap_plink_parser.readPlinkBedFile2doubleFAAA(bed_fn.encode('ascii'), iid_count_in, sid_count_in, self.count_A1, iid_index, sid_index, val)
-                    elif order=="C":
-                        wrap_plink_parser.readPlinkBedFile2doubleCAAA(bed_fn.encode('ascii'), iid_count_in, sid_count_in, self.count_A1, iid_index, sid_index, val)
-                    else:
-                        raise Exception("order '{0}' not known, only 'F' and 'C'".format(order));
-                elif dtype == np.float32:
-                    if order=="F":
-                        wrap_plink_parser.readPlinkBedFile2floatFAAA(bed_fn.encode('ascii'), iid_count_in, sid_count_in, self.count_A1, iid_index, sid_index, val)
-                    elif order=="C":
-                        wrap_plink_parser.readPlinkBedFile2floatCAAA(bed_fn.encode('ascii'), iid_count_in, sid_count_in, self.count_A1, iid_index, sid_index, val)
-                    else:
-                        raise Exception("order '{0}' not known, only 'F' and 'C'".format(order));
-                elif dtype == np.int8:
-                    if order=="F":
-                        wrap_plink_parser.readPlinkBedFile2int8FAAA(bed_fn.encode('ascii'), iid_count_in, sid_count_in, self.count_A1, iid_index, sid_index, val)
-                    elif order=="C":
-                        wrap_plink_parser.readPlinkBedFile2int8CAAA(bed_fn.encode('ascii'), iid_count_in, sid_count_in, self.count_A1, iid_index, sid_index, val)
-                    else:
-                        raise Exception("order '{0}' not known, only 'F' and 'C'".format(order));
-                else:
-                    raise Exception("dtype '{0}' not known, only float64 and float32".format(dtype))
-            
-        else:
-            if not self.count_A1:
-                byteZero = 0
-                byteThree = 2
-            else:
-                byteZero = 2
-                byteThree = 0
-            if dtype == np.int8:
-                missing = -127
-            else:
-                missing = np.nan
-            # An earlier version of this code had a way to read consecutive SNPs of code in one read. May want
-            # to add that ability back to the code. 
-            # Also, note that reading with python will often result in non-contiguous memory, so the python standardizers will automatically be used, too.       
-            self._open_bed()
-            #logging.warn("using pure python plink parser (might be much slower!!)")
-            val = np.zeros(((int(np.ceil(0.25*iid_count_in))*4),sid_count_out),order=order, dtype=dtype) #allocate it a little big
-            for SNPsIndex, bimIndex in enumerate(sid_index):
-
-                startbit = int(np.ceil(0.25*iid_count_in)*bimIndex+3)
-                self._filepointer.seek(startbit)
-                nbyte = int(np.ceil(0.25*iid_count_in))
-                bytes = np.array(bytearray(self._filepointer.read(nbyte))).reshape((int(np.ceil(0.25*iid_count_in)),1),order='F')
-
-                val[3::4,SNPsIndex:SNPsIndex+1]=byteZero
-                val[3::4,SNPsIndex:SNPsIndex+1][bytes>=64]=missing
-                val[3::4,SNPsIndex:SNPsIndex+1][bytes>=128]=1
-                val[3::4,SNPsIndex:SNPsIndex+1][bytes>=192]=byteThree
-                bytes=np.mod(bytes,64)
-                val[2::4,SNPsIndex:SNPsIndex+1]=byteZero
-                val[2::4,SNPsIndex:SNPsIndex+1][bytes>=16]=missing
-                val[2::4,SNPsIndex:SNPsIndex+1][bytes>=32]=1
-                val[2::4,SNPsIndex:SNPsIndex+1][bytes>=48]=byteThree
-                bytes=np.mod(bytes,16)
-                val[1::4,SNPsIndex:SNPsIndex+1]=byteZero
-                val[1::4,SNPsIndex:SNPsIndex+1][bytes>=4]=missing
-                val[1::4,SNPsIndex:SNPsIndex+1][bytes>=8]=1
-                val[1::4,SNPsIndex:SNPsIndex+1][bytes>=12]=byteThree
-                bytes=np.mod(bytes,4)
-                val[0::4,SNPsIndex:SNPsIndex+1]=byteZero
-                val[0::4,SNPsIndex:SNPsIndex+1][bytes>=1]=missing
-                val[0::4,SNPsIndex:SNPsIndex+1][bytes>=2]=1
-                val[0::4,SNPsIndex:SNPsIndex+1][bytes>=3]=byteThree
-            val = val[iid_index,:] #reorder or trim any extra allocation
-            if not SnpReader._array_properties_are_ok(val, order, dtype):
-                val = val.copy(order=order)
-            self._close_bed()
 
         return val
 
@@ -347,24 +176,6 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     import os
 
-    if False:
-
-        filename = 'M:/deldir/genbgen/good/merged_487400x4840000.bgen'
-
-        import tracemalloc
-        import logging
-        import os
-        logging.basicConfig(level=logging.INFO)
-        from pysnptools.distreader import Bgen
-        tracemalloc.start()
-        print(os.path.getsize(filename))
-        bgen = Bgen(filename)
-        print(bgen.shape)
-        current, peak = tracemalloc.get_traced_memory()
-        print(f"Current memory usage is {current / 10**6}MB; Peak was {peak / 10**6}MB")
-        tracemalloc.stop()
-
-
 
     if False: #Look for example Bed files with missing data
         from pysnptools.util._example_file import pysnptools_hashdown
@@ -372,11 +183,16 @@ if __name__ == "__main__":
         for file in pysnptools_hashdown.walk():
             if file.endswith('.bed'):
                 print(file+"?")
-                bed_file = example_file(file[:-4]+'.*','*.bed')
-                bed = Bed(bed_file)
-                snpdata = bed[:1000,:1000].read()
-                if not np.all(snpdata.val==snpdata.val):
-                    print(bed_file+"!")
+                bed_file = None
+                try:
+                    bed_file = example_file(file[:-4]+'.*','*.bed')
+                except Exception:
+                    pass
+                if bed_file is not None:
+                    bed = Bed(bed_file)
+                    snpdata = bed[:1000,:1000].read()
+                    if not np.all(snpdata.val==snpdata.val):
+                        print(bed_file+"!")
 
     if False:
         from pysnptools.snpreader import Bed

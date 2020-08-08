@@ -59,13 +59,10 @@ class Bed(SnpReader):
              warnings.warn("'count_A1' was not set. For now it will default to 'False', but in the future it will default to 'True'", FutureWarning)
              count_A1 = False
         self.count_A1 =count_A1
-        self.skip_format_check = skip_format_check
-        if iid is not None:
-            self._row = PstData._fixup_input(iid,empty_creator=lambda ignore:np.empty([0,2],dtype='str'),dtype='str')
-        if sid is not None:
-            self._col = PstData._fixup_input(sid,empty_creator=lambda ignore:np.empty([0],dtype='str'),dtype='str')
-        if pos is not None:
-            self._col_property = PstData._fixup_input(pos,count=len(self._col),empty_creator=lambda count:np.array([[np.nan, np.nan, np.nan]]*count))
+        self._skip_format_check = skip_format_check
+        self._original_iid = iid
+        self._original_sid = sid
+        self._original_pos = pos
 
     def __repr__(self): 
         return "{0}('{1}',count_A1={2})".format(self.__class__.__name__,self.filename,self.count_A1)
@@ -99,20 +96,21 @@ class Bed(SnpReader):
             return
         self._ran_once = True
 
-        if not hasattr(self,"_row"):
-            self._row = SnpReader._read_fam(self.filename,remove_suffix="bed")
+        original_chromosome = None  if self._original_pos is None else self._original_pos[:,0]
+        original_cm_position = None if self._original_pos is None else self._original_pos[:,1]
+        original_bp_position = None if self._original_pos is None else self._original_pos[:,2]
+        self._open_bed = open_bed(self.filename,iid=self._original_iid,sid=self._original_sid, #!!!cmk __enter__????
+                                  chromosome=original_chromosome,cm_position=original_cm_position,bp_position=original_bp_position,
+                                  skip_format_check=self._skip_format_check,count_A1=self.count_A1)
 
-        if not hasattr(self,"_col") or not hasattr(self,"_col_property"):
-            self._col, self._col_property = SnpReader._read_map_or_bim(self.filename,remove_suffix="bed", add_suffix="bim")
-        self._assert_iid_sid_pos(check_val=False)
+        self._row = self._open_bed.iid
+        self._col = self._open_bed.sid
+        self._pos = np.array([self._open_bed.chromosome.astype("float"), self._open_bed.cm_position, self._open_bed.bp_position]).T #!!!cmk could copy in batches to use less memory
 
-        if not self.skip_format_check:
-            with open_bed(self.filename,skip_format_check=False) as ob:
-                pass
 
     def copyinputs(self, copier):
         # doesn't need to self.run_once() because only uses original inputs
-        copier.input(SnpReader._name_of_other_file(self.filename,remove_suffix="bed", add_suffix="bed"))
+        copier.input(SnpReader._name_of_other_file(self.filename,remove_suffix="bed", add_suffix="bed"))#!!!cmk use the _name_of_other_file in library
         copier.input(SnpReader._name_of_other_file(self.filename,remove_suffix="bed", add_suffix="bim"))
         copier.input(SnpReader._name_of_other_file(self.filename,remove_suffix="bed", add_suffix="fam"))
 
@@ -135,7 +133,7 @@ class Bed(SnpReader):
         >>> pheno_fn = example_file("pysnptools/examples/toydata.phe")
         >>> snpdata = Pheno(pheno_fn).read()         # Read data from Pheno format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata.5chrom.bed")
-        >>> Bed.write("tempdir/toydata.5chrom.bed",snpdata,count_A1=False)   # Write data in Bed format
+        >>> Bed.write("tempdir/toydata.5chrom.bed",snpdata,count_A1=False)   # Write data in Bed format #!!!cmk this SHOULD FAIL
         Bed('tempdir/toydata.5chrom.bed',count_A1=False)
         """
 
@@ -147,27 +145,18 @@ class Bed(SnpReader):
              warnings.warn("'count_A1' was not set. For now it will default to 'False', but in the future it will default to 'True'", FutureWarning)
              count_A1 = False
 
-        #!!!cmk understand when and why the filepointer might be left open                
-        bedfile = SnpReader._name_of_other_file(filename,remove_suffix="bed", add_suffix="bed")
-        open_bed.write(bedfile,val=snpdata.val,iid=snpdata.iid,sid=snpdata.sid,pos=snpdata.pos,count_A1=count_A1,force_python_only=True) #!!!cmk change force_python_only
+        #!!!cmk understand when and why the filepointer might be left open
+        #!!!cmk when open_bed.write switches away from pos, make that change here, too       
+        open_bed.write(filename,val=snpdata.val,iid=snpdata.iid,sid=snpdata.sid,pos=snpdata.pos,count_A1=count_A1,force_python_only=force_python_only)
 
         return Bed(filename,count_A1=count_A1)
 
     def _read(self, iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok):
         self._run_once()
 
-        if order=='A':
-            order='F'
-        dtype = np.dtype(dtype)
-
         assert not hasattr(self, 'ind_used'), "A SnpReader should not have a 'ind_used' attribute"
-        with open_bed(self.filename, 
-                      #!!!cmk need a way to override iid, sid, and pos),
-                    count_A1=self.count_A1,
-                    skip_format_check=False,
-                      ) as ob:
-            val = ob.read(index=(iid_index_or_none,sid_index_or_none),order=order,dtype=dtype,force_python_only=True) #!!!cmk change force_python_only
 
+        val = self._open_bed.read(index=(iid_index_or_none,sid_index_or_none),order=order,dtype=dtype,force_python_only=force_python_only)
 
         return val
 

@@ -916,3 +916,5 @@ ModelManifest.xml
 /pysnptools/distreader/.coverage
 /delv.cpp
 /del.cpp
+/tests/.ipynb_checkpoints
+/tests/Untitled.ipynb

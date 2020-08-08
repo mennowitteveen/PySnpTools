@@ -1069,7 +1069,24 @@ def getTestSuite():
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
+    if False: #!!!cmk
+        from pysnptools.util.filecache import LocalCache
+
+        currentFolder = os.path.dirname(os.path.realpath(__file__))
+        snpreader = Bed(currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
+        snpdata = snpreader.read(order='F',force_python_only=True)
+        snpdata1 = snpdata[:,::100].read()
+        snpdata1.val[1,2] = np.NaN # Inject a missing value to test writing and reading missing values
+        output = "tempdir/snpreader/toydata.distributedbed"
+        LocalCache(output).rmtree()
+        DistributedBed.write(output, snpdata1, piece_per_chrom_count=5)
+        snpreader = DistributedBed(output)
+        _fortesting_JustCheckExists().input(snpreader)
+        snpdata2 = snpreader.read()
+        np.testing.assert_array_almost_equal(snpdata1.val, snpdata2.val, decimal=10)
+
+
     suites = getTestSuite()
-    r = unittest.TextTestRunner(failfast=False)
+    r = unittest.TextTestRunner(failfast=True)
     ret = r.run(suites)
     assert ret.wasSuccessful()

@@ -87,7 +87,7 @@ class SnpReader(PstReader):
         >>> pheno_fn = example_file('pysnptools/examples/toydata.phe')
         >>> snpdata = Pheno(pheno_fn).read() # Read data from Pheno format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata.5chrom.bed")
-        >>> Bed.write("tempdir/toydata.5chrom.bed",snpdata,count_A1=False)   # Write data in Bed format
+        >>> Bed.write("tempdir/toydata.5chrom.bed",snpdata,count_A1=False)   # Write data in Bed format #!!!cmk this SHOULD FAIL
         Bed('tempdir/toydata.5chrom.bed',count_A1=False)
 
 

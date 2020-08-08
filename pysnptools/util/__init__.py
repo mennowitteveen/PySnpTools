@@ -268,7 +268,7 @@ def sub_matrix(val, row_index_list, col_index_list, order='A', dtype=np.float64)
 
     Note: Behind the scenes, for performance, this function selects and then calls one of 16 C++ helper functions.
     """
-    from pysnptools.snpreader import wrap_matrix_subset
+    from sgkit_plink import wrap_matrix_subset
 
     if order == 'A':
         if val.flags['F_CONTIGUOUS']:

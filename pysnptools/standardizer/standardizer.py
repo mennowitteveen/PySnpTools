@@ -82,7 +82,7 @@ class Standardizer(object):
     @staticmethod
     #changes snps in place
     def _standardize_unit_and_beta(snps, is_beta, a, b, apply_in_place, use_stats, stats, force_python_only=False):
-        from pysnptools.snpreader import wrap_plink_parser
+        from sgkit_plink import wrap_plink_parser
 
         assert snps.flags["C_CONTIGUOUS"] or snps.flags["F_CONTIGUOUS"], "Expect snps to be order 'C' or order 'F'"
 

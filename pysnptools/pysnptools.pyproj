@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{60f1cb4a-9da3-47c2-9b89-60ac1ce93347}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>util\generate.py</StartupFile>
+    <StartupFile>test.py</StartupFile>
     <SearchPath>..\;..\..\sgkit-plink</SearchPath>
     <WorkingDirectory>.\snpreader</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -236,20 +236,6 @@
     <Content Include="examples\toydata.shufflePlus.phe" />
     <Content Include="examples\toydata.sim" />
     <Content Include="examples\toydata.snpmajor.snp.hdf5" />
-    <Content Include="snpreader\CPlinkBedFile.cpp" />
-    <Content Include="snpreader\CPlinkBedFile.h" />
-    <Content Include="snpreader\CPlinkBedFileT.cpp" />
-    <Content Include="snpreader\CPlinkBedFileT.h" />
-    <Content Include="snpreader\MatrixSubset.cpp" />
-    <Content Include="snpreader\MatrixSubset.h" />
-    <Content Include="snpreader\MatrixSubsetT.cpp" />
-    <Content Include="snpreader\MatrixSubsetT.h" />
-    <Content Include="snpreader\wrap_matrix_subset.cpp" />
-    <Content Include="snpreader\wrap_matrix_subset.pyx">
-      <SubType>Code</SubType>
-    </Content>
-    <Content Include="snpreader\wrap_plink_parser.cpp" />
-    <Content Include="snpreader\wrap_plink_parser.pyx" />
     <Content Include="util\pysnptools.hashdown.json" />
   </ItemGroup>
   <ItemGroup>

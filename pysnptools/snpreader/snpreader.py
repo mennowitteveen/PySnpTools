@@ -664,6 +664,8 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
             assert self._val.shape == (len(self._row),len(self._col)), "val shape should match that of iid_row x sid_row"
 
         assert self._row.dtype.type is np.str_ and len(self._row.shape)==2 and self._row.shape[1]==2, "iid should be dtype str, have two dimensions, and the second dimension should be size 2"
+        if not (self._col.dtype.type is np.str_ and len(self._col.shape)==1):
+            print("!!!cmk")
         assert self._col.dtype.type is np.str_ and len(self._col.shape)==1, "sid should be of dtype of str and one dimensional"
 
     @staticmethod

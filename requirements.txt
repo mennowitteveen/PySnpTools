@@ -7,3 +7,4 @@ dill>=0.2.9
 backports.tempfile>=1.0
 bgen-reader>=4.0.5
 wheel>=0.34.2
+https://github.com/CarlKCarlK/sgkit-plink/releases/download/0.0.1/sgkit_plink-0.0.1-cp37-cp37m-linux_x86_64.whl

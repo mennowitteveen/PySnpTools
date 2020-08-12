@@ -6,8 +6,7 @@ matrix:
     os: linux
     before_install:
     - pip install -r requirements.txt
-    - pip install fixuphttps://github.com/fastlmm/PySnpTools/releases/download/v4.0.4/bgen_reader-4.0.4-cp37-cp37m-manylinux1_x86_64.whl
-
+    
   - name: macosx_py3
     os: osx
     osx_image: xcode11.3

@@ -10,7 +10,7 @@ except:
     import six.moves.cPickle as pickle
 import subprocess, sys, os.path
 import multiprocessing
-import pysnptools.util as pstutil
+from pysnptools.util import create_directory_if_necessary, _datestamp
 
 
 class LocalMultiProc(Runner):
@@ -61,9 +61,9 @@ class LocalMultiProc(Runner):
 
         import datetime
         now = datetime.datetime.now()
-        run_dir_rel = os.path.join("runs",pstutil._datestamp(appendrandom=True))
+        run_dir_rel = os.path.join("runs",_datestamp(appendrandom=True))
         run_dir_abs = os.path.join(localwd,run_dir_rel)
-        pstutil.create_directory_if_necessary(run_dir_rel, isfile=False)
+        create_directory_if_necessary(run_dir_rel, isfile=False)
 
         distributablep_filename = os.path.join(run_dir_rel, "distributable.p")
         with open(distributablep_filename, mode='wb') as f:

@@ -9,7 +9,6 @@ except ImportError:
     from urllib2 import urlopen, HTTPError  # Python 2
 import logging
 from contextlib import contextmanager
-import pysnptools.util as pstutil
 from pysnptools.util.filecache import FileCache
 import tempfile
 import json
@@ -111,6 +110,8 @@ class Hashdown(FileCache):
     def _get_large_file(url, file, trust_local_files, length=16 * 1024):
         """https://stackoverflow.com/questions/1517616/stream-large-binary-files-with-urllib2-to-file
         """
+        import pysnptools.util as pstutil # put here to avoid recursive nesting
+
         logging.info("Downloading'{0}'".format(url))
         if trust_local_files and os.path.exists(file):
             logging.info("Trusting local file'{0}'".format(file))
@@ -287,6 +288,8 @@ class Hashdown(FileCache):
         'per0 per0 0 0 2 0.408848'
 
         """
+        import pysnptools.util as pstutil # put here to avoid recursive nesting
+
         pstutil.create_directory_if_necessary(filename)
         dict0 = dict(self.__dict__)
         del dict0["directory"]

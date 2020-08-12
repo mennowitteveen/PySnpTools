@@ -162,7 +162,7 @@ class Bed(SnpReader):
         )
 
     @staticmethod
-    def write(filename, snpdata, count_A1=False, force_python_only=False):
+    def write(filename, snpdata, count_A1=False, force_python_only=False, _require_float32_64=True):
         """Writes a :class:`SnpData` to Bed format and returns the :class:`.Bed`.
 
         :param filename: the name of the file to create
@@ -180,6 +180,12 @@ class Bed(SnpReader):
         >>> snpdata = Pheno(pheno_fn).read()         # Read data from Pheno format
         >>> pstutil.create_directory_if_necessary("tempdir/toydata.5chrom.bed")
         >>> Bed.write("tempdir/toydata.5chrom.bed",snpdata,count_A1=False)   # Write data in Bed format #!!!cmk this SHOULD FAIL
+        Bed('tempdir/toydata.5chrom.bed',count_A1=False)
+        >>> # Can write from an int8 array, too.
+        >>> snpdata_int = SnpData(val=np.int_(snpdata.val).astype('int8'),iid=snpdata.iid,sid=snpdata.sid,pos=snpdata.pos,_require_float32_64=False)
+        >>> snpdata_int.val.dtype
+        dtype('int8')
+        >>> Bed.write("tempdir/toydata.5chrom.bed",snpdata_int,count_A1=False,_require_float32_64=False)
         Bed('tempdir/toydata.5chrom.bed',count_A1=False)
         """
 

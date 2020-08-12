@@ -1,108 +1,52 @@
+from contextlib import contextmanager
+import time
+import datetime
+import sys
+
+import hashlib
 import math
 import os
 from os.path import getmtime
 from pathlib import Path
-from pandas import Series, read_csv
-from tempfile import mkdtemp
 from typing import Any, List, Optional, Tuple, Union
-from numpy import empty, uint16, uint32, uint64, zeros
 
 import numpy as np
 from numpy import asarray, stack
-import logging
 
 from bgen_reader._bgen_file import bgen_file
 from bgen_reader._bgen_metafile import bgen_metafile
 from bgen_reader._ffi import ffi, lib
 from bgen_reader._file import assert_file_exist, assert_file_readable, tmp_cwd
 from bgen_reader._helper import genotypes_to_allele_counts, get_genotypes
+from pysnptools.distreader._multimemmap import MultiMemMap
 
-from pysnptools.util import log_in_place
+def _touch(filepath: Path, mode=0o666, dir_fd=None, **kwargs):
+    """
+    Touch a file.
 
-def _inner_read_partition(self, index: int):
-        # start = time()
-        partition = lib.bgen_metafile_read_partition(self._bgen_metafile, index)
-        # print(f"Elapsed: {time() - start} for bgen_metafile_read_partition")
-        if partition == ffi.NULL:
-            raise RuntimeError(f"Could not read partition {partition}.")
-
-        nvariants = lib.bgen_partition_nvariants(partition)
-
-        # start = time()
-        position = empty(nvariants, dtype=uint32)
-        nalleles = empty(nvariants, dtype=uint16)
-        offset = empty(nvariants, dtype=uint64)
-        vid_max_len = ffi.new("uint32_t[]", 1)
-        rsid_max_len = ffi.new("uint32_t[]", 1)
-        chrom_max_len = ffi.new("uint32_t[]", 1)
-        allele_ids_max_len = ffi.new("uint32_t[]", 1)
-        # print(f"Elapsed: {time() - start} empty")
-
-        # start = time()
-        position_ptr = ffi.cast("uint32_t *", ffi.from_buffer(position))
-        nalleles_ptr = ffi.cast("uint16_t *", ffi.from_buffer(nalleles))
-        offset_ptr = ffi.cast("uint64_t *", ffi.from_buffer(offset))
-        lib.read_partition_part1(
-            partition,
-            position_ptr,
-            nalleles_ptr,
-            offset_ptr,
-            vid_max_len,
-            rsid_max_len,
-            chrom_max_len,
-            allele_ids_max_len,
+    Credits to <https://stackoverflow.com/a/1160227>.
+    """
+    flags = os.O_CREAT | os.O_APPEND
+    with os.fdopen(os.open(filepath, flags=flags, mode=mode, dir_fd=dir_fd)) as f:
+        os.utime(
+            f.fileno() if os.utime in os.supports_fd else filepath,
+            dir_fd=None if os.supports_fd else dir_fd,
+            **kwargs,
         )
-        # print(f"Elapsed: {time() - start} read_partition")
-
-        # start = time()
-        vid = zeros(nvariants, dtype=f"S{vid_max_len[0]}")
-        rsid = zeros(nvariants, dtype=f"S{rsid_max_len[0]}")
-        chrom = zeros(nvariants, dtype=f"S{chrom_max_len[0]}")
-        allele_ids = zeros(nvariants, dtype=f"S{allele_ids_max_len[0]}")
-        # print(f"Elapsed: {time() - start} create_strings")
-
-        # start = time()
-        lib.read_partition_part2(
-            partition,
-            ffi.from_buffer("char[]", vid),
-            vid_max_len[0],
-            ffi.from_buffer("char[]", rsid),
-            rsid_max_len[0],
-            ffi.from_buffer("char[]", chrom),
-            chrom_max_len[0],
-            ffi.from_buffer("char[]", allele_ids),
-            allele_ids_max_len[0],
-        )
-        # print(f"Elapsed: {time() - start} read_partition2")
-        lib.bgen_partition_destroy(partition)
-
-        return nvariants, vid, rsid, chrom, position, nalleles, allele_ids, offset
 
 
-def _get_samples(bgen, sample_file, verbose):
-    if sample_file is None:
-        if bgen.contain_samples:
-            return bgen.read_samples()
-        else:
-            return generate_samples(bgen.nsamples) #LATER do a coverage report for distreader to find similar untested paths
-    else:
-        samples_filepath = Path(sample_file)
-        assert_file_exist(samples_filepath)
-        assert_file_readable(samples_filepath)
-        return read_samples_file(samples_filepath, verbose)
-
-def generate_samples(nsamples: int):
-    return Series([f"sample_{i}" for i in range(nsamples)], dtype=str, name="id")
-
-def read_samples_file(sample_filepath: Path, verbose: bool):
-    if verbose:
-        print(f"Sample IDs are read from {sample_filepath}.")
-
-    samples = read_csv(sample_filepath, sep=" ", skiprows=[1]).iloc[:, 0].astype("str")
-    return Series(samples, dtype=str, name="id")
+def is_file_writable(filepath: Path):
+    try:
+        _touch(filepath)
+    except PermissionError:
+        return False
+    finally:
+        if filepath.exists():
+            os.remove(filepath)
+    return True
 
 
-def infer_metafile_filepath(bgen_filepath, suffix= ".metafile"):
+def infer_metafile_filepath(bgen_filepath: Path, suffix: str = ".metafile") -> Path:
     """
     Infer metafile filepath.
 
@@ -123,11 +67,63 @@ def infer_metafile_filepath(bgen_filepath, suffix= ".metafile"):
             warnings.warn(str(e), UserWarning)
             return BGEN_READER_CACHE_HOME / "metafile" / path_to_filename(metafile)
     else:
-        if True:#is_file_writable(metafile):
+        if is_file_writable(metafile):
             return metafile
 
         warnings.warn(_metafile_nowrite_dir.format(filepath=metafile), UserWarning)
         return BGEN_READER_CACHE_HOME / "metafile" / path_to_filename(metafile)
+
+
+# best location?
+@contextmanager
+def _log_in_place(name, verbose, time_lambda=time.time, show_log_diffs=False):
+    """
+        Create a one-argument function to write messages to. All messages will be on the same line and
+        will include time.
+
+    """
+    # LATER what if logging messages aren't suppose to go to stdout?
+    t_wait = time_lambda()
+    last_len = [0]  # We have to make this an array so that the value is by reference.
+    last_message_hash = [None]
+    every_printed = [False]  # Don't print the final newline if nothing is ever printed
+
+    if not verbose:
+
+        def do_nothing(message):
+            pass
+
+        yield do_nothing
+    else:
+
+        def writer(message):
+            time_str = str(datetime.timedelta(seconds=time_lambda() - t_wait))
+            if "." in time_str:
+                time_str = time_str[
+                    : time_str.index(".") + 3
+                ]  # Time to the 1/100th of a sec
+            s = "{0} -- time={1}, {2}".format(name, time_str, message)
+            if show_log_diffs:
+                message_hash = hash(message)
+                if (
+                    message_hash != last_message_hash[0]
+                    and last_message_hash[0] is not None
+                ):
+                    sys.stdout.write("\n")
+                last_message_hash[0] = message_hash
+            # Pad with spaces to cover up previous message
+            sys.stdout.write("{0}{1}\r".format(s, " " * max(0, last_len[0] - len(s))))
+            sys.stdout.flush()
+            every_printed[0] = True
+            last_len[0] = len(s)
+
+        yield writer
+
+    if not verbose:
+        return
+    if every_printed[0]:
+        sys.stdout.write("\n")
+
 
 
 # https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard
@@ -142,6 +138,12 @@ class open_bgen:
     samples_filepath
         Path to a `sample format`_ file or ``None`` to read samples from the BGEN file itself.
         Defaults to ``None``.
+    allow_complex
+        ``False`` (default) to assume homogeneous data; ``True`` to allow complex data.
+        The BGEN format allows every variant to vary in its phaseness, its allele count,
+        and its maximum ploidy. For files where these values may actually vary,
+        set ``allow_complex`` to ``True``.
+
     verbose
         ``True`` (default) to show progress; ``False`` otherwise.
 
@@ -149,6 +151,11 @@ class open_bgen:
     -------
     an open_bgen object : :class:`open_bgen`
 
+
+    The first time a file is opened , ``open_bgen`` creates a .metadata2.mmm file, a process that takes seconds to hours,
+    depending on the size of the file and the ``allow_complex`` setting. Subsequent openings take just a fraction of
+    a second. Changing ``samples_filepath`` or ``allow_complex`` results in a new .metadata2.mmm with a slightly
+    different name.
 
     .. _open_examples:
 
@@ -224,58 +231,218 @@ class open_bgen:
         self,
         filepath: Union[str, Path],
         samples_filepath: Optional[Union[str, Path]] = None,
+        allow_complex: bool = False,
         verbose: bool = True,
     ):
         filepath = Path(filepath)
         assert_file_exist(filepath)
         assert_file_readable(filepath)
-
-        self._verbose = verbose
         self._filepath = filepath
+        self._allow_complex = allow_complex
+        self._verbose = verbose
+        self._samples_filepath = (
+            Path(samples_filepath) if samples_filepath is not None else None
+        )
+        self._metadata2_path = self._metadata_path_from_filename(
+            self._filepath, self._samples_filepath, self._allow_complex
+        ).resolve()  # needed because of tmp_cwd in create_metadata
 
         self._bgen_context_manager = bgen_file(filepath)
         self._bgen = self._bgen_context_manager.__enter__()
 
-        self._samples = np.array(
-            _get_samples(self._bgen, samples_filepath, self._verbose), dtype="str"
+        self._nvariants = self._bgen.nvariants
+        self._nsamples = self._bgen.nsamples
+
+        if self._metadata2_path.exists() and getmtime(self._metadata2_path) < getmtime(
+            self._filepath
+        ):
+            self._metadata2_path.unlink()
+        if not self._metadata2_path.exists():
+            self._create_metadata2()
+
+        self._metadata2_memmaps = MultiMemMap(self._metadata2_path, mode="r")
+
+    def _create_metadata2(self):
+        metadata2_temp = self._metadata2_path.parent / (
+            self._metadata2_path.name + ".temp"
         )
-        self._sample_range = np.arange(len(self._samples), dtype=np.int)
+        if metadata2_temp.exists():
+            metadata2_temp.unlink()
 
-        # LATER could make a version of this method public
-        metadata2 = self._metadatapath_from_filename(filepath).resolve() #needed because of tmp_cwd below
-        if metadata2.exists() and getmtime(metadata2) < getmtime(filepath):
-            metadata2.unlink()
+        self._metadata2_memmaps = MultiMemMap(metadata2_temp, mode="w+")
 
-        if metadata2.exists():
-            d = np.load(str(metadata2))
-            self._ids = d["ids"]
-            self._rsids = d["rsids"]
-            self._vaddr = d["vaddr"]
-            self._chromosomes = d["chromosomes"]
-            self._positions = d["positions"]
-            self._nalleles = d["nalleles"]
-            self._allele_ids = d["allele_ids"]
-            self._ncombinations = d["ncombinations"]
-            self._phased = d["phased"]
+        self._extract_nalleles_ids_etc()
+        self._extract_ncombinations_etc()
+        self._extract_samples_etc()
+
+        del self._metadata2_memmaps
+        os.rename(metadata2_temp, self._metadata2_path)
+
+    def _extract_samples_etc(self):
+        if self._samples_filepath is not None:
+            self._extract_samples_from_samples_file()
         else:
-            with tmp_cwd():
-                metafile_filepath = Path("bgen.metadata")
-                self._bgen.create_metafile(metafile_filepath, verbose=self._verbose)
-                self._map_metadata(metafile_filepath)
-                np.savez(
-                    metadata2,
-                    ids=self._ids,
-                    rsids=self._rsids,
-                    vaddr=self._vaddr,
-                    chromosomes=self._chromosomes,
-                    positions=self._positions,
-                    nalleles=self._nalleles,
-                    allele_ids=self._allele_ids,
-                    ncombinations=self._ncombinations,
-                    phased=self._phased,
-                )
+            if self._bgen.contain_samples:
+                self._extract_samples_from_bgen_file()
+            else:
+                self._extract_samples_from_nothing()
+        self._extract_sample_range()
 
-        self._max_combinations = max(self._ncombinations)
+    def _extract_samples_from_nothing(self):
+        with _log_in_place("metadata", self._verbose) as updater:
+            prefix = "sample_"
+            max_length = len(prefix + str(self.nsamples - 1))
+            samples_memmap = self._metadata2_memmaps.append_empty(
+                "samples", self.nsamples, f"<U{max_length}"
+            )
+            for i in range(
+                self.nsamples
+            ):  # LATER Is there another low-memory way to do this that would be faster?
+                if i % 1000 == 0:
+                    updater(
+                        "'generate samples': part {0:,} of {1:,}".format(
+                            i, self.nsamples
+                        )
+                    )
+                samples_memmap[i] = prefix + str(i)
+
+    def _extract_samples_from_bgen_file(self):
+        with _log_in_place("metadata", self._verbose) as updater:
+
+            bgen_samples = lib.bgen_file_read_samples(self._bgen._bgen_file)
+            if bgen_samples == ffi.NULL:
+                raise RuntimeError("Could not fetch samples from the bgen file.")
+
+            try:
+                samples_max_len = ffi.new("uint32_t[]", 1)
+                lib.read_samples_part1(bgen_samples, self.nsamples, samples_max_len)
+                updater("'samples from bgen'")
+                samples_memmap = self._metadata2_memmaps.append_empty(
+                    "samples", self.nsamples, f"<U{samples_max_len[0]}"
+                )
+                samples = self._metadata2_memmaps.append_empty(
+                    "_samples", self.nsamples, f"S{samples_max_len[0]}"
+                )  # This one second, so we can delete it afterwards.
+                lib.read_samples_part2(
+                    bgen_samples,
+                    self.nsamples,
+                    ffi.from_buffer("char[]", samples),
+                    samples_max_len[0],
+                )
+            finally:
+                lib.bgen_samples_destroy(bgen_samples)
+            samples_memmap[:] = samples
+            self._metadata2_memmaps.popitem()  # Remove _samples
+
+    def _extract_sample_range(self):
+        sample_range_memmap = self._metadata2_memmaps.append_empty(
+            "sample_range", self.nsamples, "int32"
+        )
+        with _log_in_place("metadata", self._verbose) as updater:
+            for i in range(
+                self.nsamples
+            ):  # LATER: Is there another low memory way to do this that would be faster?
+                if i % 1000 == 0:
+                    updater(
+                        "'sample range': part {0:,} of {1:,}".format(i, self.nsamples)
+                    )
+                sample_range_memmap[i] = i
+
+    def _extract_samples_from_samples_file(self):
+        with _log_in_place("metadata", self._verbose) as updater:
+            assert_file_exist(self._samples_filepath)
+            assert_file_readable(self._samples_filepath)
+            if self._verbose:
+                print(f"Sample IDs are read from '{self._samples_filepath}''.")
+
+            # Find max length
+            max_len = 0
+            with self._samples_filepath.open("r") as fp:
+                fp.readline()
+                fp.readline()
+                for index, line in enumerate(fp):
+                    if index % 1000 == 0:
+                        updater(
+                            "'samples_filepath max_len': part {0:,} of {1:,}".format(
+                                index, self.nsamples
+                            )
+                        )
+                    max_len = max(max_len, len(line.strip()))
+
+                assert (
+                    index + 1 == self.nsamples
+                ), "Expect new of samples in file to match number of samples in BGEN file"
+
+            # Copy samples into memmap
+            samples_memmap = self._metadata2_memmaps.append_empty(
+                "samples", self.nsamples, f"<U{max_len}"
+            )
+            with self._samples_filepath.open("r") as fp:
+                fp.readline()
+                fp.readline()
+                for index, line in enumerate(fp):
+                    if index % 1000 == 0:
+                        updater(
+                            "'samples_filepath': part {0:,} of {1:,}".format(
+                                index, self.nsamples
+                            )
+                        )
+                    samples_memmap[index] = line.strip()
+
+    def _extract_ncombinations_etc(self):
+
+        ncombinations_memmap = self._metadata2_memmaps.append_empty(
+            "ncombinations", (self.nvariants), "int32"
+        )
+        phased_memmap = self._metadata2_memmaps.append_empty(
+            "phased", (self.nvariants), "bool"
+        )
+
+        if not self._allow_complex:
+            assert (
+                self.nvariants > 0
+            ), "If allow_complex is False, there must be at least one variant"
+            i = 0
+            previous_i = None
+            while i < self.nvariants:
+                genotype = lib.bgen_file_open_genotype(
+                    self._bgen._bgen_file, self._vaddr[0]
+                )
+                ncombinations_memmap[i] = lib.bgen_genotype_ncombs(genotype)
+                phased_memmap[i] = lib.bgen_genotype_phased(genotype)
+                lib.bgen_genotype_close(genotype)
+                assert previous_i is None or (
+                    ncombinations_memmap[previous_i] == ncombinations_memmap[i]
+                    and phased_memmap[previous_i] == phased_memmap[i]
+                ), "allow_complex is False but a spot check shows that file is complex"
+                previous_i = i
+                i = (i + 1) * 2 - 1
+            ncombinations_memmap[1:] = ncombinations_memmap[0]
+            phased_memmap[1:] = phased_memmap[0]
+        else:
+            if self._verbose:
+                print(
+                    "Parameter 'allow_complex' is True, so reading phase and ncombinations of every variant"
+                )
+            with _log_in_place("metadata", self._verbose) as updater:
+                for i, vaddr0 in enumerate(self._vaddr):
+                    if i % 1000 == 0:
+                        updater(
+                            "'ncombinations': part {0:,} of {1:,}".format(
+                                i, self.nvariants
+                            )
+                        )
+                    genotype = lib.bgen_file_open_genotype(
+                        self._bgen._bgen_file, vaddr0
+                    )
+                    ncombinations_memmap[i] = lib.bgen_genotype_ncombs(genotype)
+                    phased_memmap[i] = lib.bgen_genotype_phased(genotype)
+                    lib.bgen_genotype_close(genotype)
+
+        max_combinations_memmap = self._metadata2_memmaps.append_empty(
+            "max_combinations", (1), "int32"
+        )
+        max_combinations_memmap[0] = max(self.ncombinations)
 
     def read(
         self,
@@ -501,7 +668,7 @@ class open_bgen:
         vaddr_per_second = 10 ** (
             int(math.log10(vaddr_per_second) + 0.5)
         )  # Do "logarithmic rounding" to make numbers look nicer, e.g.  999 -> 1000
-        with log_in_place("reading",logging.INFO) as updater:
+        with _log_in_place("reading", self._verbose) as updater:
             for out_index, vaddr0 in enumerate(vaddr):
                 if out_index % vaddr_per_second == 0:
                     updater("part {0:,} of {1:,}".format(out_index, len(vaddr)))
@@ -513,8 +680,8 @@ class open_bgen:
                         prob_buffer is None
                         or ncombinations[out_index] != prob_buffer.shape[-1]
                     ):
-                        prob_buffer = np.full(
-                            (len(self._samples), ncombinations[out_index]),
+                        prob_buffer = np.full(  # LATER could offer an option to memmap this buffer
+                            (self.nsamples, ncombinations[out_index]),
                             np.nan,
                             order="C",
                             dtype="float64",
@@ -567,7 +734,7 @@ class open_bgen:
             4
 
         """
-        return len(self._samples)
+        return self._nsamples
 
     @property
     def nvariants(self) -> int:
@@ -586,7 +753,7 @@ class open_bgen:
             4
 
         """
-        return len(self.ids)
+        return self._nvariants
 
     @property
     def max_combinations(self) -> int:
@@ -608,7 +775,7 @@ class open_bgen:
             4
 
         """
-        return self._max_combinations
+        return self._metadata2_memmaps["max_combinations"][0]
 
     @property
     def shape(self) -> Tuple[int, int, int]:
@@ -631,9 +798,19 @@ class open_bgen:
         return (self.nsamples, self.nvariants, self.max_combinations)
 
     # This is static so that test code can use it easily.
+    # LATER could make a version of this method public
     @staticmethod
-    def _metadatapath_from_filename(filename):
-        return infer_metafile_filepath(Path(filename), ".metadata2.npz")
+    def _metadata_path_from_filename(filename, samples_filepath, allow_complex=False):
+        # If there is a sample file, put a hash its name is the name of the metadata file
+        if samples_filepath is None:
+            s_string = ""
+        else:
+            hash = hashlib.sha256(samples_filepath.name.encode("utf-8")).hexdigest()
+            s_string = ".S" + hash[:6]
+        a_string = "" if not allow_complex else ".complex"
+        return infer_metafile_filepath(
+            Path(filename), f"{s_string}{a_string}.metadata2.mmm"
+        )
 
     @property
     def samples(self) -> List[str]:
@@ -652,7 +829,7 @@ class open_bgen:
             ['sample_0' 'sample_1' 'sample_2' 'sample_3']
 
         """
-        return self._samples
+        return self._metadata2_memmaps["samples"]
 
     @property
     def ids(self) -> List[str]:
@@ -671,7 +848,7 @@ class open_bgen:
             ['SNP1' 'SNP2' 'SNP3' 'SNP4']
 
         """
-        return self._ids
+        return self._metadata2_memmaps["ids"]
 
     @property
     def rsids(self) -> List[str]:
@@ -690,7 +867,19 @@ class open_bgen:
             ['RS1' 'RS2' 'RS3' 'RS4']
 
         """
-        return self._rsids
+        return self._metadata2_memmaps["rsids"]
+
+    @property
+    def _vaddr(self) -> List[int]:
+        return self._metadata2_memmaps["vaddr"]
+
+    @property
+    def _ncombinations(self) -> List[int]:
+        return self._metadata2_memmaps["ncombinations"]
+
+    @property
+    def _sample_range(self) -> List[int]:
+        return self._metadata2_memmaps["sample_range"]
 
     @property
     def chromosomes(self) -> List[str]:
@@ -709,7 +898,7 @@ class open_bgen:
             ['1' '1' '1' '1']
 
         """
-        return self._chromosomes
+        return self._metadata2_memmaps["chromosomes"]
 
     @property
     def positions(self) -> List[int]:
@@ -728,7 +917,7 @@ class open_bgen:
             [1 2 3 4]
 
         """
-        return self._positions
+        return self._metadata2_memmaps["positions"]
 
     @property
     def nalleles(self) -> List[int]:
@@ -747,7 +936,7 @@ class open_bgen:
             [2 2 2 2]
 
         """
-        return self._nalleles
+        return self._metadata2_memmaps["nalleles"]
 
     @property
     def allele_ids(self) -> List[str]:
@@ -766,7 +955,7 @@ class open_bgen:
             ['A,G' 'A,G' 'A,G' 'A,G']
 
         """
-        return self._allele_ids
+        return self._metadata2_memmaps["allele_ids"]
 
     @property
     def ncombinations(self) -> List[int]:
@@ -786,7 +975,7 @@ class open_bgen:
             [4 4 4 4]
 
         """
-        return self._ncombinations
+        return self._metadata2_memmaps["ncombinations"]
 
     @property
     def phased(self) -> List[bool]:
@@ -806,7 +995,7 @@ class open_bgen:
             [ True  True  True  True]
 
         """
-        return self._phased
+        return self._metadata2_memmaps["phased"]
 
     @staticmethod
     def _split_index(index):
@@ -828,66 +1017,168 @@ class open_bgen:
             pass
         return index
 
-    def _map_metadata(self, metafile_filepath):
-        with log_in_place("metadata",logging.INFO) as updater:
-            with bgen_metafile(Path(metafile_filepath)) as mf:
-                nparts = mf.npartitions
-                (
-                    id_list,
-                    rsid_list,
-                    chrom_list,
-                    position_list,
-                    vaddr_list,
-                    nalleles_list,
-                    allele_ids_list,
-                    ncombinations_list,
-                    phased_list,
-                ) = ([], [], [], [], [], [], [], [], [])
+    def _extract_nalleles_ids_etc(self):
+        with tmp_cwd():
+            metafile_filepath = Path("bgen.metadata")
+            self._bgen.create_metafile(metafile_filepath, verbose=self._verbose)
 
-                for ipart2 in range(nparts):  # LATER multithread?
-                    # LATER in notebook this message doesn't appear on one line
-                    updater("step 2: part {0:,} of {1:,}".format(ipart2, nparts))
+            with _log_in_place("metadata", self._verbose) as updater:
+                with bgen_metafile(metafile_filepath) as mf:
+                    nparts = mf.npartitions
 
-                    (
-                        nvariants,
-                        vid,
-                        rsid,
-                        chrom,
-                        position,
-                        nalleles,
-                        allele_ids,
-                        offset,
-                    ) = _inner_read_partition(mf, ipart2)
+                    vaddr_memmap = self._metadata2_memmaps.append_empty(
+                        "vaddr", (self.nvariants), "uint64"
+                    )
+                    positions_memmap = self._metadata2_memmaps.append_empty(
+                        "positions", (self.nvariants), "uint32"
+                    )
+                    nalleles_memmap = self._metadata2_memmaps.append_empty(
+                        "nalleles", (self.nvariants), "uint16"
+                    )
 
-                    id_list.append(vid)
-                    rsid_list.append(rsid)
-                    chrom_list.append(chrom)
-                    position_list.append(position)
-                    nalleles_list.append(nalleles)
-                    allele_ids_list.append(allele_ids)
-                    vaddr_list.append(offset)
+                    vid_max_max = 0
+                    rsid_max_max = 0
+                    chrom_max_max = 0
+                    allele_ids_max_max = 0
 
-            # LATER use concatenate(...out=) instead
-            self._ids = np.array(
-                np.concatenate(id_list), dtype="str"
-            )  # dtype needed to make unicode
-            self._rsids = np.array(np.concatenate(rsid_list), dtype="str")
-            self._vaddr = np.concatenate(vaddr_list)
-            self._chromosomes = np.array(np.concatenate(chrom_list), dtype="str")
-            self._positions = np.concatenate(position_list)
-            self._nalleles = np.concatenate(nalleles_list)
-            self._allele_ids = np.array(np.concatenate(allele_ids_list), dtype="str")
+                    start = 0
+                    for ipart2 in range(nparts):  # LATER multithread?
+                        # LATER in notebook this message doesn't appear on one line
+                        updater("'nallele': part {0:,} of {1:,}".format(ipart2, nparts))
 
-            for i, vaddr0 in enumerate(self._vaddr):
-                if i % 1000 == 0:
-                    updater("step 3: part {0:,} of {1:,}".format(i, self.nvariants))
-                genotype = lib.bgen_file_open_genotype(self._bgen._bgen_file, vaddr0)
-                ncombinations_list.append(lib.bgen_genotype_ncombs(genotype))
-                phased_list.append(lib.bgen_genotype_phased(genotype))
-                lib.bgen_genotype_close(genotype)
+                        partition = lib.bgen_metafile_read_partition(
+                            mf._bgen_metafile, ipart2
+                        )
+                        if partition == ffi.NULL:
+                            raise RuntimeError(f"Could not read partition {partition}.")
 
-            self._ncombinations = np.array(ncombinations_list, dtype="int")
-            self._phased = np.array(phased_list, dtype="bool")
+                        try:
+                            nvariants = lib.bgen_partition_nvariants(partition)
+                            position = np.empty(nvariants, dtype=np.uint32)
+                            nalleles = np.empty(nvariants, dtype=np.uint16)
+                            offset = np.empty(nvariants, dtype=np.uint64)
+                            vid_max_len = ffi.new("uint32_t[]", 1)
+                            rsid_max_len = ffi.new("uint32_t[]", 1)
+                            chrom_max_len = ffi.new("uint32_t[]", 1)
+                            allele_ids_max_len = ffi.new("uint32_t[]", 1)
+                            position_ptr = ffi.cast(
+                                "uint32_t *", ffi.from_buffer(position)
+                            )
+                            nalleles_ptr = ffi.cast(
+                                "uint16_t *", ffi.from_buffer(nalleles)
+                            )
+                            offset_ptr = ffi.cast("uint64_t *", ffi.from_buffer(offset))
+                            lib.read_partition_part1(
+                                partition,
+                                position_ptr,
+                                nalleles_ptr,
+                                offset_ptr,
+                                vid_max_len,
+                                rsid_max_len,
+                                chrom_max_len,
+                                allele_ids_max_len,
+                            )
+
+                            vid_max_max = max(vid_max_max, vid_max_len[0])
+                            rsid_max_max = max(rsid_max_max, rsid_max_len[0])
+                            chrom_max_max = max(chrom_max_max, chrom_max_len[0])
+                            allele_ids_max_max = max(
+                                allele_ids_max_max, allele_ids_max_len[0]
+                            )
+
+                            end = start + nvariants
+                            vaddr_memmap[start:end] = offset
+                            positions_memmap[start:end] = position
+                            nalleles_memmap[start:end] = nalleles
+                            start = end
+
+                        finally:
+                            lib.bgen_partition_destroy(partition)
+
+                    ids_memmap = self._metadata2_memmaps.append_empty(
+                        "ids", (self.nvariants), f"<U{vid_max_max}"
+                    )
+                    rsids_memmap = self._metadata2_memmaps.append_empty(
+                        "rsids", (self.nvariants), f"<U{rsid_max_max}"
+                    )
+                    chrom_memmap = self._metadata2_memmaps.append_empty(
+                        "chromosomes", (self.nvariants), f"<U{chrom_max_max}"
+                    )
+                    allele_ids_memmap = self._metadata2_memmaps.append_empty(
+                        "allele_ids", (self.nvariants), f"<U{allele_ids_max_max}"
+                    )
+
+                    start = 0
+                    for ipart2 in range(nparts):  # LATER multithread?
+                        updater("'ids': part {0:,} of {1:,}".format(ipart2, nparts))
+
+                        partition = lib.bgen_metafile_read_partition(
+                            mf._bgen_metafile, ipart2
+                        )
+
+                        from numpy import empty, uint16, uint32, uint64, zeros
+
+                        if partition == ffi.NULL:
+                            raise RuntimeError(f"Could not read partition {partition}.")
+
+                        try:
+
+                            nvariants = lib.bgen_partition_nvariants(partition)
+
+                            position = empty(nvariants, dtype=uint32)
+                            nalleles = empty(nvariants, dtype=uint16)
+                            offset = empty(nvariants, dtype=uint64)
+                            vid_max_len = ffi.new("uint32_t[]", 1)
+                            rsid_max_len = ffi.new("uint32_t[]", 1)
+                            chrom_max_len = ffi.new("uint32_t[]", 1)
+                            allele_ids_max_len = ffi.new("uint32_t[]", 1)
+
+                            position_ptr = ffi.cast(
+                                "uint32_t *", ffi.from_buffer(position)
+                            )
+                            nalleles_ptr = ffi.cast(
+                                "uint16_t *", ffi.from_buffer(nalleles)
+                            )
+                            offset_ptr = ffi.cast("uint64_t *", ffi.from_buffer(offset))
+                            # If we don't call "part1" the call to "part2" will give the wrong answers
+                            lib.read_partition_part1(
+                                partition,
+                                position_ptr,
+                                nalleles_ptr,
+                                offset_ptr,
+                                vid_max_len,
+                                rsid_max_len,
+                                chrom_max_len,
+                                allele_ids_max_len,
+                            )
+
+                            vid = zeros(nvariants, dtype=f"S{vid_max_len[0]}")
+                            rsid = zeros(nvariants, dtype=f"S{rsid_max_len[0]}")
+                            chrom = zeros(nvariants, dtype=f"S{chrom_max_len[0]}")
+                            allele_ids = zeros(
+                                nvariants, dtype=f"S{allele_ids_max_len[0]}"
+                            )
+                            lib.read_partition_part2(
+                                partition,
+                                ffi.from_buffer("char[]", vid),
+                                vid_max_len[0],
+                                ffi.from_buffer("char[]", rsid),
+                                rsid_max_len[0],
+                                ffi.from_buffer("char[]", chrom),
+                                chrom_max_len[0],
+                                ffi.from_buffer("char[]", allele_ids),
+                                allele_ids_max_len[0],
+                            )
+
+                        finally:
+                            lib.bgen_partition_destroy(partition)
+
+                        end = start + nvariants
+                        ids_memmap[start:end] = vid
+                        rsids_memmap[start:end] = rsid
+                        chrom_memmap[start:end] = chrom
+                        allele_ids_memmap[start:end] = allele_ids
+                        start = end
 
     def __str__(self):
         return "{0}('{1}')".format(self.__class__.__name__, self._filepath.name)
@@ -935,6 +1226,15 @@ class open_bgen:
             self._bgen_context_manager.__exit__(None, None, None)
             del (
                 self._bgen_context_manager
+            )  # This allows __del__ and __exit__ to be called twice on the same object with
+            # no bad effect.
+        if (
+            hasattr(self, "_metadata2_memmaps") and self._metadata2_memmaps is not None
+        ):  # we need to test this because Python doesn't guarantee that __init__ was
+            # fully run
+            self._metadata2_memmaps.__exit__(None, None, None)
+            del (
+                self._metadata2_memmaps
             )  # This allows __del__ and __exit__ to be called twice on the same object with
             # no bad effect.
 
@@ -1124,7 +1424,7 @@ class open_bgen:
             [500 rows x 2 columns]
 
         """
-        samples_index, variants_index = self._split_index(index)
+        _, variants_index = self._split_index(index)
         phased_list = self.phased[variants_index]
         nalleles = self.nalleles[variants_index]
         if any(phased_list):

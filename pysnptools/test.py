@@ -180,13 +180,13 @@ class TestPySnpTools(unittest.TestCase):
                 snpdata = snpreader.read(dtype='int8',_require_float32_64=False,force_python_only=force_python_only,order=order)
                 assert snpdata.val.dtype == 'int8'
                 assert np.allclose(snpdata.val, ref.val, equal_nan=True)
+                # !!!cmk why did I remove this for a while?
                 output = "tempdir/snpreader/int8.bed"
                 create_directory_if_necessary(output)
                 for count_A1 in [False,True]:
                     bed2 = Bed.write(output,snpdata,count_A1=count_A1,_require_float32_64=False,force_python_only=force_python_only)
                     assert np.allclose(bed2.read(dtype='int8',_require_float32_64=False,force_python_only=force_python_only).val, ref.val, equal_nan=True)
-
-
+                    
     def test_scalar_index(self):
         snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
         arr=np.int64(1)

@@ -2,7 +2,7 @@ import numpy as np
 from itertools import *
 import pandas as pd
 import logging
-from sgkit_plink._open_bed import open_bed
+from bed_reader import open_bed
 from pysnptools.snpreader import SnpReader
 from pysnptools.snpreader import SnpData
 import math
@@ -118,8 +118,8 @@ class Bed(SnpReader):
 
         self._open_bed = open_bed(
             self.filename,
-            overrides={
-                "fid": None if self._original_iid is None else self._original_iid[:, 1],
+            metadata={
+                "fid": None if self._original_iid is None else self._original_iid[:, 0],
                 "iid": None if self._original_iid is None else self._original_iid[:, 1],
                 "sid": self._original_sid,
                 "chromosome": None if self._original_pos is None else self._original_pos[:, 0],
@@ -132,7 +132,7 @@ class Bed(SnpReader):
         )
 
         self._row = np.array(
-            [self._open_bed.iid, self._open_bed.iid]
+            [self._open_bed.fid, self._open_bed.iid]
         ).T  #!!!cmk could copy in batches or use concatenate
         self._col = self._open_bed.sid
         self._pos = np.array(
@@ -207,12 +207,21 @@ class Bed(SnpReader):
 
         #!!!cmk understand when and why the filepointer might be left open
         #!!!cmk when open_bed.write switches away from pos, make that change here, too
+        chromosome = snpdata.pos[:,0]
+        chromosome[chromosome!=chromosome]="0"
+        bp_position = snpdata.pos[:,2]
+        bp_position[bp_position!=bp_position]=0
+
         open_bed.write(
             filename,
             val=snpdata.val,
-            iid=snpdata.iid,
-            sid=snpdata.sid,
-            pos=snpdata.pos,
+            metadata = {"fid":snpdata.iid[:,0],
+                        "iid":snpdata.iid[:,1],
+                        "sid":snpdata.sid,
+                        "chromosome":chromosome,
+                        "cm_position":snpdata.pos[:,1],
+                        "bp_position":bp_position,
+                        },
             count_A1=count_A1,
             force_python_only=force_python_only,
         )

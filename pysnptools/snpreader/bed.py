@@ -210,20 +210,15 @@ class Bed(SnpReader):
 
         #!!!cmk understand when and why the filepointer might be left open
         #!!!cmk when open_bed.write switches away from pos, make that change here, too
-        chromosome = snpdata.pos[:,0]
-        chromosome[chromosome!=chromosome]="0"
-        bp_position = snpdata.pos[:,2]
-        bp_position[bp_position!=bp_position]=0
-
         open_bed.write(
             filename,
             val=snpdata.val,
             metadata = {"fid":snpdata.iid[:,0],
                         "iid":snpdata.iid[:,1],
                         "sid":snpdata.sid,
-                        "chromosome":chromosome,
+                        "chromosome":snpdata.pos[:,0],
                         "cm_position":snpdata.pos[:,1],
-                        "bp_position":bp_position,
+                        "bp_position":snpdata.pos[:,2],
                         },
             count_A1=count_A1,
             force_python_only=force_python_only,

@@ -90,6 +90,43 @@ class TestPySnpTools(unittest.TestCase):
         self.snpdata = snpreader.read(order='F',force_python_only=True)
         self.snps = self.snpdata.val
 
+    def test_write_bad_value_and_good(self):
+        from pysnptools.snpreader import Pheno, Bed, SnpData
+        import pysnptools.util as pstutil
+        from pysnptools.util import example_file # Download and return local file name
+        pheno_fn = example_file("pysnptools/examples/toydata.phe")
+        snpdata = Pheno(pheno_fn).read()         # Read data from Pheno format
+        pstutil.create_directory_if_necessary("tempdir/toydata.5chrom.bed")
+        error_seen = False
+        try:
+            Bed.write("tempdir/toydata.5chrom.bed",snpdata,count_A1=False)   # Write data in Bed format
+        except:
+            error_seen = True
+        assert error_seen
+        # Can write from an int8 array, too.
+        snpdata_int = SnpData(val=np.int_(snpdata.val).astype('int8'),iid=snpdata.iid,sid=snpdata.sid,pos=snpdata.pos,_require_float32_64=False)
+        assert snpdata_int.val.dtype == 'int8'
+        error_seen = False
+        try:
+            Bed.write("tempdir/toydata.5chrom.bed",snpdata_int,count_A1=False,_require_float32_64=False)
+        except:
+            error_seen = True
+        assert error_seen
+
+        bed_fn = example_file("pysnptools/examples/toydata.5chrom.bed")
+        snpdata = Bed(bed_fn)[:,::2].read() # Read every-other SNP
+        pstutil.create_directory_if_necessary("tempdir/everyother.bed")
+        Bed.write("tempdir/everyother.bed",snpdata,count_A1=False)   # Write data in Bed format
+        #Bed('tempdir/everyother.bed',count_A1=False)
+        # Can write from an int8 array, too.
+        snpdata_int = SnpData(val=np.int_(snpdata.val).astype('int8'),iid=snpdata.iid,sid=snpdata.sid,pos=snpdata.pos,_require_float32_64=False)
+        snpdata_int.val.dtype
+        assert snpdata_int.val.dtype == 'int8'
+        Bed.write("tempdir/everyother.bed",snpdata_int,count_A1=False,_require_float32_64=False)
+        #Bed('tempdir/everyother',count_A1=False)
+
+
+
     def test_val_assign(self):
         from pysnptools.snpreader import SnpData
         from pysnptools.kernelreader import KernelData
@@ -1054,6 +1091,7 @@ def getTestSuite():
     test_suite = unittest.TestSuite([])
 
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPySnpTools))
+    #!!!cmk
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistributedBed))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestFileCache))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestUtilTools))

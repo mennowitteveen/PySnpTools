@@ -143,6 +143,9 @@ class Bed(SnpReader):
             ]
         ).T  #!!!cmk could copy in batches to use less memory
 
+    def __del__(self):
+        pass
+
     def copyinputs(self, copier):
         # doesn't need to self.run_once() because only uses original inputs
         copier.input(
@@ -176,17 +179,17 @@ class Bed(SnpReader):
         >>> from pysnptools.snpreader import Pheno, Bed
         >>> import pysnptools.util as pstutil
         >>> from pysnptools.util import example_file # Download and return local file name
-        >>> pheno_fn = example_file("pysnptools/examples/toydata.phe")
-        >>> snpdata = Pheno(pheno_fn).read()         # Read data from Pheno format
-        >>> pstutil.create_directory_if_necessary("tempdir/toydata.5chrom.bed")
-        >>> Bed.write("tempdir/toydata.5chrom.bed",snpdata,count_A1=False)   # Write data in Bed format #!!!cmk this SHOULD FAIL
-        Bed('tempdir/toydata.5chrom.bed',count_A1=False)
+        >>> bed_fn = example_file("pysnptools/examples/toydata.5chrom.bed")
+        >>> snpdata = Bed(bed_fn)[:,::2].read() # Read every-other SNP
+        >>> pstutil.create_directory_if_necessary("tempdir/everyother.bed")
+        >>> Bed.write("tempdir/everyother.bed",snpdata,count_A1=False)   # Write data in Bed format
+        Bed('tempdir/everyother.bed',count_A1=False)
         >>> # Can write from an int8 array, too.
         >>> snpdata_int = SnpData(val=np.int_(snpdata.val).astype('int8'),iid=snpdata.iid,sid=snpdata.sid,pos=snpdata.pos,_require_float32_64=False)
         >>> snpdata_int.val.dtype
         dtype('int8')
-        >>> Bed.write("tempdir/toydata.5chrom.bed",snpdata_int,count_A1=False,_require_float32_64=False)
-        Bed('tempdir/toydata.5chrom.bed',count_A1=False)
+        >>> Bed.write("tempdir/everyother.bed",snpdata_int,count_A1=False,_require_float32_64=False)
+        Bed('tempdir/everyother.bed',count_A1=False)
         """
 
         if isinstance(filename, SnpData) and isinstance(

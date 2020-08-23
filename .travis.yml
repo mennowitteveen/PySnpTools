@@ -6,7 +6,6 @@ matrix:
     os: linux
     before_install:
     - pip install -r requirements.txt
-    - pip install fixuphttps://github.com/fastlmm/PySnpTools/releases/download/v4.0.4/bgen_reader-4.0.4-cp37-cp37m-manylinux1_x86_64.whl
 
   - name: macosx_py3
     os: osx
@@ -29,7 +28,6 @@ matrix:
     - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
     - cp /c/Python37/python.exe /c/Python37/python3.exe
     - pip install -r requirements.txt
-    - pip install wheel
 
   - name: win_py38
     os: windows
@@ -39,12 +37,10 @@ matrix:
     - export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
     - cp /c/Python38/python.exe /c/Python38/python3.exe
     - pip install -r requirements.txt
-    - pip install wheel
 
 
 install:
-- python setup.py build_ext --inplace
-- python setup.py sdist bdist_wheel
+- python setup.py
 
 script:
 - export PYTHONPATH=$TRAVIS_BUILD_DIR

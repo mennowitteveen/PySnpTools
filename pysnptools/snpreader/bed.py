@@ -2,7 +2,7 @@ import numpy as np
 from itertools import *
 import pandas as pd
 import logging
-from bed_reader import open_bed
+from bed_reader import open_bed, to_bed
 from pysnptools.snpreader import SnpReader
 from pysnptools.snpreader import SnpData
 import math
@@ -27,7 +27,7 @@ class Bed(SnpReader):
                      * **iid** (an array of strings) -- The :attr:`SnpReader.iid` information. If not given, reads info from '.fam' file.
                      * **sid** (an array of strings) -- The :attr:`SnpReader.sid` information. If not given, reads info from '.bim' file.
                      * **pos** (optional, an array of strings) -- The :attr:`SnpReader.pos` information.  If not given, reads info from '.bim' file.
-                     * **skip_format_check** (*bool*) -- If False (default), will check that '.bed' file has expected starting bytes.
+                     * **skip_format_check** (*bool*) -- If False (default), will check that '.bed' file has expected starting bytes. #!!!cmk describe this better
 
     **Methods beyond** :class:`.SnpReader`
 
@@ -57,9 +57,9 @@ class Bed(SnpReader):
         iid=None,
         sid=None,
         pos=None,
-        num_threads = None,
+        num_threads=None,
         skip_format_check=False,
-    ):  #!!!document these new optionals. they are here
+    ):  #!!!cmk document these new optionals. they are here
         super(Bed, self).__init__()
 
         self._ran_once = False
@@ -77,10 +77,41 @@ class Bed(SnpReader):
         self._original_sid = sid
         self._original_pos = pos
         self._num_threads = num_threads
+        self._open_bed = None
 
     def __repr__(self):
         return "{0}('{1}',count_A1={2})".format(
             self.__class__.__name__, self.filename, self.count_A1
+        )
+
+    def _open_bed_if_needed(self):
+        if self._open_bed is not None:
+            return
+
+        properties = {
+            "father": None,
+            "mother": None,
+            "sex": None,
+            "pheno": None,
+            "allele_1": None,
+            "allele_2": None,
+        }
+        if self._original_iid is not None:
+            properties["fid"] = self._original_iid[:, 0]
+            properties["iid"] = self._original_iid[:, 1]
+        if self._original_sid is not None:
+            properties["sid"] = self._original_sid
+        if self._original_pos is not None:
+            properties["chromosome"] = self._original_pos[:, 0]
+            properties["cm_position"] = self._original_pos[:, 1]
+            properties["bp_position"] = self._original_pos[:, 2]
+
+        self._open_bed = open_bed(
+            self.filename,
+            properties=properties,
+            skip_format_check=self._skip_format_check,
+            count_A1=self.count_A1,
+            num_threads=self._num_threads,
         )
 
     @property
@@ -88,7 +119,12 @@ class Bed(SnpReader):
         """*same as* :attr:`iid`
         """
         if not hasattr(self, "_row"):
-            self._row = SnpReader._read_fam(self.filename, remove_suffix="bed")
+            self._open_bed_if_needed()
+
+            self._row = np.array(
+                [self._open_bed.fid, self._open_bed.iid]
+            ).T  #!!!cmk could copy in batches or use concatenate
+
         return self._row
 
     @property
@@ -96,9 +132,8 @@ class Bed(SnpReader):
         """*same as* :attr:`sid`
         """
         if not hasattr(self, "_col"):
-            self._col, self._col_property = SnpReader._read_map_or_bim(
-                self.filename, remove_suffix="bed", add_suffix="bim"
-            )
+            self._open_bed_if_needed()
+            self._col = self._open_bed.sid
         return self._col
 
     @property
@@ -106,9 +141,21 @@ class Bed(SnpReader):
         """*same as* :attr:`pos`
         """
         if not hasattr(self, "_col_property"):
-            self._col, self._col_property = SnpReader._read_map_or_bim(
-                self.filename, remove_suffix="bed", add_suffix="bim"
-            )
+            self._open_bed_if_needed()
+
+            self._col_property = np.array(
+                [
+                    self._open_bed.chromosome.astype("float"),
+                    self._open_bed.cm_position,
+                    self._open_bed.bp_position,
+                ]
+            ).T  #!!!cmk could copy in batches to use less memory
+            self._col_property[
+                self._col_property == 0
+            ] = (
+                np.nan
+            )  #!!!cmk document that any missing SNP information will become NaN
+
         return self._col_property
 
     def _run_once(self):
@@ -116,32 +163,12 @@ class Bed(SnpReader):
             return
         self._ran_once = True
 
-        self._open_bed = open_bed(
-            self.filename,
-            metadata={
-                "fid": None if self._original_iid is None else self._original_iid[:, 0],
-                "iid": None if self._original_iid is None else self._original_iid[:, 1],
-                "sid": self._original_sid,
-                "chromosome": None if self._original_pos is None else self._original_pos[:, 0],
-                "cm_position": None if self._original_pos is None else self._original_pos[:, 1],
-                "bp_position": None if self._original_pos is None else self._original_pos[:, 2],
-            },
-            skip_format_check=self._skip_format_check,
-            count_A1=self.count_A1,
-            num_threads = self._num_threads,
-        )
+        self.row
+        self.col
+        self.col_property
+        assert self._open_bed is not None  # real assert
 
-        self._row = np.array(
-            [self._open_bed.fid, self._open_bed.iid]
-        ).T  #!!!cmk could copy in batches or use concatenate
-        self._col = self._open_bed.sid
-        self._pos = np.array(
-            [
-                self._open_bed.chromosome.astype("float"),
-                self._open_bed.cm_position,
-                self._open_bed.bp_position,
-            ]
-        ).T  #!!!cmk could copy in batches to use less memory
+        self._assert_iid_sid_pos(check_val=False)  #!!!cmk needed?
 
     def __del__(self):
         pass
@@ -165,7 +192,13 @@ class Bed(SnpReader):
         )
 
     @staticmethod
-    def write(filename, snpdata, count_A1=False, force_python_only=False, _require_float32_64=True):
+    def write(
+        filename,
+        snpdata,
+        count_A1=False,
+        force_python_only=False,
+        _require_float32_64=True,
+    ):
         """Writes a :class:`SnpData` to Bed format and returns the :class:`.Bed`.
 
         :param filename: the name of the file to create
@@ -209,17 +242,17 @@ class Bed(SnpReader):
             count_A1 = False
 
         #!!!cmk understand when and why the filepointer might be left open
-        #!!!cmk when open_bed.write switches away from pos, make that change here, too
-        open_bed.write(
+        to_bed(
             filename,
             val=snpdata.val,
-            metadata = {"fid":snpdata.iid[:,0],
-                        "iid":snpdata.iid[:,1],
-                        "sid":snpdata.sid,
-                        "chromosome":snpdata.pos[:,0],
-                        "cm_position":snpdata.pos[:,1],
-                        "bp_position":snpdata.pos[:,2],
-                        },
+            properties={
+                "fid": snpdata.iid[:, 0],
+                "iid": snpdata.iid[:, 1],
+                "sid": snpdata.sid,
+                "chromosome": snpdata.pos[:, 0],
+                "cm_position": snpdata.pos[:, 1],
+                "bp_position": snpdata.pos[:, 2],
+            },
             count_A1=count_A1,
             force_python_only=force_python_only,
         )
@@ -236,6 +269,9 @@ class Bed(SnpReader):
         view_ok,
     ):
         self._run_once()
+
+        if order == "A":
+            order = "F"
 
         assert not hasattr(
             self, "ind_used"

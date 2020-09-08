@@ -9,6 +9,7 @@ from pysnptools.pstreader import PstReader
 import warnings
 import pysnptools.standardizer as stdizer
 from six.moves import range
+from bed_reader import open_bed
 
 #!!why do the examples use ../tests/datasets instead of "examples"?
 class SnpReader(PstReader):
@@ -399,9 +400,9 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
         >>> bedfile = example_file("tests/datasets/all_chr.maf0.001.N300.*","*.bed")
         >>> snp_on_disk = Bed(bedfile,count_A1=False)
         >>> print(snp_on_disk.pos[:3,]) # print position information for the first three sids: #The '...' is for possible space char
-        [[...1.          0.00800801  0.        ]
-         [...1.          0.023023    1.        ]
-         [...1.          0.0700701   4.        ]]
+        [[1.         0.00800801        nan]
+         [1.         0.023023   1.        ]
+         [1.         0.0700701  4.        ]]
         """
         return self.col_property
 
@@ -663,6 +664,8 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
             assert len(self._val.shape)==2, "val should have two dimensions"
             assert self._val.shape == (len(self._row),len(self._col)), "val shape should match that of iid_row x sid_row"
 
+        if not(self._row.dtype.type is np.str_ and len(self._row.shape)==2 and self._row.shape[1]==2):
+            print("!!!cmk")
         assert self._row.dtype.type is np.str_ and len(self._row.shape)==2 and self._row.shape[1]==2, "iid should be dtype str, have two dimensions, and the second dimension should be size 2"
         if not (self._col.dtype.type is np.str_ and len(self._col.shape)==1):
             print("!!!cmk")
@@ -686,10 +689,11 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
     @staticmethod
     def _write_map_or_bim(snpdata, basefilename, remove_suffix, add_suffix):
         mapfile = SnpReader._name_of_other_file(basefilename, remove_suffix, add_suffix)
-
+        #!!!cmk should fill any NaN with 0????
         with open(mapfile,"w") as map_filepointer:
             for sid_index, sid in enumerate(snpdata.sid):
-                posrow = snpdata.pos[sid_index]
+                posrow = snpdata.pos[sid_index].copy()
+                posrow[posrow!=posrow]=0 #Fill missing with zero as per the PLINK standard
                 map_filepointer.write("%r\t%s\t%r\t%r\tA\tC\n" % (posrow[0], sid, posrow[1], posrow[2]))
 
 
@@ -697,30 +701,41 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
     def _read_fam(basefilename, remove_suffix, add_suffix='fam'):
         famfile = SnpReader._name_of_other_file(basefilename, remove_suffix, add_suffix)
 
+        properties = {
+            "father": None,
+            "mother": None,
+            "sex": None,
+            "pheno": None,
+        }
+
         logging.info("Loading {0} file {1}".format(add_suffix, famfile))
-        if os.path.getsize(famfile)>0:
-            iid = np.loadtxt(famfile, dtype = 'str',usecols=(0,1),comments=None)
-        else:
-            iid = np.empty((0,2), dtype = 'str')
-        if len(iid.shape) == 1: #When empty or just one item, make sure the result is (x,2)
-            iid = iid.reshape((len(iid)//2,2))
+        with open_bed(basefilename,fam_filepath=famfile,properties=properties,skip_format_check=True) as bed:
+            iid =np.array([bed.fid, bed.iid]).T
         return iid
 
 
     @staticmethod
-    def _read_map_or_bim( basefilename, remove_suffix, add_suffix):
-        mapfile = SnpReader._name_of_other_file(basefilename, remove_suffix, add_suffix)
+    def _read_map_or_bim(basefilename, remove_suffix, add_suffix):
+        bimfile = SnpReader._name_of_other_file(basefilename, remove_suffix, add_suffix)
 
-        logging.info("Loading {0} file {1}".format(add_suffix, mapfile))
-        if os.path.getsize(mapfile) == 0: #If the map/bim file is empty, return empty arrays
-            sid = np.array([],dtype='str')
-            pos = np.array([[]],dtype=int).reshape(0,3)
-            return sid,pos
-        else:
-            fields = pd.read_csv(mapfile,delimiter = '\t',usecols = (0,1,2,3),header=None,index_col=False,comment=None)
-            sid = np.array(fields[1].tolist(),dtype='str')
-            pos = fields[[0,2,3]].values
-            return sid,pos
+        properties = {
+            "allele_1": None,
+            "allele_2": None,
+        }
+
+        logging.info("Loading {0} file {1}".format(add_suffix, bimfile))
+        with open_bed(basefilename,bim_filepath=bimfile,properties=properties,skip_format_check=True) as bed:
+            sid = bed.sid
+            pos = np.array(
+                [
+                    bed.chromosome.astype("float"),
+                    bed.cm_position,
+                    bed.bp_position,
+                ]
+            ).T  #!!!cmk could copy in batches to use less memory
+            pos[pos == 0] = np.nan #!!!cmk document that any missing SNP information will become NaN
+
+        return sid,pos
 
     @property
     def val_shape(self):

@@ -60,7 +60,7 @@ def snp_gen(fst, dfr, iid_count, sid_count, maf_low=.05, maf_high=.5, seed=0, si
     """
     from pysnptools.snpreader import SnpData
 
-    assert 0 <= freq_pop_0 and freq_pop_0 <=1.0,"assert 0 <= freq_pop_0 and freq_pop_0 <=1.0"
+    assert 0 <= freq_pop_0 <=1.0, "assert 0 <= freq_pop_0 <= 1.0"
 
     if seed is not None:
         np.random.seed(int(seed % 2147483647)) #old maxint
@@ -81,7 +81,7 @@ def snp_gen(fst, dfr, iid_count, sid_count, maf_low=.05, maf_high=.5, seed=0, si
     val = np.concatenate(snp_list)
 
     if not label_with_pop:
-        iid = np.array([["i_{0}".format(iid_index),"f_{0}".format(iid_index)] for iid_index in range(val.shape[0])],dtype=str).reshape(-1,2)
+        iid = np.array([["i_{0}".format(iid_index),"f_{0}".format(iid_index)] for iid_index in range(val.shape[0])],dtype=str).reshape(-1,2)#!!!cmk isn't i and f backwards
     else:
         assert len(snp_list) == 5, "real assert"
         iid0 = [["0",str(iid_index)] for iid_index in range(len(snp_list[0])+len(snp_list[1]))] #parents and children of pop 0
@@ -223,53 +223,53 @@ class TestGenerate(unittest.TestCase):
 
 
     def test_gen1(self):
-        self.gen_and_compare("gen1", fst=0,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=5)
+        self.gen_and_compare("gen1.bed", fst=0,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=5)
 
     def test_gen2(self):
-        self.gen_and_compare("gen2", fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=5)
+        self.gen_and_compare("gen2.bed", fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=5)
 
     def test_gen2b(self):
         """
         Test that different seed produces different result
         """
         from pysnptools.snpreader import Bed
-        gen_snpdata = self.gen_and_compare("gen2b", fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=6)
-        ref_snpdata = Bed(self.currentFolder + "/../../tests/datasets/generate/gen2",count_A1=False).read()
+        gen_snpdata = self.gen_and_compare("gen2b.bed", fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=6)
+        ref_snpdata = Bed(self.currentFolder + "/../../tests/datasets/generate/gen2.bed",count_A1=False).read()
         assert gen_snpdata != ref_snpdata, "Expect different seeds to produce different results"
 
     def test_gen3(self):
-        self.gen_and_compare("gen3", fst=.1,dfr=0,iid_count=200,sid_count=20,maf_low=.05,seed=5)
+        self.gen_and_compare("gen3.bed", fst=.1,dfr=0,iid_count=200,sid_count=20,maf_low=.05,seed=5)
 
     def test_gen4(self):
-        self.gen_and_compare("gen4", fst=.1,dfr=.01,iid_count=200,sid_count=20,maf_low=.1,seed=5)
+        self.gen_and_compare("gen4.bed", fst=.1,dfr=.01,iid_count=200,sid_count=20,maf_low=.1,seed=5)
 
     def test_gen5(self):
         from pysnptools.snpreader import Bed
-        gen_snpdata = self.gen_and_compare("gen5", fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,maf_high=.4, seed=5)
-        ref_snpdata = Bed(self.currentFolder + "/../../tests/datasets/generate/gen2",count_A1=False).read()
+        gen_snpdata = self.gen_and_compare("gen5.bed", fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,maf_high=.4, seed=5)
+        ref_snpdata = Bed(self.currentFolder + "/../../tests/datasets/generate/gen2.bed",count_A1=False).read()
         assert gen_snpdata != ref_snpdata, "Expect different seeds to produce different results"
 
     def test_gen6(self):
         from pysnptools.snpreader import Bed
-        gen_snpdata = self.gen_and_compare("gen6", fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=5,sibs_per_family=5)
-        ref_snpdata = Bed(self.currentFolder + "/../../tests/datasets/generate/gen2",count_A1=False).read()
+        gen_snpdata = self.gen_and_compare("gen6.bed", fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=5,sibs_per_family=5)
+        ref_snpdata = Bed(self.currentFolder + "/../../tests/datasets/generate/gen2.bed",count_A1=False).read()
         assert gen_snpdata != ref_snpdata, "Expect different seeds to produce different results"
 
     def test_gen7(self):
         from pysnptools.snpreader import Bed
-        gen_snpdata = self.gen_and_compare("gen7", fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=5,freq_pop_0=.75)
-        ref_snpdata = Bed(self.currentFolder + "/../../tests/datasets/generate/gen2",count_A1=False).read()
+        gen_snpdata = self.gen_and_compare("gen7.bed", fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=5,freq_pop_0=.75)
+        ref_snpdata = Bed(self.currentFolder + "/../../tests/datasets/generate/gen2.bed",count_A1=False).read()
         assert gen_snpdata != ref_snpdata
 
 
     def test_gen8(self):
-        self.gen_and_compare("gen8a", fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=5,chr_count=3)
-        self.gen_and_compare("gen8b", fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=5,chr_count=4)
-        self.gen_and_compare("gen8c", fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=5,chr_count=6)
+        self.gen_and_compare("gen8a.bed", fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=5,chr_count=3)
+        self.gen_and_compare("gen8b.bed", fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=5,chr_count=4)
+        self.gen_and_compare("gen8c.bed", fst=.1,dfr=.5,iid_count=200,sid_count=20,maf_low=.05,seed=5,chr_count=6)
 
     def test_pheno1(self):
         from pysnptools.snpreader import Bed, SnpData, SnpNpz
-        some_snp_data = Bed(self.currentFolder + "/../../tests/datasets/generate/gen2",count_A1=False).read()
+        some_snp_data = Bed(self.currentFolder + "/../../tests/datasets/generate/gen2.bed",count_A1=False).read()
         gen_snpdata = SnpData(iid=some_snp_data.iid,sid=["pheno"],val=_generate_phenotype(some_snp_data, 10, genetic_var=.5, noise_var=.5, seed=5).reshape(-1,1))
         #SnpNpz.write(r'c:\deldir\pheno1.snp.npz',gen_snpdata)
         ref_snpdata = SnpNpz(self.currentFolder + "/../../tests/datasets/generate/pheno1.snp.npz").read()

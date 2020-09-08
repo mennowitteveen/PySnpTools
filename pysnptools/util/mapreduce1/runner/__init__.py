@@ -58,7 +58,7 @@ def _run_one_task(original_distributable, taskindex, taskcount, workdirectory):
     '''
 
     if not 0 < taskcount: raise Exception("Expect taskcount to be positive")
-    if not (0 <= taskindex and taskindex < taskcount+1) :raise Exception("Expect taskindex to be between 0 (inclusive) and taskcount (exclusive)")
+    if not (0 <= taskindex < taskcount+1) :raise Exception("Expect taskindex to be between 0 (inclusive) and taskcount (exclusive)")
 
     shaped_distributable = _shape_to_desired_workcount(original_distributable, taskcount)
 
@@ -134,7 +134,7 @@ class BatchUpWork(object): # implements IDistributable
         return work_sequence_range(0,self._workcount)
 
     def work_sequence_range(self, start, stop):
-        assert 0 <= start and start <= stop and stop <= self._workcount, "real assert"
+        assert 0 <= start <= stop <= self._workcount, "real assert"
         for workIndex in range(start, stop):
             yield lambda workIndex=workIndex : self.work(workIndex)
             
@@ -188,7 +188,7 @@ class BatchUpWork(object): # implements IDistributable
         return "{0}({1},{2},{3})".format(self.__class__.__name__,self.sub_distributable,self.sub_workcount,self._workcount)
 
     def createSubWorkIndexList(self, workindex):
-        assert 0 <= workindex and workindex < self._workcount, "real assert"
+        assert 0 <= workindex < self._workcount, "real assert"
         start = workindex * self.sub_workcount // self._workcount # assuming high prediction integer math
         stop = (workindex + 1) * self.sub_workcount // self._workcount # assuming high prediction integer math
         return start,stop

@@ -264,7 +264,7 @@ class _Distributed1Bed(SnpReader):
 
         _bed = SnpReader._name_of_other_file(self.path,remove_suffix="bed", add_suffix="bed")
         local_bed = self._storage.open_read(_bed)
-        self.local = Bed(local_bed.__enter__(),count_A1=True,iid=self.row,sid=self.col,pos=self.col_property,skip_format_check=True)
+        self.local = Bed(local_bed.__enter__(),count_A1=True,iid=self.row,sid=self.col,pos=self.col_property,skip_format_check=True)#!!!cmk understand why this is True
         self._file_dict["bed"] = local_bed
 
     def __del__(self):
@@ -306,7 +306,7 @@ class TestDistributedBed(unittest.TestCase):
         ref1 = DistributedBed(os.path.dirname(os.path.realpath(__file__))+'/../../tests/datasets/distributed_bed_test1').read()
         assert(snpdata.allclose(ref1,equal_nan=True))
 
-        ref2 = Bed(os.path.dirname(os.path.realpath(__file__))+'/../../tests/datasets/distributed_bed_test1_X',count_A1=False).read()
+        ref2 = Bed(os.path.dirname(os.path.realpath(__file__))+'/../../tests/datasets/distributed_bed_test1_X.bed',count_A1=False).read()
         assert(snpdata.allclose(ref2,equal_nan=True))
 
 

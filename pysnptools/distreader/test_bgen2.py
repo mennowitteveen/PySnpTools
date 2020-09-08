@@ -235,7 +235,7 @@ def random_file_tests(nsamples, nvariants, bits, verbose=False, overwrite=False)
         val = bgen2.read(-1)
         assert val.shape == (nsamples, 1, 3)
         mean = np.nanmean(val)
-        assert mean != mean or (0 <= mean and mean <= 1)
+        assert mean != mean or 0 <= mean <= 1
 
 
 def test_open_bgen_without_metadata():

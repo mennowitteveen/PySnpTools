@@ -142,7 +142,7 @@ class MultiMemMap:
         self._bootstrap[3] = value
 
     def _check_index(self, index):
-        assert 0 <= index and index < self._memmap_count, "real assert"
+        assert 0 <= index < self._memmap_count, "real assert"
 
     def _get_memmap_name(self, index):
         self._check_index(index)

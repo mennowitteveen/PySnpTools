@@ -86,6 +86,7 @@ class TestPySnpTools(unittest.TestCase):
         self.currentFolder = os.path.dirname(os.path.realpath(__file__))
         #TODO: get data set with NANs!
         snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
+        assert snpreader.pos[0,1] != snpreader.pos[0,1] # real assert
         self.pheno_fn = self.currentFolder + "/examples/toydata.phe"
         self.snpdata = snpreader.read(order='F',force_python_only=True)
         self.snps = self.snpdata.val
@@ -793,7 +794,10 @@ class TestPySnpTools(unittest.TestCase):
                 col = ['s0','s1','s2','s3','s4'][:col_count]
                 for is_none in [True,False]:
                     row_prop = None
-                    col_prop = None if is_none else [(x,x,x) for x in range(5)][:col_count]
+                    if is_none:
+                        col_prop = None
+                    else:
+                        col_prop = [(x,x,x) for x in range(1,6)][:col_count]
                     snpdata = SnpData(iid=row,sid=col,val=val,pos=col_prop,name=str(i))
                     for the_class,suffix,constructor,writer in the_class_and_suffix_list:
                         constructor = constructor or (lambda filename: the_class(filename))

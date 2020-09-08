@@ -4,7 +4,7 @@ import numpy as np
 def randlong(l): #Because of round off error will not get some at end
     sr = int(np.sqrt(l))
     result = np.random.randint(sr) + sr * np.random.randint(sr)
-    assert 0 <= result and result < l
+    assert 0 <= result < l
     return result
 
 def region_gen(scale=1,seed=0):

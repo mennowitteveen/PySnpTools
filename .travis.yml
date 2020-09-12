@@ -9,7 +9,8 @@ before_install:
   - pip install -r requirements.txt
 
 install:
-  - python setup.py
+  - pip install .
+  - python setup.py bdist_wheel
 
 script:
  - export PYTHONPATH=$TRAVIS_BUILD_DIR

@@ -7,4 +7,4 @@ dill>=0.2.9
 backports.tempfile>=1.0
 bgen-reader==4.0.5
 wheel>=0.34.2
-bed-reader
+bed-reader>=1.0.1

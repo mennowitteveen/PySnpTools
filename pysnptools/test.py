@@ -486,6 +486,10 @@ class TestPySnpTools(unittest.TestCase):
         snpreader2 = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
         self.load_and_standardize(snpreader2, snpreader2)
 
+        snpreader3 = Bed(self.currentFolder + "/examples/toydata.5chrom",count_A1=False)
+        self.load_and_standardize(snpreader3, snpreader3)
+
+
     def too_slow_test_write_bedbig(self):
         iid_count = 100000
         sid_count = 50000

@@ -9,7 +9,6 @@ import math
 import warnings
 from pysnptools.pstreader import PstData
 
-
 class Bed(SnpReader):
     """
     A :class:`.SnpReader` for random-access reads of Bed/Bim/Fam files from disk.
@@ -69,7 +68,7 @@ class Bed(SnpReader):
 
         self._ran_once = False
 
-        self.filename = filename
+        self.filename = SnpReader._name_of_other_file(filename,remove_suffix="bed", add_suffix="bed") #!!!cmk test this
         if count_A1 is None:
             warnings.warn(
                 "'count_A1' was not set. For now it will default to 'False', but in the future it will default to 'True'",

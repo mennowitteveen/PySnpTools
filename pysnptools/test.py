@@ -515,7 +515,7 @@ class TestPySnpTools(unittest.TestCase):
         snpdata = snpreader[0:iid_index,:].read(order='F',dtype=np.float64)
         if snpdata.iid_count > 0:
             snpdata.val[-1,0] = float("NAN")
-        output = "tempdir/toydata.F64cpp.{0}".format(iid_index)
+        output = "tempdir/toydata.F64cpp.{0}.bed".format(iid_index)
         create_directory_if_necessary(output)
         Bed.write(output, snpdata ,count_A1=False)
         snpdata2 = Bed(output,count_A1=False).read()

@@ -247,6 +247,8 @@ class Bed(SnpReader):
             )
             count_A1 = False
 
+        filename = SnpReader._name_of_other_file(filename,remove_suffix="bed", add_suffix="bed")
+
         to_bed(
             filename,
             val=snpdata.val,

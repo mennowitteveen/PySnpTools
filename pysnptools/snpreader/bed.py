@@ -27,13 +27,18 @@ class Bed(SnpReader):
                      * **iid** (an array of strings) -- The :attr:`SnpReader.iid` information. If not given, reads info from '.fam' file.
                      * **sid** (an array of strings) -- The :attr:`SnpReader.sid` information. If not given, reads info from '.bim' file.
                      * **pos** (optional, an array of strings) -- The :attr:`SnpReader.pos` information.  If not given, reads info from '.bim' file.
-                     * **skip_format_check** (*bool*) -- If False (default), will check that '.bed' file has expected starting bytes. #!!!cmk describe this better
+                     * **num_threads** (optinal, int) -- The number of threads with which to read data. Defaults to all available processors.
+                            Can also be set with the 'MKL_NUM_THREADS' environment variable.
+                     * **skip_format_check** (*bool*) -- By default (False), checks that the '.bed' file starts with the expected bytes
+                            the first time any file ('*.bed', '*.fam', or '*.bim') is opened.
 
     **Methods beyond** :class:`.SnpReader`
 
         The :meth:`.SnpReader.read` method returns a :class:`SnpData` with a :attr:`SnpData.val` ndarray. By default, this ndarray is
         numpy.float32. Optionally, it can be numpy.float16. For :class:`Bed`, however, it can also be numpy.int8 with missing values
         represented by -127.
+
+        When reading, any chromosome and position values of 0 (the PLINK standard for missing) will be represented in :attr:`pos` as NaN.
 
         :Example:
 
@@ -59,8 +64,7 @@ class Bed(SnpReader):
         pos=None,
         num_threads=None,
         skip_format_check=False,
-    ):  #!!!cmk document these new optionals. they are here
-        super(Bed, self).__init__()
+    ): super(Bed, self).__init__()
 
         self._ran_once = False
 
@@ -123,7 +127,7 @@ class Bed(SnpReader):
 
             self._row = np.array(
                 [self._open_bed.fid, self._open_bed.iid]
-            ).T  #!!!cmk could copy in batches or use concatenate
+            ).T  # LATER: could copy in batches or use concatenate
 
         return self._row
 
@@ -149,12 +153,12 @@ class Bed(SnpReader):
                     self._open_bed.cm_position,
                     self._open_bed.bp_position,
                 ]
-            ).T  #!!!cmk could copy in batches to use less memory
+            ).T  # LATER: Could copy in batches to use less memory
             self._col_property[
                 self._col_property == 0
             ] = (
                 np.nan
-            )  #!!!cmk document that any missing SNP information will become NaN
+            )
 
         return self._col_property
 
@@ -168,7 +172,7 @@ class Bed(SnpReader):
         self.col_property
         assert self._open_bed is not None  # real assert
 
-        self._assert_iid_sid_pos(check_val=False)  #!!!cmk needed?
+        self._assert_iid_sid_pos(check_val=False)
 
     def __del__(self):
         pass
@@ -179,7 +183,7 @@ class Bed(SnpReader):
             SnpReader._name_of_other_file(
                 self.filename, remove_suffix="bed", add_suffix="bed"
             )
-        )  #!!!cmk use the _name_of_other_file in library
+        )
         copier.input(
             SnpReader._name_of_other_file(
                 self.filename, remove_suffix="bed", add_suffix="bim"
@@ -208,6 +212,8 @@ class Bed(SnpReader):
         :param count_A1: Tells if it should count the number of A1 alleles (the PLINK standard) or the number of A2 alleles. False is the current default, but in the future the default will change to True.
         :type count_A1: bool
         :rtype: :class:`.Bed`
+
+        Any :attr:`pos` values of NaN will be written as 0, the PLINK standard for missing chromosome and position values. 
 
         >>> from pysnptools.snpreader import Pheno, Bed
         >>> import pysnptools.util as pstutil
@@ -241,7 +247,6 @@ class Bed(SnpReader):
             )
             count_A1 = False
 
-        #!!!cmk understand when and why the filepointer might be left open
         to_bed(
             filename,
             val=snpdata.val,

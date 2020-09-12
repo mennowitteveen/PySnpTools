@@ -264,7 +264,7 @@ class _Distributed1Bed(SnpReader):
 
         _bed = SnpReader._name_of_other_file(self.path,remove_suffix="bed", add_suffix="bed")
         local_bed = self._storage.open_read(_bed)
-        self.local = Bed(local_bed.__enter__(),count_A1=True,iid=self.row,sid=self.col,pos=self.col_property,skip_format_check=True)#!!!cmk understand why this is True
+        self.local = Bed(local_bed.__enter__(),count_A1=True,iid=self.row,sid=self.col,pos=self.col_property,skip_format_check=True)
         self._file_dict["bed"] = local_bed
 
     def __del__(self):

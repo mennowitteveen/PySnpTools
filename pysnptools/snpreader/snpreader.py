@@ -664,11 +664,7 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
             assert len(self._val.shape)==2, "val should have two dimensions"
             assert self._val.shape == (len(self._row),len(self._col)), "val shape should match that of iid_row x sid_row"
 
-        if not(self._row.dtype.type is np.str_ and len(self._row.shape)==2 and self._row.shape[1]==2):
-            print("!!!cmk")
         assert self._row.dtype.type is np.str_ and len(self._row.shape)==2 and self._row.shape[1]==2, "iid should be dtype str, have two dimensions, and the second dimension should be size 2"
-        if not (self._col.dtype.type is np.str_ and len(self._col.shape)==1):
-            print("!!!cmk")
         assert self._col.dtype.type is np.str_ and len(self._col.shape)==1, "sid should be of dtype of str and one dimensional"
 
     @staticmethod
@@ -689,7 +685,6 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
     @staticmethod
     def _write_map_or_bim(snpdata, basefilename, remove_suffix, add_suffix):
         mapfile = SnpReader._name_of_other_file(basefilename, remove_suffix, add_suffix)
-        #!!!cmk should fill any NaN with 0????
         with open(mapfile,"w") as map_filepointer:
             for sid_index, sid in enumerate(snpdata.sid):
                 posrow = snpdata.pos[sid_index].copy()
@@ -732,8 +727,8 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
                     bed.cm_position,
                     bed.bp_position,
                 ]
-            ).T  #!!!cmk could copy in batches to use less memory
-            pos[pos == 0] = np.nan #!!!cmk document that any missing SNP information will become NaN
+            ).T  # LATER could copy in batches to use less memory
+            pos[pos == 0] = np.nan
 
         return sid,pos
 

@@ -81,7 +81,7 @@ def snp_gen(fst, dfr, iid_count, sid_count, maf_low=.05, maf_high=.5, seed=0, si
     val = np.concatenate(snp_list)
 
     if not label_with_pop:
-        iid = np.array([["i_{0}".format(iid_index),"f_{0}".format(iid_index)] for iid_index in range(val.shape[0])],dtype=str).reshape(-1,2)#!!!cmk isn't i and f backwards
+        iid = np.array([["f_{0}".format(iid_index),"i_{0}".format(iid_index)] for iid_index in range(val.shape[0])],dtype=str).reshape(-1,2)
     else:
         assert len(snp_list) == 5, "real assert"
         iid0 = [["0",str(iid_index)] for iid_index in range(len(snp_list[0])+len(snp_list[1]))] #parents and children of pop 0

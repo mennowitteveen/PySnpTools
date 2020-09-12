@@ -64,7 +64,8 @@ class Bed(SnpReader):
         pos=None,
         num_threads=None,
         skip_format_check=False,
-    ): super(Bed, self).__init__()
+    ):
+        super(Bed, self).__init__()
 
         self._ran_once = False
 

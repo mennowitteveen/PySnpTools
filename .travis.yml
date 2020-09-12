@@ -15,8 +15,6 @@ script:
 - export PYTHONPATH=$TRAVIS_BUILD_DIR
 - python tests/test.py
 
-script: pytest
-
 deploy:
   provider: s3
   access_key_id: AKIAIH6I45BAJIHWYAAQ

@@ -6,14 +6,14 @@ before_install:
   - python --version
   - pip install -U pip
   - pip install -U pytest
+  - pip install -r requirements.txt
 
 install:
-- pip install -r requirements.txt
-- pip install .
+  - python setup.py
 
 script:
-- export PYTHONPATH=$TRAVIS_BUILD_DIR
-- python tests/test.py
+ - export PYTHONPATH=$TRAVIS_BUILD_DIR
+ - python tests/test.py
 
 deploy:
   provider: s3

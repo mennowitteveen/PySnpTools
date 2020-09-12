@@ -114,7 +114,7 @@ class TestPySnpTools(unittest.TestCase):
             error_seen = True
         assert error_seen
 
-        bed_fn = example_file("pysnptools/examples/toydata.5chrom.bed")
+        bed_fn = example_file("pysnptools/examples/toydata.5chrom.*","*.bed")
         snpdata = Bed(bed_fn)[:,::2].read() # Read every-other SNP
         pstutil.create_directory_if_necessary("tempdir/everyother.bed")
         Bed.write("tempdir/everyother.bed",snpdata,count_A1=False)   # Write data in Bed format

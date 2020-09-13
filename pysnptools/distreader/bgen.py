@@ -5,8 +5,8 @@ import unittest
 from pathlib import Path
 
 from bgen_reader import example_filepath
-from pysnptools.distreader._bgen2 import open_bgen
-from pysnptools.distreader._multimemmap import MultiMemMap
+from bgen_reader import open_bgen
+from bgen_reader._multimemmap import MultiMemMap
 from pysnptools.util import log_in_place
 import shutil
 import math

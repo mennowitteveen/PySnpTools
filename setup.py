@@ -6,7 +6,7 @@ from setuptools import setup
 import numpy
 
 # Version number
-version = '0.4.21'
+version = '0.4.22'
 
 def readme():
     with open('README.md') as f:
@@ -22,10 +22,15 @@ setup(
     description='PySnpTools',
     long_description=readme(),
     long_description_content_type = 'text/markdown',
-    keywords='gwas bioinformatics sets intervals ranges regions',
+    keywords='gwas bioinformatics sets intervals ranges regions plink genomics file-format reader genotype bed-format writer python snps',
     url="https://fastlmm.github.io/",
     author='FaST-LMM Team',
     author_email='fastlmm-dev@python.org',
+    project_urls={
+        "Bug Tracker": "https://github.com/fastlmm/PySnpTools/issues",
+        "Documentation": "http://fastlmm.github.io/PySnpTools",
+        "Source Code": "https://github.com/fastlmm/PySnpTools",
+    },
     license='Apache 2.0',
     classifiers = [
             "Programming Language :: Python :: 3.7",

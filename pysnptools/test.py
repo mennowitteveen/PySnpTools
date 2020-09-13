@@ -1098,7 +1098,6 @@ def getTestSuite():
     test_suite = unittest.TestSuite([])
 
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPySnpTools))
-    #!!!cmk
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistributedBed))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestFileCache))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestUtilTools))
@@ -1120,7 +1119,7 @@ def getTestSuite():
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
-    if False: #!!!cmk
+    if False:
         from pysnptools.util.filecache import LocalCache
 
         currentFolder = os.path.dirname(os.path.realpath(__file__))

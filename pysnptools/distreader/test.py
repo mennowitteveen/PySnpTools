@@ -569,7 +569,6 @@ class TestDistReaderDocStrings(unittest.TestCase):
         assert result.failed == 0, "failed doc test: " + __file__
 
 
-
 def getTestSuite():
     """
     set up composite test suite

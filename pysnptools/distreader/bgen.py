@@ -957,21 +957,6 @@ class TestBgen(unittest.TestCase):
         )
         bed3.iid[0,0]='0'
 
-    def test_from_notebook(self):
-        os.chdir(r'D:\OneDrive\programs\pstsgkit\doc\ipynb') #!!!cmk
-        from pysnptools.distreader import DistData
-        iid = [('0','iid0'),('0','iid1')]
-        sid = ['snp0','snp1','snp2']
-        pos = [[1,0,1],[1,0,2],[1,0,3]] #chromosome, genetic distance, basepair distance
-        val = np.array([[[0,0,1],[.5,.25,.25],[.95,.05,0]],
-                        [[1,0,0],[44,44,44],[np.nan,np.nan,np.nan]]
-                       ],dtype='float32')
-        distdata = DistData(iid=iid,sid=sid,pos=pos,val=val,name='in-memory sample')
-        distdata.val /= distdata.val.sum(axis=2,keepdims=True)
-
-        bgen = Bgen.write('2x3samplecmk3.bgen',distdata,bits=23) #write it
-        bgen.read(dtype='float32').val #Read the data from disk
-
 
 
 def getTestSuite():
@@ -986,6 +971,22 @@ def getTestSuite():
 
 if __name__ == "__main__":
     logging.getLogger().setLevel(logging.INFO)
+
+    if True:
+        os.chdir(r'D:\OneDrive\programs\pstsgkit\doc\ipynb') #!!!cmk
+        from pysnptools.distreader import DistData
+        iid = [('0','iid0'),('0','iid1')]
+        sid = ['snp0','snp1','snp2']
+        pos = [[1,0,1],[1,0,2],[1,0,3]] #chromosome, genetic distance, basepair distance
+        val = np.array([[[0,0,1],[.5,.25,.25],[.95,.05,0]],
+                        [[1,0,0],[44,44,44],[np.nan,np.nan,np.nan]]
+                       ],dtype='float32')
+        distdata = DistData(iid=iid,sid=sid,pos=pos,val=val,name='in-memory sample')
+        distdata.val /= distdata.val.sum(axis=2,keepdims=True)
+        #!!!cmk if you ask try to read a file that isn't there, do you get a sensible error?
+        bgen = Bgen.write('2x3samplecmk13.bgen',distdata,bits=23) #write it
+        bgen.read(dtype='float32').val #Read the data from disk
+
 
     if False:
 

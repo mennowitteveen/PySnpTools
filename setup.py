@@ -13,7 +13,7 @@ def readme():
         return f.read()
 
 install_requires = ['scipy>=1.1.0', 'numpy>=1.11.3', 'pandas>=0.19.0', 'psutil>=5.6.3', 'h5py>=2.10.0', 'dill>=0.2.9',
-                   'backports.tempfile>=1.0', 'bgen-reader==4.0.5', 'bed-reader>=0.1.1']
+                   'backports.tempfile>=1.0', 'bgen-reader>=4.0.6', 'bed-reader>=0.1.1']
 
 #python setup.py sdist bdist_wininst upload
 setup(

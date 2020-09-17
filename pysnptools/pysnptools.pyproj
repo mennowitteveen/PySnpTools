@@ -42,9 +42,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="distreader\test_bgen2.py" />
-    <Compile Include="distreader\_bgen2.py" />
     <Compile Include="distreader\_distmergesids.py" />
-    <Compile Include="distreader\_multimemmap.py" />
     <Compile Include="distreader\_snp2dist.py" />
     <Compile Include="distreader\distdata.py" />
     <Compile Include="distreader\distreader.py" />

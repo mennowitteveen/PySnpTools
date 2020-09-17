@@ -976,8 +976,8 @@ def getTestSuite():
 if __name__ == "__main__":
     logging.getLogger().setLevel(logging.INFO)
 
-    if True:
-        os.chdir(r'D:\OneDrive\programs\pstsgkit\doc\ipynb') #!!!cmk
+    if False:
+        os.chdir(r'D:\OneDrive\programs\pstsgkit\doc\ipynb')
         from pysnptools.distreader import DistData
         iid = [('0','iid0'),('0','iid1')]
         sid = ['snp0','snp1','snp2']
@@ -987,8 +987,8 @@ if __name__ == "__main__":
                        ],dtype='float32')
         distdata = DistData(iid=iid,sid=sid,pos=pos,val=val,name='in-memory sample')
         distdata.val /= distdata.val.sum(axis=2,keepdims=True)
-        #!!!cmk if you ask try to read a file that isn't there, do you get a sensible error?
-        bgen = Bgen.write('2x3samplecmk13.bgen',distdata,bits=23) #write it
+        # if you ask try to read a file that isn't there, do you get a sensible error?
+        bgen = Bgen.write('2x3sample13.bgen',distdata,bits=23) #write it
         bgen.read(dtype='float32').val #Read the data from disk
 
 

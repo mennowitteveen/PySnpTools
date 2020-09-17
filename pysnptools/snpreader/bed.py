@@ -29,7 +29,7 @@ class Bed(SnpReader):
                      * **num_threads** (optinal, int) -- The number of threads with which to read data. Defaults to all available processors.
                             Can also be set with the 'MKL_NUM_THREADS' environment variable.
                      * **skip_format_check** (*bool*) -- By default (False), checks that the '.bed' file starts with the expected bytes
-                            the first time any file ('*.bed', '*.fam', or '*.bim') is opened.
+                            the first time any file ('.bed', '.fam', or '.bim') is opened.
 
     **Methods beyond** :class:`.SnpReader`
 

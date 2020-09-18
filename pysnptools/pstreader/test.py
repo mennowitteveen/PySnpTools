@@ -6,11 +6,12 @@ import unittest
 import os.path
 import time
 import sys
+import tempfile
 from pysnptools.pstreader import PstData, PstNpz, PstHdf5, PstMemMap
 from pysnptools.util import create_directory_if_necessary
 from pysnptools.kernelreader.test import _fortesting_JustCheckExists
 from six.moves import range
-from backports import tempfile
+
 
 class TestPstReader(unittest.TestCase):     
 

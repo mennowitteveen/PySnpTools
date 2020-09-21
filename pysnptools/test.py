@@ -86,9 +86,47 @@ class TestPySnpTools(unittest.TestCase):
         self.currentFolder = os.path.dirname(os.path.realpath(__file__))
         #TODO: get data set with NANs!
         snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
+        assert snpreader.pos[0,1] != snpreader.pos[0,1] # real assert
         self.pheno_fn = self.currentFolder + "/examples/toydata.phe"
         self.snpdata = snpreader.read(order='F',force_python_only=True)
         self.snps = self.snpdata.val
+
+    def test_write_bad_value_and_good(self):
+        from pysnptools.snpreader import Pheno, Bed, SnpData
+        import pysnptools.util as pstutil
+        from pysnptools.util import example_file # Download and return local file name
+        pheno_fn = example_file("pysnptools/examples/toydata.phe")
+        snpdata = Pheno(pheno_fn).read()         # Read data from Pheno format
+        pstutil.create_directory_if_necessary("tempdir/toydata.5chrom.bed")
+        error_seen = False
+        try:
+            Bed.write("tempdir/toydata.5chrom.bed",snpdata,count_A1=False)   # Write data in Bed format
+        except:
+            error_seen = True
+        assert error_seen
+        # Can write from an int8 array, too.
+        snpdata_int = SnpData(val=np.int_(snpdata.val).astype('int8'),iid=snpdata.iid,sid=snpdata.sid,pos=snpdata.pos,_require_float32_64=False)
+        assert snpdata_int.val.dtype == 'int8'
+        error_seen = False
+        try:
+            Bed.write("tempdir/toydata.5chrom.bed",snpdata_int,count_A1=False,_require_float32_64=False)
+        except:
+            error_seen = True
+        assert error_seen
+
+        bed_fn = example_file("pysnptools/examples/toydata.5chrom.*","*.bed")
+        snpdata = Bed(bed_fn)[:,::2].read() # Read every-other SNP
+        pstutil.create_directory_if_necessary("tempdir/everyother.bed")
+        Bed.write("tempdir/everyother.bed",snpdata,count_A1=False)   # Write data in Bed format
+        #Bed('tempdir/everyother.bed',count_A1=False)
+        # Can write from an int8 array, too.
+        snpdata_int = SnpData(val=np.int_(snpdata.val).astype('int8'),iid=snpdata.iid,sid=snpdata.sid,pos=snpdata.pos,_require_float32_64=False)
+        snpdata_int.val.dtype
+        assert snpdata_int.val.dtype == 'int8'
+        Bed.write("tempdir/everyother.bed",snpdata_int,count_A1=False,_require_float32_64=False)
+        #Bed('tempdir/everyother',count_A1=False)
+
+
 
     def test_val_assign(self):
         from pysnptools.snpreader import SnpData
@@ -170,6 +208,22 @@ class TestPySnpTools(unittest.TestCase):
         snpdata.val = 2 - snpdata.val
         self.c_reader(snpdata)
 
+    def test_bed_int8(self):
+        snpreader = Bed(self.currentFolder + "/../tests/datasets/distributed_bed_test1_X.bed",count_A1=True)
+        ref = snpreader.read()
+        ref.val[ref.val!=ref.val]=-127
+        ref.val = ref.val.astype('int8')
+        for force_python_only in [False,True]:
+            for order in ['F','C']:
+                snpdata = snpreader.read(dtype='int8',_require_float32_64=False,force_python_only=force_python_only,order=order)
+                assert snpdata.val.dtype == 'int8'
+                assert np.allclose(snpdata.val, ref.val, equal_nan=True)
+                output = "tempdir/snpreader/int8.bed"
+                create_directory_if_necessary(output)
+                for count_A1 in [False,True]:
+                    bed2 = Bed.write(output,snpdata,count_A1=count_A1,_require_float32_64=False,force_python_only=force_python_only)
+                    assert np.allclose(bed2.read(dtype='int8',_require_float32_64=False,force_python_only=force_python_only).val, ref.val, equal_nan=True)
+                    
     def test_scalar_index(self):
         snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
         arr=np.int64(1)
@@ -432,6 +486,10 @@ class TestPySnpTools(unittest.TestCase):
         snpreader2 = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
         self.load_and_standardize(snpreader2, snpreader2)
 
+        snpreader3 = Bed(self.currentFolder + "/examples/toydata.5chrom",count_A1=False)
+        self.load_and_standardize(snpreader3, snpreader3)
+
+
     def too_slow_test_write_bedbig(self):
         iid_count = 100000
         sid_count = 50000
@@ -457,7 +515,7 @@ class TestPySnpTools(unittest.TestCase):
         snpdata = snpreader[0:iid_index,:].read(order='F',dtype=np.float64)
         if snpdata.iid_count > 0:
             snpdata.val[-1,0] = float("NAN")
-        output = "tempdir/toydata.F64cpp.{0}".format(iid_index)
+        output = "tempdir/toydata.F64cpp.{0}.bed".format(iid_index)
         create_directory_if_necessary(output)
         Bed.write(output, snpdata ,count_A1=False)
         snpdata2 = Bed(output,count_A1=False).read()
@@ -739,7 +797,10 @@ class TestPySnpTools(unittest.TestCase):
                 col = ['s0','s1','s2','s3','s4'][:col_count]
                 for is_none in [True,False]:
                     row_prop = None
-                    col_prop = None if is_none else [(x,x,x) for x in range(5)][:col_count]
+                    if is_none:
+                        col_prop = None
+                    else:
+                        col_prop = [(x,x,x) for x in range(1,6)][:col_count]
                     snpdata = SnpData(iid=row,sid=col,val=val,pos=col_prop,name=str(i))
                     for the_class,suffix,constructor,writer in the_class_and_suffix_list:
                         constructor = constructor or (lambda filename: the_class(filename))
@@ -1058,7 +1119,24 @@ def getTestSuite():
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
+    if False:
+        from pysnptools.util.filecache import LocalCache
+
+        currentFolder = os.path.dirname(os.path.realpath(__file__))
+        snpreader = Bed(currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
+        snpdata = snpreader.read(order='F',force_python_only=True)
+        snpdata1 = snpdata[:,::100].read()
+        snpdata1.val[1,2] = np.NaN # Inject a missing value to test writing and reading missing values
+        output = "tempdir/snpreader/toydata.distributedbed"
+        LocalCache(output).rmtree()
+        DistributedBed.write(output, snpdata1, piece_per_chrom_count=5)
+        snpreader = DistributedBed(output)
+        _fortesting_JustCheckExists().input(snpreader)
+        snpdata2 = snpreader.read()
+        np.testing.assert_array_almost_equal(snpdata1.val, snpdata2.val, decimal=10)
+
+
     suites = getTestSuite()
-    r = unittest.TextTestRunner(failfast=False)
+    r = unittest.TextTestRunner(failfast=True)
     ret = r.run(suites)
     assert ret.wasSuccessful()

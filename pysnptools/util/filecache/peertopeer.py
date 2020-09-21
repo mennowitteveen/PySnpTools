@@ -9,7 +9,6 @@ import datetime
 import shutil
 
 from pysnptools.util.filecache import FileCache, _DibLib
-import pysnptools.util as pstutil #don't confuse pstutil (pysnptools) with psutil (processes)
 from pysnptools.util import format_delta
 
 class PeerToPeer(FileCache):
@@ -98,6 +97,8 @@ class PeerToPeer(FileCache):
 
     @contextmanager
     def _simple_open_read(self,simple_file_name,updater=None):
+        import pysnptools.util as pstutil # put here to avoid recursive nesting
+
 
         logging.debug("open_read('{0}')".format(simple_file_name))
         #

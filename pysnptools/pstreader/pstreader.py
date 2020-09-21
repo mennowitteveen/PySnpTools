@@ -404,9 +404,9 @@ class PstReader(object):
         >>> pstnpz_file = example_file('tests/datasets/all_chr.maf0.001.N300.pst.npz')
         >>> on_disk = PstNpz(pstnpz_file)
         >>> print(on_disk.col_property[:3]) # print column information for the first three cols: #The '...' is an optional space
-        [[...1.          0.00800801  0.        ]
-         [...1.          0.023023    1.        ]
-         [...1.          0.0700701   4.        ]]
+        [[1.         0.00800801 0.        ]
+         [1.         0.023023   1.        ]
+         [1.         0.0700701  4.        ]]
         """
         raise NotImplementedError
 

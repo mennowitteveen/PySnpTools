@@ -58,7 +58,8 @@ class LocalCache(FileCache):
 
     @contextmanager
     def _simple_open_write(self,simple_file_name,size=0,updater=None):
-        import pysnptools.util as pstutil
+        import pysnptools.util as pstutil # put here to avoid recursive nesting
+
         logging.info("open_write('{0}',size={1})".format(simple_file_name,size))
 
         #Register the file name in the directory

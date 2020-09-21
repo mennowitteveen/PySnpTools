@@ -306,7 +306,7 @@ class TestDistributedBed(unittest.TestCase):
         ref1 = DistributedBed(os.path.dirname(os.path.realpath(__file__))+'/../../tests/datasets/distributed_bed_test1').read()
         assert(snpdata.allclose(ref1,equal_nan=True))
 
-        ref2 = Bed(os.path.dirname(os.path.realpath(__file__))+'/../../tests/datasets/distributed_bed_test1_X',count_A1=False).read()
+        ref2 = Bed(os.path.dirname(os.path.realpath(__file__))+'/../../tests/datasets/distributed_bed_test1_X.bed',count_A1=False).read()
         assert(snpdata.allclose(ref2,equal_nan=True))
 
 

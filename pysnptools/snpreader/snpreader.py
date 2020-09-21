@@ -9,6 +9,7 @@ from pysnptools.pstreader import PstReader
 import warnings
 import pysnptools.standardizer as stdizer
 from six.moves import range
+from bed_reader import open_bed
 
 #!!why do the examples use ../tests/datasets instead of "examples"?
 class SnpReader(PstReader):
@@ -84,11 +85,11 @@ class SnpReader(PstReader):
         >>> import pysnptools.util as pstutil
         >>> from pysnptools.util import example_file # Download and return local file name
 
-        >>> pheno_fn = example_file('pysnptools/examples/toydata.phe')
-        >>> snpdata = Pheno(pheno_fn).read() # Read data from Pheno format
-        >>> pstutil.create_directory_if_necessary("tempdir/toydata.5chrom.bed")
-        >>> Bed.write("tempdir/toydata.5chrom.bed",snpdata,count_A1=False)   # Write data in Bed format
-        Bed('tempdir/toydata.5chrom.bed',count_A1=False)
+        >>> bed_fn = example_file("pysnptools/examples/toydata.5chrom.bed")
+        >>> snpdata = Bed(bed_fn)[:,::2].read() # Read every-other SNP
+        >>> pstutil.create_directory_if_necessary("tempdir/everyother.bed")
+        >>> Bed.write("tempdir/everyother.bed",snpdata,count_A1=False)   # Write data in Bed format
+        Bed('tempdir/everyother.bed',count_A1=False)
 
 
     iids and sids:
@@ -399,9 +400,9 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
         >>> bedfile = example_file("tests/datasets/all_chr.maf0.001.N300.*","*.bed")
         >>> snp_on_disk = Bed(bedfile,count_A1=False)
         >>> print(snp_on_disk.pos[:3,]) # print position information for the first three sids: #The '...' is for possible space char
-        [[...1.          0.00800801  0.        ]
-         [...1.          0.023023    1.        ]
-         [...1.          0.0700701   4.        ]]
+        [[1.         0.00800801        nan]
+         [1.         0.023023   1.        ]
+         [1.         0.0700701  4.        ]]
         """
         return self.col_property
 
@@ -418,7 +419,7 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
         raise NotImplementedError
     
     #!!check that views always return contiguous memory by default
-    def read(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False):
+    def read(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False, _require_float32_64=True):
         """Reads the SNP values and returns a :class:`.SnpData` (with :attr:`.SnpData.val` property containing a new ndarray of the SNP values).
 
         :param order: {'F' (default), 'C', 'A'}, optional -- Specify the order of the ndarray. If order is 'F' (default),
@@ -428,8 +429,10 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
             ndarray may be in any order (either C-, Fortran-contiguous).
         :type order: string or None
 
-        :param dtype: {numpy.float64 (default), numpy.float32}, optional -- The data-type for the :attr:`SnpData.val` ndarray.
-        :type dtype: data-type
+        :param dtype: {numpy.float64 (default), numpy.float32}, optional -- The data-type for the :attr:`SnpData.val` ndarray. 
+             (For :class:`Bed`, only, it can also be numpy.int8. Hidden option _require_float32_64 must be set 
+             to False. See :class:`Bed` for an example.)
+        :type dtype: data-type. 
 
         :param force_python_only: optional -- If False (default), may use outside library code. If True, requests that the read
             be done without outside library code.
@@ -453,7 +456,9 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
         :Example:
 
         >>> from pysnptools.snpreader import Bed
-        >>> snp_on_disk = Bed('../../tests/datasets/all_chr.maf0.001.N300.bed',count_A1=False) # Specify SNP data on disk
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> bedfile = example_file("tests/datasets/all_chr.maf0.001.N300.*","*.bed")
+        >>> snp_on_disk = Bed(bedfile, count_A1=False) # Specify SNP data on disk
         >>> snpdata1 = snp_on_disk.read() # Read all the SNP data returning a SnpData instance
         >>> print(type(snpdata1.val).__name__) # The SnpData instance contains a ndarray of the data.
         ndarray
@@ -467,7 +472,7 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
         dtype = np.dtype(dtype)
         val = self._read(None, None, order, dtype, force_python_only, view_ok)
         from pysnptools.snpreader import SnpData
-        ret = SnpData(self.iid,self.sid,val,pos=self.pos,name=str(self))
+        ret = SnpData(self.iid,self.sid,val,pos=self.pos,name=str(self),_require_float32_64=_require_float32_64)
         return ret
 
     def iid_to_index(self, list):
@@ -680,10 +685,10 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
     @staticmethod
     def _write_map_or_bim(snpdata, basefilename, remove_suffix, add_suffix):
         mapfile = SnpReader._name_of_other_file(basefilename, remove_suffix, add_suffix)
-
         with open(mapfile,"w") as map_filepointer:
             for sid_index, sid in enumerate(snpdata.sid):
-                posrow = snpdata.pos[sid_index]
+                posrow = snpdata.pos[sid_index].copy()
+                posrow[posrow!=posrow]=0 #Fill missing with zero as per the PLINK standard
                 map_filepointer.write("%r\t%s\t%r\t%r\tA\tC\n" % (posrow[0], sid, posrow[1], posrow[2]))
 
 
@@ -691,30 +696,41 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
     def _read_fam(basefilename, remove_suffix, add_suffix='fam'):
         famfile = SnpReader._name_of_other_file(basefilename, remove_suffix, add_suffix)
 
+        properties = {
+            "father": None,
+            "mother": None,
+            "sex": None,
+            "pheno": None,
+        }
+
         logging.info("Loading {0} file {1}".format(add_suffix, famfile))
-        if os.path.getsize(famfile)>0:
-            iid = np.loadtxt(famfile, dtype = 'str',usecols=(0,1),comments=None)
-        else:
-            iid = np.empty((0,2), dtype = 'str')
-        if len(iid.shape) == 1: #When empty or just one item, make sure the result is (x,2)
-            iid = iid.reshape((len(iid)//2,2))
+        with open_bed(basefilename,fam_filepath=famfile,properties=properties,skip_format_check=True) as bed:
+            iid =np.array([bed.fid, bed.iid]).T
         return iid
 
 
     @staticmethod
-    def _read_map_or_bim( basefilename, remove_suffix, add_suffix):
-        mapfile = SnpReader._name_of_other_file(basefilename, remove_suffix, add_suffix)
+    def _read_map_or_bim(basefilename, remove_suffix, add_suffix):
+        bimfile = SnpReader._name_of_other_file(basefilename, remove_suffix, add_suffix)
 
-        logging.info("Loading {0} file {1}".format(add_suffix, mapfile))
-        if os.path.getsize(mapfile) == 0: #If the map/bim file is empty, return empty arrays
-            sid = np.array([],dtype='str')
-            pos = np.array([[]],dtype=int).reshape(0,3)
-            return sid,pos
-        else:
-            fields = pd.read_csv(mapfile,delimiter = '\t',usecols = (0,1,2,3),header=None,index_col=False,comment=None)
-            sid = np.array(fields[1].tolist(),dtype='str')
-            pos = fields[[0,2,3]].values
-            return sid,pos
+        properties = {
+            "allele_1": None,
+            "allele_2": None,
+        }
+
+        logging.info("Loading {0} file {1}".format(add_suffix, bimfile))
+        with open_bed(basefilename,bim_filepath=bimfile,properties=properties,skip_format_check=True) as bed:
+            sid = bed.sid
+            pos = np.array(
+                [
+                    bed.chromosome.astype("float"),
+                    bed.cm_position,
+                    bed.bp_position,
+                ]
+            ).T  # LATER could copy in batches to use less memory
+            pos[pos == 0] = np.nan
+
+        return sid,pos
 
     @property
     def val_shape(self):
@@ -738,7 +754,9 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
             :Example:
 
             >>> from pysnptools.snpreader import Bed
-            >>> snpreader = Bed('../../tests/datasets/all_chr.maf0.001.N300',count_A1=False)
+            >>> from pysnptools.util import example_file # Download and return local file name
+            >>> bedfile = example_file("tests/datasets/all_chr.maf0.001.N300.*","*.bed")
+            >>> snpreader = Bed(bedfile, count_A1=False)
             >>> print(snpreader[0,0].read().val)
             [[2.]]
             >>> distreader = snpreader.as_dist(max_weight=2)
@@ -750,7 +768,7 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
             return snp2dist
 
 
-
+# LATER look at Eric's push related to Docker, etc from May
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 

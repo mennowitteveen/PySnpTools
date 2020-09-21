@@ -5,8 +5,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{60f1cb4a-9da3-47c2-9b89-60ac1ce93347}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>snpreader\snpgen.py</StartupFile>
-    <SearchPath>..\</SearchPath>
+    <StartupFile>distreader\bgen.py</StartupFile>
+    <SearchPath>..\;..\..\bed-reader;..\..\pstsgkit;..\..\bgen-reader-py</SearchPath>
     <WorkingDirectory>.\snpreader</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
@@ -42,7 +42,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="distreader\test_bgen2.py" />
-    <Compile Include="distreader\_bgen2.py" />
     <Compile Include="distreader\_distmergesids.py" />
     <Compile Include="distreader\_snp2dist.py" />
     <Compile Include="distreader\distdata.py" />
@@ -89,6 +88,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="pstreader\pstmemmap.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="snpreader\wrap_plink_parser.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="snpreader\_dist2snp.py" />
@@ -236,20 +238,6 @@
     <Content Include="examples\toydata.shufflePlus.phe" />
     <Content Include="examples\toydata.sim" />
     <Content Include="examples\toydata.snpmajor.snp.hdf5" />
-    <Content Include="snpreader\CPlinkBedFile.cpp" />
-    <Content Include="snpreader\CPlinkBedFile.h" />
-    <Content Include="snpreader\CPlinkBedFileT.cpp" />
-    <Content Include="snpreader\CPlinkBedFileT.h" />
-    <Content Include="snpreader\MatrixSubset.cpp" />
-    <Content Include="snpreader\MatrixSubset.h" />
-    <Content Include="snpreader\MatrixSubsetT.cpp" />
-    <Content Include="snpreader\MatrixSubsetT.h" />
-    <Content Include="snpreader\wrap_matrix_subset.cpp" />
-    <Content Include="snpreader\wrap_matrix_subset.pyx">
-      <SubType>Code</SubType>
-    </Content>
-    <Content Include="snpreader\wrap_plink_parser.cpp" />
-    <Content Include="snpreader\wrap_plink_parser.pyx" />
     <Content Include="util\pysnptools.hashdown.json" />
   </ItemGroup>
   <ItemGroup>

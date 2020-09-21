@@ -82,7 +82,7 @@ class Standardizer(object):
     @staticmethod
     #changes snps in place
     def _standardize_unit_and_beta(snps, is_beta, a, b, apply_in_place, use_stats, stats, force_python_only=False):
-        from pysnptools.snpreader import wrap_plink_parser
+        from bed_reader import wrap_plink_parser_onep
 
         assert snps.flags["C_CONTIGUOUS"] or snps.flags["F_CONTIGUOUS"], "Expect snps to be order 'C' or order 'F'"
 
@@ -100,19 +100,19 @@ class Standardizer(object):
         if not force_python_only:
             if snps.dtype == np.float64:
                 if snps.flags['F_CONTIGUOUS'] and (snps.flags["OWNDATA"] or snps.base.nbytes == snps.nbytes): #!!create a method called is_single_segment
-                    wrap_plink_parser.standardizedoubleFAAA(snps,is_beta,a,b,apply_in_place,use_stats,stats)
+                    wrap_plink_parser_onep.standardizedoubleFAAA(snps,is_beta,a,b,apply_in_place,use_stats,stats)
                     return stats
                 elif snps.flags['C_CONTIGUOUS']  and (snps.flags["OWNDATA"] or snps.base.nbytes == snps.nbytes):
-                    wrap_plink_parser.standardizedoubleCAAA(snps,is_beta,a,b,apply_in_place,use_stats,stats)
+                    wrap_plink_parser_onep.standardizedoubleCAAA(snps,is_beta,a,b,apply_in_place,use_stats,stats)
                     return stats
                 else:
                     logging.info("Array is not contiguous, so will standardize with python only instead of C++")
             elif snps.dtype == np.float32:
                 if snps.flags['F_CONTIGUOUS'] and (snps.flags["OWNDATA"] or snps.base.nbytes == snps.nbytes):
-                    wrap_plink_parser.standardizefloatFAAA(snps,is_beta,a,b,apply_in_place,use_stats,stats)
+                    wrap_plink_parser_onep.standardizefloatFAAA(snps,is_beta,a,b,apply_in_place,use_stats,stats)
                     return stats
                 elif snps.flags['C_CONTIGUOUS'] and (snps.flags["OWNDATA"] or snps.base.nbytes == snps.nbytes):
-                    wrap_plink_parser.standardizefloatCAAA(snps,is_beta,a,b,apply_in_place,use_stats,stats)
+                    wrap_plink_parser_onep.standardizefloatCAAA(snps,is_beta,a,b,apply_in_place,use_stats,stats)
                     return stats
                 else:
                     logging.info("Array is not contiguous, so will standardize with python only instead of C++")

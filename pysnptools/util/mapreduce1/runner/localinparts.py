@@ -1,7 +1,8 @@
 from pysnptools.util.mapreduce1.runner import Runner,_JustCheckExists, _run_one_task
 import os, sys
 import logging
-import pysnptools.util as pstutil
+from pysnptools.util import create_directory_if_necessary
+
 try:
     import dill as pickle
 except:
@@ -73,7 +74,7 @@ class LocalInParts(Runner):
         else:
             result = _run_one_task(distributable, self.taskindex, self.taskcount, tempdir)
             if self.result_file is not None:
-                pstutil.create_directory_if_necessary(self.result_file)
+                create_directory_if_necessary(self.result_file)
                 with open(self.result_file, mode='wb') as f:
                     pickle.dump(result, f, pickle.HIGHEST_PROTOCOL)
 

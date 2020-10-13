@@ -57,7 +57,7 @@ class DiagKtoN(Standardizer):
         factor = float(kerneldata.iid_count) / np.diag(kerneldata.val).sum()
 
         if abs(factor-1.0)>1e-15:
-            kerneldata.val *= factor
+            kerneldata._val *= factor
 
         if return_trained:
             return kerneldata, DiagKtoNTrained(factor)
@@ -148,7 +148,7 @@ class DiagKtoNTrained(Standardizer):
 
     def _standardize_kernel(self, kerneldata, return_trained=False, force_python_only=False):
         if not self.is_constant:
-            kerneldata.val *= self.factor
+            kerneldata._val *= self.factor
 
         if return_trained:
             return kerneldata, self

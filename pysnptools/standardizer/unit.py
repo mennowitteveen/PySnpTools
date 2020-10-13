@@ -3,6 +3,7 @@ import logging
 from pysnptools.standardizer import Standardizer
 from pysnptools.standardizer.unittrained import UnitTrained
 import warnings
+import pysnptools.util as pstutil
 
 class Unit(Standardizer):
     """A :class:`.Standardizer` to unit standardize SNP data. For each sid, the mean of the values is zero with standard deviation 1.
@@ -27,10 +28,13 @@ class Unit(Standardizer):
         return "{0}()".format(self.__class__.__name__)
 
     def standardize(self, snps, block_size=None, return_trained=False, force_python_only=False):
+        xp = pstutil.array_module_from_env() #!!!cmk should there be a way to override the environment variable? 
+
         if block_size is not None:
             warnings.warn("block_size is deprecated (and not needed, since standardization is in-place", DeprecationWarning)
 
         if hasattr(snps,"val"):
+            snps._val = xp.asarray(snps.val) #If cupy, replace SnpData's val with cupy array
             val = snps.val
         else:
             warnings.warn("standardizing an nparray instead of a SnpData is deprecated", DeprecationWarning)

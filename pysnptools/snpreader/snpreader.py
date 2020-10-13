@@ -625,14 +625,15 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
                 return kernel
 
         else: #Do in blocks
+            xp = pstutil.array_module_from_env() #!!!cmk should there be a way to override the environment variable? 
             #Set the default order to 'C' because with kernels any order is fine and the Python .dot method likes 'C' best.
             if order=='A':
                 order = 'C'
             t0 = time.time()
-            K = np.zeros([self.iid_count,self.iid_count],dtype=dtype,order=order)
+            K = xp.zeros([self.iid_count,self.iid_count],dtype=dtype,order=order)
             trained_standardizer_list = []
 
-            logging.info("reading {0} SNPs in blocks of {1} and adding up kernels (for {2} individuals)".format(self.sid_count, block_size, self.iid_count))
+            logging.info(f"reading {self.sid_count} SNPs in blocks of {block_size} and adding up kernels (for {self.iid_count} individuals) with {xp.__name__}.")
 
             ct = 0
             ts = time.time()

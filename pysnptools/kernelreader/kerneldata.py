@@ -65,8 +65,8 @@ class KernelData(KernelReader,PstData):
 
     **Methods beyond** :class:`.KernelReader`
     """
-
-    def __init__(self, iid=None, iid0=None, iid1=None, val=None, name=None, parent_string=None): #!!!autodoc doesn't generate good doc for this constructor
+    #!!!cmk doc xp
+    def __init__(self, iid=None, iid0=None, iid1=None, val=None, name=None, parent_string=None, xp = np): #!!!autodoc doesn't generate good doc for this constructor
         #We don't have a 'super(KernelData, self).__init__()' here because KernelData takes full responsiblity for initializing both its superclasses
 
         self._val = None
@@ -85,7 +85,8 @@ class KernelData(KernelReader,PstData):
             self._col = PstData._fixup_input(iid1,empty_creator=lambda ignore:np.empty([0,2],dtype='str'),dtype='str')
         self._row_property = PstData._fixup_input(None,count=len(self._row),empty_creator=lambda count:np.empty([count,0],dtype='str'),dtype='str')
         self._col_property = PstData._fixup_input(None,count=len(self._col),empty_creator=lambda count:np.empty([count,0],dtype='str'),dtype='str')
-        self._val = PstData._fixup_input_val(val,row_count=len(self._row),col_count=len(self._col),empty_creator=lambda row_count,col_count:np.empty([row_count,col_count],dtype=np.float64))
+        self._val = PstData._fixup_input_val(val,row_count=len(self._row),col_count=len(self._col),
+                                             empty_creator=lambda row_count,col_count:xp.empty([row_count,col_count],dtype=xp.float64),xp=xp)
         self._assert_iid0_iid1(check_val=True) 
         self._name = name or parent_string or ""
         self._std_string_list = []

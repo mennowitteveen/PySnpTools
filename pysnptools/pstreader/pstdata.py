@@ -68,10 +68,11 @@ class PstData(PstReader):
 
 
     '''
-    def __init__(self, row, col, val, row_property=None, col_property=None, name=None, parent_string=None, copyinputs_function=None):
+    def __init__(self, row, col, val, row_property=None, col_property=None, name=None, parent_string=None, copyinputs_function=None, xp=np): #!!!cmk document xp
         super(PstData, self).__init__()
 
         self._val = None
+        self._xp = xp
 
         self._row = PstData._fixup_input(row)
         self._col = PstData._fixup_input(col)
@@ -139,14 +140,15 @@ class PstData(PstReader):
         return input
 
     @staticmethod
-    def _fixup_input_val(input,row_count,col_count,empty_creator=_default_empty_creator_val, _require_float32_64=True):
+    def _fixup_input_val(input,row_count,col_count,empty_creator=_default_empty_creator_val, _require_float32_64=True, xp = np):
+
         if input is None:
             assert row_count == 0 or col_count == 0, "If val is None, either row_count or col_count must be 0"
             input = _default_empty_creator_val(row_count, col_count)
-        elif not isinstance(input,np.ndarray):
-            input = np.array(input,dtype=np.float64)
-        elif _require_float32_64 and input.dtype not in [np.float32,np.float64]:
-            input = np.array(input,dtype=np.float64)
+        elif not isinstance(input,xp.ndarray):
+            input = xp.array(input,dtype=xp.float64)
+        elif _require_float32_64 and input.dtype not in [xp.float32,xp.float64]:
+            input = xp.array(input,dtype=xp.float64)
 
         assert len(input.shape) in {2,3}, "Expect val to be two or three dimensional."
         assert input.shape[0] == row_count, "Expect number of rows ({0}) in val to match the number of row names given ({1})".format(input.shape[0], row_count)

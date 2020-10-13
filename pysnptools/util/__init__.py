@@ -10,6 +10,7 @@ from contextlib import contextmanager
 import time
 import datetime
 from pysnptools.util.intrangeset import IntRangeSet
+from types import ModuleType
 
 def _testtest(data, iididx):
     return (data[0][iididx],data[1][iididx])
@@ -581,6 +582,36 @@ def _datestamp(appendrandom=False):
         import random
         s += "_" + str(random.random())[2:]
     return s
+
+_warn_array_module_once = False
+def array_module_from_env(xp = None): #!!!cmk document this
+    xp = xp or os.environ.get('ARRAY_MODULE','numpy')
+
+    if isinstance(xp, ModuleType):
+        return xp
+
+    if xp == 'numpy':
+        return np
+
+    if xp == 'cupy':
+        try:
+            import cupy as cp
+            return cp
+        except ModuleNotFoundError as e:
+            global _warn_array_module_once
+            if not _warn_array_module_once:
+                logging.warn(f"Using numpy. ({e})")
+                _warn_array_module_once = True
+            return np
+
+    raise ValueError(f"Don't know ARRAY_MODULE '{xp}'")
+
+
+
+def asnumpy(a):
+    if isinstance(a, np.ndarray):
+        return a
+    return a.get()
 
 from pysnptools.util.generate import snp_gen
 from pysnptools.util._example_file import example_file

@@ -7,6 +7,7 @@ from pysnptools.standardizer import Identity as SS_Identity
 from pysnptools.kernelreader import KernelReader
 from pysnptools.kernelreader import KernelData
 from pysnptools.kernelstandardizer import DiagKtoN
+import pysnptools.util as pstutil
 
 class SnpKernel(KernelReader):
     '''
@@ -111,15 +112,19 @@ class SnpKernel(KernelReader):
         Note that snp_standardizer should be None or the standardizer instead the SnpKernel should have the placeholder value Standardizer()
 
         '''
+        logging.info("Starting '_read_with_standardizing'")
+        xp = pstutil.array_module_from_env() #!!!cmk should there be a way to override the environment variable? 
+
         if to_kerneldata:
             val, snp_trained = self.snpreader._read_kernel(self.standardizer,block_size=self.block_size,return_trained=True)
-            kernel = KernelData(iid=self.snpreader.iid, val=val, name=str(self))
+            kernel = KernelData(iid=self.snpreader.iid, val=val, name=str(self), xp=xp)
             kernel, kernel_trained = kernel.standardize(kernel_standardizer,return_trained=True)
         else:
             snpdata, snp_trained = self.snpreader.read().standardize(self.standardizer, return_trained=True)
             snpdata, kernel_trained = snpdata.standardize(kernel_standardizer, return_trained=True)
             kernel = SnpKernel(snpdata, SS_Identity())
 
+        logging.info("Ending '_read_with_standardizing'")
         if return_trained:
             return kernel, snp_trained, kernel_trained
         else:

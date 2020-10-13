@@ -61,7 +61,7 @@ class TestKernelReader(unittest.TestCase):
                 assert abs(diag0.factor-diag1.factor) < 1e-7
 
 
-    def cmktest_merge_std(self):
+    def test_merge_std(self):
         #unit vs beta
         for std in [stdizer.Beta(2,10),stdizer.Unit()]:
             np.random.seed(0)
@@ -73,7 +73,7 @@ class TestKernelReader(unittest.TestCase):
             np.testing.assert_array_almost_equal(trained0.stats,trained1.stats, decimal=10)
             assert abs(diag0.factor-diag1.factor) < 1e-7
     
-    def cmktest_cpp_std(self):
+    def test_cpp_std(self):
 
         #Order C vs F
         for order in ['C','F']:
@@ -130,7 +130,7 @@ class TestKernelReader(unittest.TestCase):
         logging.info("done with 'test_cpp_std'")
 
 
-    def cmktest_intersection(self):
+    def test_intersection(self):
 
         from pysnptools.standardizer import Unit
         from pysnptools.kernelreader import SnpKernel
@@ -154,7 +154,7 @@ class TestKernelReader(unittest.TestCase):
 
         logging.info("Done with test_intersection")
 
-    def cmktest_respect_read_inputs(self):
+    def test_respect_read_inputs(self):
         from pysnptools.kernelreader import KernelHdf5,Identity,KernelNpz,SnpKernel
         from pysnptools.standardizer import Unit
         from pysnptools.standardizer import Identity as StdIdentity
@@ -194,7 +194,7 @@ class TestKernelReader(unittest.TestCase):
         os.chdir(previous_wd)
 
 
-    def cmktest_respect_inputs(self):
+    def test_respect_inputs(self):
         np.random.seed(0)
         for dtype_start,decimal_start in [(np.float32,5),(np.float64,10)]:
             for order_start in ['F','C','A']:
@@ -214,7 +214,7 @@ class TestKernelReader(unittest.TestCase):
                                     PstReader._array_properties_are_ok(k.val,order_goal,dtype_goal)
                                     np.testing.assert_array_almost_equal(refval0,k.val, decimal=min(decimal_start,decimal_goal))
 
-    def cmktest_fail(self):
+    def test_fail(self):
         did_fail = True
         try:
             kd = KernelData(iid=[["0"],["1"],["2"]],val=[[1,2,3],[4,5,6],[7,8,9]]) #Wrong iid shape
@@ -223,7 +223,7 @@ class TestKernelReader(unittest.TestCase):
             pass
         assert did_fail, "The constructor should fail because the iid is the wrong shape"
 
-    def cmktest_kernel2(self):
+    def test_kernel2(self):
         logging.info("in kernel2")
         kd = KernelData(iid=[["0","0"],["1","1"],["2","2"]],val=[[1,2,3],[4,5,6],[7,8,9]])
         assert np.array_equal(kd.iid_to_index([["1","1"],["2","2"]]),np.array([1,2]))
@@ -232,14 +232,14 @@ class TestKernelReader(unittest.TestCase):
         assert np.abs(np.diag(kd.val).sum()-3)<1e-7
         assert kd.iid1_count == 3
 
-    def cmktest_snp_kernel2(self):
+    def test_snp_kernel2(self):
         logging.info("in test_snp_kernel2")
         snpreader = Bed(self.currentFolder + "/../examples/toydata.5chrom.bed",count_A1=False)
         snpkernel = SnpKernel(snpreader,standardizer=stdizer.Beta(1,25))
         s  = str(snpkernel)
         _fortesting_JustCheckExists().input(snpkernel)
         
-    def cmktest_npz(self):
+    def test_npz(self):
         logging.info("in test_npz")
         snpreader = Bed(self.currentFolder + "/../examples/toydata.5chrom.bed",count_A1=False)
         kerneldata1 = snpreader.read_kernel(standardizer=stdizer.Unit())
@@ -252,7 +252,7 @@ class TestKernelReader(unittest.TestCase):
         np.testing.assert_array_almost_equal(kerneldata1.val, kerneldata2.val, decimal=10)
         logging.info("done with test")
 
-    def cmktest_subset(self):
+    def test_subset(self):
         logging.info("in test_subset")
         snpreader = Bed(self.currentFolder + "/../examples/toydata.5chrom.bed",count_A1=False)
         snpkernel = SnpKernel(snpreader,stdizer.Unit())
@@ -266,7 +266,7 @@ class TestKernelReader(unittest.TestCase):
         np.testing.assert_array_almost_equal(kerneldata2.val, expected.val, decimal=10)
         logging.info("done with test")
 
-    def cmktest_identity(self):
+    def test_identity(self):
         logging.info("in test_identity")
         snpreader = Bed(self.currentFolder + "/../examples/toydata.5chrom.bed",count_A1=False)
         assert snpreader.iid is snpreader.row
@@ -282,7 +282,7 @@ class TestKernelReader(unittest.TestCase):
         sub2 = kid[0:0]
         np.testing.assert_array_almost_equal(sub2.read().val, np.identity(0))
 
-    def cmktest_identity_sub(self):
+    def test_identity_sub(self):
         logging.info("in test_identity_sub")
         snpreader = Bed(self.currentFolder + "/../examples/toydata.5chrom.bed",count_A1=False)
         assert snpreader.iid is snpreader.row
@@ -293,7 +293,7 @@ class TestKernelReader(unittest.TestCase):
 
         logging.info("done with test")
 
-    def cmktest_underscore_read1(self):
+    def test_underscore_read1(self):
         logging.info("in test_underscore_read1")
         snpreader = Bed(self.currentFolder + "/../examples/toydata.5chrom.bed",count_A1=False)
         assert snpreader.iid is snpreader.row
@@ -304,7 +304,7 @@ class TestKernelReader(unittest.TestCase):
 
         logging.info("done with test")
 
-    def cmktest_underscore_read2(self):
+    def test_underscore_read2(self):
         logging.info("in test_underscore_read2")
         snpreader = Bed(self.currentFolder + "/../examples/toydata.5chrom.bed",count_A1=False)
         assert snpreader.iid is snpreader.row
@@ -318,7 +318,7 @@ class TestKernelReader(unittest.TestCase):
 # We do it this way instead of using doctest.DocTestSuite because doctest.DocTestSuite requires modules to be pickled, which python doesn't allow.
 # We need tests to be pickleable so that they can be run on a cluster.
 class TestKrDocStrings(unittest.TestCase):
-    def cmktest_kernelreader(self):
+    def test_kernelreader(self):
         import pysnptools.kernelreader.kernelreader
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -326,7 +326,7 @@ class TestKrDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    def cmktest_snpkernel(self):
+    def test_snpkernel(self):
         import pysnptools.kernelreader.snpkernel
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -334,7 +334,7 @@ class TestKrDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    def cmktest_kerneldata(self):
+    def test_kerneldata(self):
         import pysnptools.kernelreader.kerneldata
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -342,7 +342,7 @@ class TestKrDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    def cmktest_identity(self):
+    def test_identity(self):
         import pysnptools.kernelreader.identity
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -350,7 +350,7 @@ class TestKrDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    def cmktest_kernelhdf5(self):
+    def test_kernelhdf5(self):
         import pysnptools.kernelreader.kernelhdf5
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -358,7 +358,7 @@ class TestKrDocStrings(unittest.TestCase):
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
-    def cmktest_kernelnpz(self):
+    def test_kernelnpz(self):
         import pysnptools.kernelreader.kernelnpz
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))

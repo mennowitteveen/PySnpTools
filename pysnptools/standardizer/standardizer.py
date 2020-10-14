@@ -170,7 +170,7 @@ class Standardizer(object):
             #logging.warn("A least one snps has only one value, that is, its standard deviation is zero")
             snp_std[snp_std == 0.0] = xp.inf #We make the stdev infinity so that applying as a trained_standardizer will turn any input to 0. Thus if a variable has no variation in the training data, then it will be set to 0 in test data, too. 
             t1 = time.time()
-            logging.info(f'sup std0toinf {t1-t0}')
+            logging.info(f'sup std0toinf {t1-t0}')   
             t0=t1
             stats[:,0] = snp_mean
             t1 = time.time()

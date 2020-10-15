@@ -84,7 +84,7 @@ class Standardizer(object):
     #changes snps in place
     def _standardize_unit_and_beta(snps, is_beta, a, b, apply_in_place, use_stats, stats, force_python_only=False):
         from bed_reader import wrap_plink_parser_onep
-        xp = pstutil.array_module_from_env() #!!!cmk should there be a way to override the environment variable? 
+        xp = pstutil.array_module_from_env()
 
         assert snps.flags["C_CONTIGUOUS"] or snps.flags["F_CONTIGUOUS"], "Expect snps to be order 'C' or order 'F'"
 
@@ -96,7 +96,7 @@ class Standardizer(object):
              and (stats.flags["OWNDATA"]) # stats must own its data
              and (snps.flags["C_CONTIGUOUS"] and stats.flags["C_CONTIGUOUS"]) or (snps.flags["F_CONTIGUOUS"] and stats.flags["F_CONTIGUOUS"]) #stats must have the same order as snps
              ):
-            stats = np.array(stats,dtype=snps.dtype,order="F" if snps.flags["F_CONTIGUOUS"] else "C") #!!!cmk test this path
+            stats = np.array(stats,dtype=snps.dtype,order="F" if snps.flags["F_CONTIGUOUS"] else "C")
         assert stats.shape == (snps.shape[1],2), "stats must have size [sid_count,2]"
 
         if not force_python_only and xp is np:
@@ -136,7 +136,7 @@ class Standardizer(object):
         '''
         import time #!!!cmk remove all these time messages
         t0 = time.time()
-        xp = pstutil.array_module_from_env() #!!!cmk should there be a way to override the environment variable? 
+        xp = pstutil.array_module_from_env()
         t1 = time.time()
         logging.info(f'sup xp {t1-t0}. shape={snps.shape} with {xp.__name__}')
         t0=t1

@@ -28,7 +28,7 @@ class Unit(Standardizer):
         return "{0}()".format(self.__class__.__name__)
 
     def standardize(self, snps, block_size=None, return_trained=False, force_python_only=False):
-        xp = pstutil.array_module_from_env() #!!!cmk should there be a way to override the environment variable? 
+        xp = pstutil.array_module_from_env()
 
         if block_size is not None:
             warnings.warn("block_size is deprecated (and not needed, since standardization is in-place", DeprecationWarning)

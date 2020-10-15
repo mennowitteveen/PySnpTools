@@ -67,7 +67,7 @@ class KernelData(KernelReader,PstData):
     """
     #!!!cmk doc xp
     def __init__(self, iid=None, iid0=None, iid1=None, val=None, name=None, parent_string=None, xp = np): #!!!autodoc doesn't generate good doc for this constructor
-        #We don't have a 'super(KernelData, self).__init__()' here because KernelData takes full responsiblity for initializing both its superclasses
+        #We don't have a 'super(KernelData, self).__init__()' here because KernelData takes full responsibility for initializing both its superclasses
 
         self._val = None
 

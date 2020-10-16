@@ -4,6 +4,7 @@ import dill
 import pysnptools.util as pstutil
 from itertools import *
 from six.moves import range
+from unittest.mock import patch
 
 def work_sequence_to_result_sequence(work_sequence):
     '''
@@ -39,10 +40,10 @@ def create_task_file_name(workdirectory, taskindex, taskcount):
 
     
 
-def _shape_to_desired_workcount(distributable, taskcount):
+def _shape_to_desired_workcount(distributable, taskcount, weights = None):
     workcount = distributable.work_count
     if workcount > taskcount:
-        distributable = BatchUpWork(distributable, workcount, taskcount)
+        distributable = BatchUpWork(distributable, workcount, taskcount, weights)
     else:
        if workcount < taskcount:
            if workcount == 0:
@@ -51,7 +52,7 @@ def _shape_to_desired_workcount(distributable, taskcount):
                 distributable = ExpandWork(distributable, workcount, taskcount)
     return distributable
 
-def _run_one_task(original_distributable, taskindex, taskcount, workdirectory):
+def _run_one_task(original_distributable, taskindex, taskcount, workdirectory, weights = None, environ = None):
     '''
     Does a fraction of the work (e.g. 1 of every 1000 work items) and then saves the results to single file.
     if taskindex == taskcount, does the reduce step
@@ -60,18 +61,19 @@ def _run_one_task(original_distributable, taskindex, taskcount, workdirectory):
     if not 0 < taskcount: raise Exception("Expect taskcount to be positive")
     if not (0 <= taskindex < taskcount+1) :raise Exception("Expect taskindex to be between 0 (inclusive) and taskcount (exclusive)")
 
-    shaped_distributable = _shape_to_desired_workcount(original_distributable, taskcount)
+    shaped_distributable = _shape_to_desired_workcount(original_distributable, taskcount, weights = weights)
 
     if shaped_distributable.work_count != taskcount : raise Exception("Assert: expect workcount == taskcount")
 
     pstutil.create_directory_if_necessary(workdirectory, isfile=False, robust=True)
 
-    if (taskindex < taskcount):
-        doMainWorkForOneIndex(shaped_distributable, taskcount, taskindex, workdirectory)
-        return None
-    else:
-        result_sequence = work_sequence_from_disk(workdirectory, taskcount)
-        return shaped_distributable.reduce(result_sequence)
+    with patch.dict('os.environ', environ if environ is not None else {}) as _:
+        if (taskindex < taskcount):
+            doMainWorkForOneIndex(shaped_distributable, taskcount, taskindex, workdirectory)
+            return None
+        else:
+            result_sequence = work_sequence_from_disk(workdirectory, taskcount)
+            return shaped_distributable.reduce(result_sequence)
 
 
 def _work_sequence_for_one_index(distributable, taskAndWorkcount, taskindex):
@@ -119,12 +121,24 @@ class BatchUpWork(object): # implements IDistributable
     '''
     A wrapper.
     Takes a distributable that has more work items that wanted and turns it into one with exactly the right number of work items.
-    It does this by batching up work items, block-style style.
+    It does this by batching up work items, block style.
     '''
-    def __init__(self, distributable, workcount, taskcount):
+    def __init__(self, distributable, workcount, taskcount, weights=None):
         self.sub_distributable = distributable
         self.sub_workcount = workcount
         self._workcount = taskcount
+
+        if taskcount <= 0: raise Exception("Expect taskcount to be at least 1.")
+
+        if weights is None:
+            self._partial_sum_weight = list(range(0,taskcount+1))
+        else:
+            if len(weights) != taskcount: raise Exception("Expect weights to have length of taskcount.")
+            self._partial_sum_weight = [0]
+            for weight in weights:
+                if weight != int(weight) or weight < 0: raise Exception("Expect weights be non-negative integers.")
+                self._partial_sum_weight.append(weight + self._partial_sum_weight[-1])
+        if self._partial_sum_weight[-1] == 0: raise Exception("Weights cannot be all zero.")
 
     @property
     def work_count(self):
@@ -189,8 +203,8 @@ class BatchUpWork(object): # implements IDistributable
 
     def createSubWorkIndexList(self, workindex):
         assert 0 <= workindex < self._workcount, "real assert"
-        start = workindex * self.sub_workcount // self._workcount # assuming high prediction integer math
-        stop = (workindex + 1) * self.sub_workcount // self._workcount # assuming high prediction integer math
+        start = self._partial_sum_weight[workindex] * self.sub_workcount // self._partial_sum_weight[-1]   # assuming high precision integer math
+        stop =  self._partial_sum_weight[workindex+1] * self.sub_workcount // self._partial_sum_weight[-1] # assuming high precision integer math
         return start,stop
 
 class ExpandWork(object): # implements IDistributable

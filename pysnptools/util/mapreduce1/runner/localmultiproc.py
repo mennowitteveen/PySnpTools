@@ -39,7 +39,10 @@ class LocalMultiProc(Runner):
 
     '''
 
-    def __init__(self, taskcount, mkl_num_threads = None, just_one_process = False, logging_handler=logging.StreamHandler(sys.stdout)):
+    def __init__(self, taskcount, mkl_num_threads = None, 
+                 weights = None, #!!!cmk search for all use of this and be sure keywords are used for just_one_process
+                 taskindex_to_environ = None,
+                 just_one_process = False, logging_handler=logging.StreamHandler(sys.stdout)):
         self.just_one_process = just_one_process
         logger = logging.getLogger()
         if not logger.handlers:
@@ -52,6 +55,8 @@ class LocalMultiProc(Runner):
 
         self.taskcount = taskcount
         self.mkl_num_threads = mkl_num_threads
+        self.weights = weights
+        self.taskindex_to_environ = taskindex_to_environ
 
     def run(self, distributable):
         _JustCheckExists().input(distributable)
@@ -71,13 +76,17 @@ class LocalMultiProc(Runner):
 
         distributable_py_file = os.path.join(os.path.dirname(__file__),"..","distributable.py")
         if not os.path.exists(distributable_py_file): raise Exception("Expect file at " + distributable_py_file + ", but it doesn't exist.")
-        command_format_string_list_lambda = lambda taskindex: [sys.executable, distributable_py_file, distributablep_filename, "LocalInParts({0},{1},mkl_num_threads={2})".format(taskindex, self.taskcount, self.mkl_num_threads)]
-
 
         if not self.just_one_process:
             proc_list = []
             for taskindex in range(self.taskcount):
-                command_string_list = command_format_string_list_lambda(taskindex)
+                environ = self.taskindex_to_environ(taskindex) if self.taskindex_to_environ is not None else None
+                command_string_list = [sys.executable,
+                                       distributable_py_file,
+                                       distributablep_filename, 
+                                       f"LocalInParts({taskindex},{self.taskcount},mkl_num_threads={self.mkl_num_threads},weights={self.weights},environ={environ})".replace(" ","")
+                                       ]
+
                 #logging.info(command_string_list)
                 proc = subprocess.Popen(command_string_list, cwd=os.getcwd())
                 proc_list.append(proc)
@@ -88,14 +97,15 @@ class LocalMultiProc(Runner):
         else:
             from pysnptools.util.mapreduce1.runner import LocalInParts
             for taskindex in range(self.taskcount):
-                LocalInParts(taskindex,self.taskcount, mkl_num_threads=self.mkl_num_threads).run(distributable)
+                environ = self.taskindex_to_environ(taskindex) if self.taskindex_to_environ is not None else None
+                LocalInParts(taskindex,self.taskcount, mkl_num_threads=self.mkl_num_threads, weights=self.weights, environ=environ).run(distributable)
 
-        result = _run_one_task(distributable, self.taskcount, self.taskcount, distributable.tempdirectory)
+        result = _run_one_task(distributable, self.taskcount, self.taskcount, distributable.tempdirectory, weights=self.weights)
 
 
         _JustCheckExists().output(distributable)
         return result
-
+    #!!!Do something with GPU setting of reduces (like set to GPU, too)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

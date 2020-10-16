@@ -43,7 +43,8 @@ class LocalInParts(Runner):
 
     '''
 
-    def __init__(self, taskindex, taskcount, mkl_num_threads=None, result_file=None, run_dir=".", temp_dir=None, logging_handler=logging.StreamHandler(sys.stdout)):
+    def __init__(self, taskindex, taskcount, mkl_num_threads=None, weights=None, environ=None, result_file=None, run_dir=".",
+                temp_dir=None, logging_handler=logging.StreamHandler(sys.stdout)):
         logger = logging.getLogger()
         if not logger.handlers:
             logger.setLevel(logging.INFO)
@@ -58,6 +59,8 @@ class LocalInParts(Runner):
         self.result_file = os.path.join(run_dir,result_file) if result_file else None
         self.taskindex = taskindex
         self.taskcount = taskcount
+        self.weights = weights
+        self.environ = environ
         if mkl_num_threads != None:
             os.environ['MKL_NUM_THREADS'] = str(mkl_num_threads)
 
@@ -70,9 +73,9 @@ class LocalInParts(Runner):
         tempdir = os.path.realpath(tempdir)
         if self.taskindex != self.taskcount:
             _JustCheckExists().input(distributable)
-            return _run_one_task(distributable, self.taskindex, self.taskcount, tempdir)
+            return _run_one_task(distributable, self.taskindex, self.taskcount, tempdir, weights=self.weights, environ=self.environ)
         else:
-            result = _run_one_task(distributable, self.taskindex, self.taskcount, tempdir)
+            result = _run_one_task(distributable, self.taskindex, self.taskcount, tempdir, weights=self.weights, environ=self.environ)
             if self.result_file is not None:
                 create_directory_if_necessary(self.result_file)
                 with open(self.result_file, mode='wb') as f:

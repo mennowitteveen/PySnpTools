@@ -613,8 +613,10 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
             return snpreader.read(order=order,dtype=dtype).standardize(standardizer,return_trained=True,force_python_only=force_python_only)
     
     def _read_kernel(self, standardizer, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False, return_trained=False):
+        '''
+        Currently the do-in-blocks code path will respect any cupy environment variable, but the all-at-once path ignores it.
+        '''
         dtype = np.dtype(dtype)
-        #!!!cmk0 why no xp for "all-at-once"?
         #Do all-at-once (not in blocks) if 1. No block size is given or 2. The #ofSNPs < Min(block_size,iid_count)
         if block_size is None or (self.sid_count <= block_size or self.sid_count <= self.iid_count):
             train_data,trained_standardizer  = SnpReader._as_snpdata(self,standardizer=standardizer,dtype=dtype,order='A',force_python_only=force_python_only)
@@ -625,7 +627,7 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
                 return kernel
 
         else: #Do in blocks
-            xp = pstutil.array_module_from_env()#!!!cmk0 should this be here or a param?
+            xp = pstutil.array_module_from_env()
             #Set the default order to 'C' because with kernels any order is fine and the Python .dot method likes 'C' best.
             if order=='A':
                 order = 'C'

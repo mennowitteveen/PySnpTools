@@ -68,11 +68,10 @@ class PstData(PstReader):
 
 
     '''
-    def __init__(self, row, col, val, row_property=None, col_property=None, name=None, parent_string=None, copyinputs_function=None, xp=np): #!!!cmk document xp
+    def __init__(self, row, col, val, row_property=None, col_property=None, name=None, parent_string=None, copyinputs_function=None):
         super(PstData, self).__init__()
 
         self._val = None
-        self._xp = xp
 
         self._row = PstData._fixup_input(row)
         self._col = PstData._fixup_input(col)

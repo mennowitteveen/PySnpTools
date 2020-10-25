@@ -28,7 +28,10 @@ class Unit(Standardizer):
         return "{0}()".format(self.__class__.__name__)
 
     def standardize(self, snps, block_size=None, return_trained=False, force_python_only=False):
-        xp = pstutil.array_module_from_env()#!!!cmk0 here or param?
+        '''
+        When cupy environment variable is set, will use cupy.
+        '''
+        xp = pstutil.array_module_from_env()
 
         if block_size is not None:
             warnings.warn("block_size is deprecated (and not needed, since standardization is in-place", DeprecationWarning)
@@ -40,7 +43,8 @@ class Unit(Standardizer):
             warnings.warn("standardizing an nparray instead of a SnpData is deprecated", DeprecationWarning)
             val = snps
 
-        stats = self._standardize_unit_and_beta(val, is_beta=False, a=np.nan, b=np.nan, apply_in_place=True,use_stats=False,stats=None,force_python_only=force_python_only,)
+        stats = self._standardize_unit_and_beta(val, is_beta=False, a=np.nan, b=np.nan, apply_in_place=True,
+                                                use_stats=False,stats=None,force_python_only=force_python_only, xp=xp) 
 
         if return_trained:
             assert hasattr(snps,"val"), "return_trained=True requires that snps be a SnpData"

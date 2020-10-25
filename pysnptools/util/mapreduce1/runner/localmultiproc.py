@@ -105,7 +105,7 @@ class LocalMultiProc(Runner):
 
         _JustCheckExists().output(distributable)
         return result
-    #!!!Do something with GPU setting of reduces (like set to GPU, too)
+    #!!!cmkDo something with GPU setting of reduces (like set to GPU, too)????
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

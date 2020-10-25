@@ -358,7 +358,7 @@ class KernelReader(PstReader):
         assert self._row.dtype.type is np.str_ and len(self._row.shape)==2 and self._row.shape[1]==2, "iid0 should be dtype str, have two dimensions, and the second dimension should be size 2"
         assert self._col.dtype.type is np.str_ and len(self._col.shape)==2 and self._col.shape[1]==2, "iid1 should be dtype str have two dimensions, and the second dimension should be size 2"
 
-    def _read_with_standardizing(self, to_kerneldata, snp_standardizer=None, kernel_standardizer=DiagKtoN(), return_trained=False):
+    def _read_with_standardizing(self, to_kerneldata, snp_standardizer=None, kernel_standardizer=DiagKtoN(), return_trained=False): #!!!cmk does this need xp=np???
         assert to_kerneldata, "When working with non-SnpKernels, to_kerneldata must be 'True'"
         kernel, kernel_trained = self.read().standardize(kernel_standardizer,return_trained=True)
 

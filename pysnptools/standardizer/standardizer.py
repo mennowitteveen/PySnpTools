@@ -84,7 +84,8 @@ class Standardizer(object):
     #changes snps in place
     def _standardize_unit_and_beta(snps, is_beta, a, b, apply_in_place, use_stats, stats, force_python_only=False):
         from bed_reader import wrap_plink_parser_onep
-        xp = pstutil.array_module_from_env()
+        xp = pstutil.array_module_from_env() #!!!cmk0 here or a param?
+        #!!!cmk0 why do only a few paths have xp stuff?
 
         assert snps.flags["C_CONTIGUOUS"] or snps.flags["F_CONTIGUOUS"], "Expect snps to be order 'C' or order 'F'"
 
@@ -134,68 +135,27 @@ class Standardizer(object):
         '''
         standardize snps to zero-mean and unit variance
         '''
-        import time #!!!cmk remove all these time messages
-        t0 = time.time()
-        xp = pstutil.array_module_from_env()
-        t1 = time.time()
-        logging.info(f'sup xp {t1-t0}. shape={snps.shape} with {xp.__name__}')
-        t0=t1
-
+        xp = pstutil.array_module_from_env() #!!!cmk0 where or a param???
         assert snps.dtype in [np.float64,np.float32], "snps must be a float in order to standardize in place."
-
         imissX = xp.isnan(snps)
-
-        t1 = time.time()
-        logging.info(f'sup isnan {t1-t0}')
-        t0=t1
 
         if use_stats:
             snp_mean = stats[:,0]
             snp_std = stats[:,1]
         else:
             snp_std = xp.nanstd(snps, axis=0)
-
-            t1 = time.time()
-            logging.info(f'sup nanstd {t1-t0}')
-            t0=t1
-
             snp_mean = xp.nanmean(snps, axis=0)
-
-            t1 = time.time()
-            logging.info(f'sup nanmean {t1-t0}')
-            t0=t1
-
             # avoid div by 0 when standardizing
             #Don't need this warning because SNCs are still meaning full in QQ plots because they should be thought of as SNPs without enough data.
             #logging.warn("A least one snps has only one value, that is, its standard deviation is zero")
             snp_std[snp_std == 0.0] = xp.inf #We make the stdev infinity so that applying as a trained_standardizer will turn any input to 0. Thus if a variable has no variation in the training data, then it will be set to 0 in test data, too. 
-            t1 = time.time()
-            logging.info(f'sup std0toinf {t1-t0}')   
-            t0=t1
             stats[:,0] = snp_mean
-            t1 = time.time()
-            logging.info(f'sup stats[:,0] = {t1-t0}')
-            t0=t1
             stats[:,1] = snp_std
-            t1 = time.time()
-            logging.info(f'sup stats[:,1] = {t1-t0}')
-            t0=t1
 
         if apply_in_place:
             snps -= snp_mean
-            t1 = time.time()
-            logging.info(f'sup -=mean {t1-t0}')
-            t0=t1
             snps /= snp_std
-            t1 = time.time()
-            logging.info(f'sup /=std {t1-t0}')
-            t0=t1
-
             snps[imissX] = 0
-            t1 = time.time()
-            logging.info(f'sup miss=0 {t1-t0}')
-            t0=t1
-
 
     @property
     def is_constant(self):

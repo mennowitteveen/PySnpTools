@@ -42,7 +42,8 @@ class LocalInParts(Runner):
         328350
 
     '''
-
+    #!!!cmk doc
+    #!!!cmk search all uses of "LocalInParts" and ensure that keywords are used passed first 3 params
     def __init__(self, taskindex, taskcount, mkl_num_threads=None, weights=None, environ=None, result_file=None, run_dir=".",
                 temp_dir=None, logging_handler=logging.StreamHandler(sys.stdout)):
         logger = logging.getLogger()

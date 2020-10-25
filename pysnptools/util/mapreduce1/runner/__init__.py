@@ -123,7 +123,7 @@ class BatchUpWork(object): # implements IDistributable
     Takes a distributable that has more work items that wanted and turns it into one with exactly the right number of work items.
     It does this by batching up work items, block style.
     '''
-    def __init__(self, distributable, workcount, taskcount, weights=None):
+    def __init__(self, distributable, workcount, taskcount, weights=None):#!!!cmk
         self.sub_distributable = distributable
         self.sub_workcount = workcount
         self._workcount = taskcount
@@ -204,7 +204,7 @@ class BatchUpWork(object): # implements IDistributable
     def createSubWorkIndexList(self, workindex):
         assert 0 <= workindex < self._workcount, "real assert"
         start = self._partial_sum_weight[workindex] * self.sub_workcount // self._partial_sum_weight[-1]   # assuming high precision integer math
-        stop =  self._partial_sum_weight[workindex+1] * self.sub_workcount // self._partial_sum_weight[-1] # assuming high precision integer math
+        stop = self._partial_sum_weight[workindex+1] * self.sub_workcount // self._partial_sum_weight[-1]  # assuming high precision integer math
         return start,stop
 
 class ExpandWork(object): # implements IDistributable

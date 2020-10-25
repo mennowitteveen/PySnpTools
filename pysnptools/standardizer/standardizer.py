@@ -83,9 +83,11 @@ class Standardizer(object):
     @staticmethod
     #changes snps in place
     def _standardize_unit_and_beta(snps, is_beta, a, b, apply_in_place, use_stats, stats, force_python_only=False):
+        '''
+        When cupy environment variable is set, will use cupy to compute new stats for unit. (Other paths are not defined for cupy)
+        '''
         from bed_reader import wrap_plink_parser_onep
-        xp = pstutil.array_module_from_env() #!!!cmk0 here or a param?
-        #!!!cmk0 why do only a few paths have xp stuff?
+        xp = pstutil.array_module_from_env()
 
         assert snps.flags["C_CONTIGUOUS"] or snps.flags["F_CONTIGUOUS"], "Expect snps to be order 'C' or order 'F'"
 
@@ -127,15 +129,14 @@ class Standardizer(object):
             Standardizer._standardize_beta_python(snps, a, b, apply_in_place, use_stats=use_stats, stats=stats)
             return stats
         else:
-            Standardizer._standardize_unit_python(snps, apply_in_place, use_stats=use_stats, stats=stats)
+            Standardizer._standardize_unit_python(snps, apply_in_place, use_stats=use_stats, stats=stats, xp=xp)
             return stats
 
     @staticmethod
-    def _standardize_unit_python(snps,apply_in_place,use_stats,stats):
+    def _standardize_unit_python(snps,apply_in_place,use_stats,stats,xp=np):
         '''
         standardize snps to zero-mean and unit variance
         '''
-        xp = pstutil.array_module_from_env() #!!!cmk0 where or a param???
         assert snps.dtype in [np.float64,np.float32], "snps must be a float in order to standardize in place."
         imissX = xp.isnan(snps)
 

@@ -102,7 +102,7 @@ class SnpKernel(KernelReader):
             return KernelReader.__getitem__(self,iid_indexer_and_snp_indexer)
 
 
-    def _read_with_standardizing(self, to_kerneldata, kernel_standardizer=DiagKtoN(), return_trained=False, xp=np):#!!!cmk0 should this be here or an enviernment?
+    def _read_with_standardizing(self, to_kerneldata, kernel_standardizer=DiagKtoN(), return_trained=False):
         '''
         Reads a SnpKernel with two cases
               If returning KernelData,
@@ -113,6 +113,7 @@ class SnpKernel(KernelReader):
 
         '''
         logging.info("Starting '_read_with_standardizing'")
+        xp = pstutil.array_module_from_env()
 
         if to_kerneldata:
             val, snp_trained = self.snpreader._read_kernel(self.standardizer,block_size=self.block_size,return_trained=True)

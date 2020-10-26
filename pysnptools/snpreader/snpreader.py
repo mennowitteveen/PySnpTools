@@ -614,7 +614,7 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
     
     def _read_kernel(self, standardizer, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False, return_trained=False):
         '''
-        Currently the do-in-blocks code path will respect any cupy environment variable, but the all-at-once path ignores it.
+        Will respect the cupy environment variable.
         '''
         dtype = np.dtype(dtype)
         #Do all-at-once (not in blocks) if 1. No block size is given or 2. The #ofSNPs < Min(block_size,iid_count)

@@ -89,7 +89,7 @@ class DistributedBed(SnpReader):
                 for reader in reader_list:
                     reader._row = self._merge.row
             
-    def close(self): #!!!cmk doc this ALSO explain in elsewere why needed
+    def close(self): #!!!cmk doc this ALSO explain in elsewhere why needed
         self._ran_once = False
         if self._merge is not None:
             del self._merge

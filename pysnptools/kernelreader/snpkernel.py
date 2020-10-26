@@ -111,6 +111,8 @@ class SnpKernel(KernelReader):
                   read the reference and learn both standardization (but can't this cause multiple reads?)
         Note that snp_standardizer should be None or the standardizer instead the SnpKernel should have the placeholder value Standardizer()
 
+        Will respect the cupy environment variable.
+
         '''
         logging.info("Starting '_read_with_standardizing'")
         xp = pstutil.array_module_from_env()

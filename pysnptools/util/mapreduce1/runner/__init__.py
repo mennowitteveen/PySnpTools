@@ -122,8 +122,13 @@ class BatchUpWork(object): # implements IDistributable
     A wrapper.
     Takes a distributable that has more work items that wanted and turns it into one with exactly the right number of work items.
     It does this by batching up work items, block style.
+
+    If weights is given, it must be an array of integers of length "taskcount". Each value gives the relative weight
+    of that task compared to the others. For example, if all values are 1, then all task will be assigned
+    the same amount of work. If the first value is 2 and the others are 1, then the first task (index 0)
+    will be assigned twice as much work as the other tasks.
     '''
-    def __init__(self, distributable, workcount, taskcount, weights=None):#!!!cmk doc
+    def __init__(self, distributable, workcount, taskcount, weights=None):
         self.sub_distributable = distributable
         self.sub_workcount = workcount
         self._workcount = taskcount

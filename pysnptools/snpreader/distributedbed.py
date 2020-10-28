@@ -12,8 +12,6 @@ from pysnptools.snpreader import _snps_fixup
 from pysnptools.util import log_in_place
 from pysnptools.util.mapreduce1 import map_reduce
 from pysnptools.util.filecache import FileCache
-import six
-from six.moves import range
 
 class DistributedBed(SnpReader):
     '''
@@ -89,14 +87,14 @@ class DistributedBed(SnpReader):
                 for reader in reader_list:
                     reader._row = self._merge.row
             
-    def close(self): #!!!cmk doc this ALSO explain in elsewhere why needed
+    def close(self): #!!!cmk1 doc this ALSO explain in elsewhere why needed
         self._ran_once = False
         if self._merge is not None:
             del self._merge
             self._merge = None
         
     #def __del__(self):
-    #    for handle in self._file_dict.itervalues():
+    #    for handle in self._file_dict.values():
     #        handle.close()
 
     def copyinputs(self, copier):
@@ -271,8 +269,8 @@ class _Distributed1Bed(SnpReader):
         local_bed = self._storage.open_read(_bed)
         self.local = Bed(local_bed.__enter__(),count_A1=True,iid=self.row,sid=self.col,pos=self.col_property,skip_format_check=True)
         self._file_dict["bed"] = local_bed
-        #!!!cmk look for orphaned six methods
-    #!!!cmk what's up with this error message
+        #!!!cmk1 look for orphaned six methods
+    #!!!cmk1 what's up with this error message
     #   File "D:\OneDrive\programs\pysnptools\pysnptools\snpreader\distributedbed.py", line 271, in __del__
     #    TypeError: 'NoneType' object is not callable
     def __del__(self):

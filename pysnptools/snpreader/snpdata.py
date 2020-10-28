@@ -22,10 +22,11 @@ class SnpData(PstData,SnpReader):
                      * **pos** (optional, an array of strings) -- The :attr:`SnpReader.pos` information
                      * **name** (optional, string) -- Information to be display about the origin of this data
                      * **copyinputs_function** (optional, function) -- *Used internally by optional clustering code*
+                     * **xp** (optional, a Python module or string) -- The numpy-like module that controls **val**,
+                               for example, 'numpy' or 'cupy'. Defaults to numpy.
 
         :Example:
 
-        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.snpreader import SnpData
         >>> snpdata = SnpData(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'], val=[[0.,2.,0.],[0.,1.,2.]])
         >>> print((snpdata.val[0,1], snpdata.iid_count, snpdata.sid_count))
@@ -61,7 +62,7 @@ class SnpData(PstData,SnpReader):
 
     **Methods beyond** :class:`.SnpReader`
     """
-    def __init__(self, iid, sid, val, pos=None, name=None, parent_string=None, copyinputs_function=None, _require_float32_64=True, xp = np):#!!!cmk doc
+    def __init__(self, iid, sid, val, pos=None, name=None, parent_string=None, copyinputs_function=None, xp = np, _require_float32_64=True):
 
         #We don't have a 'super(SnpData, self).__init__()' here because SnpData takes full responsibility for initializing both its superclasses
 
@@ -81,6 +82,7 @@ class SnpData(PstData,SnpReader):
         self._assert_iid_sid_pos(check_val=True)
         self._name = name or parent_string or ""
         self._std_string_list = []
+        self._xp = xp
 
     @property
     def val(self):
@@ -97,7 +99,8 @@ class SnpData(PstData,SnpReader):
 
     @val.setter
     def val(self, new_value):
-        self._val = PstData._fixup_input_val(new_value,row_count=len(self._row),col_count=len(self._col),empty_creator=lambda row_count,col_count:np.empty([row_count,col_count],dtype=np.float64))
+        self._val = PstData._fixup_input_val(new_value,row_count=len(self._row),col_count=len(self._col),empty_creator=lambda row_count,col_count:np.empty([row_count,col_count],dtype=np.float64),
+                                             xp=self._xp)
         self._assert_iid_sid_pos(check_val=True)
 
 

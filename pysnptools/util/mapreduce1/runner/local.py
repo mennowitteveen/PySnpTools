@@ -42,13 +42,12 @@ class Local(Runner):
         logger.addHandler(logging_handler)
         if logger.level == logging.NOTSET:
             logger.setLevel(logging.INFO)
-        
-        if mkl_num_threads != None:
-            os.environ['MKL_NUM_THREADS'] = str(mkl_num_threads)
+        self.mkl_num_threads = mkl_num_thread
 
     def run(self, distributable):
         _JustCheckExists().input(distributable)
-        result = _run_all_in_memory(distributable)
+        with patch.dict('os.environ', {'MKL_NUM_THREADS': str(mkl_num_threads} if mkl_num_threads is not None else {}) as _:
+            result = _run_all_in_memory(distributable)
         _JustCheckExists().output(distributable)
         return result
 

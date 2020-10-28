@@ -2,12 +2,11 @@ from __future__ import absolute_import
 from pysnptools.util.mapreduce1.runner import Runner,_JustCheckExists, _run_one_task
 import os
 import logging
-from six.moves import range
 try:
     import dill as pickle
 except:
     logging.warning("Can't import dill, so won't be able to clusterize lambda expressions. If you try, you'll get this error 'Can't pickle <type 'function'>: attribute lookup __builtin__.function failed'")
-    import six.moves.cPickle as pickle
+    import pickle
 import subprocess, sys, os.path
 import multiprocessing
 from pysnptools.util import create_directory_if_necessary, _datestamp
@@ -20,6 +19,13 @@ class LocalMultiProc(Runner):
     **Constructor:**
         :Parameters: * **taskcount** (*number*) -- The number of processes to run on.
         :Parameters: * **mkl_num_threads** (*number*) -- (default None) Limit on the number threads used by the NumPy MKL library.
+        :Parameters: * **weights** (*array of integers*) -- (default None) If given, tells the relative amount of work assigned to
+                              each task. The length of the array must be **taskcount**. If not given, all tasks are assigned the
+                              same amount of work.
+        :Parameters: * **taskindex_to_environ** (*function from integers to dictionaries*) -- (default None). If given, this
+                              should be function from taskindex to a dictionary. The dictionary tells how to temporarily set
+                              environment variables while the task is running. The dictionary is a mapping of
+                              variables and values (both strings).
         :Parameters: * **just_one_process** (*bool*) -- (default False) Divide the work for multiple processes, but runs sequentially on one process. Can be useful for debugging.
         :Parameters: * **logging_handler** (*stream*) --  (default stdout) Where to output logging messages.
         
@@ -40,7 +46,7 @@ class LocalMultiProc(Runner):
     '''
 
     def __init__(self, taskcount, mkl_num_threads = None, 
-                 weights = None, #!!!cmk search for all use of this and be sure keywords are used for just_one_process
+                 weights = None,
                  taskindex_to_environ = None,
                  just_one_process = False, logging_handler=logging.StreamHandler(sys.stdout)):
         self.just_one_process = just_one_process
@@ -100,12 +106,12 @@ class LocalMultiProc(Runner):
                 environ = self.taskindex_to_environ(taskindex) if self.taskindex_to_environ is not None else None
                 LocalInParts(taskindex,self.taskcount, mkl_num_threads=self.mkl_num_threads, weights=self.weights, environ=environ).run(distributable)
 
-        result = _run_one_task(distributable, self.taskcount, self.taskcount, distributable.tempdirectory, weights=self.weights)
-
+        #!!!cmk0 add some tests for weights and environ, everywhere that uses them
+        environ = self.taskindex_to_environ(self.taskcount) if self.taskindex_to_environ is not None else None
+        result = _run_one_task(distributable, self.taskcount, self.taskcount, distributable.tempdirectory, weights=self.weights, environ=environ)
 
         _JustCheckExists().output(distributable)
         return result
-    #!!!cmkDo something with GPU setting of reduces (like set to GPU, too)????
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

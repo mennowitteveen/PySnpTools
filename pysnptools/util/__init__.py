@@ -584,7 +584,25 @@ def _datestamp(appendrandom=False):
     return s
 
 _warn_array_module_once = False
-def array_module_from_env(xp = None): #!!!cmk document this
+
+def array_module_from_env(xp = None): #!!!cmk9 check that these docs and doctest work
+    '''
+    Find the numpy-like module to use.
+
+    :param xp: The module to use (optional). If not given, will try to read
+               from the ARRAY_MODULE environment variable. If 'cupy', will
+               try to import cupy. If that import fails, will revert to numpy.
+    :type xp: string or Python module
+    :rtype: Python module
+
+    >>> from pysnptools.util import array_module_from_env
+    >>> xp = array_module_from_env() # will look at environment variable
+    >>> print(xp.zeros((3))
+    [0 0 0]
+    >>> xp = array_module_from_env('cupy') # will try to import 'cupy'
+    >>> print(xp.zeros((3))
+    [0 0 0]
+    '''
     xp = xp or os.environ.get('ARRAY_MODULE','numpy')
 
     if isinstance(xp, ModuleType):
@@ -606,9 +624,18 @@ def array_module_from_env(xp = None): #!!!cmk document this
 
     raise ValueError(f"Don't know ARRAY_MODULE '{xp}'")
 
-
-
 def asnumpy(a):
+    '''
+    Given an array created with any numpy-like module, return the equivalent 
+    numpy array. (A numpy array is returned unchanged.)
+
+    >>> from pysnptools.util import asnumpy, array_module_from_env
+    >>> xp = array_module_from_env('cupy')
+    >>> zeros_xp = xp.zeros((3)) # will be cupy if avaiable
+    >>> zeros_np = asnumpy(zeros_xp) # will be numpy
+    >>> zeros_np
+    [0 0 0]
+    '''
     if isinstance(a, np.ndarray):
         return a
     return a.get()

@@ -42,7 +42,7 @@ class Local(Runner):
         logger.addHandler(logging_handler)
         if logger.level == logging.NOTSET:
             logger.setLevel(logging.INFO)
-        self.mkl_num_threads = mkl_num_thread
+        self.mkl_num_threads = mkl_num_threads
 
     def run(self, distributable):
         _JustCheckExists().input(distributable)

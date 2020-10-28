@@ -75,7 +75,7 @@ class LocalInParts(Runner):
             tempdir = os.path.join(self.run_dir,distributable.tempdirectory)
         tempdir = os.path.realpath(tempdir)
 
-        with patch.dict('os.environ', {'MKL_NUM_THREADS': str(mkl_num_threads)} if mkl_num_threads is not None else {}) as _:
+        with patch.dict('os.environ', {'MKL_NUM_THREADS': str(self.mkl_num_threads)} if self.mkl_num_threads is not None else {}) as _:
             if self.taskindex != self.taskcount:
                 _JustCheckExists().input(distributable)
                 return _run_one_task(distributable, self.taskindex, self.taskcount, tempdir, weights=self.weights, environ=self.environ)

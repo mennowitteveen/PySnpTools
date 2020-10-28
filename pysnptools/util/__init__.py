@@ -590,10 +590,10 @@ def array_module_from_env(xp = None): #!!!cmk9 check that these docs and doctest
     >>> from pysnptools.util import array_module_from_env
     >>> xp = array_module_from_env() # will look at environment variable
     >>> print(xp.zeros((3)))
-    [0., 0., 0.]
+    [0. 0. 0.]
     >>> xp = array_module_from_env('cupy') # will try to import 'cupy'
     >>> print(xp.zeros((3)))
-    [0., 0., 0.]
+    [0. 0. 0.]
     '''
     xp = xp or os.environ.get('ARRAY_MODULE','numpy')
 

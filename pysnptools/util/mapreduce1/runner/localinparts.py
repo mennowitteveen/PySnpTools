@@ -64,7 +64,7 @@ class LocalInParts(Runner):
         self.taskcount = taskcount
         self.weights = weights
         self.environ = environ
-        self.mkl_num_threads = mkl_num_thread
+        self.mkl_num_threads = mkl_num_threads
 
 
     def run(self, distributable):

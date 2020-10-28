@@ -1,6 +1,7 @@
-from pysnptools.util.mapreduce1.runner import Runner,_JustCheckExists, _run_one_task
+from unittest.mock import patch
 import os, sys
 import logging
+from pysnptools.util.mapreduce1.runner import Runner,_JustCheckExists, _run_one_task
 from pysnptools.util import create_directory_if_necessary
 
 try:

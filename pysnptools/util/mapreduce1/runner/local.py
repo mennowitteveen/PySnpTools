@@ -46,7 +46,7 @@ class Local(Runner):
 
     def run(self, distributable):
         _JustCheckExists().input(distributable)
-        with patch.dict('os.environ', {'MKL_NUM_THREADS': str(mkl_num_threads} if mkl_num_threads is not None else {}) as _:
+        with patch.dict('os.environ', {'MKL_NUM_THREADS': str(mkl_num_threads)} if mkl_num_threads is not None else {}) as _:
             result = _run_all_in_memory(distributable)
         _JustCheckExists().output(distributable)
         return result

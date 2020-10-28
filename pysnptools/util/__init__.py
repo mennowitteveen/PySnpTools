@@ -1,10 +1,7 @@
-from __future__ import absolute_import
-from __future__ import print_function
 import os
 import logging
 import numpy as np
 import scipy as sp
-from six.moves import range
 import sys
 from contextlib import contextmanager
 import time
@@ -50,7 +47,6 @@ def intersect_apply(data_list, sort_by_dataset=True, intersect_before_standardiz
 
     :Example:
 
-    >>> from __future__ import print_function #Python 2 & 3 compatibility
     >>> from pysnptools.snpreader import Bed, Pheno
     >>> from pysnptools.kernelreader import SnpKernel
     >>> from pysnptools.standardizer import Unit
@@ -256,7 +252,6 @@ def sub_matrix(val, row_index_list, col_index_list, order='A', dtype=np.float64)
 
     :rtype: ndarray
 
-    >>> from __future__ import print_function #Python 2 & 3 compatibility
     >>> import numpy as np
     >>> import pysnptools.util as pstutil
     >>> np.random.seed(0) # set seed so that results are deterministic
@@ -441,7 +436,6 @@ def weighted_simple_linear_regression(xs, ys, weights):
     :type weights: ndarray
     :rtype: slope, intercept, xmean, ymean
 
-    >>> from __future__ import print_function #Python 2 & 3 compatibility
     >>> xs = np.array([53.8329911,57.49486653,60.07392197,60.21081451])
     >>> ys = np.array([103.664086,89.80645161,83.86888046,90.54141176])
     >>> weights = np.array([2.340862423,4.982888433,0.17522245,0.098562628])
@@ -474,7 +468,6 @@ def format_delta(delta_seconds):
     :type delta_seconds: number
     :rtype: string
 
-    >>> from __future__ import print_function #Python 2 & 3 compatibility
     >>> from pysnptools.util import format_delta
     >>> print(format_delta(86403.5))
     1 day, 0:00:03.500000
@@ -504,7 +497,6 @@ def log_in_place(name, level, time_lambda=time.time, show_log_diffs=False):
         .. code-block:: python
 
             from pysnptools.util import log_in_place
-            from six.moves import range
             import logging
             import time
             logging.basicConfig(level=logging.INFO)
@@ -597,11 +589,11 @@ def array_module_from_env(xp = None): #!!!cmk9 check that these docs and doctest
 
     >>> from pysnptools.util import array_module_from_env
     >>> xp = array_module_from_env() # will look at environment variable
-    >>> print(xp.zeros((3))
-    [0 0 0]
+    >>> print(xp.zeros((3)))
+    array([0., 0., 0.])
     >>> xp = array_module_from_env('cupy') # will try to import 'cupy'
-    >>> print(xp.zeros((3))
-    [0 0 0]
+    >>> print(xp.zeros((3)))
+    array([0., 0., 0.])
     '''
     xp = xp or os.environ.get('ARRAY_MODULE','numpy')
 
@@ -634,7 +626,7 @@ def asnumpy(a):
     >>> zeros_xp = xp.zeros((3)) # will be cupy if avaiable
     >>> zeros_np = asnumpy(zeros_xp) # will be numpy
     >>> zeros_np
-    [0 0 0]
+    array([0., 0., 0.])
     '''
     if isinstance(a, np.ndarray):
         return a

@@ -1,9 +1,7 @@
-from __future__ import absolute_import
 import logging
 import os
 import numpy as np
 from pysnptools.pstreader import PstReader
-from six.moves import range
 
 
 #!!! would be be better to make a Transpose class that could term _mergerows into mergecols? Be sure special Bed code is still there.

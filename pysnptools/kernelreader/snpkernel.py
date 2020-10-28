@@ -26,7 +26,6 @@ class SnpKernel(KernelReader):
 
         :Example:
 
-        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.snpreader import Bed
         >>> from pysnptools.standardizer import Unit
         >>> from pysnptools.util import example_file # Download and return local file name

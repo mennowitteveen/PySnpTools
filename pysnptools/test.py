@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import numpy as np
 import sys
 import scipy as sp
@@ -36,8 +34,7 @@ import unittest
 import os.path
 import time
 
-from six.moves import range
-   
+
 class TestPySnpTools(unittest.TestCase):     
 
     def xtest_aaa_hdf5_speed(self): #!!too slow to use all the time

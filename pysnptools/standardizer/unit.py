@@ -11,7 +11,6 @@ class Unit(Standardizer):
 
     See :class:`.Standardizer` for more information about standardization.
 
-    >>> from __future__ import print_function #Python 2 & 3 compatibility
     >>> from pysnptools.standardizer import Unit
     >>> from pysnptools.snpreader import Bed
     >>> from pysnptools.util import example_file # Download and return local file name

@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import logging
 import os
 import shutil
@@ -25,7 +23,6 @@ class SnpMemMap(PstMemMap,SnpData):
 
         :Example:
 
-        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.snpreader import SnpMemMap
         >>> from pysnptools.util import example_file # Download and return local file name
         >>> mem_map_file = example_file('pysnptools/examples/tiny.snp.memmap')

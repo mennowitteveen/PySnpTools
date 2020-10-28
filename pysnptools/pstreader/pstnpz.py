@@ -21,7 +21,6 @@ class PstNpz(PstReader):
 
         :Example:
 
-        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.pstreader import PstNpz
         >>> from pysnptools.util import example_file # Download and return local file name
         >>> 

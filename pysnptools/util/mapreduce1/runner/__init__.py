@@ -3,7 +3,6 @@ import os
 import dill
 import pysnptools.util as pstutil
 from itertools import *
-from six.moves import range
 from unittest.mock import patch
 
 def work_sequence_to_result_sequence(work_sequence):

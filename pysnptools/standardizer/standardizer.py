@@ -10,8 +10,6 @@ class Standardizer(object):
 
     Read and standardize SNP data.
 
-    >>> from __future__ import print_function #Python 2 & 3 compatibility
-    >>> from six.moves import range #Python 2 & 3 compatibility
     >>> from pysnptools.standardizer import Unit
     >>> from pysnptools.snpreader import Bed
     >>> from pysnptools.util import example_file # Download and return local file name

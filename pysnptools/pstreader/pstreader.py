@@ -100,7 +100,6 @@ class PstReader(object):
 
         Example:
 
-        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.pstreader import PstHdf5
         >>> from pysnptools.util import print2 #print bytes strings and Unicode strings the same
         >>> from pysnptools.util import example_file # Download and return local file name

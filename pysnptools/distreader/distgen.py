@@ -1,12 +1,9 @@
-from __future__ import absolute_import
-from __future__ import print_function
 import numpy as np
 import logging
 import os
 import unittest
 import doctest
 from pysnptools.distreader import DistReader
-from six.moves import range
 
 class DistGen(DistReader):
     '''
@@ -26,7 +23,6 @@ class DistGen(DistReader):
         
         :Example:
 
-        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.distreader import DistGen
         >>> #Prepare to generate data for 1000 individuals and 1,000,000 SNPs
         >>> dist_gen = DistGen(seed=332,iid_count=1000,sid_count=1000*1000)

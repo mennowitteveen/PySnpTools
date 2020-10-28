@@ -13,8 +13,6 @@ class KernelStandardizer(object):
 
     Read and standardize Kernel data.
 
-    >>> from __future__ import print_function #Python 2 & 3 compatibility
-    >>> from six.moves import range #Python 2 & 3 compatibility
     >>> from pysnptools.kernelstandardizer import DiagKtoN
     >>> from pysnptools.kernelreader import KernelNpz
     >>> from pysnptools.util import example_file # Download and return local file name

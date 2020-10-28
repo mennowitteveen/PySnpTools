@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-from __future__ import print_function
 import numpy as np
 import os.path
 from itertools import *
@@ -15,7 +13,6 @@ class KernelReader(PstReader):
 
     * A class such as :class:`KernelNpz` for you to a file with data. For example,
 
-        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.kernelreader import KernelNpz
         >>> from pysnptools.util import example_file # Download and return local file name
         >>> 
@@ -100,7 +97,6 @@ class KernelReader(PstReader):
         Some of the classes, such as :class:`.KernelNpz`, also provide a static :meth:`KernelNpz.write` method for writing :class:`.KernelData`.
 
         >>> # create a kernel from a Bed file and write to KernelNpz format
-        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.snpreader import Bed
         >>> from pysnptools.util import example_file # Download and return local file name
         >>> from pysnptools.standardizer import Unit
@@ -170,7 +166,6 @@ class KernelReader(PstReader):
         :Example:
 
         >>> from pysnptools.kernelreader import KernelNpz
-        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.util import example_file # Download and return local file name
         >>> 
         >>> kernel_file = example_file('pysnptools/examples/toydata.kernel.npz')

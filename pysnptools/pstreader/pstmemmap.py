@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-from __future__ import print_function
 import logging
 import numpy as np
 import unittest
@@ -25,7 +23,6 @@ class PstMemMap(PstData):
         :Example:
 
         >>> from pysnptools.pstreader import PstMemMap
-        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.util import example_file # Download and return local file name
         >>> 
         >>> pst_mem_map_file = example_file('pysnptools/examples/tiny.pst.memmap')

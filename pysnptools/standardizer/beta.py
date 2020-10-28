@@ -14,7 +14,6 @@ class Beta(Standardizer):
         :Parameters: * **a** (*float*) -- The *a* parameter of the beta distribution
                      * **b** (*float*) -- The *b* parameter of the beta distribution
 
-    >>> from __future__ import print_function #Python 2 & 3 compatibility
     >>> from pysnptools.standardizer import Beta
     >>> from pysnptools.snpreader import Bed
     >>> from pysnptools.util import example_file # Download and return local file name

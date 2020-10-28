@@ -9,7 +9,6 @@ import numpy as np
 from pysnptools.pstreader import PstReader
 from pysnptools.pstreader.pstdata import PstData
 import warnings
-from six.moves import range
 
 class PstHdf5(PstReader):
     '''
@@ -25,7 +24,6 @@ class PstHdf5(PstReader):
 
         :Example:
 
-        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.pstreader import PstHdf5
         >>> from pysnptools.util import example_file # Download and return local file name
         >>> 

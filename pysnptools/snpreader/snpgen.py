@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-from __future__ import print_function
 from pysnptools.util import log_in_place
 import numpy as np
 import logging
@@ -7,7 +5,6 @@ import os
 import unittest
 import doctest
 from pysnptools.snpreader import SnpReader
-from six.moves import range
 
 class SnpGen(SnpReader):
     '''
@@ -25,7 +22,6 @@ class SnpGen(SnpReader):
         
         :Example:
 
-        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.snpreader import SnpGen
         >>> #Prepare to generate data for 1000 individuals and 1,000,000 SNPs
         >>> snp_gen = SnpGen(seed=332,iid_count=1000,sid_count=1000*1000)

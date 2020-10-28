@@ -10,7 +10,6 @@ from pysnptools.pstreader import PstReader
 from pysnptools.snpreader import SnpData
 import warnings
 import pysnptools.standardizer as stdizer
-from six.moves import range
 from pysnptools.snpreader._dist2snp import _Dist2Snp
 
 #!!why do the examples use ../tests/datasets instead of "examples"?
@@ -19,7 +18,6 @@ class DistReader(PstReader):
 
     * A class such as :class:`.Bgen` for you to specify a file with data. For example,
 
-        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.distreader import Bgen
         >>> from pysnptools.util import example_file # Download and return local file name
         >>> bgen_file = example_file("pysnptools/examples/2500x100.bgen")
@@ -134,7 +132,6 @@ class DistReader(PstReader):
 
         :Example:
 
-        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.distreader import Bgen
         >>> from pysnptools.util import example_file # Download and return local file name
         >>> bgen_file = example_file("pysnptools/examples/2500x100.bgen")

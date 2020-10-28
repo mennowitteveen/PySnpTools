@@ -8,7 +8,6 @@ import pysnptools.util as pstutil
 from pysnptools.pstreader import PstReader
 import warnings
 import pysnptools.standardizer as stdizer
-from six.moves import range
 from bed_reader import open_bed
 
 #!!why do the examples use ../tests/datasets instead of "examples"?
@@ -17,7 +16,6 @@ class SnpReader(PstReader):
 
     * A class such as :class:`.Bed` for you to specify a file with data. For example,
 
-        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.snpreader import Bed
         >>> from pysnptools.util import example_file # Download and return local file name
         >>> bedfile = example_file("tests/datasets/all_chr.maf0.001.N300.*","*.bed")
@@ -330,7 +328,6 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
 
         :Example:
 
-        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> from pysnptools.snpreader import Bed
         >>> from pysnptools.util import example_file # Download and return local file name
         >>> bedfile = example_file("tests/datasets/all_chr.maf0.001.N300.*","*.bed")

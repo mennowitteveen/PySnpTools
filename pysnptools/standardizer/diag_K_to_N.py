@@ -23,7 +23,6 @@ class DiagKtoN(Standardizer):
 
     Example of DiagKtoN to :class:`.SnpData`:
 
-    >>> from __future__ import print_function #Python 2 & 3 compatibility
     >>> from pysnptools.standardizer import DiagKtoN, Unit, Identity
     >>> from pysnptools.snpreader import Bed
     >>> from pysnptools.util import example_file # Download and return local file name

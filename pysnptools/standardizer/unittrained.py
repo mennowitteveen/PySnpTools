@@ -12,7 +12,6 @@ class UnitTrained(Standardizer):
     **Constructor:**
         :Parameters: * **stats** (*ndarray of float*) -- The mean and stddev of each sid
 
-    >>> from __future__ import print_function #Python 2 & 3 compatibility
     >>> from pysnptools.standardizer import Unit
     >>> from pysnptools.snpreader import Bed
     >>> from pysnptools.util import example_file # Download and return local file name

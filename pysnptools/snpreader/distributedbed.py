@@ -25,7 +25,6 @@ class DistributedBed(SnpReader):
 
         :Example:
 
-        >>> from __future__ import print_function #Python 2 & 3 compatibility
         >>> import os
         >>> from pysnptools.snpreader import DistributedBed
         >>> from pysnptools.util import example_file # Download and return local file name

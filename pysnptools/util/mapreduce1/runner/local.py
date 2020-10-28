@@ -5,7 +5,7 @@ See SamplePi.py for examples.
 '''
 
 from __future__ import absolute_import
-from __future__ import print_function
+from unittest.mock import patch
 from pysnptools.util.mapreduce1.runner import Runner, _run_all_in_memory
 import os, sys
 import logging
@@ -20,7 +20,6 @@ class Local(Runner):
         
         :Example:
 
-        >>> from six.moves import range #Python 2 & 3 compatibility
         >>> from pysnptools.util.mapreduce1 import map_reduce
         >>> from pysnptools.util.mapreduce1.runner import Local
         >>> def holder1(n,runner):

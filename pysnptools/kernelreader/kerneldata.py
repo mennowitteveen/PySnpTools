@@ -22,6 +22,9 @@ class KernelData(KernelReader,PstData):
                      * **iid1** (an array of strings pairs) -- The :attr:`KernelReader.iid1` information.
                      * **val** (a 2-D array of floats) -- The SNP values
                      * **name** (optional, string) -- Information to be display about the origin of this data
+                     * **xp** (optional, a Python module or string) -- The numpy-like module that controls **val**,
+                               for example, 'numpy' or 'cupy'. Defaults to numpy. Can also be set with the
+                               'ARRAY_MODULE' environment variable.
 
         If *iid* is provided, don't provide *iid0* and *iid1*. Likewise, if *iid0* and *iid1* are provided, don't provide *iid*.
 
@@ -64,7 +67,6 @@ class KernelData(KernelReader,PstData):
 
     **Methods beyond** :class:`.KernelReader`
     """
-    #!!!cmk doc xp
     def __init__(self, iid=None, iid0=None, iid1=None, val=None, name=None, parent_string=None, xp = np): #!!!autodoc doesn't generate good doc for this constructor
         #We don't have a 'super(KernelData, self).__init__()' here because KernelData takes full responsibility for initializing both its superclasses
 
@@ -89,6 +91,7 @@ class KernelData(KernelReader,PstData):
         self._assert_iid0_iid1(check_val=True) 
         self._name = name or parent_string or ""
         self._std_string_list = []
+        self._xp = xp
 
 
     @property
@@ -104,7 +107,8 @@ class KernelData(KernelReader,PstData):
 
     @val.setter
     def val(self, new_value):
-        self._val = PstData._fixup_input_val(new_value,row_count=len(self._row),col_count=len(self._col),empty_creator=lambda row_count,col_count:np.empty([row_count,col_count],dtype=np.float64))
+        self._val = PstData._fixup_input_val(new_value,row_count=len(self._row),col_count=len(self._col),empty_creator=lambda row_count,col_count:np.empty([row_count,col_count],dtype=np.float64),
+                                             xp=self._xp)
         self._assert_iid0_iid1(check_val=True) 
 
 

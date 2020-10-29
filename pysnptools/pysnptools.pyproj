@@ -131,7 +131,6 @@
     <Compile Include="standardizer\__init__.py" />
     <Compile Include="snpreader\distributedbed.py" />
     <Compile Include="test.py" />
-    <Compile Include="util\mapreduce1\runner\localprocgpu.py" />
     <Compile Include="util\_example_file.py">
       <SubType>Code</SubType>
     </Compile>

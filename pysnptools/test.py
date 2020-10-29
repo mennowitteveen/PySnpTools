@@ -1094,46 +1094,30 @@ def getTestSuite():
 
     test_suite = unittest.TestSuite([])
 
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPySnpTools))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistributedBed))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestFileCache))
+    #!!!cmk9
+    #test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPySnpTools))
+    #test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistributedBed))
+    #test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestFileCache))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestUtilTools))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestIntRangeSet))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestSnpDocStrings))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPstDocStrings))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestKrDocStrings))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestSnpGen))
+    #test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestSnpDocStrings))
+    #test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPstDocStrings))
+    #test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestKrDocStrings))
+    #test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestSnpGen))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestGenerate))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestExampleFile))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPstMemMap))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestSnpMemMap))
-    test_suite.addTests(NaNCNCTestCases.factory_iterator())
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPstReader))
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestKernelReader))
+    #test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPstMemMap))
+    #test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestSnpMemMap))
+    #test_suite.addTests(NaNCNCTestCases.factory_iterator())
+    #test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPstReader))
+    #test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestKernelReader))
 
     return test_suite
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
-    if False:
-        from pysnptools.util.filecache import LocalCache
-
-        currentFolder = os.path.dirname(os.path.realpath(__file__))
-        snpreader = Bed(currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
-        snpdata = snpreader.read(order='F',force_python_only=True)
-        snpdata1 = snpdata[:,::100].read()
-        snpdata1.val[1,2] = np.NaN # Inject a missing value to test writing and reading missing values
-        output = "tempdir/snpreader/toydata.distributedbed"
-        LocalCache(output).rmtree()
-        DistributedBed.write(output, snpdata1, piece_per_chrom_count=5)
-        snpreader = DistributedBed(output)
-        _fortesting_JustCheckExists().input(snpreader)
-        snpdata2 = snpreader.read()
-        np.testing.assert_array_almost_equal(snpdata1.val, snpdata2.val, decimal=10)
-
-
     suites = getTestSuite()
-    r = unittest.TextTestRunner(failfast=True)
+    r = unittest.TextTestRunner(failfast=True) #!!!cmk9
     ret = r.run(suites)
     assert ret.wasSuccessful()

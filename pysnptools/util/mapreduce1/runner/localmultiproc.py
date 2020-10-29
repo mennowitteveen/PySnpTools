@@ -105,7 +105,6 @@ class LocalMultiProc(Runner):
                 environ = self.taskindex_to_environ(taskindex) if self.taskindex_to_environ is not None else None
                 LocalInParts(taskindex,self.taskcount, mkl_num_threads=self.mkl_num_threads, weights=self.weights, environ=environ).run(distributable)
 
-        #!!!cmk0 add some tests for weights and environ, everywhere that uses them
         environ = self.taskindex_to_environ(self.taskcount) if self.taskindex_to_environ is not None else None
         result = _run_one_task(distributable, self.taskcount, self.taskcount, distributable.tempdirectory, weights=self.weights, environ=environ)
 

@@ -53,7 +53,6 @@ class IntRangeSet(object):
     Zip together the two lists to create an iterable of exon_start,exon_stop tuples. Then
     'set subtract' all these ranges from int_range_set
 
-    >>> from __future__ import absolute_import #Python 2 & 3 compatibility
     >>> int_range_set -= zip(exon_starts,exon_stops)
     >>> print(int_range_set) # See what it looks like
     IntRangeSet('30818:32358,32562:36715')

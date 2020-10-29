@@ -577,13 +577,15 @@ def _datestamp(appendrandom=False):
 
 _warn_array_module_once = False
 
-def array_module_from_env(xp = None): #!!!cmk9 check that these docs and doctest work
+def array_module_from_env(xp = None):
     '''
     Find the numpy-like module to use.
 
-    :param xp: The module to use (optional). If not given, will try to read
-               from the ARRAY_MODULE environment variable. If 'cupy', will
-               try to import cupy. If that import fails, will revert to numpy.
+    :param xp: The numpy-like module to use (optional), for example, 'numpy' (normal CPU-based module)
+               or 'cupy' (GPU-based module). If not given, will try to read
+               from the ARRAY_MODULE environment variable. If not given and ARRAY_MODULE is not set,
+               will use numpy. If 'cupy' is requested, will
+               try to 'import cupy'. If that import fails, will revert to numpy.
     :type xp: string or Python module
     :rtype: Python module
 

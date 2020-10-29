@@ -52,7 +52,7 @@ class TestKernelReader(unittest.TestCase):
 
     #    for use_gpu in [True]: #!!!cmk add false?
     #        with patch.dict('os.environ', { 'ARRAY_MODULE': 'cupy' if use_gpu else 'numpy',}
-    #                    ) as patched_environ: #!!!cmk make this a utility?
+    #                    ) as patched_environ:
     #            K0 = SnpKernel(snpreader,std,block_size=1)
     #            kerneldata0,trained0,diag0 = K0._read_with_standardizing(to_kerneldata=True, return_trained=True)
     #            np.testing.assert_array_almost_equal(kerneldata0.val,kerneldata1.val, decimal=10)

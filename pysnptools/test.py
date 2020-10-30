@@ -4,6 +4,7 @@ import scipy as sp
 import logging
 import doctest
 import shutil
+import pickle
 
 from pysnptools.snpreader import Bed
 from pysnptools.snpreader import SnpHdf5, SnpNpz
@@ -265,7 +266,6 @@ class TestPySnpTools(unittest.TestCase):
         SnpNpz.write(output,snpdata3)
         snpdata4 = SnpNpz(output).read()
         assert snpdata3 == snpdata4
-
 
 
     def test_standardize_npz(self):
@@ -718,22 +718,24 @@ class TestPySnpTools(unittest.TestCase):
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
         snpreader_list = [
-                           _MergeIIDs([Bed('examples/toydata.5chrom.bed',count_A1=True)[:5,:].read(),Bed('examples/toydata.5chrom.bed',count_A1=True)[5:,:].read()]),
+                           Bed('examples/toydata.5chrom.bed',count_A1=True),
                            SnpGen(seed=0,iid_count=500,sid_count=50),
                            SnpHdf5('examples/toydata.snpmajor.snp.hdf5'),
                            SnpMemMap('examples/tiny.snp.memmap'),
                            SnpNpz('examples/toydata10.snp.npz'),
                            Bed('examples/toydata.5chrom.bed',count_A1=True)[::2,::2],
                            _MergeSIDs([Bed('examples/toydata.5chrom.bed',count_A1=True)[:,:5].read(),Bed('examples/toydata.5chrom.bed',count_A1=True)[:,5:].read()]),
-                           Bed('examples/toydata.5chrom.bed',count_A1=True),
                            Dat('examples/toydata.dat'),
                            Dense('examples/toydata100.dense.txt'),
                            DistributedBed('examples/toydataSkip10.distributedbed'),
                            Ped('examples/toydata.ped'),
                            Pheno('examples/toydata.phe'),
-                           Bed('examples/toydata.5chrom.bed',count_A1=True).read()
+                           Bed('examples/toydata.5chrom.bed',count_A1=True).read(),
+                           _MergeIIDs([Bed('examples/toydata.5chrom.bed',count_A1=True)[:5,:].read(),Bed('examples/toydata.5chrom.bed',count_A1=True)[5:,:].read()]),
                           ]
 
+        output_p = "tempdir/snpreader/respect.p"
+        create_directory_if_necessary(output_p)
 
         for snpreader in snpreader_list:
             logging.info(str(snpreader))
@@ -751,6 +753,13 @@ class TestPySnpTools(unittest.TestCase):
                                 logging.info("{0} could have read a view, but didn't".format(snpreader))
                             if not force_python_only: #Don't check this when force_python_only -- Bed is know to get the order wrong, but it doesn't matter
                                 assert val.dtype == dtype and has_right_order
+            with open(output_p, 'wb') as f:
+                pickle.dump(snpreader,f)
+            with open(output_p,'rb') as f:
+                snpreader_p = pickle.load(f)
+            val_p = snpreader_p.read(order=order,dtype=dtype,force_python_only=force_python_only,view_ok=view_ok).val
+            np.allclose(val,val_p,equal_nan=True)
+
         os.chdir(previous_wd)
 
 
@@ -1117,6 +1126,6 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
     suites = getTestSuite()
-    r = unittest.TextTestRunner(failfast=True) #!!!cmk9
+    r = unittest.TextTestRunner(failfast=False)
     ret = r.run(suites)
     assert ret.wasSuccessful()

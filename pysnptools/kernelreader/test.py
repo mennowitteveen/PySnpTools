@@ -41,25 +41,6 @@ class TestKernelReader(unittest.TestCase):
     def setUpClass(self):
         self.currentFolder = os.path.dirname(os.path.realpath(__file__))
 
-    #def test_cupy(self): #!!!cmk
-    #    from unittest.mock import patch
-
-    #    np.random.seed(0)
-    #    sid_count = 20
-    #    std = stdizer.Unit()
-    #    snpreader = SnpData(iid=[["0","0"],["1","1"],["2","2"]],sid=[str(i) for i in range(sid_count)],val=np.array(np.random.randint(3,size=[3,sid_count]),dtype=np.float64,order='F'))
-    #    kerneldata1,trained1,diag1 = SnpKernel(snpreader,std,block_size=None)._read_with_standardizing(to_kerneldata=True,return_trained=True)
-
-    #    for use_gpu in [True]: #!!!cmk add false?
-    #        with patch.dict('os.environ', { 'ARRAY_MODULE': 'cupy' if use_gpu else 'numpy',}
-    #                    ) as patched_environ:
-    #            K0 = SnpKernel(snpreader,std,block_size=1)
-    #            kerneldata0,trained0,diag0 = K0._read_with_standardizing(to_kerneldata=True, return_trained=True)
-    #            np.testing.assert_array_almost_equal(kerneldata0.val,kerneldata1.val, decimal=10)
-    #            np.testing.assert_array_almost_equal(trained0.stats,trained1.stats, decimal=10)
-    #            assert abs(diag0.factor-diag1.factor) < 1e-7
-
-
     def test_merge_std(self):
         #unit vs beta
         for std in [stdizer.Beta(2,10),stdizer.Unit()]:

@@ -45,6 +45,12 @@ class PstHdf5(PstReader):
 
         self.filename=filename
 
+    def __getstate__(self):
+        return self.filename, self._block_size
+
+    def __setstate__(self,state):
+        filename, block_size = state
+        self.__init__(filename, block_size=block_size)
 
     def __repr__(self): 
         return "{0}('{1}')".format(self.__class__.__name__,self.filename) #!!LATER print non-default values, too

@@ -4,7 +4,7 @@ import numpy as np
 from pysnptools.pstreader import PstReader
 
 
-#!!! would be be better to make a Transpose class that could term _mergerows into mergecols? Be sure special Bed code is still there.
+#!!! would be better to make a Transpose class that could term _mergerows into mergecols? Be sure special Bed code is still there.
 class _MergeCols(PstReader):
     def __init__(self,reader_list,cache_file=None,skip_check=False):
         super(_MergeCols, self).__init__()

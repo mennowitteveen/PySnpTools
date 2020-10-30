@@ -4,7 +4,7 @@ import scipy as sp
 import logging
 import doctest
 import shutil
-import pickle
+import dill as pickle
 
 from pysnptools.snpreader import Bed
 from pysnptools.snpreader import SnpHdf5, SnpNpz

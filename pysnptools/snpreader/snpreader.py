@@ -624,7 +624,7 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
                 return kernel
 
         else: #Do in blocks
-            xp = pstutil.array_module_from_env()
+            xp = pstutil.array_module()
             #Set the default order to 'C' because with kernels any order is fine and the Python .dot method likes 'C' best.
             if order=='A':
                 order = 'C'

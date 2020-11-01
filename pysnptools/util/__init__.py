@@ -8,6 +8,7 @@ import time
 import datetime
 from pysnptools.util.intrangeset import IntRangeSet
 from types import ModuleType
+import inspect
 
 def _testtest(data, iididx):
     return (data[0][iididx],data[1][iididx])
@@ -577,23 +578,23 @@ def _datestamp(appendrandom=False):
 
 _warn_array_module_once = False
 
-def array_module_from_env(xp = None):
+def array_module(xp = None):
     '''
     Find the numpy-like module to use.
 
-    :param xp: The numpy-like module to use (optional), for example, 'numpy' (normal CPU-based module)
+    :param xp: The numpy-like module to use, for example, 'numpy' (normal CPU-based module)
                or 'cupy' (GPU-based module). If not given, will try to read
                from the ARRAY_MODULE environment variable. If not given and ARRAY_MODULE is not set,
                will use numpy. If 'cupy' is requested, will
                try to 'import cupy'. If that import fails, will revert to numpy.
-    :type xp: string or Python module
+    :type xp: optional, string or Python module
     :rtype: Python module
 
-    >>> from pysnptools.util import array_module_from_env
-    >>> xp = array_module_from_env() # will look at environment variable
+    >>> from pysnptools.util import array_module
+    >>> xp = array_module() # will look at environment variable
     >>> print(xp.zeros((3)))
     [0. 0. 0.]
-    >>> xp = array_module_from_env('cupy') # will try to import 'cupy'
+    >>> xp = array_module('cupy') # will try to import 'cupy'
     >>> print(xp.zeros((3)))
     [0. 0. 0.]
     '''
@@ -623,9 +624,9 @@ def asnumpy(a):
     Given an array created with any numpy-like module, return the equivalent 
     numpy array. (A numpy array is returned unchanged.)
 
-    >>> from pysnptools.util import asnumpy, array_module_from_env
-    >>> xp = array_module_from_env('cupy')
-    >>> zeros_xp = xp.zeros((3)) # will be cupy if avaiable
+    >>> from pysnptools.util import asnumpy, array_module
+    >>> xp = array_module('cupy')
+    >>> zeros_xp = xp.zeros((3)) # will be cupy if available
     >>> zeros_np = asnumpy(zeros_xp) # will be numpy
     >>> zeros_np
     array([0., 0., 0.])
@@ -633,6 +634,23 @@ def asnumpy(a):
     if isinstance(a, np.ndarray):
         return a
     return a.get()
+
+def get_array_module(a):
+    '''
+    Given a numpy-like ndarray, returns the array's
+    module, for example, numpy or cupy.
+    Works for numpy even when cupy is not available.
+
+    >>> import numpy as np
+    >>> zeros_np = np.zeros((3))
+    >>> xp = get_array_module(zeros_np)
+    >>> xp.ones((3))
+    array([1., 1., 1.])
+    '''
+    submodule = inspect.getmodule(type(a))
+    module_name = submodule.__name__.split('.')[0]
+    xp = array_module(module_name)
+    return xp
 
 from pysnptools.util.generate import snp_gen
 from pysnptools.util._example_file import example_file

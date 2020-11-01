@@ -80,11 +80,12 @@ class Standardizer(object):
 
     @staticmethod
     #changes snps in place
-    def _standardize_unit_and_beta(snps, is_beta, a, b, apply_in_place, use_stats, stats, force_python_only=False, xp=np):
+    def _standardize_unit_and_beta(snps, is_beta, a, b, apply_in_place, use_stats, stats, force_python_only=False):
         '''
-        When xp is cupy, will use cupy to compute new stats for unit. (Other paths are not defined for cupy)
+        When snps is a cupy ndarray, will use cupy to compute new stats for unit. (Other paths are not defined for cupy)
         '''
         from bed_reader import wrap_plink_parser_onep
+        xp = pstutil.get_array_module(snps)
 
         assert snps.flags["C_CONTIGUOUS"] or snps.flags["F_CONTIGUOUS"], "Expect snps to be order 'C' or order 'F'"
 
@@ -96,7 +97,7 @@ class Standardizer(object):
              and (stats.flags["OWNDATA"]) # stats must own its data
              and (snps.flags["C_CONTIGUOUS"] and stats.flags["C_CONTIGUOUS"]) or (snps.flags["F_CONTIGUOUS"] and stats.flags["F_CONTIGUOUS"]) #stats must have the same order as snps
              ):
-            stats = np.array(stats,dtype=snps.dtype,order="F" if snps.flags["F_CONTIGUOUS"] else "C")
+            stats = xp.array(stats,dtype=snps.dtype,order="F" if snps.flags["F_CONTIGUOUS"] else "C")
         assert stats.shape == (snps.shape[1],2), "stats must have size [sid_count,2]"
 
         if not force_python_only and xp is np:
@@ -126,15 +127,19 @@ class Standardizer(object):
             Standardizer._standardize_beta_python(snps, a, b, apply_in_place, use_stats=use_stats, stats=stats)
             return stats
         else:
-            Standardizer._standardize_unit_python(snps, apply_in_place, use_stats=use_stats, stats=stats, xp=xp)
+            Standardizer._standardize_unit_python(snps, apply_in_place, use_stats=use_stats, stats=stats)
             return stats
 
     @staticmethod
-    def _standardize_unit_python(snps,apply_in_place,use_stats,stats,xp=np):
+    def _standardize_unit_python(snps,apply_in_place,use_stats,stats):
         '''
-        standardize snps to zero-mean and unit variance
+        Standardize snps to zero-mean and unit variance.
+
+        Will work with both numpy and cupy ndarray.
         '''
         assert snps.dtype in [np.float64,np.float32], "snps must be a float in order to standardize in place."
+        xp = pstutil.get_array_module(snps)
+
         imissX = xp.isnan(snps)
 
         if use_stats:

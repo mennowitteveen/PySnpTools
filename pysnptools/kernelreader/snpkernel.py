@@ -114,7 +114,7 @@ class SnpKernel(KernelReader):
 
         '''
         logging.info("Starting '_read_with_standardizing'")
-        xp = pstutil.array_module_from_env()
+        xp = pstutil.array_module()
 
         if to_kerneldata:
             val, snp_trained = self.snpreader._read_kernel(self.standardizer,block_size=self.block_size,return_trained=True)

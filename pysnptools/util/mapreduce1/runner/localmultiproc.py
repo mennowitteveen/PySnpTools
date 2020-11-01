@@ -18,16 +18,16 @@ class LocalMultiProc(Runner):
 
     **Constructor:**
         :Parameters: * **taskcount** (*number*) -- The number of processes to run on.
-        :Parameters: * **mkl_num_threads** (*number*) -- (default None) Limit on the number threads used by the NumPy MKL library.
-        :Parameters: * **weights** (*array of integers*) -- (default None) If given, tells the relative amount of work assigned to
-                              each task. The length of the array must be **taskcount**. If not given, all tasks are assigned the
-                              same amount of work.
-        :Parameters: * **taskindex_to_environ** (*function from integers to dictionaries*) -- (default None). If given, this
-                              should be function from taskindex to a dictionary. The dictionary tells how to temporarily set
-                              environment variables while the task is running. The dictionary is a mapping of
-                              variables and values (both strings).
-        :Parameters: * **just_one_process** (*bool*) -- (default False) Divide the work for multiple processes, but runs sequentially on one process. Can be useful for debugging.
-        :Parameters: * **logging_handler** (*stream*) --  (default stdout) Where to output logging messages.
+                     * **mkl_num_threads** (*number*) -- (default None) Limit on the number threads used by the NumPy MKL library.
+                     * **weights** (*array of integers*) -- (default None) If given, tells the relative amount of work assigned to
+                            each task. The length of the array must be **taskcount**. If not given, all tasks are assigned the
+                            same amount of work.
+                     * **taskindex_to_environ** (*function from integers to dictionaries*) -- (default None). If given, this
+                            should be function from taskindex to a dictionary. The dictionary tells how to temporarily set
+                            environment variables while the task is running. The dictionary is a mapping of
+                            variables and values (both strings).
+                     * **just_one_process** (*bool*) -- (default False) Divide the work for multiple processes, but runs sequentially on one process. Can be useful for debugging.
+                     * **logging_handler** (*stream*) --  (default stdout) Where to output logging messages.
         
         :Example:
 

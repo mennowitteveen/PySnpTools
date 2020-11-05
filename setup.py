@@ -6,14 +6,14 @@ from setuptools import setup
 import numpy
 
 # Version number
-version = '0.4.23'
+version = '0.4.24'
 
 def readme():
     with open('README.md') as f:
         return f.read()
 
-install_requires = ['scipy>=1.1.0', 'numpy>=1.11.3', 'pandas>=1.1.1', 'psutil>=5.6.3', 'h5py>=2.10.0', 'dill>=0.2.9',
-                    'bgen-reader>=4.0.6', 'bed-reader>=0.1.1']
+install_requires = ['scipy>=1.1.0', 'numpy>=1.17.0', 'pandas>=1.1.1', 'psutil>=5.6.3', 'h5py>=2.10.0', 'dill>=0.2.9',
+                    'bgen-reader>=4.0.7', 'bed-reader>=0.1.1']
 
 #python setup.py sdist bdist_wininst upload
 setup(

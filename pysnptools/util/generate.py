@@ -289,10 +289,10 @@ class TestGenerate(unittest.TestCase):
 
     def test_doc_test(self):
         import sys
-        import pysnptools.util.generate
+        import pysnptools.util.generate as gen_mod
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__))+"/..")
-        result = doctest.testmod(pysnptools.util.generate,optionflags=doctest.ELLIPSIS)
+        result = doctest.testmod(gen_mod,optionflags=doctest.ELLIPSIS)
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 

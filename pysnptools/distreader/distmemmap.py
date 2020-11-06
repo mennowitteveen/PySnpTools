@@ -258,12 +258,12 @@ class TestDistMemMap(unittest.TestCase):
         os.chdir(old_dir)
 
     def test_doctest(self):
-        import pysnptools.distreader.distmemmap
+        import pysnptools.distreader.distmemmap as mod_mm
         import doctest
 
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
-        result = doctest.testmod(pysnptools.distreader.distmemmap)
+        result = doctest.testmod(mod_mm)
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 

@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{60f1cb4a-9da3-47c2-9b89-60ac1ce93347}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>test.py</StartupFile>
+    <StartupFile>distreader\bgen.py</StartupFile>
     <SearchPath>..\</SearchPath>
     <WorkingDirectory>.\snpreader</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -22,7 +22,7 @@
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <IsWindowsApplication>False</IsWindowsApplication>
     <CommandLineArguments>sdist bdist_wininst upload</CommandLineArguments>
-    <InterpreterId>CondaEnv|CondaEnv|cupy2</InterpreterId>
+    <InterpreterId>CondaEnv|CondaEnv|base37</InterpreterId>
     <TestFramework>unittest</TestFramework>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
@@ -241,7 +241,7 @@
     <Content Include="util\pysnptools.hashdown.json" />
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="CondaEnv|CondaEnv|cupy2" />
+    <InterpreterReference Include="CondaEnv|CondaEnv|base37" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
 </Project>

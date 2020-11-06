@@ -912,14 +912,14 @@ class TestBgen(unittest.TestCase):
             assert bgen.sid_count == 199
 
     def test_doctest(self):
-        import pysnptools.distreader.bgen
         import doctest
+        import pysnptools.distreader.bgen as bgen_mod
 
         old_level = logging.getLogger().level
         logging.getLogger().setLevel(logging.WARN)
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
-        result = doctest.testmod(pysnptools.distreader.bgen)
+        result = doctest.testmod(bgen_mod)
         os.chdir(old_dir)
         logging.getLogger().setLevel(old_level)
         assert result.failed == 0, "failed doc test: " + __file__

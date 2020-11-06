@@ -8,7 +8,7 @@ import datetime
 from types import ModuleType
 import inspect
 import warnings
-
+from pysnptools.util.intrangeset import IntRangeSet
 
 def _testtest(data, iididx):
     return (data[0][iididx], data[1][iididx])

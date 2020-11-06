@@ -23,6 +23,7 @@ class IntRangeSet(object):
 
     .. image:: example1.png
 
+    >>> from pysnptools.util import IntRangeSet
     >>> a = IntRangeSet("100:500,501:1000") # a is the set of integers from 100 to 500 (exclusive) and 501 to 1000 (exclusive)
     >>> b = IntRangeSet("-20,400:600")      # b is the set of integers -20 and the range 400 to 600 (exclusive)
     >>> c = a | b                           # c is the union of a and b, namely -20 and 100 to 1000 (exclusive)
@@ -1809,7 +1810,6 @@ class TestIntRangeSet(unittest.TestCase):
         IntRangeSet._test()
 
     def test_doc(self):
-        import pysnptools.util.intrangeset
         doctest.testmod(pysnptools.util.intrangeset)
 
 if __name__ == "__main__":

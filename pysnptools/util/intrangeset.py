@@ -1810,7 +1810,8 @@ class TestIntRangeSet(unittest.TestCase):
         IntRangeSet._test()
 
     def test_doc(self):
-        doctest.testmod(pysnptools.util.intrangeset)
+        import pysnptools.util.intrangeset as set_mod
+        doctest.testmod(set_mod)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

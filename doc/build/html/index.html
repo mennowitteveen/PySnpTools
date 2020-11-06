@@ -916,7 +916,7 @@ represented by -127.</p>
 <h3><code class="xref py py-class docutils literal notranslate"><span class="pre">snpreader.SnpData</span></code><a class="headerlink" href="#snpreader-snpdata" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt id="pysnptools.snpreader.SnpData">
-<em class="property">class </em><code class="sig-prename descclassname">pysnptools.snpreader.</code><code class="sig-name descname">SnpData</code><span class="sig-paren">(</span><em class="sig-param">iid</em>, <em class="sig-param">sid</em>, <em class="sig-param">val</em>, <em class="sig-param">pos=None</em>, <em class="sig-param">name=None</em>, <em class="sig-param">parent_string=None</em>, <em class="sig-param">copyinputs_function=None</em>, <em class="sig-param">xp=&lt;module 'numpy' from 'C:\\Users\\Carl\\AppData\\Roaming\\Python\\Python37\\site-packages\\numpy\\__init__.py'&gt;</em>, <em class="sig-param">_require_float32_64=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpData" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pysnptools.snpreader.</code><code class="sig-name descname">SnpData</code><span class="sig-paren">(</span><em class="sig-param">iid</em>, <em class="sig-param">sid</em>, <em class="sig-param">val</em>, <em class="sig-param">pos=None</em>, <em class="sig-param">name=None</em>, <em class="sig-param">parent_string=None</em>, <em class="sig-param">copyinputs_function=None</em>, <em class="sig-param">xp=&lt;module 'numpy' from 'C:\\Users\\Carl\\anaconda3\\envs\\base37\\lib\\site-packages\\numpy\\__init__.py'&gt;</em>, <em class="sig-param">_require_float32_64=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpData" title="Permalink to this definition">¶</a></dt>
 <dd><p>A <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> for holding SNP values (or similar values) in-memory, along with related iid and sid information.
 It is usually created by calling the <a class="reference internal" href="#pysnptools.snpreader.SnpReader.read" title="pysnptools.snpreader.SnpReader.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SnpReader.read()</span></code></a> method on another <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a>, for example, <a class="reference internal" href="#pysnptools.snpreader.Bed" title="pysnptools.snpreader.Bed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bed</span></code></a>. It can also be constructed directly.</p>
 <p>See <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a> for details and examples.</p>
@@ -931,7 +931,7 @@ It is usually created by calling the <a class="reference internal" href="#pysnpt
 <li><p><strong>name</strong> (optional, string) – Information to be display about the origin of this data</p></li>
 <li><p><strong>copyinputs_function</strong> (optional, function) – <em>Used internally by optional clustering code</em></p></li>
 <li><dl class="simple">
-<dt><strong>xp</strong> (optional, a Python module or string) – The numpy-like module that controls <strong>val</strong>,</dt><dd><p>for example, ‘numpy’ or ‘cupy’. Defaults to numpy. Can also be set with the
+<dt><strong>xp</strong> (optional, a Python module or string) – The array module that controls <strong>val</strong>,</dt><dd><p>for example, ‘numpy’ or ‘cupy’. Defaults to numpy. Can also be set with the
 ‘ARRAY_MODULE’ environment variable.</p>
 </dd>
 </dl>
@@ -2125,7 +2125,7 @@ share memory and so it may ignore your suggestion and allocate a new ndarray any
 <h3><code class="xref py py-class docutils literal notranslate"><span class="pre">kernelreader.KernelData</span></code><a class="headerlink" href="#kernelreader-kerneldata" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt id="pysnptools.kernelreader.KernelData">
-<em class="property">class </em><code class="sig-prename descclassname">pysnptools.kernelreader.</code><code class="sig-name descname">KernelData</code><span class="sig-paren">(</span><em class="sig-param">iid=None</em>, <em class="sig-param">iid0=None</em>, <em class="sig-param">iid1=None</em>, <em class="sig-param">val=None</em>, <em class="sig-param">name=None</em>, <em class="sig-param">parent_string=None</em>, <em class="sig-param">xp=&lt;module 'numpy' from 'C:\\Users\\Carl\\AppData\\Roaming\\Python\\Python37\\site-packages\\numpy\\__init__.py'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.kernelreader.KernelData" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pysnptools.kernelreader.</code><code class="sig-name descname">KernelData</code><span class="sig-paren">(</span><em class="sig-param">iid=None</em>, <em class="sig-param">iid0=None</em>, <em class="sig-param">iid1=None</em>, <em class="sig-param">val=None</em>, <em class="sig-param">name=None</em>, <em class="sig-param">parent_string=None</em>, <em class="sig-param">xp=&lt;module 'numpy' from 'C:\\Users\\Carl\\anaconda3\\envs\\base37\\lib\\site-packages\\numpy\\__init__.py'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.kernelreader.KernelData" title="Permalink to this definition">¶</a></dt>
 <dd><p>A <a class="reference internal" href="#pysnptools.kernelreader.KernelReader" title="pysnptools.kernelreader.KernelReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelReader</span></code></a> for holding kernel values in-memory, along with related iid information.
 It is usually created by calling the <a class="reference internal" href="#pysnptools.snpreader.SnpReader.read_kernel" title="pysnptools.snpreader.SnpReader.read_kernel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SnpReader.read_kernel()</span></code></a> method on a <a class="reference internal" href="#pysnptools.snpreader.SnpReader" title="pysnptools.snpreader.SnpReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpReader</span></code></a>, for example, <a class="reference internal" href="#pysnptools.snpreader.Bed" title="pysnptools.snpreader.Bed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bed</span></code></a>.
 It can also be created by calling the <a class="reference internal" href="#pysnptools.kernelreader.KernelReader.read" title="pysnptools.kernelreader.KernelReader.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">KernelReader.read()</span></code></a> method on <a class="reference internal" href="#pysnptools.kernelreader.SnpKernel" title="pysnptools.kernelreader.SnpKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpKernel</span></code></a>, for example, <a class="reference internal" href="#pysnptools.kernelreader.KernelNpz" title="pysnptools.kernelreader.KernelNpz"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelNpz</span></code></a>.
@@ -2141,7 +2141,7 @@ It can also be constructed directly.</p>
 <li><p><strong>val</strong> (a 2-D array of floats) – The SNP values</p></li>
 <li><p><strong>name</strong> (optional, string) – Information to be display about the origin of this data</p></li>
 <li><dl class="simple">
-<dt><strong>xp</strong> (optional, a Python module or string) – The numpy-like module that controls <strong>val</strong>,</dt><dd><p>for example, ‘numpy’ or ‘cupy’. Defaults to numpy. Can also be set with the
+<dt><strong>xp</strong> (optional, a Python module or string) – The array module that controls <strong>val</strong>,</dt><dd><p>for example, ‘numpy’ or ‘cupy’. Defaults to numpy. Can also be set with the
 ‘ARRAY_MODULE’ environment variable.</p>
 </dd>
 </dl>
@@ -5000,14 +5000,17 @@ val, row, col, row_property, and col_property information in NPZ format.</p>
 <dl class="py function">
 <dt id="pysnptools.util.array_module">
 <code class="sig-prename descclassname">pysnptools.util.</code><code class="sig-name descname">array_module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xp</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.array_module" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find the numpy-like module to use.</p>
+<dd><p>Find the array module to use, for example <strong>numpy</strong> or <strong>cupy</strong>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>xp</strong> (<em>optional</em><em>, </em><em>string</em><em> or </em><em>Python module</em>) – The numpy-like module to use, for example, ‘numpy’ (normal CPU-based module)
-or ‘cupy’ (GPU-based module). If not given, will try to read
-from the ARRAY_MODULE environment variable. If not given and ARRAY_MODULE is not set,
+<dd class="field-odd"><p><strong>xp</strong> (<em>optional</em><em>, </em><em>string</em><em> or </em><em>Python module</em>) – The array module to use, for example, ‘numpy’
+(normal CPU-based module) or ‘cupy’ (GPU-based module).
+If not given, will try to read
+from the ARRAY_MODULE environment variable. If not given and
+ARRAY_MODULE is not set,
 will use numpy. If ‘cupy’ is requested, will
-try to ‘import cupy’. If that import fails, will revert to numpy.</p>
+try to ‘import cupy’. If that import fails, will
+revert to numpy.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>Python module</p>
@@ -5027,8 +5030,8 @@ try to ‘import cupy’. If that import fails, will revert to numpy.</p>
 <dl class="py function">
 <dt id="pysnptools.util.asnumpy">
 <code class="sig-prename descclassname">pysnptools.util.</code><code class="sig-name descname">asnumpy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.asnumpy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given an array created with any numpy-like module, return the equivalent 
-numpy array. (A numpy array is returned unchanged.)</p>
+<dd><p>Given an array created with any array module, return the equivalent
+numpy array. (Returns a numpy array unchanged.)</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util</span> <span class="kn">import</span> <span class="n">asnumpy</span><span class="p">,</span> <span class="n">array_module</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">xp</span> <span class="o">=</span> <span class="n">array_module</span><span class="p">(</span><span class="s1">&#39;cupy&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">zeros_xp</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">))</span> <span class="c1"># will be cupy if available</span>
@@ -5076,8 +5079,8 @@ numpy array. (A numpy array is returned unchanged.)</p>
 <dl class="py function">
 <dt id="pysnptools.util.get_array_module">
 <code class="sig-prename descclassname">pysnptools.util.</code><code class="sig-name descname">get_array_module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">a</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.get_array_module" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a numpy-like ndarray, returns the array’s
-module, for example, numpy or cupy.
+<dd><p>Given an array, returns the array’s
+module, for example, <strong>numpy</strong> or <strong>cupy</strong>.
 Works for numpy even when cupy is not available.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">zeros_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">))</span>
@@ -5091,16 +5094,21 @@ Works for numpy even when cupy is not available.</p>
 <dl class="py function">
 <dt id="pysnptools.util.intersect_apply">
 <code class="sig-prename descclassname">pysnptools.util.</code><code class="sig-name descname">intersect_apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_list</span></em>, <em class="sig-param"><span class="n">sort_by_dataset</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">intersect_before_standardize</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">is_test</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.intersect_apply" title="Permalink to this definition">¶</a></dt>
-<dd><p>Intersects and sorts the iids from a list of datasets, returning new version of the datasets with all the same iids in the same order.</p>
+<dd><p>Intersects and sorts the iids from a list of datasets, returning new
+version of the datasets with all the same iids in the same order.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data_list</strong> (<em>list</em>) – list of datasets</p></li>
-<li><p><strong>sort_by_dataset</strong> (<em>bool</em>) – optional, If True (default), the iids are ordered according to the first non-None dataset.
+<li><p><strong>sort_by_dataset</strong> (<em>bool</em>) – optional, If True (default), the iids are ordered
+according to the first non-None dataset.
 If False, the order is arbitrary, but consistent.</p></li>
-<li><p><strong>intersect_before_standardize</strong> (<em>bool</em>) – optional. Special code for <a class="reference internal" href="#pysnptools.kernelreader.SnpKernel" title="pysnptools.kernelreader.SnpKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpKernel</span></code></a>, the class that postpones computing a kernel from SNP data. 
-If True (default), <a class="reference internal" href="#pysnptools.kernelreader.SnpKernel" title="pysnptools.kernelreader.SnpKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpKernel</span></code></a> will remove any iids before SNP standardization before computing the kernel.
-If False, SNPs will be standardized with all iids, then the kernel will be computed, then any iids will be removed.</p></li>
+<li><p><strong>intersect_before_standardize</strong> (<em>bool</em>) – optional. Special code for
+<a class="reference internal" href="#pysnptools.kernelreader.SnpKernel" title="pysnptools.kernelreader.SnpKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpKernel</span></code></a>, the class that postpones computing a kernel from SNP data.
+If True (default), <a class="reference internal" href="#pysnptools.kernelreader.SnpKernel" title="pysnptools.kernelreader.SnpKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpKernel</span></code></a> will remove any iids before SNP
+standardization before computing the kernel.
+If False, SNPs will be standardized with all iids, then the kernel
+will be computed, then any iids will be removed.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -5182,7 +5190,7 @@ are already ok). Inputting a tuple returns a new tuple (unless its iids are alre
 <dt id="pysnptools.util.intersect_ids">
 <code class="sig-prename descclassname">pysnptools.util.</code><code class="sig-name descname">intersect_ids</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">idslist</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.intersect_ids" title="Permalink to this definition">¶</a></dt>
 <dd><div class="deprecated">
-<p><span class="versionmodified deprecated">Deprecated since version Use: </span><a class="reference internal" href="#pysnptools.util.intersect_apply" title="pysnptools.util.intersect_apply"><code class="xref py py-func docutils literal notranslate"><span class="pre">intersect_apply()</span></code></a> instead.    </p>
+<p><span class="versionmodified deprecated">Deprecated since version Use: </span><a class="reference internal" href="#pysnptools.util.intersect_apply" title="pysnptools.util.intersect_apply"><code class="xref py py-func docutils literal notranslate"><span class="pre">intersect_apply()</span></code></a> instead.</p>
 </div>
 <p>Takes a list of 2d string arrays of family and individual ids.
 These are intersected.</p>
@@ -5218,7 +5226,8 @@ will include time.</p>
         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="p">)</span> <span class="c1">#typically, some work -- not a delay -- goes here</span>
 </pre></div>
 </div>
-<p>Outputs 100 messages on the same line, ending with something like “counting – time=0:00:09.99, 99”</p>
+<p>Outputs 100 messages on the same line, ending with
+something like “counting – time=0:00:09.99, 99”</p>
 </dd></dl>
 
 <dl class="py function">
@@ -5405,7 +5414,8 @@ It differs from other Python interval libraries (that we know of) by being speci
 </dl>
 <p>Here we take the union (operator “|”) of two IntRangeSets:</p>
 <img alt="_images/example1.png" src="_images/example1.png" />
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">IntRangeSet</span><span class="p">(</span><span class="s2">&quot;100:500,501:1000&quot;</span><span class="p">)</span> <span class="c1"># a is the set of integers from 100 to 500 (exclusive) and 501 to 1000 (exclusive)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util</span> <span class="kn">import</span> <span class="n">IntRangeSet</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">IntRangeSet</span><span class="p">(</span><span class="s2">&quot;100:500,501:1000&quot;</span><span class="p">)</span> <span class="c1"># a is the set of integers from 100 to 500 (exclusive) and 501 to 1000 (exclusive)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">IntRangeSet</span><span class="p">(</span><span class="s2">&quot;-20,400:600&quot;</span><span class="p">)</span>      <span class="c1"># b is the set of integers -20 and the range 400 to 600 (exclusive)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">|</span> <span class="n">b</span>                           <span class="c1"># c is the union of a and b, namely -20 and 100 to 1000 (exclusive)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>

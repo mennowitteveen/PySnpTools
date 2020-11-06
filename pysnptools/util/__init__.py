@@ -820,10 +820,10 @@ _warn_array_module_once = False
 
 def array_module(xp=None):
     """
-    Find the numpy-like module to use.
+    Find the array module to use, for example **numpy** or **cupy**.
 
-    :param xp: The numpy-like module to use, for example, 'numpy'
-              (normal CPU-based module) or 'cupy' (GPU-based module).
+    :param xp: The array module to use, for example, 'numpy'
+               (normal CPU-based module) or 'cupy' (GPU-based module).
                If not given, will try to read
                from the ARRAY_MODULE environment variable. If not given and
                ARRAY_MODULE is not set,
@@ -866,8 +866,8 @@ def array_module(xp=None):
 
 def asnumpy(a):
     """
-    Given an array created with any numpy-like module, return the equivalent
-    numpy array. (A numpy array is returned unchanged.)
+    Given an array created with any array module, return the equivalent
+    numpy array. (Returns a numpy array unchanged.)
 
     >>> from pysnptools.util import asnumpy, array_module
     >>> xp = array_module('cupy')
@@ -883,8 +883,8 @@ def asnumpy(a):
 
 def get_array_module(a):
     """
-    Given a numpy-like ndarray, returns the array's
-    module, for example, numpy or cupy.
+    Given an array, returns the array's
+    module, for example, **numpy** or **cupy**.
     Works for numpy even when cupy is not available.
 
     >>> import numpy as np

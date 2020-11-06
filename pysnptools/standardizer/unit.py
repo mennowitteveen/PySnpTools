@@ -30,7 +30,7 @@ class Unit(Standardizer):
         '''
         When cupy environment variable is set, will use cupy.
         '''
-        xp = pstutil.array_module() # Get numpy-like module based on any ARRAY_MODULE environ variable.
+        xp = pstutil.array_module() # Get array module based on any ARRAY_MODULE environ variable.
 
         if block_size is not None:
             warnings.warn("block_size is deprecated (and not needed, since standardization is in-place", DeprecationWarning)

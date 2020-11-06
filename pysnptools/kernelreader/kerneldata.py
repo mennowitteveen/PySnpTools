@@ -22,7 +22,7 @@ class KernelData(KernelReader,PstData):
                      * **iid1** (an array of strings pairs) -- The :attr:`KernelReader.iid1` information.
                      * **val** (a 2-D array of floats) -- The SNP values
                      * **name** (optional, string) -- Information to be display about the origin of this data
-                     * **xp** (optional, a Python module or string) -- The numpy-like module that controls **val**,
+                     * **xp** (optional, a Python module or string) -- The array module that controls **val**,
                                for example, 'numpy' or 'cupy'. Defaults to numpy. Can also be set with the
                                'ARRAY_MODULE' environment variable.
 

@@ -22,7 +22,7 @@ class SnpData(PstData,SnpReader):
                      * **pos** (optional, an array of strings) -- The :attr:`SnpReader.pos` information
                      * **name** (optional, string) -- Information to be display about the origin of this data
                      * **copyinputs_function** (optional, function) -- *Used internally by optional clustering code*
-                     * **xp** (optional, a Python module or string) -- The numpy-like module that controls **val**,
+                     * **xp** (optional, a Python module or string) -- The array module that controls **val**,
                                for example, 'numpy' or 'cupy'. Defaults to numpy. Can also be set with the
                                'ARRAY_MODULE' environment variable.
 

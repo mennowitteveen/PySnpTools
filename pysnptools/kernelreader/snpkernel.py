@@ -110,7 +110,7 @@ class SnpKernel(KernelReader):
                   read the reference and learn both standardization (but can't this cause multiple reads?)
         Note that snp_standardizer should be None or the standardizer instead the SnpKernel should have the placeholder value Standardizer()
 
-        Will choose which numpy-like module to use based on the ARRAY_MODULE environment variable (e.g. 'numpy' (default) or 'cupy')
+        Will choose which array module to use based on the ARRAY_MODULE environment variable (e.g. 'numpy' (default) or 'cupy')
 
         '''
         logging.info("Starting '_read_with_standardizing'")

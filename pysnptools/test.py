@@ -1100,7 +1100,6 @@ def getTestSuite():
     """
     set up composite test suite
     """
-
     test_suite = unittest.TestSuite([])
 
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestPySnpTools))

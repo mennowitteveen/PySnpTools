@@ -58,7 +58,7 @@ matrix:
 install:
   - python --version
   - pip install .
-  - python setup.py bdist_wheel
+  - python setup.py sdist
 
 script:
  - export PYTHONPATH=$TRAVIS_BUILD_DIR

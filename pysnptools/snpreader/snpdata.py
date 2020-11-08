@@ -8,6 +8,7 @@ from pysnptools.standardizer import Identity
 from pysnptools.pstreader import PstData
 import warnings
 import time
+import pysnptools.util as pstutil
 
 class SnpData(PstData,SnpReader):
     """A :class:`.SnpReader` for holding SNP values (or similar values) in-memory, along with related iid and sid information.
@@ -63,10 +64,9 @@ class SnpData(PstData,SnpReader):
 
     **Methods beyond** :class:`.SnpReader`
     """
-    def __init__(self, iid, sid, val, pos=None, name=None, parent_string=None, copyinputs_function=None, xp = np, _require_float32_64=True):
-
+    def __init__(self, iid, sid, val, pos=None, name=None, parent_string=None, copyinputs_function=None, xp = None, _require_float32_64=True):
         #We don't have a 'super(SnpData, self).__init__()' here because SnpData takes full responsibility for initializing both its superclasses
-
+        xp = pstutil.array_module(xp)
         self._val = None
 
         if parent_string is not None:

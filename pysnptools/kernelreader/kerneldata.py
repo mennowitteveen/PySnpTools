@@ -7,6 +7,7 @@ from pysnptools.kernelreader import KernelReader
 from pysnptools.pstreader import PstData
 from pysnptools.kernelstandardizer import Identity as KS_Identity
 from pysnptools.kernelstandardizer import DiagKtoN
+import pysnptools.util as pstutil
 
 class KernelData(KernelReader,PstData):
     """A :class:`.KernelReader` for holding kernel values in-memory, along with related iid information.
@@ -67,9 +68,9 @@ class KernelData(KernelReader,PstData):
 
     **Methods beyond** :class:`.KernelReader`
     """
-    def __init__(self, iid=None, iid0=None, iid1=None, val=None, name=None, parent_string=None, xp = np): #!!!autodoc doesn't generate good doc for this constructor
+    def __init__(self, iid=None, iid0=None, iid1=None, val=None, name=None, parent_string=None, xp = None): #!!!autodoc doesn't generate good doc for this constructor
         #We don't have a 'super(KernelData, self).__init__()' here because KernelData takes full responsibility for initializing both its superclasses
-
+        xp = pstutil.array_module(xp)
         self._val = None
 
         #!!why does SnpData __init__ have a copy_inputs, but KernelData doesn't?

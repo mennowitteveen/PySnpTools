@@ -3,7 +3,7 @@ from itertools import *
 import pandas as pd
 import logging
 from pysnptools.pstreader import PstReader
-
+import pysnptools.util as pstutil
 
 def _default_empty_creator(count):
     return np.empty([count or 0, 0],dtype='str')
@@ -136,7 +136,8 @@ class PstData(PstReader):
         return input
 
     @staticmethod
-    def _fixup_input_val(input,row_count,col_count,empty_creator=_default_empty_creator_val, _require_float32_64=True, xp = np):
+    def _fixup_input_val(input,row_count,col_count,empty_creator=_default_empty_creator_val, _require_float32_64=True, xp = None):
+        xp = pstutil.array_module(xp)
 
         if input is None:
             assert row_count == 0 or col_count == 0, "If val is None, either row_count or col_count must be 0"

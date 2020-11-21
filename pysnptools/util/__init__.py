@@ -601,7 +601,7 @@ def create_directory_if_necessary(name, isfile=True, robust=False):
                 except OSError:
                     if not os.path.isdir(directory_name):
                         time_to_sleep *= 1.1
-                        warnings.warn(
+                        warnings.warning(
                             "creating directory robust=True, try#{0},time={3} error: not valid path: '{1}'. (Working directory is '{2}'".format(
                                 i, directory_name, os.getcwd(), int(time_to_sleep)
                             )
@@ -857,7 +857,7 @@ def array_module(xp=None):
         except ModuleNotFoundError as e:
             global _warn_array_module_once
             if not _warn_array_module_once:
-                logging.warn(f"Using numpy. ({e})")
+                logging.warning(f"Using numpy. ({e})")
                 _warn_array_module_once = True
             return np
 

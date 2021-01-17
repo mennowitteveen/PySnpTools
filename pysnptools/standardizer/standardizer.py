@@ -84,7 +84,7 @@ class Standardizer(object):
         '''
         When snps is a cupy ndarray, will use cupy to compute new stats for unit. (Other paths are not defined for cupy)
         '''
-        from bed_reader import wrap_plink_parser_onep
+        # !!!cmkrust from bed_reader import wrap_plink_parser_onep
         xp = pstutil.get_array_module(snps)
 
         assert snps.flags["C_CONTIGUOUS"] or snps.flags["F_CONTIGUOUS"], "Expect snps to be order 'C' or order 'F'"

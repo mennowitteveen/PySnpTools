@@ -31,4 +31,4 @@ from pysnptools.snpreader._mergeiids import _MergeIIDs
 from pysnptools.snpreader.snpgen import SnpGen
 from pysnptools.snpreader.distributedbed import DistributedBed, _Distributed1Bed
 from bed_reader import wrap_matrix_subset # To help other programs with backwards compatibility
-from pysnptools.snpreader import wrap_plink_parser # To help other programs with backwards compatibility
+# !!!cmkrust from pysnptools.snpreader import wrap_plink_parser # To help other programs with backwards compatibility

@@ -6,7 +6,7 @@
     <ProjectGuid>{60f1cb4a-9da3-47c2-9b89-60ac1ce93347}</ProjectGuid>
     <ProjectHome />
     <StartupFile>test.py</StartupFile>
-    <SearchPath>..\</SearchPath>
+    <SearchPath>..\;..\..\bed-reader</SearchPath>
     <WorkingDirectory>.\snpreader</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
@@ -21,8 +21,9 @@
     </SccLocalPath>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <IsWindowsApplication>False</IsWindowsApplication>
-    <CommandLineArguments>sdist bdist_wininst upload</CommandLineArguments>
-    <InterpreterId>CondaEnv|CondaEnv|base37</InterpreterId>
+    <CommandLineArguments>
+    </CommandLineArguments>
+    <InterpreterId>CondaEnv|CondaEnv|anaconda3</InterpreterId>
     <TestFramework>unittest</TestFramework>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
@@ -241,6 +242,7 @@
     <Content Include="util\pysnptools.hashdown.json" />
   </ItemGroup>
   <ItemGroup>
+    <InterpreterReference Include="CondaEnv|CondaEnv|anaconda3" />
     <InterpreterReference Include="CondaEnv|CondaEnv|base37" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />

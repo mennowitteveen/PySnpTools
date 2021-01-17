@@ -1,4 +1,4 @@
-from bed_reader import wrap_plink_parser_onep
+# !!!cmkrust from bed_reader import wrap_plink_parser_onep
 
 # To help other programs with backwards compatibility
 

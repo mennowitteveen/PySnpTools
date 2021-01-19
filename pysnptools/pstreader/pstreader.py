@@ -597,10 +597,9 @@ class PstReader(object):
     @staticmethod
     def _make_sparray_from_sparray_or_slice(count, indexer):
         if isinstance(indexer,slice):
-            return np.arange(*indexer.indices(count))
-        if isinstance(indexer,np.ndarray) and np.issubdtype(indexer.dtype, np.integer) and np.any(indexer<0):
-            return np.arange(count)[indexer]
-        return indexer
+            return np.arange(*indexer.indices(count),dtype="uint64")
+        result = np.ascontiguousarray((np.arange(count,dtype="uint64")[indexer]).reshape(-1),dtype="uint64")
+        return result
 
     @staticmethod
     def _array_properties_are_ok(val, order, dtype):

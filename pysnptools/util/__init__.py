@@ -9,6 +9,7 @@ from types import ModuleType
 import inspect
 import warnings
 from pysnptools.util.intrangeset import IntRangeSet
+import rust_bed_reader
 
 def _testtest(data, iididx):
     return (data[0][iididx], data[1][iididx])
@@ -297,9 +298,9 @@ def sub_matrix(val, row_index_list, col_index_list, order="A", dtype=np.float64)
     >>> print(matrix[2,0] == submatrix[1,6]) #The row # 2 is now #1, the column #0 is now #6.
     True
 
-    Note: Behind the scenes, for performance, this function selects and then calls one of 16 C++ helper functions.
+    Note: Behind the scenes, for performance, this function selects and then calls one of 4 Rust helper functions.
     """
-    from bed_reader import wrap_matrix_subset
+    # !!!cmk from bed_reader import wrap_matrix_subset
 
     if order == "A":
         if val.flags["F_CONTIGUOUS"]:
@@ -316,236 +317,57 @@ def sub_matrix(val, row_index_list, col_index_list, order="A", dtype=np.float64)
         val_shape = 1
         val = val.reshape(iid_count, sid_count, 1)
     else:
-        assert original_dimensions == 3, "Expect val dimensions of 2 or 3"
+        assert original_dimensions == 3, "Expect val dimensions of 2 or 3" # !!!cmk be sure to test this on 3 dimensions
         iid_count, sid_count, val_shape = val.shape
-    sub_val = np.empty(
-        (len(row_index_list), len(col_index_list), val_shape),
-        dtype=dtype,
-        order=effective_order,
-    )
-    sub_val.fill(np.nan)  # !!!keep? Replace empty with zeros????
 
-    logging.debug("About to call cython matrixSubset")
-    if val.flags["F_CONTIGUOUS"]:
+    def create_sub_val(dtype):
+        return np.full(
+        (len(row_index_list), len(col_index_list), val_shape),
+        np.NAN,
+        dtype=dtype,
+        order=effective_order
+        )   
+
+    logging.debug("About to call Rust matrixSubset")
+    if val.flags["F_CONTIGUOUS"] or  val.flags["C_CONTIGUOUS"]:
         if val.dtype == np.float64:
-            if dtype == np.float64:
-                if effective_order == "F":
-                    wrap_matrix_subset.matrixSubsetDoubleFToDoubleFAAA(
-                        val,
-                        iid_count,
-                        sid_count,
-                        val_shape,
-                        row_index_list,
-                        col_index_list,
-                        sub_val,
-                    )
-                elif effective_order == "C":
-                    wrap_matrix_subset.matrixSubsetDoubleFToDoubleCAAA(
-                        val,
-                        iid_count,
-                        sid_count,
-                        val_shape,
-                        row_index_list,
-                        col_index_list,
-                        sub_val,
-                    )
-                else:
-                    raise Exception(
-                        "order '{0}' not known, only 'F' and 'C'".format(
-                            effective_order
-                        )
-                    )
-            elif dtype == np.float32:
-                if effective_order == "F":
-                    wrap_matrix_subset.matrixSubsetDoubleFToSingleFAAA(
-                        val,
-                        iid_count,
-                        sid_count,
-                        val_shape,
-                        row_index_list,
-                        col_index_list,
-                        sub_val,
-                    )
-                elif effective_order == "C":
-                    wrap_matrix_subset.matrixSubsetDoubleFToSingleCAAA(
-                        val,
-                        iid_count,
-                        sid_count,
-                        val_shape,
-                        row_index_list,
-                        col_index_list,
-                        sub_val,
-                    )
-                else:
-                    raise Exception(
-                        "dtype '{0}' not known, only float64 and float32".format(dtype)
-                    )
-        elif val.dtype == np.float32:
-            if dtype == np.float64:
-                if effective_order == "F":
-                    wrap_matrix_subset.matrixSubsetSingleFToDoubleFAAA(
-                        val,
-                        iid_count,
-                        sid_count,
-                        val_shape,
-                        row_index_list,
-                        col_index_list,
-                        sub_val,
-                    )
-                elif effective_order == "C":
-                    wrap_matrix_subset.matrixSubsetSingleFToDoubleCAAA(
-                        val,
-                        iid_count,
-                        sid_count,
-                        val_shape,
-                        row_index_list,
-                        col_index_list,
-                        sub_val,
-                    )
-                else:
-                    raise Exception(
-                        "order '{0}' not known, only 'F' and 'C'".format(
-                            effective_order
-                        )
-                    )
-            elif dtype == np.float32:
-                if effective_order == "F":
-                    wrap_matrix_subset.matrixSubsetSingleFToSingleFAAA(
-                        val,
-                        iid_count,
-                        sid_count,
-                        val_shape,
-                        row_index_list,
-                        col_index_list,
-                        sub_val,
-                    )
-                elif effective_order == "C":
-                    wrap_matrix_subset.matrixSubsetSingleFToSingleCAAA(
-                        val,
-                        iid_count,
-                        sid_count,
-                        val_shape,
-                        row_index_list,
-                        col_index_list,
-                        sub_val,
-                    )
-                else:
-                    raise Exception(
-                        "dtype '{0}' not known, only float64 and float32".format(dtype)
-                    )
-        else:
-            raise Exception(
-                "input dtype '{0}' not known, only float64 and float32".format(
-                    val.dtype
+            sub_val = create_sub_val(np.float64)
+            rust_bed_reader.subset_f64_f64(
+                    val,
+                    row_index_list,
+                    col_index_list,
+                    sub_val,
                 )
-            )
-    elif val.flags["C_CONTIGUOUS"]:
-        if val.dtype == np.float64:
             if dtype == np.float64:
-                if effective_order == "F":
-                    wrap_matrix_subset.matrixSubsetDoubleCToDoubleFAAA(
-                        val,
-                        iid_count,
-                        sid_count,
-                        val_shape,
-                        row_index_list,
-                        col_index_list,
-                        sub_val,
-                    )
-                elif effective_order == "C":
-                    wrap_matrix_subset.matrixSubsetDoubleCToDoubleCAAA(
-                        val,
-                        iid_count,
-                        sid_count,
-                        val_shape,
-                        row_index_list,
-                        col_index_list,
-                        sub_val,
-                    )
-                else:
-                    raise Exception(
-                        "order '{0}' not known, only 'F' and 'C'".format(
-                            effective_order
-                        )
-                    )
+                pass
             elif dtype == np.float32:
-                if effective_order == "F":
-                    wrap_matrix_subset.matrixSubsetDoubleCToSingleFAAA(
-                        val,
-                        iid_count,
-                        sid_count,
-                        val_shape,
-                        row_index_list,
-                        col_index_list,
-                        sub_val,
-                    )
-                elif effective_order == "C":
-                    wrap_matrix_subset.matrixSubsetDoubleCToSingleCAAA(
-                        val,
-                        iid_count,
-                        sid_count,
-                        val_shape,
-                        row_index_list,
-                        col_index_list,
-                        sub_val,
-                    )
-                else:
-                    raise Exception(
-                        "dtype '{0}' not known, only float64 and float32".format(dtype)
-                    )
+                warnings.warn("Converting float64 to float32 can cause loss of information") # !!!cmk test this
+                sub_val = sub_val.astype(dtype,order) #!!!cmk ,casting="same_kind")
+            else:
+                raise Exception(
+                    "dtype '{0}' not known, only float64 and float32".format(dtype)
+                )
         elif val.dtype == np.float32:
             if dtype == np.float64:
-                if effective_order == "F":
-                    wrap_matrix_subset.matrixSubsetSingleCToDoubleFAAA(
+                sub_val = create_sub_val(np.float64)
+                rust_bed_reader.subset_f32_f64(
                         val,
-                        iid_count,
-                        sid_count,
-                        val_shape,
                         row_index_list,
                         col_index_list,
-                        sub_val,
-                    )
-                elif effective_order == "C":
-                    wrap_matrix_subset.matrixSubsetSingleCToDoubleCAAA(
-                        val,
-                        iid_count,
-                        sid_count,
-                        val_shape,
-                        row_index_list,
-                        col_index_list,
-                        sub_val,
-                    )
-                else:
-                    raise Exception(
-                        "order '{0}' not known, only 'F' and 'C'".format(
-                            effective_order
-                        )
+                        sub_val
                     )
             elif dtype == np.float32:
-                if effective_order == "F":
-                    wrap_matrix_subset.matrixSubsetSingleCToSingleFAAA(
+                sub_val = create_sub_val(np.float32)
+                rust_bed_reader.subset_f32_f32(
                         val,
-                        iid_count,
-                        sid_count,
-                        val_shape,
                         row_index_list,
                         col_index_list,
-                        sub_val,
-                    )
-                elif effective_order == "C":
-                    wrap_matrix_subset.matrixSubsetSingleCToSingleCAAA(
-                        val,
-                        iid_count,
-                        sid_count,
-                        val_shape,
-                        row_index_list,
-                        col_index_list,
-                        sub_val,
-                    )
-                else:
-                    raise Exception(
-                        "dtype '{0}' not known, only float64 and float32".format(dtype)
-                    )
+                        sub_val
+                    )  
+            else:
+                raise Exception(
+                    "dtype '{0}' not known, only float64 and float32".format(dtype)
+                )
         else:
             raise Exception(
                 "input dtype '{0}' not known, only float64 and float32".format(
@@ -558,7 +380,7 @@ def sub_matrix(val, row_index_list, col_index_list, order="A", dtype=np.float64)
     if original_dimensions == 2:
         assert sub_val.shape[2] == 1, "real assert"
         sub_val = sub_val.reshape(sub_val.shape[0], sub_val.shape[1])
-    logging.debug("Back from cython matrixSubset")
+    logging.debug("Back from Rust matrixSubset")
     return sub_val
 
 

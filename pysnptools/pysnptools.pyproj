@@ -25,6 +25,7 @@
     </CommandLineArguments>
     <InterpreterId>CondaEnv|CondaEnv|anaconda3</InterpreterId>
     <TestFramework>unittest</TestFramework>
+    <Environment>path=D:\OneDrive\programs\pysnptools</Environment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />

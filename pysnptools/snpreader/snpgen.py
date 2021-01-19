@@ -128,7 +128,7 @@ class SnpGen(SnpReader):
         with log_in_place("working on snpgen batch", logging.INFO) as updater:
             for ii,i in enumerate(list_batch_index):  #for each distinct batch index, generate snps
                 updater("{0} of {1}".format(ii,len(list_batch_index)))
-                start = i*self._block_size  #e.g. 0 (then 2000)
+                start = int(i)*self._block_size  #e.g. 0 (then 2000)
                 stop = start + self._block_size #e.g. 1000, then 3000
                 batch_val = self._get_val2(start,stop,order=order,dtype=dtype) # generate whole batch
                 a = (batch_index==i) #e.g. [True,True,True,False,True], then [False,False,False,True,False]

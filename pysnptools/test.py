@@ -453,12 +453,6 @@ class TestPySnpTools(unittest.TestCase):
             snps_C = np.array(snps, dtype=dtype, order="C")
             snp_s4 = Unit().standardize(snps_C)
 
-            snp_beta1 = Beta(1, 25).standardize(snps.copy(), force_python_only=True)
-            snps_F = np.array(snps, dtype=dtype, order="F")
-            snp_beta2 = Beta(1, 25).standardize(snps_F)
-            snps_C = np.array(snps, dtype=dtype, order="C")
-            snp_beta3 = Beta(1, 25).standardize(snps_C)
-
             self.assertEqual(snp_s1.shape[0], snp_s2.shape[0])
             self.assertEqual(snp_s1.shape[1], snp_s2.shape[1])
 
@@ -468,9 +462,16 @@ class TestPySnpTools(unittest.TestCase):
             self.assertEqual(snp_s1.shape[0], snp_s4.shape[0])
             self.assertEqual(snp_s1.shape[1], snp_s4.shape[1])
 
-            self.assertTrue(np.allclose(snp_s1, snp_s2, rtol=1e-05, atol=1e-05))
+            self.assertTrue(np.allclose(snp_s1, snp_s2, rtol=1e-05, atol=1e-05)) 
             self.assertTrue(np.allclose(snp_s1, snp_s3, rtol=1e-05, atol=1e-05))
             self.assertTrue(np.allclose(snp_s1, snp_s4, rtol=1e-05, atol=1e-05))
+
+
+            snp_beta1 = Beta(1, 25).standardize(snps.copy(), force_python_only=True)
+            snps_F = np.array(snps, dtype=dtype, order="F")
+            snp_beta2 = Beta(1, 25).standardize(snps_F)
+            snps_C = np.array(snps, dtype=dtype, order="C")
+            snp_beta3 = Beta(1, 25).standardize(snps_C)
 
             self.assertEqual(snp_beta1.shape[0], snp_beta2.shape[0])
             self.assertEqual(snp_beta1.shape[1], snp_beta2.shape[1])
@@ -484,7 +485,7 @@ class TestPySnpTools(unittest.TestCase):
         snpreader2 = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
         self.load_and_standardize(snpreader2, snpreader2)
 
-        snpreader3 = Bed(self.currentFolder + "/examples/toydata.5chrom",count_A1=False)
+        snpreader3 = Bed(self.currentFolder + "/examples/toydata.5chrom",count_A1=False) 
         self.load_and_standardize(snpreader3, snpreader3)
 
 

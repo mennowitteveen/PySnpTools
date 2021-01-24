@@ -61,7 +61,8 @@ class UnitTrained(Standardizer):
             val = snps
             stats = self.stats
 
-        self._standardize_unit_and_beta(val, is_beta=False, a=np.nan, b=np.nan, apply_in_place=True,use_stats=True,stats=stats,force_python_only=force_python_only)
+        self._standardize_unit_and_beta(val, is_beta=False, a=np.nan, b=np.nan, apply_in_place=True,use_stats=True,stats=stats,
+                                        num_threads=None, force_python_only=force_python_only) #!!!cmk
 
         if return_trained:
             return snps, self

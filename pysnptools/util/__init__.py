@@ -9,6 +9,7 @@ from types import ModuleType
 import inspect
 import warnings
 from pysnptools.util.intrangeset import IntRangeSet
+print(os.getcwd())
 import rust_bed_reader
 
 def _testtest(data, iididx):

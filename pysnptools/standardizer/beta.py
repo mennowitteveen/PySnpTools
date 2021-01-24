@@ -40,7 +40,8 @@ class Beta(Standardizer):
             warnings.warn("standardizing an nparray instead of a SnpData is deprecated", DeprecationWarning)
             val = snpdata
 
-        stats = self._standardize_unit_and_beta(val, is_beta=True, a=self.a, b=self.b, apply_in_place=True, use_stats=False,stats=None,force_python_only=force_python_only)
+        stats = self._standardize_unit_and_beta(val, is_beta=True, a=self.a, b=self.b, apply_in_place=True, use_stats=False,
+                                                stats=None,num_threads=None,force_python_only=force_python_only) #!!!cmk
         if return_trained:
             from pysnptools.standardizer import BetaTrained
             assert hasattr(snpdata,"val"), "return_trained=True must be used with SnpData"

@@ -2,7 +2,7 @@ import numpy as np
 from itertools import *
 import pandas as pd
 import logging
-from bed_reader import open_bed, to_bed
+from bed_reader import open_bed, to_bed, get_num_threads
 from pysnptools.snpreader import SnpReader
 from pysnptools.snpreader import SnpData
 import math
@@ -110,6 +110,7 @@ class Bed(SnpReader):
             properties["cm_position"] = self._original_pos[:, 1]
             properties["bp_position"] = self._original_pos[:, 2]
 
+        print(f"cmk bed numthreads {self._num_threads}") 
         self._open_bed = open_bed(
             self.filename,
             properties=properties,

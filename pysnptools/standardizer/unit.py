@@ -19,7 +19,8 @@ class Unit(Standardizer):
     >>> print('{0:.6f}'.format(snpdata1.val[0,0]))
     0.229416
     """
-    def __init__(self):
+    def __init__(self, num_threads=None): # !!!cmk doc
+        self._num_threads = num_threads #!!!cmk add to beta
         super(Unit, self).__init__()
 
 
@@ -43,7 +44,7 @@ class Unit(Standardizer):
             val = snps
 
         stats = self._standardize_unit_and_beta(val, is_beta=False, a=np.nan, b=np.nan, apply_in_place=True,
-                                                use_stats=False,stats=None,force_python_only=force_python_only)
+                                                use_stats=False,stats=None,num_threads=self._num_threads, force_python_only=force_python_only) #!!!cmk
 
         if return_trained:
             assert hasattr(snps,"val"), "return_trained=True requires that snps be a SnpData"

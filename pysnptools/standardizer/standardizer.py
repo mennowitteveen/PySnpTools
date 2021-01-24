@@ -1,7 +1,9 @@
 import numpy as np
 import logging
 import pysnptools.util as pstutil
+from bed_reader import get_num_threads
 import rust_bed_reader
+
 
 class Standardizer(object):
     '''
@@ -81,7 +83,7 @@ class Standardizer(object):
 
     @staticmethod
     #changes snps in place
-    def _standardize_unit_and_beta(snps, is_beta, a, b, apply_in_place, use_stats, stats, force_python_only=False):
+    def _standardize_unit_and_beta(snps, is_beta, a, b, apply_in_place, use_stats, stats, num_threads, force_python_only=False):
         '''
         When snps is a cupy ndarray, will use cupy to compute new stats for unit. (Other paths are not defined for cupy)
         '''
@@ -102,15 +104,17 @@ class Standardizer(object):
         assert stats.shape == (snps.shape[1],2), "stats must have size [sid_count,2]"
 
         if not force_python_only and xp is np:
+            num_threads = get_num_threads(num_threads)
+
             if snps.dtype == np.float64:
                 if (snps.flags['F_CONTIGUOUS'] or snps.flags['C_CONTIGUOUS']) and (snps.flags["OWNDATA"] or snps.base.nbytes == snps.nbytes): #!!create a method called is_single_segment
-                    rust_bed_reader.standardize_f64(snps,is_beta,a,b,apply_in_place,use_stats,stats)
+                    rust_bed_reader.standardize_f64(snps,is_beta,a,b,apply_in_place,use_stats,stats,num_threads)
                     return stats
                 else:
                     logging.info("Array is not contiguous, so will standardize with python only instead of C++")
             elif snps.dtype == np.float32:
                 if (snps.flags['F_CONTIGUOUS'] or snps.flags['C_CONTIGUOUS']) and (snps.flags["OWNDATA"] or snps.base.nbytes == snps.nbytes):
-                    rust_bed_reader.standardize_f32(snps,is_beta,a,b,apply_in_place,use_stats,stats)
+                    rust_bed_reader.standardize_f32(snps,is_beta,a,b,apply_in_place,use_stats,stats,num_threads)
                     return stats
                 else:
                     logging.info("Array is not contiguous, so will standardize with python only instead of C++")

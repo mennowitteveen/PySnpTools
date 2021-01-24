@@ -123,7 +123,7 @@ class SnpData(PstData,SnpReader):
         '''
         return PstData.allclose(self,value,equal_nan=equal_nan)
 
-    def train_standardizer(self, apply_in_place, standardizer=Unit(), force_python_only=False):
+    def train_standardizer(self, apply_in_place, standardizer=Unit(), force_python_only=False,num_thread=None):
         """
         .. deprecated:: 0.2.23
            Use :meth:`standardize` with return_trained=True instead.
@@ -131,11 +131,11 @@ class SnpData(PstData,SnpReader):
         warnings.warn("train_standardizer is deprecated. standardize(...,return_trained=True,...) instead", DeprecationWarning)
         assert apply_in_place, "code assumes apply_in_place"
         self._std_string_list.append(str(standardizer))
-        _, trained_standardizer = standardizer.standardize(self, return_trained=True, force_python_only=force_python_only)
+        _, trained_standardizer = standardizer.standardize(self, return_trained=True, force_python_only=force_python_only,num_threads=num_threads)
         return trained_standardizer
 
     #LATER should there be a single warning if Unit() finds and imputes NaNs?
-    def standardize(self, standardizer=Unit(), block_size=None, return_trained=False, force_python_only=False):
+    def standardize(self, standardizer=Unit(), block_size=None, return_trained=False, force_python_only=False,num_threads=None): #!!!cmk doc
         """Does in-place standardization of the in-memory
         SNP data. By default, it applies 'Unit' standardization, that is: the values for each SNP will have mean zero and standard deviation 1.0.
         NaN values are then filled with zero, the mean (consequently, if there are NaN values, the final standard deviation will not be zero.
@@ -176,13 +176,13 @@ class SnpData(PstData,SnpReader):
         0.229416
         """
         self._std_string_list.append(str(standardizer))
-        _, trained = standardizer.standardize(self, return_trained=True, force_python_only=force_python_only)
+        _, trained = standardizer.standardize(self, return_trained=True, force_python_only=force_python_only, num_threads=num_threads)
         if return_trained:
             return self, trained
         else:
             return self
 
-    def _read_kernel(train, standardizer, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False, return_trained=False):
+    def _read_kernel(train, standardizer, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False, return_trained=False, num_threads=None):
         '''
         The method creates a kernel for the in-memory SNP data. It handles these cases
                 * No standardization is needed & everything is in memory  OR uses the FROM-DISK method
@@ -206,7 +206,7 @@ class SnpData(PstData,SnpReader):
             else:
                 return K
         else: #Do things the more general SnpReader way.
-            return SnpReader._read_kernel(train, standardizer, block_size=block_size, order=order, dtype=dtype, force_python_only=force_python_only,view_ok=view_ok, return_trained=return_trained)
+            return SnpReader._read_kernel(train, standardizer, block_size=block_size, order=order, dtype=dtype, force_python_only=force_python_only,view_ok=view_ok, return_trained=return_trained, num_threads=num_threads)
 
     def __repr__(self):
         if self._name == "":

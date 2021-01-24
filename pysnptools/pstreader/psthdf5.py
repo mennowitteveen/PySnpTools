@@ -187,7 +187,7 @@ class PstHdf5(PstReader):
             else:
                 return np.empty([len(self._row),block_size, self._val_shape,], dtype=dtype, order=opposite_order), opposite_order
 
-    def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
+    def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok, num_threads):
         self._run_once()
         dtype = np.dtype(dtype)
 

@@ -23,7 +23,7 @@ class Identity(Standardizer):
     def __init__(self):
         super(Identity, self).__init__()
 
-    def standardize(self, snps, block_size=None, return_trained=False, force_python_only=False):
+    def standardize(self, snps, block_size=None, return_trained=False, force_python_only=False,num_threads=None): #!!!cmk doc
         if block_size is not None:
             warnings.warn("block_size is deprecated (and not needed, since standardization is in-place", DeprecationWarning)
         if return_trained:

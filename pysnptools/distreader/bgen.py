@@ -13,7 +13,7 @@ import math
 import subprocess
 import pysnptools.util as pstutil
 from pysnptools.distreader import DistReader
-
+from bed_reader import get_num_threads
 
 def default_iid_function(sample):
     """
@@ -324,14 +324,20 @@ class Bgen(DistReader):
         dtype,
         force_python_only,
         view_ok,
+        num_threads,#!!!cmk doc
     ):
         self._run_once()
 
         if order == "A":
             order = "F"
 
+        num_threads = get_num_threads(
+                self._num_threads if num_threads is None else num_threads
+            )  # !!!cmk doc
+
+
         val = self._open_bgen.read(
-            (iid_index_or_none, sid_index_or_none), dtype=dtype, order=order, num_threads=self._num_threads
+            (iid_index_or_none, sid_index_or_none), dtype=dtype, order=order, num_threads=num_threads
         )
         assert val.shape[-1] == 3, "Expect ploidy to be 2"
         return val

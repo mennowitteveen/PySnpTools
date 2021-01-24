@@ -57,7 +57,7 @@ class Standardizer(object):
     def __init__(self):
         super(Standardizer, self).__init__()
 
-    def standardize(self, snps, block_size=None, return_trained=False, force_python_only=False):
+    def standardize(self, snps, block_size=None, return_trained=False, force_python_only=False, num_threads=None): #!!!cmk doc
         '''
         Applies standardization, in place, to :class:`.SnpData` (or a NumPy array). For convenience also returns the :class:`.SnpData` (or a NumPy array).
 
@@ -219,7 +219,7 @@ class _CannotBeTrained(Standardizer):
     def __repr__(self): 
         return "{0}({1})".format(self.__class__.__name__,self.name)
 
-    def standardize(self, snps, block_size=None, return_trained=False, force_python_only=False):
+    def standardize(self, snps, block_size=None, return_trained=False, force_python_only=False, num_threads=None):
         if block_size is not None:
             warnings.warn("block_size is deprecated (and not needed, since standardization is in-place", DeprecationWarning)
         raise Exception("Standardizer '{0}' cannot be trained",self)

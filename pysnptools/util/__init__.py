@@ -10,6 +10,7 @@ import inspect
 import warnings
 from pysnptools.util.intrangeset import IntRangeSet
 print(os.getcwd())
+from bed_reader import get_num_threads
 import rust_bed_reader
 
 def _testtest(data, iididx):
@@ -269,7 +270,7 @@ def intersect_ids(idslist):
     return indarr
 
 
-def sub_matrix(val, row_index_list, col_index_list, order="A", dtype=np.float64):
+def sub_matrix(val, row_index_list, col_index_list, order="A", dtype=np.float64, num_threads=None):
     """
     Efficiently creates a sub-matrix from a 2-D ndarray.
 
@@ -330,6 +331,7 @@ def sub_matrix(val, row_index_list, col_index_list, order="A", dtype=np.float64)
         )   
 
     logging.debug("About to call Rust matrixSubset")
+    num_threads = get_num_threads(num_threads)
     if val.flags["F_CONTIGUOUS"] or  val.flags["C_CONTIGUOUS"]:
         if val.dtype == np.float64:
             sub_val = create_sub_val(np.float64)
@@ -338,6 +340,7 @@ def sub_matrix(val, row_index_list, col_index_list, order="A", dtype=np.float64)
                     row_index_list,
                     col_index_list,
                     sub_val,
+                    num_threads,
                 )
             if dtype == np.float64:
                 pass
@@ -355,7 +358,8 @@ def sub_matrix(val, row_index_list, col_index_list, order="A", dtype=np.float64)
                         val,
                         row_index_list,
                         col_index_list,
-                        sub_val
+                        sub_val,
+                        num_threads
                     )
             elif dtype == np.float32:
                 sub_val = create_sub_val(np.float32)
@@ -363,7 +367,8 @@ def sub_matrix(val, row_index_list, col_index_list, order="A", dtype=np.float64)
                         val,
                         row_index_list,
                         col_index_list,
-                        sub_val
+                        sub_val,
+                        num_threads
                     )  
             else:
                 raise Exception(

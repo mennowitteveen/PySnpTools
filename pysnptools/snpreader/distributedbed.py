@@ -97,11 +97,11 @@ class DistributedBed(SnpReader):
     def copyinputs(self, copier):
         pass
 
-    def _read(self, iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok):
+    def _read(self, iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok, num_threads):
         self._run_once()
         dtype = np.dtype(dtype)
 
-        return self._merge._read(iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok)
+        return self._merge._read(iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok, num_threads)
 
     #!!! in future could make a default for piece_per_chrom_count that made each piece some GB size
     @staticmethod
@@ -276,11 +276,11 @@ class _Distributed1Bed(SnpReader):
     def copyinputs(self, copier):
         pass
 
-    def _read(self, iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok):
+    def _read(self, iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok, num_threads):
         self._run_once()
         dtype = np.dtype(dtype)
 
-        return self.local._read(iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok)
+        return self.local._read(iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok, num_threads)
     
     @staticmethod
     def write(path, storage, snpdata, count_A1=True, updater=None):

@@ -143,7 +143,7 @@ class DistMemMap(PstMemMap,DistData):
 
 
     @staticmethod
-    def write(filename, distreader, order='A', dtype=None, block_size=None):
+    def write(filename, distreader, order='A', dtype=None, block_size=None, num_threads=None): #!!!cmk doc
         """Writes a :class:`DistReader` to :class:`DistMemMap` format.
 
         :param filename: the name of the file to create
@@ -193,7 +193,7 @@ class DistMemMap(PstMemMap,DistData):
             with log_in_place("sid_index ", logging.INFO) as updater:
                 while start < distreader.sid_count:
                     updater('{0} of {1}'.format(start,distreader.sid_count))
-                    distdata = distreader[:,start:start+block_size].read(order=order,dtype=dtype)
+                    distdata = distreader[:,start:start+block_size].read(order=order,dtype=dtype,num_threads=num_threads)
                     self.val[:,start:start+distdata.sid_count,:] = distdata.val
                     start += distdata.sid_count
 

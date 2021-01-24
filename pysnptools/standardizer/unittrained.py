@@ -31,11 +31,12 @@ class UnitTrained(Standardizer):
     """
 
     #!!might want to add code so that can check that sids are in the same order for both test and train
-    def __init__(self, sid, stats):
+    def __init__(self, sid, stats, num_threads=None): # !!!cmk doc
         super(UnitTrained, self).__init__()
         self.sid = sid
         self.stats = stats
         self.sid_to_index = None
+        self._num_threads = num_threads
 
     def __repr__(self): 
         return "{0}(stats={1},sid={2})".format(self.__class__.__name__,self.stats,self.sid)
@@ -44,7 +45,7 @@ class UnitTrained(Standardizer):
     def is_constant(self):
         return True        
 
-    def standardize(self, snps, block_size=None, return_trained=False, force_python_only=False):
+    def standardize(self, snps, block_size=None, return_trained=False, force_python_only=False, num_threads=None):
         if block_size is not None:
             warnings.warn("block_size is deprecated (and not needed, since standardization is in-place", DeprecationWarning)
 
@@ -61,8 +62,9 @@ class UnitTrained(Standardizer):
             val = snps
             stats = self.stats
 
+        num_threads = self._num_threads if num_threads is None else num_threads
         self._standardize_unit_and_beta(val, is_beta=False, a=np.nan, b=np.nan, apply_in_place=True,use_stats=True,stats=stats,
-                                        num_threads=None, force_python_only=force_python_only) #!!!cmk
+                                        num_threads=num_threads, force_python_only=force_python_only)
 
         if return_trained:
             return snps, self

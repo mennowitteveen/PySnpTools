@@ -51,7 +51,7 @@ class DiagKtoN(Standardizer):
         if deprecated_iid_count is not None:
             warnings.warn("'iid_count' is deprecated (and not needed, since can get iid_count from SNPs val's first dimension", DeprecationWarning)
 
-    def _standardize_kernel(self, kerneldata, return_trained=False, force_python_only=False):
+    def _standardize_kernel(self, kerneldata, return_trained=False, force_python_only=False, num_threads=None):
 
         factor = float(kerneldata.iid_count) / np.diag(kerneldata.val).sum()
 
@@ -63,16 +63,16 @@ class DiagKtoN(Standardizer):
         else:
             return kerneldata
 
-    def standardize(self, input, block_size=None, return_trained=False, force_python_only=False):
+    def standardize(self, input, block_size=None, return_trained=False, force_python_only=False, num_threads=None): #!!!cmk document
         from pysnptools.kernelreader import KernelReader
         if block_size is not None:
             warnings.warn("block_size is deprecated (and not needed, since standardization is in-place", DeprecationWarning)
         if isinstance(input,KernelReader) and hasattr(input,'val'):
-            return self._standardize_kernel(input, return_trained=return_trained,force_python_only=force_python_only)
+            return self._standardize_kernel(input, return_trained=return_trained,force_python_only=force_python_only, num_threads=num_threads)
         else:
-            return self._standardize_snps(input, return_trained=return_trained,force_python_only=force_python_only)
+            return self._standardize_snps(input, return_trained=return_trained,force_python_only=force_python_only, num_threads=num_threads)
 
-    def _standardize_snps(self, snps, return_trained=False, force_python_only=False):
+    def _standardize_snps(self, snps, return_trained=False, force_python_only=False, num_threads=None):
 
         if hasattr(snps,"val"):
             val = snps.val
@@ -115,21 +115,21 @@ class DiagKtoNTrained(Standardizer):
         super(DiagKtoNTrained, self).__init__()
         self.factor = factor
 
-    def standardize(self, input, block_size=None, return_trained=False, force_python_only=False):
+    def standardize(self, input, block_size=None, return_trained=False, force_python_only=False, num_threads=None): #!!!cmk doc
         if block_size is not None:
             warnings.warn("block_size is deprecated (and not needed, since standardization is in-place", DeprecationWarning)
 
         from pysnptools.kernelreader import KernelReader
         if isinstance(input,KernelReader) and hasattr(input,'val'):
-            return self._standardize_kernel(input, return_trained=return_trained,force_python_only=force_python_only)
+            return self._standardize_kernel(input, return_trained=return_trained,force_python_only=force_python_only,num_threads=num_threads)
         else:
-            return self._standardize_snps(input, return_trained=return_trained,force_python_only=force_python_only)#LATER test coverage
+            return self._standardize_snps(input, return_trained=return_trained,force_python_only=force_python_only,num_threads=num_threads)#LATER test coverage
 
     @property
     def is_constant(self):
         return abs(self.factor-1.0)<1e-15
 
-    def _standardize_snps(self, snps, return_trained=False, force_python_only=False):
+    def _standardize_snps(self, snps, return_trained=False, force_python_only=False, num_threads=None):
     
         if hasattr(snps,"val"):
             val = snps.val#LATER test coverage
@@ -145,7 +145,7 @@ class DiagKtoNTrained(Standardizer):
         else:
             return snps
 
-    def _standardize_kernel(self, kerneldata, return_trained=False, force_python_only=False):
+    def _standardize_kernel(self, kerneldata, return_trained=False, force_python_only=False, num_threads=None):
         if not self.is_constant:
             kerneldata._val *= self.factor
 

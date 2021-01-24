@@ -75,16 +75,16 @@ class SnpKernel(KernelReader):
         copier.input(self.snpreader)
         copier.input(self.standardizer)
 
-    def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
+    def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok, num_threads):
         dtype = np.dtype(dtype)
         #Special case: If square and constant, can push the subsetting into the SnpReader
         if (self.standardizer.is_constant and row_index_or_none is not None and col_index_or_none is not None and np.array_equal(row_index_or_none,col_index_or_none)):
-            return self.snpreader[row_index_or_none,:]._read_kernel(self.standardizer,self.block_size,order, dtype, force_python_only, view_ok)#!!!LATER can this ever be reached?
+            return self.snpreader[row_index_or_none,:]._read_kernel(self.standardizer,self.block_size,order, dtype, force_python_only, view_ok, num_threads)#!!!LATER can this ever be reached?
         else:
             #LATER: If it was often that case that we wanted to standardize on all the data, but then only return a slice of the result,
             #       that could be done with less memory by working in blocks but not tabulating for all the iids.
-            whole = self.snpreader._read_kernel(self.standardizer,self.block_size,order, dtype, force_python_only, view_ok)
-            val, shares_memory = self._apply_sparray_or_slice_to_val(whole, row_index_or_none, col_index_or_none, order, dtype, force_python_only)
+            whole = self.snpreader._read_kernel(self.standardizer,self.block_size,order, dtype, force_python_only, view_ok, num_threads)
+            val, shares_memory = self._apply_sparray_or_slice_to_val(whole, row_index_or_none, col_index_or_none, order, dtype, force_python_only, num_threads)
             return val
 
     def __getitem__(self, iid_indexer_and_snp_indexer):
@@ -101,7 +101,7 @@ class SnpKernel(KernelReader):
             return KernelReader.__getitem__(self,iid_indexer_and_snp_indexer)
 
 
-    def _read_with_standardizing(self, to_kerneldata, kernel_standardizer=DiagKtoN(), return_trained=False):
+    def _read_with_standardizing(self, to_kerneldata, kernel_standardizer=DiagKtoN(), return_trained=False,num_threads=None): #!!!cmk rust
         '''
         Reads a SnpKernel with two cases
               If returning KernelData,
@@ -117,12 +117,12 @@ class SnpKernel(KernelReader):
         xp = pstutil.array_module()
 
         if to_kerneldata:
-            val, snp_trained = self.snpreader._read_kernel(self.standardizer,block_size=self.block_size,return_trained=True)
+            val, snp_trained = self.snpreader._read_kernel(self.standardizer,block_size=self.block_size,return_trained=True,num_threads=num_threads)
             kernel = KernelData(iid=self.snpreader.iid, val=val, name=str(self), xp=xp)
-            kernel, kernel_trained = kernel.standardize(kernel_standardizer,return_trained=True)
+            kernel, kernel_trained = kernel.standardize(kernel_standardizer,return_trained=True,num_threads=num_threads)
         else:
-            snpdata, snp_trained = self.snpreader.read().standardize(self.standardizer, return_trained=True)
-            snpdata, kernel_trained = snpdata.standardize(kernel_standardizer, return_trained=True)
+            snpdata, snp_trained = self.snpreader.read().standardize(self.standardizer, return_trained=True, num_threads=num_threads)
+            snpdata, kernel_trained = snpdata.standardize(kernel_standardizer, return_trained=True, num_threads=num_threads)
             kernel = SnpKernel(snpdata, SS_Identity())
 
         logging.info("Ending '_read_with_standardizing'")
@@ -150,7 +150,7 @@ class SnpKernel(KernelReader):
         return self.snpreader.pos
 
     #LATER this needs a test
-    def read_snps(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False):
+    def read_snps(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False, num_threads=None): #!!!cmk doc
         """Reads the SNP values, applies the standardizer, and returns a :class:`.SnpData`.
 
         :param order: {'F' (default), 'C', 'A'}, optional -- Specify the order of the ndarray. If order is 'F' (default),
@@ -180,7 +180,7 @@ class SnpKernel(KernelReader):
 
         """
         dtype = np.dtype(dtype)
-        return self.snpreader.read(order=order, dtype=dtype, force_python_only=force_python_only, view_ok=view_ok).standardize(self.standardizer)
+        return self.snpreader.read(order=order, dtype=dtype, force_python_only=force_python_only, view_ok=view_ok, num_threads=num_threads).standardize(self.standardizer, num_threads=num_threads)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

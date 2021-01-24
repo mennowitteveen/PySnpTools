@@ -105,7 +105,7 @@ class _Pairs(SnpReader):
         self._ran_once = True
         self.col
 
-    def _read(self, iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok):
+    def _read(self, iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok, num_threads):
         self._run_once()
         dtype = np.dtype(dtype)
 
@@ -131,8 +131,8 @@ class _Pairs(SnpReader):
         sid_index_inner_1 = self.index1_list[sid_index] #Find the sid_index of the right snps of interest
         if self.snpreader1 is None:
             sid_index_inner_01 = np.unique(np.r_[sid_index_inner_0,sid_index_inner_1]) #Index of every snp of interest
-            inner_01 = self.snpreader0[iid_index_or_none,sid_index_inner_01].read(order=order, dtype=dtype, force_python_only=force_python_only, view_ok=True) #read every val of interest
-            val_inner_01 = inner_01.standardize().val if self.do_standardize else inner_01.val
+            inner_01 = self.snpreader0[iid_index_or_none,sid_index_inner_01].read(order=order, dtype=dtype, force_python_only=force_python_only, view_ok=True,num_threads=num_threads) #read every val of interest
+            val_inner_01 = inner_01.standardize(num_threads=num_threads).val if self.do_standardize else inner_01.val
 
             sid_index_inner_01_reverse = {v:i for i,v in enumerate(sid_index_inner_01)} #Dictionary of snp_index to position in sid_index_inner_01
             sid_index_inner_0_in_val = np.array([sid_index_inner_01_reverse[i] for i in sid_index_inner_0])  #Replace snp_index0 with column # in val_inner_01
@@ -140,10 +140,10 @@ class _Pairs(SnpReader):
             val_inner_0 = val_inner_01[:,sid_index_inner_0_in_val] #Extract the vals for the left snps of interest
             val_inner_1 = val_inner_01[:,sid_index_inner_1_in_val]#Extract the vals for the right snps of interest
         else:
-            inner_0 = self.snpreader0[iid_index_or_none,sid_index_inner_0].read(order=order, dtype=dtype, force_python_only=force_python_only, view_ok=True) #read every val of interest
-            inner_1 = self.snpreader1[iid_index_or_none,sid_index_inner_1].read(order=order, dtype=dtype, force_python_only=force_python_only, view_ok=True) #read every val of interest
-            val_inner_0 = inner_0.standardize().val if self.do_standardize else inner_0.val
-            val_inner_1 = inner_1.standardize().val if self.do_standardize else inner_1.val
+            inner_0 = self.snpreader0[iid_index_or_none,sid_index_inner_0].read(order=order, dtype=dtype, force_python_only=force_python_only, view_ok=True,num_threads=num_threads) #read every val of interest
+            inner_1 = self.snpreader1[iid_index_or_none,sid_index_inner_1].read(order=order, dtype=dtype, force_python_only=force_python_only, view_ok=True,num_threads=num_threads) #read every val of interest
+            val_inner_0 = inner_0.standardize(num_threads=num_threads).val if self.do_standardize else inner_0.val
+            val_inner_1 = inner_1.standardize(num_threads=num_threads).val if self.do_standardize else inner_1.val
         val = val_inner_0*val_inner_1 #Element multiplication creates the vals for the pairs
         return val
 

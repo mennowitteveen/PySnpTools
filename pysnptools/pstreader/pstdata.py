@@ -214,9 +214,9 @@ class PstData(PstReader):
 
     # Most _read's support only indexlists or None, but this one supports Slices, too.
     _read_accepts_slices = True
-    def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
+    def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok, num_threads):
         dtype = np.dtype(dtype)
-        val, shares_memory = self._apply_sparray_or_slice_to_val(self.val, row_index_or_none, col_index_or_none, order, dtype, force_python_only)
+        val, shares_memory = self._apply_sparray_or_slice_to_val(self.val, row_index_or_none, col_index_or_none, order, dtype, force_python_only, num_threads)
         if shares_memory and not view_ok:
             val = val.copy(order='K')
         return val

@@ -412,11 +412,11 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
         return self._row_property
 
 
-    def _read(self, iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok):
+    def _read(self, iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok, num_threads):
         raise NotImplementedError
     
     #!!check that views always return contiguous memory by default
-    def read(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False, _require_float32_64=True):
+    def read(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False, num_threads=None, _require_float32_64=True): #!!!cmk
         """Reads the SNP values and returns a :class:`.SnpData` (with :attr:`.SnpData.val` property containing a new ndarray of the SNP values).
 
         :param order: {'F' (default), 'C', 'A'}, optional -- Specify the order of the ndarray. If order is 'F' (default),
@@ -467,7 +467,7 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
         >>> # print np.may_share_memory(subset_snpdata.val, subsub_snpdata.val) # Do the two ndarray's share memory? They could. Currently they won't.       
         """
         dtype = np.dtype(dtype)
-        val = self._read(None, None, order, dtype, force_python_only, view_ok)
+        val = self._read(None, None, order, dtype, force_python_only, view_ok, num_threads)
         from pysnptools.snpreader import SnpData
         ret = SnpData(self.iid,self.sid,val,pos=self.pos,name=str(self),_require_float32_64=_require_float32_64)
         return ret
@@ -520,7 +520,7 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
         iid_indexer, snp_indexer = iid_indexer_and_snp_indexer
         return _SnpSubset(self, iid_indexer, snp_indexer)
 
-    def read_kernel(self, standardizer=None, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False):
+    def read_kernel(self, standardizer=None, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False, num_threads=None):
         """Returns a :class:`KernelData` such that the :meth:`KernelData.val` property will be a ndarray of the standardized SNP values multiplied with their transposed selves.
 
         :param standardizer: -- (required) Specify standardization to be applied before the matrix multiply. Any :class:`.Standardizer` may be used. Some choices include :class:`Standardizer.Identity` 
@@ -552,10 +552,10 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
 
         from pysnptools.kernelreader import SnpKernel
         snpkernel = SnpKernel(self,standardizer=standardizer,block_size=block_size)
-        kerneldata = snpkernel.read(order, dtype, force_python_only, view_ok)
+        kerneldata = snpkernel.read(order, dtype, force_python_only, view_ok, num_threads)
         return kerneldata
 
-    def kernel(self, standardizer, allowlowrank=False, block_size=10000, blocksize=None):
+    def kernel(self, standardizer, allowlowrank=False, block_size=10000, blocksize=None, num_threads=None): #!!!cmkdoc
         """ .. Warning:: Deprecated. Use :meth:`read_kernel` instead.
 
         Returns a ndarray of size iid_count x iid_count. The returned array has the value of the standardized SNP values multiplied with their transposed selves.
@@ -590,10 +590,10 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
         if blocksize is not None:
             warnings.warn(".kernel(...blocksize...) is deprecated. Use '.kernel(...block_size=...)", DeprecationWarning)
             block_size = blocksize
-        return self._read_kernel(standardizer, block_size=block_size)
+        return self._read_kernel(standardizer, block_size=block_size,num_threads=num_threads)
 
     @staticmethod
-    def _as_snpdata(snpreader, standardizer, force_python_only, order, dtype):
+    def _as_snpdata(snpreader, standardizer, force_python_only, order, dtype, num_threads):
         '''
         Like 'read' except (1) won't read if already a snpdata and (2) returns the standardizer
         '''
@@ -607,17 +607,17 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
              ):
             return snpreader, stdizer.Identity()
         else:
-            return snpreader.read(order=order,dtype=dtype).standardize(standardizer,return_trained=True,force_python_only=force_python_only)
+            return snpreader.read(order=order,dtype=dtype).standardize(standardizer,return_trained=True,force_python_only=force_python_only,num_threads=num_threads)
     
-    def _read_kernel(self, standardizer, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False, return_trained=False):
+    def _read_kernel(self, standardizer, block_size=None, order='A', dtype=np.float64, force_python_only=False, view_ok=False, return_trained=False, num_threads=None):
         '''
         Will respect the cupy environment variable.
         '''
         dtype = np.dtype(dtype)
         #Do all-at-once (not in blocks) if 1. No block size is given or 2. The #ofSNPs < Min(block_size,iid_count)
         if block_size is None or (self.sid_count <= block_size or self.sid_count <= self.iid_count):
-            train_data,trained_standardizer  = SnpReader._as_snpdata(self,standardizer=standardizer,dtype=dtype,order='A',force_python_only=force_python_only)
-            kernel = train_data._read_kernel(stdizer.Identity(), order=order,dtype=dtype,force_python_only=force_python_only,view_ok=False)
+            train_data,trained_standardizer  = SnpReader._as_snpdata(self,standardizer=standardizer,dtype=dtype,order='A',force_python_only=force_python_only, num_threads=num_threads)
+            kernel = train_data._read_kernel(stdizer.Identity(), order=order,dtype=dtype,force_python_only=force_python_only,view_ok=False, num_threads=num_threads)
             if return_trained:
                 return kernel, trained_standardizer
             else:
@@ -639,9 +639,9 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
 
             for start in range(0, self.sid_count, block_size):
                 ct += block_size
-                train_data,trained_standardizer = SnpReader._as_snpdata(self[:,start:start+block_size],standardizer=standardizer,dtype=dtype,order='A',force_python_only=force_python_only)
+                train_data,trained_standardizer = SnpReader._as_snpdata(self[:,start:start+block_size],standardizer=standardizer,dtype=dtype,order='A',force_python_only=force_python_only, num_threads=num_threads)
                 trained_standardizer_list.append(trained_standardizer)
-                K += train_data._read_kernel(stdizer.Identity(),block_size=None,order=order,dtype=dtype,force_python_only=force_python_only,view_ok=False)
+                K += train_data._read_kernel(stdizer.Identity(),block_size=None,order=order,dtype=dtype,force_python_only=force_python_only,view_ok=False, num_threads=num_threads)
                 if ct % block_size==0:
                     diff = time.time()-ts
                     if diff > 1: logging.info("read %s SNPs in %.2f seconds" % (ct, diff))

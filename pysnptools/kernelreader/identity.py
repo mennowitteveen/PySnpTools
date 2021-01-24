@@ -71,7 +71,7 @@ class Identity(KernelReader):
     def col(self):
         return self._row1
 
-    def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
+    def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok, num_threads):
         dtype = np.dtype(dtype)
         if row_index_or_none is None and col_index_or_none is None and self._row0 is self._row1: #read all of a square ID
             val = np.identity(self.row_count,dtype=dtype)
@@ -85,7 +85,7 @@ class Identity(KernelReader):
             big = np.zeros([self.row_count,self.col_count],dtype=dtype)
             common = set([PstReader._makekey(x) for x in self.row]) & set([PstReader._makekey(x) for x in self.col])
             big[self.row_to_index(common),self.col_to_index(common)] = 1.0
-            val, shares_memory = self._apply_sparray_or_slice_to_val(big, row_index_or_none, col_index_or_none, order, dtype, force_python_only)
+            val, shares_memory = self._apply_sparray_or_slice_to_val(big, row_index_or_none, col_index_or_none, order, dtype, force_python_only, num_threads)
             return val
 
     def __getitem__(self, iid_indexer_and_snp_indexer):

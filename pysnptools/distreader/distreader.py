@@ -216,11 +216,11 @@ class DistReader(PstReader):
         return self._row_property
 
 
-    def _read(self, iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok):
+    def _read(self, iid_index_or_none, sid_index_or_none, order, dtype, force_python_only, view_ok, num_threads):
         raise NotImplementedError
     
     #!!check that views always return contiguous memory by default
-    def read(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False):
+    def read(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False, num_threads=None): #!!!cmk doc
         """Reads the SNP values and returns a :class:`.DistData` (with :attr:`DistData.val` property containing a new 3D ndarray of the SNP distribution values).
 
         :param order: {'F' (default), 'C', 'A'}, optional -- Specify the order of the ndarray. If order is 'F' (default),
@@ -269,7 +269,7 @@ class DistReader(PstReader):
         >>> # print np.may_share_memory(subset_distdata.val, subsub_distdata.val) # Do the two ndarray's share memory? They could. Currently they won't.       
         """
         dtype = np.dtype(dtype)
-        val = self._read(None, None, order, dtype, force_python_only, view_ok)
+        val = self._read(None, None, order, dtype, force_python_only, view_ok, num_threads)
         from pysnptools.distreader import DistData
         ret = DistData(self.iid,self.sid,val,pos=self.pos,name=str(self))
         return ret
@@ -359,7 +359,7 @@ class DistReader(PstReader):
         return _DistSubset(self, iid_indexer, snp_indexer)
 
     @staticmethod
-    def _as_distdata(distreader, force_python_only, order, dtype):
+    def _as_distdata(distreader, force_python_only, order, dtype, num_threads):
         '''
         Like 'read' except won't read if already a DistData
         '''
@@ -369,7 +369,7 @@ class DistReader(PstReader):
         if hasattr(distreader,'val') and distreader.val.dtype==dtype and (order=="A" or (order=="C" and distreader.val.flags["C_CONTIGUOUS"]) or (order=="F" and distreader.val.flags["F_CONTIGUOUS"])):
             return distreader
         else:
-            return distreader.read(order=order,dtype=dtype,view_ok=True)
+            return distreader.read(order=order,dtype=dtype,view_ok=True, num_threads=num_threads)
     
     def copyinputs(self, copier):
         raise NotImplementedError

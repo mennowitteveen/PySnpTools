@@ -112,7 +112,7 @@ class SnpGen(SnpReader):
         copier.input(self._cache_file)
 
     # Most _read's support only indexlists or None, but this one supports Slices, too.
-    def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
+    def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok, num_threads):
         self._run_once()
         import pysnptools.util as pstutil
         dtype = np.dtype(dtype)

@@ -107,7 +107,7 @@ class DistGen(DistReader):
         copier.input(self._cache_file)
 
     # Most _read's support only indexlists or None, but this one supports Slices, too.
-    def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok):
+    def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok, num_threads):
         self._run_once()
         import pysnptools.util as pstutil
 
@@ -127,7 +127,7 @@ class DistGen(DistReader):
             batch_val = self._get_val(start,stop,dtype) # generate whole batch
             a = (batch_index==i) #e.g. [True,True,True,False,True], then [False,False,False,True,False]
             b = col_index[a]-start #e.g.  0,1,200,10, then 200
-            val[:,a,:] = batch_val[:,b,:] if row_index_or_none is None else pstutil.sub_matrix(batch_val, row_index_or_none, b)
+            val[:,a,:] = batch_val[:,b,:] if row_index_or_none is None else pstutil.sub_matrix(batch_val, row_index_or_none, b, num_threads=num_threads)
 
         return val
 

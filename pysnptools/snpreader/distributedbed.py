@@ -293,7 +293,7 @@ class _Distributed1Bed(SnpReader):
 
 class TestDistributedBed(unittest.TestCase):     
 
-    def cmktest1(self):
+    def test1(self):
         logging.info("in TestDistributedBed test1")
         from pysnptools.snpreader import SnpGen, DistributedBed
         snpgen = SnpGen(seed=0,iid_count=100,sid_count=100)

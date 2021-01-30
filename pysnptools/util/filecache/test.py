@@ -9,7 +9,7 @@ from pysnptools.util.filecache import LocalCache, PeerToPeer, Hashdown
 
 class TestFileCache(unittest.TestCase):
 
-    def cmktest_local_file(self):
+    def test_local_file(self):
         logging.info("test_local_file")
 
         temp_dir = self._temp_dir()
@@ -18,7 +18,7 @@ class TestFileCache(unittest.TestCase):
         self._write_and_read(storage_closure())
         self._distribute(storage_closure)
     
-    def cmktest_hashdown(self):
+    def test_hashdown(self):
         logging.info("test_hashdown")
 
         from pysnptools.util.filecache.test import TestFileCache as self
@@ -109,7 +109,7 @@ class TestFileCache(unittest.TestCase):
         
 
 
-    def cmktest_peer_to_peer(self):
+    def test_peer_to_peer(self):
         from pysnptools.util.filecache import ip_address_pid
         logging.info("test_peer_to_peer")
 
@@ -290,7 +290,7 @@ class TestFileCache(unittest.TestCase):
         #read on #2 and see that it is different.
         assert storage2.load("a/b/c.txt")=="There"
 
-    def cmktest_util_filecache_testmod(self):
+    def test_util_filecache_testmod(self):
         import doctest
         import pysnptools.util.filecache
         old_dir = os.getcwd()

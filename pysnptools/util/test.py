@@ -6,7 +6,7 @@ import unittest
 
 class TestUtilTools(unittest.TestCase):
 
-    def test_util_mapreduce1_testmod(self):
+    def cmktest_util_mapreduce1_testmod(self):
         import pysnptools.util.mapreduce1
         import pysnptools.util.pheno
         import pysnptools.util.mapreduce1.examples
@@ -26,7 +26,7 @@ class TestUtilTools(unittest.TestCase):
             assert result.failed == 0, "failed doc test: " + __file__
         os.chdir(old_dir)
 
-    def test_local(self):
+    def cmktest_local(self):
         from pysnptools.util.mapreduce1 import map_reduce
         from pysnptools.util.mapreduce1.runner import Local
         def holder1(n,runner):
@@ -37,7 +37,7 @@ class TestUtilTools(unittest.TestCase):
             return map_reduce(range(n),mapper=mapper1,reducer=reducer1,runner=runner)
         assert 328350 == holder1(100,Local())
         
-    def test_localinparts(self):
+    def cmktest_localinparts(self):
         from pysnptools.util.mapreduce1 import map_reduce
         from pysnptools.util.mapreduce1.runner import LocalInParts
         def holder1(n,runner):
@@ -52,7 +52,7 @@ class TestUtilTools(unittest.TestCase):
         holder1(100,LocalInParts(3,4)) #Run part 3 of 4 and save partial results to disk as '3.4.p'.
         assert 328350 == holder1(100,LocalInParts(4,4)) #Read the all partial results and then apply the reduce function and return the result.
 
-    def test_localmultiproc(self):
+    def cmktest_localmultiproc(self):
         from pysnptools.util.mapreduce1 import map_reduce
         from pysnptools.util.mapreduce1.runner import LocalMultiProc
         def holder1(n,runner):
@@ -63,7 +63,7 @@ class TestUtilTools(unittest.TestCase):
             return map_reduce(range(n),mapper=mapper1,reducer=reducer1,runner=runner)
         assert 328350 == holder1(100,LocalMultiProc(4))
 
-    def test_localmultithread(self):
+    def cmktest_localmultithread(self):
         from pysnptools.util.mapreduce1 import map_reduce
         from pysnptools.util.mapreduce1.runner import LocalMultiThread
         def holder1(n,runner):
@@ -74,7 +74,7 @@ class TestUtilTools(unittest.TestCase):
             return map_reduce(range(n),mapper=mapper1,reducer=reducer1,runner=runner)
         assert 328350 == holder1(100,LocalMultiThread(4))
         
-    def test_localinparts_with_weights(self):
+    def cmktest_localinparts_with_weights(self):
         from pysnptools.util.mapreduce1 import map_reduce
         from pysnptools.util.mapreduce1.runner import LocalInParts
         def holder1(n,runner):

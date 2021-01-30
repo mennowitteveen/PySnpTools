@@ -10,8 +10,7 @@ import inspect
 import warnings
 from pysnptools.util.intrangeset import IntRangeSet
 print(os.getcwd())
-from bed_reader import get_num_threads
-import rust_bed_reader
+from bed_reader import get_num_threads, subset_f64_f64, subset_f32_f64, subset_f32_f32
 
 def _testtest(data, iididx):
     return (data[0][iididx], data[1][iididx])
@@ -335,7 +334,7 @@ def sub_matrix(val, row_index_list, col_index_list, order="A", dtype=np.float64,
     if val.flags["F_CONTIGUOUS"] or  val.flags["C_CONTIGUOUS"]:
         if val.dtype == np.float64:
             sub_val = create_sub_val(np.float64)
-            rust_bed_reader.subset_f64_f64(
+            subset_f64_f64(
                     val,
                     row_index_list,
                     col_index_list,
@@ -354,7 +353,7 @@ def sub_matrix(val, row_index_list, col_index_list, order="A", dtype=np.float64,
         elif val.dtype == np.float32:
             if dtype == np.float64:
                 sub_val = create_sub_val(np.float64)
-                rust_bed_reader.subset_f32_f64(
+                subset_f32_f64(
                         val,
                         row_index_list,
                         col_index_list,
@@ -363,7 +362,7 @@ def sub_matrix(val, row_index_list, col_index_list, order="A", dtype=np.float64,
                     )
             elif dtype == np.float32:
                 sub_val = create_sub_val(np.float32)
-                rust_bed_reader.subset_f32_f32(
+                subset_f32_f32(
                         val,
                         row_index_list,
                         col_index_list,

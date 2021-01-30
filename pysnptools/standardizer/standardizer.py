@@ -1,8 +1,7 @@
 import numpy as np
 import logging
 import pysnptools.util as pstutil
-from bed_reader import get_num_threads
-import rust_bed_reader
+from bed_reader import get_num_threads, standardize_f64, standardize_f32
 
 
 class Standardizer(object):
@@ -108,13 +107,13 @@ class Standardizer(object):
 
             if snps.dtype == np.float64:
                 if (snps.flags['F_CONTIGUOUS'] or snps.flags['C_CONTIGUOUS']) and (snps.flags["OWNDATA"] or snps.base.nbytes == snps.nbytes): #!!create a method called is_single_segment
-                    rust_bed_reader.standardize_f64(snps,is_beta,a,b,apply_in_place,use_stats,stats,num_threads)
+                    standardize_f64(snps,is_beta,a,b,apply_in_place,use_stats,stats,num_threads)
                     return stats
                 else:
                     logging.info("Array is not contiguous, so will standardize with python only instead of C++")
             elif snps.dtype == np.float32:
                 if (snps.flags['F_CONTIGUOUS'] or snps.flags['C_CONTIGUOUS']) and (snps.flags["OWNDATA"] or snps.base.nbytes == snps.nbytes):
-                    rust_bed_reader.standardize_f32(snps,is_beta,a,b,apply_in_place,use_stats,stats,num_threads)
+                    standardize_f32(snps,is_beta,a,b,apply_in_place,use_stats,stats,num_threads)
                     return stats
                 else:
                     logging.info("Array is not contiguous, so will standardize with python only instead of C++")

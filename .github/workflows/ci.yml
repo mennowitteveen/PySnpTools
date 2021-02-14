@@ -43,11 +43,11 @@ jobs:
         python setup.py sdist
 
     - name: Test
-      env:
-        PYTHONPATH: ${{ env.GITHUB_WORKSPACE }}
+      shell: pwsh
       run: |
         pip uninstall pysnptools --yes
-        echo %pythonpath%
+        $env:pythonpath = '${{ env.GITHUB_WORKSPACE }}'
+        echo $env:pythonpath
         python tests/test.py
 
     - name: Save SDist

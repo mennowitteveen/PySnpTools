@@ -416,7 +416,7 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
         raise NotImplementedError
     
     #!!check that views always return contiguous memory by default
-    def read(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False, num_threads=None, _require_float32_64=True): #!!!cmk
+    def read(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False, num_threads=None, _require_float32_64=True):
         """Reads the SNP values and returns a :class:`.SnpData` (with :attr:`.SnpData.val` property containing a new ndarray of the SNP values).
 
         :param order: {'F' (default), 'C', 'A'}, optional -- Specify the order of the ndarray. If order is 'F' (default),
@@ -443,6 +443,11 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
             the others. Also keep in mind that :meth:`read` relies on ndarray's mechanisms to decide whether to actually
             share memory and so it may ignore your suggestion and allocate a new ndarray anyway.
         :type view_ok: bool
+
+        :param num_threads: optional -- The number of threads with which to read data. Defaults to all available
+            processors. Can also be set with these environment variables (listed in priority order):
+            'PST_NUM_THREADS', 'NUM_THREADS', 'MKL_NUM_THREADS'.
+        :type num_threads: None or int
 
         :rtype: :class:`.SnpData`
 
@@ -555,7 +560,7 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
         kerneldata = snpkernel.read(order, dtype, force_python_only, view_ok, num_threads)
         return kerneldata
 
-    def kernel(self, standardizer, allowlowrank=False, block_size=10000, blocksize=None, num_threads=None): #!!!cmkdoc
+    def kernel(self, standardizer, allowlowrank=False, block_size=10000, blocksize=None, num_threads=None):
         """ .. Warning:: Deprecated. Use :meth:`read_kernel` instead.
 
         Returns a ndarray of size iid_count x iid_count. The returned array has the value of the standardized SNP values multiplied with their transposed selves.
@@ -566,6 +571,12 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
 
         :param block_size: optional -- Default of 10000. None means to load all. Suggested number of sids to read into memory at a time.
         :type block_size: int or None
+
+        :param num_threads: optional -- The number of threads with which to standardize data. Defaults to all available
+            processors. Can also be set with these environment variables (listed in priority order):
+            'PST_NUM_THREADS', 'NUM_THREADS', 'MKL_NUM_THREADS'.
+        :type num_threads: None or int
+
 
         :rtype: ndarray of size :attr:`.iid_count` x :attr:`.iid_count`
 

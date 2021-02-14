@@ -396,8 +396,6 @@ class PstReader(object):
 
         :Example:
 
-        :Example:
-
         >>> from pysnptools.pstreader import PstNpz
         >>> from pysnptools.util import example_file # Download and return local file name
         >>> pstnpz_file = example_file('tests/datasets/all_chr.maf0.001.N300.pst.npz')
@@ -416,7 +414,7 @@ class PstReader(object):
 
 
     #!!check that views always return contiguous memory by default
-    def read(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False, num_threads=None): #!!!cmk doc
+    def read(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False, num_threads=None):
         """Reads the matrix values and returns a :class:`.PstData` (with :attr:`PstData.val` property containing a new ndarray of the matrix values).
 
         :param order: {'F' (default), 'C', 'A'}, optional -- Specify the order of the ndarray. If order is 'F' (default),
@@ -442,6 +440,12 @@ class PstReader(object):
             the others. Also keep in mind that :meth:`read` relies on ndarray's mechanisms to decide whether to actually
             share memory and so it may ignore your suggestion and allocate a new ndarray anyway.
         :type view_ok: bool
+
+        :param num_threads: optional -- The number of threads with which to read data. Defaults to all available
+            processors. Can also be set with these environment variables (listed in priority order):
+            'PST_NUM_THREADS', 'NUM_THREADS', 'MKL_NUM_THREADS'.
+        :type num_threads: None or int
+
 
         :rtype: :class:`.PstData`
 
@@ -597,8 +601,8 @@ class PstReader(object):
     @staticmethod
     def _make_sparray_from_sparray_or_slice(count, indexer):
         if isinstance(indexer,slice):
-            return np.arange(*indexer.indices(count),dtype="uint64")
-        result = np.ascontiguousarray((np.arange(count,dtype="uint64")[indexer]).reshape(-1),dtype="uint64")
+            return np.arange(*indexer.indices(count),dtype="uintp")
+        result = np.ascontiguousarray((np.arange(count,dtype="uintp")[indexer]).reshape(-1),dtype="uintp")
         return result
 
     @staticmethod

@@ -180,12 +180,11 @@ class TestPySnpTools(unittest.TestCase):
         m = np.random.random((100,1000))
         from pysnptools.standardizer import DiagKtoN
         s = DiagKtoN()
-        # !!!cmkrust
         s.standardize(m)
-        #K = m.dot(m.T)
-        #sum_diag = np.sum(np.diag(K))
+        K = m.dot(m.T)
+        sum_diag = np.sum(np.diag(K))
         
-        #np.testing.assert_almost_equal(100, sum_diag)
+        np.testing.assert_almost_equal(100, sum_diag)
         
     def test_c_reader_bed(self):
         snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
@@ -764,7 +763,46 @@ class TestPySnpTools(unittest.TestCase):
 
         os.chdir(previous_wd)
 
+    def test_writes(self):
+        from pysnptools.snpreader import SnpData, SnpHdf5, SnpNpz, SnpMemMap
 
+        the_class_and_suffix_list = [(SnpMemMap,"memmap",None,None)]
+        
+        #===================================
+        #    Starting main function
+        #===================================
+        logging.info("starting 'test_writes'")
+        np.random.seed(0)
+        output_template = "tempdir/snpreader/writes.{0}.{1}"
+        create_directory_if_necessary(output_template.format(0,"npz"))
+        for row_count in [1]:
+            for col_count in [4]:
+                val = np.random.randint(0,4,size=(row_count,col_count))*1.0
+                val[val==3]=np.NaN
+                row = [('0','0'),('1','1'),('2','2'),('3','3'),('4','4')][:row_count]
+                col = ['s0','s1','s2','s3','s4'][:col_count]
+                for is_none in [True]:
+                    row_prop = None
+                    col_prop = None
+                    snpdata = SnpData(iid=row,sid=col,val=val,pos=col_prop)
+                    for the_class,suffix,constructor,writer in the_class_and_suffix_list:
+                        constructor = (lambda filename: the_class(filename))
+                        writer = (lambda filename,_data: the_class.write(filename,_data))
+
+                        filename = output_template.format("debug",suffix)
+                        logging.info(filename)
+                        ret = writer(filename,snpdata)
+                        assert ret is not None
+                        for subsetter in [np.s_[::2,::3]]:
+                            reader = constructor(filename)
+                            _fortesting_JustCheckExists().input(reader)
+                            subreader = reader if subsetter is None else reader[subsetter[0],subsetter[1]]
+                            readdata = subreader.read(order='C')
+                        try:
+                            os.remove(filename)
+                        except:
+                            pass
+        logging.info("done with 'test_writes'")
 
     def test_writes(self):
         from pysnptools.snpreader import SnpData, SnpHdf5, SnpNpz, SnpMemMap
@@ -1127,6 +1165,6 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
     suites = getTestSuite()
-    r = unittest.TextTestRunner(failfast=True) # !!!cmkrust
+    r = unittest.TextTestRunner(failfast=False)
     ret = r.run(suites)
     assert ret.wasSuccessful()

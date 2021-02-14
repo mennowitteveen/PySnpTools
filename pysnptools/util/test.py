@@ -108,6 +108,20 @@ class TestUtilTools(unittest.TestCase):
         result = holder1(100,runner)
         assert result == 0*1+1*97+2*1+3*1+4
 
+    def test_sub_matrix(self):
+        import pysnptools.util as pstutil
+        np.random.seed(0) # set seed so that results are deterministic
+        matrix = np.random.rand(12,7) # create a 12 x 7 ndarray
+        submatrix = pstutil.sub_matrix(matrix,[0,2,11],[6,5,4,3,2,1,0])
+        assert  matrix[2,0] == submatrix[1,6] #The row # 2 is now #1, the column #0 is now #6.
+
+        np.random.seed(0) # set seed so that results are deterministic
+        matrix = np.random.rand(12,7,3) # create a 12 x 7 ndarray
+        submatrix = pstutil.sub_matrix(matrix,[0,2,11],[6,5,4,3,2,1,0])
+        assert  matrix[2,0,1] == submatrix[1,6,1] #The row # 2 is now #1, the column #0 is now #6.
+
+
+
 def getTestSuite():
     """
     set up composite test suite

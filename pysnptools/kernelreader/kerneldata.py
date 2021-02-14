@@ -133,7 +133,7 @@ class KernelData(KernelReader,PstData):
 
 
     #!! SnpData.standardize() changes the str to help show that the data has been standardized. Should this to that too?
-    def standardize(self, standardizer=DiagKtoN(), return_trained=False, force_python_only=False):
+    def standardize(self, standardizer=DiagKtoN(), return_trained=False, force_python_only=False, num_threads=None):
         """Does in-place standardization of the in-memory
         kernel data. The method multiples the values with a scalar factor such that the diagonal sums to iid_count. Although it works in place, for convenience
         it also returns the KernelData.
@@ -156,7 +156,7 @@ class KernelData(KernelReader,PstData):
         >>> print(np.diag(kerneldata2.val).sum())
         500.0
         """
-        return standardizer.standardize(self, return_trained=return_trained, force_python_only=force_python_only)
+        return standardizer.standardize(self, return_trained=return_trained, force_python_only=force_python_only,num_threads=num_threads)
 
 
 if __name__ == "__main__":

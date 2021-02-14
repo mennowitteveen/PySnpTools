@@ -101,7 +101,7 @@ class SnpKernel(KernelReader):
             return KernelReader.__getitem__(self,iid_indexer_and_snp_indexer)
 
 
-    def _read_with_standardizing(self, to_kerneldata, kernel_standardizer=DiagKtoN(), return_trained=False,num_threads=None): #!!!cmk rust
+    def _read_with_standardizing(self, to_kerneldata, kernel_standardizer=DiagKtoN(), return_trained=False, num_threads=None):
         '''
         Reads a SnpKernel with two cases
               If returning KernelData,
@@ -150,7 +150,7 @@ class SnpKernel(KernelReader):
         return self.snpreader.pos
 
     #LATER this needs a test
-    def read_snps(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False, num_threads=None): #!!!cmk doc
+    def read_snps(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False, num_threads=None):
         """Reads the SNP values, applies the standardizer, and returns a :class:`.SnpData`.
 
         :param order: {'F' (default), 'C', 'A'}, optional -- Specify the order of the ndarray. If order is 'F' (default),
@@ -175,6 +175,11 @@ class SnpKernel(KernelReader):
             the others. Also keep in mind that :meth:`read` relies on ndarray's mechanisms to decide whether to actually
             share memory and so it may ignore your suggestion and allocate a new ndarray anyway.
         :type view_ok: bool
+
+        :param num_threads: optional -- The number of threads with which to read data. Defaults to all available
+            processors. Can also be set with these environment variables (listed in priority order):
+            'PST_NUM_THREADS', 'NUM_THREADS', 'MKL_NUM_THREADS'.
+        :type num_threads: None or int
 
         :rtype: :class:`.SnpData`
 

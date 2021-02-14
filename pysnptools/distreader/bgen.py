@@ -106,7 +106,8 @@ class Bgen(DistReader):
                        (Default: :meth:`bgen.default_sid_function`.) Can also be the string 'id' or 'rsid', which is faster than using a function.
                      * **sample** (optional, string) -- A GEN sample file. If given, overrides information in \*.bgen file.
                      * **num_threads** (optinal, int) -- The number of threads with which to read data. Defaults to all available processors.
-                            Can also be set with the 'MKL_NUM_THREADS' environment variable. #!!!cmk
+                            Can also be set with these environment variables (listed in priority order):
+                            'PST_NUM_THREADS', 'NUM_THREADS', 'MKL_NUM_THREADS'.
                      * **fresh_properties** (optional, bool) -- When true (default), memory will be allocated for the iid, sid, and
                        pos properties. This is safe. When false, the properties will use the Bgen's on-disk 'memmap'. That saves
                        memory, but is only safe if the Bgen object is still around when the properties are used.
@@ -324,7 +325,7 @@ class Bgen(DistReader):
         dtype,
         force_python_only,
         view_ok,
-        num_threads,#!!!cmk doc
+        num_threads,
     ):
         self._run_once()
 
@@ -333,7 +334,7 @@ class Bgen(DistReader):
 
         num_threads = get_num_threads(
                 self._num_threads if num_threads is None else num_threads
-            )  # !!!cmk doc
+            )
 
 
         val = self._open_bgen.read(

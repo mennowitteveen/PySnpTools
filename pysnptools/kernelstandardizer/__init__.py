@@ -41,7 +41,7 @@ class KernelStandardizer(object):
 
     Details of Methods & Properties:
     '''
-    def standardize(self, kerneldata, return_trained=False, force_python_only=False):
+    def standardize(self, kerneldata, return_trained=False, force_python_only=False, num_threads=None):
         '''
         Applies standardization, in place, to :class:`.KernelData`. For convenience also returns the :class:`KernelData`.
 
@@ -54,6 +54,12 @@ class KernelStandardizer(object):
         :param force_python_only: optional -- If False (default), may use outside library code. If True, requests that the read
             be done without outside library code.
         :type force_python_only: bool
+
+        :param num_threads: optional -- The number of threads with which to standardize data. Defaults to all available
+            processors. Can also be set with these environment variables (listed in priority order):
+            'PST_NUM_THREADS', 'NUM_THREADS', 'MKL_NUM_THREADS'.
+        :type num_threads: None or int
+
 
         :rtype: :class:`.KernelData`, (optional) constant :class:`.KernelStandardizer`
 
@@ -82,7 +88,7 @@ class Identity(KernelStandardizer):
     def __init__(self):
         super(Identity, self).__init__()
 
-    def standardize(self, kerneldata, return_trained=False, force_python_only=False):
+    def standardize(self, kerneldata, return_trained=False, force_python_only=False, num_threads=None):
         if return_trained:
             return kerneldata, self
         else:

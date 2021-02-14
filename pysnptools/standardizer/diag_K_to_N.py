@@ -63,7 +63,7 @@ class DiagKtoN(Standardizer):
         else:
             return kerneldata
 
-    def standardize(self, input, block_size=None, return_trained=False, force_python_only=False, num_threads=None): #!!!cmk document
+    def standardize(self, input, block_size=None, return_trained=False, force_python_only=False, num_threads=None):
         from pysnptools.kernelreader import KernelReader
         if block_size is not None:
             warnings.warn("block_size is deprecated (and not needed, since standardization is in-place", DeprecationWarning)
@@ -115,7 +115,7 @@ class DiagKtoNTrained(Standardizer):
         super(DiagKtoNTrained, self).__init__()
         self.factor = factor
 
-    def standardize(self, input, block_size=None, return_trained=False, force_python_only=False, num_threads=None): #!!!cmk doc
+    def standardize(self, input, block_size=None, return_trained=False, force_python_only=False, num_threads=None):
         if block_size is not None:
             warnings.warn("block_size is deprecated (and not needed, since standardization is in-place", DeprecationWarning)
 

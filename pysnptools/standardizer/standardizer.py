@@ -56,7 +56,7 @@ class Standardizer(object):
     def __init__(self):
         super(Standardizer, self).__init__()
 
-    def standardize(self, snps, block_size=None, return_trained=False, force_python_only=False, num_threads=None): #!!!cmk doc
+    def standardize(self, snps, block_size=None, return_trained=False, force_python_only=False, num_threads=None):
         '''
         Applies standardization, in place, to :class:`.SnpData` (or a NumPy array). For convenience also returns the :class:`.SnpData` (or a NumPy array).
 
@@ -73,6 +73,11 @@ class Standardizer(object):
             be done without outside library code.
         :type force_python_only: bool
 
+        :param num_threads: optional -- The number of threads with which to standardize data. Defaults to all available
+            processors. Can also be set with these environment variables (listed in priority order):
+            'PST_NUM_THREADS', 'NUM_THREADS', 'MKL_NUM_THREADS'.
+        :type num_threads: None or int
+
         :rtype: :class:`.SnpData` (or a NumPy array), (optional) constant :class:`.Standardizer`
 
         '''
@@ -86,7 +91,6 @@ class Standardizer(object):
         '''
         When snps is a cupy ndarray, will use cupy to compute new stats for unit. (Other paths are not defined for cupy)
         '''
-        # !!!cmkrust from bed_reader import wrap_plink_parser_onep
         xp = pstutil.get_array_module(snps)
 
         assert snps.flags["C_CONTIGUOUS"] or snps.flags["F_CONTIGUOUS"], "Expect snps to be order 'C' or order 'F'"

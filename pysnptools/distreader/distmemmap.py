@@ -143,7 +143,7 @@ class DistMemMap(PstMemMap,DistData):
 
 
     @staticmethod
-    def write(filename, distreader, order='A', dtype=None, block_size=None, num_threads=None): #!!!cmk doc
+    def write(filename, distreader, order='A', dtype=None, block_size=None, num_threads=None):
         """Writes a :class:`DistReader` to :class:`DistMemMap` format.
 
         :param filename: the name of the file to create
@@ -158,6 +158,10 @@ class DistMemMap(PstMemMap,DistData):
         :type dtype: data-type
         :param block_size: The number of SNPs to read in a batch from *distreader*. Defaults to a *block_size* such that *block_size* \* *iid_count* is about 100,000.
         :type block_size: number
+        :param num_threads: optional -- The number of threads with which to write data. Defaults to all available
+            processors. Can also be set with these environment variables (listed in priority order):
+            'PST_NUM_THREADS', 'NUM_THREADS', 'MKL_NUM_THREADS'.
+        :type num_threads: None or int
         :rtype: :class:`.DistMemMap`
 
         >>> import pysnptools.util as pstutil

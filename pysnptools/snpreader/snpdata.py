@@ -135,7 +135,7 @@ class SnpData(PstData,SnpReader):
         return trained_standardizer
 
     #LATER should there be a single warning if Unit() finds and imputes NaNs?
-    def standardize(self, standardizer=Unit(), block_size=None, return_trained=False, force_python_only=False,num_threads=None): #!!!cmk doc
+    def standardize(self, standardizer=Unit(), block_size=None, return_trained=False, force_python_only=False, num_threads=None):
         """Does in-place standardization of the in-memory
         SNP data. By default, it applies 'Unit' standardization, that is: the values for each SNP will have mean zero and standard deviation 1.0.
         NaN values are then filled with zero, the mean (consequently, if there are NaN values, the final standard deviation will not be zero.
@@ -155,6 +155,11 @@ class SnpData(PstData,SnpReader):
 
         :param force_python_only: optional -- If true, will use pure Python instead of faster C++ libraries.
         :type force_python_only: bool
+
+        :param num_threads: optional -- The number of threads with which to standardize data. Defaults to all available
+            processors. Can also be set with these environment variables (listed in priority order):
+            'PST_NUM_THREADS', 'NUM_THREADS', 'MKL_NUM_THREADS'.
+        :type num_threads: None or int
 
         :rtype: :class:`.SnpData` (standardizes in place, but for convenience, returns 'self')
 

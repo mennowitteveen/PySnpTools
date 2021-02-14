@@ -19,14 +19,13 @@ class Unit(Standardizer):
     >>> print('{0:.6f}'.format(snpdata1.val[0,0]))
     0.229416
     """
-    def __init__(self, num_threads=None): # !!!cmk doc
-        self._num_threads = num_threads
+    def __init__(self):
         super(Unit, self).__init__()
 
     def __repr__(self):
         return "{0}()".format(self.__class__.__name__)
 
-    def standardize(self, snps, block_size=None, return_trained=False, force_python_only=False, num_threads=None): #!!!cmk doc
+    def standardize(self, snps, block_size=None, return_trained=False, force_python_only=False, num_threads=None):
         '''
         When cupy environment variable is set, will use cupy.
         '''
@@ -41,8 +40,6 @@ class Unit(Standardizer):
         else:
             warnings.warn("standardizing an ndarray instead of a SnpData is deprecated", DeprecationWarning)
             val = snps
-
-        num_threads = self._num_threads if num_threads is None else num_threads
 
         stats = self._standardize_unit_and_beta(val, is_beta=False, a=np.nan, b=np.nan, apply_in_place=True,
                                                 use_stats=False,stats=None,num_threads=num_threads, force_python_only=force_python_only)

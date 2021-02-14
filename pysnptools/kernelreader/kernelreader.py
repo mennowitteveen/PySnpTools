@@ -242,7 +242,7 @@ class KernelReader(PstReader):
 
 
     #!!check that views always return contiguous memory by default
-    def read(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False, num_threads=None): #!!!cmk doc
+    def read(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False, num_threads=None):
         """Reads the kernel values and returns a :class:`.KernelData` (with :attr:`KernelData.val` property containing a new ndarray of the kernel values).
 
         :param order: {'F' (default), 'C', 'A'}, optional -- Specify the order of the ndarray. If order is 'F' (default),
@@ -259,7 +259,6 @@ class KernelReader(PstReader):
             be done without outside library code.
         :type force_python_only: bool
 
-
         :param view_ok: optional -- If False (default), allocates new memory for the :attr:`KernelData.val`'s ndarray. If True,
             if practical and reading from a :class:`KernelData`, will return a new 
             :class:`KernelData` with a ndarray shares memory with the original :class:`KernelData`.
@@ -268,6 +267,11 @@ class KernelReader(PstReader):
             the others. Also keep in mind that :meth:`read` relies on ndarray's mechanisms to decide whether to actually
             share memory and so it may ignore your suggestion and allocate a new ndarray anyway.
         :type view_ok: bool
+
+        :param num_threads: optional -- The number of threads with which to standardize data. Defaults to all available
+            processors. Can also be set with these environment variables (listed in priority order):
+            'PST_NUM_THREADS', 'NUM_THREADS', 'MKL_NUM_THREADS'.
+        :type num_threads: None or int
 
         :rtype: :class:`.KernelData`
 

@@ -22,11 +22,10 @@ class Beta(Standardizer):
     >>> print('{0:.6f}'.format(snpdata1.val[0,0]))
     0.680802
     '''
-    def __init__(self,a,b,num_threads=None): # !!!cmk doc
+    def __init__(self,a,b):
         super(Beta, self).__init__()
         self.a = a
         self.b = b
-        self._num_threads = num_threads
 
     def __repr__(self): 
         return "{0}(a={1},b={2})".format(self.__class__.__name__,self.a,self.b)
@@ -41,7 +40,6 @@ class Beta(Standardizer):
             warnings.warn("standardizing an nparray instead of a SnpData is deprecated", DeprecationWarning)
             val = snpdata
 
-        num_threads = self._num_threads if num_threads is None else num_threads
         stats = self._standardize_unit_and_beta(val, is_beta=True, a=self.a, b=self.b, apply_in_place=True, use_stats=False,
                                                 stats=None,num_threads=num_threads,force_python_only=force_python_only)
         if return_trained:

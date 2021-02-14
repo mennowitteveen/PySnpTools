@@ -271,7 +271,7 @@ def intersect_ids(idslist):
 
 def sub_matrix(val, row_index_list, col_index_list, order="A", dtype=np.float64, num_threads=None):
     """
-    Efficiently creates a sub-matrix from a 2-D ndarray.
+    Efficiently creates a sub-matrix from a 2-D or 3-D ndarray.
 
     :param val: The ndarray from which to copy.
     :type val: ndarray
@@ -286,6 +286,10 @@ def sub_matrix(val, row_index_list, col_index_list, order="A", dtype=np.float64,
     :type order: string or None
     :param dtype: {numpy.float64 (default), numpy.float32}, optional -- The data-type for sub-matrix created.
     :type dtype: data-type
+    :param num_threads: optional -- The number of threads with which to work. Defaults to all available
+        processors. Can also be set with these environment variables (listed in priority order):
+        'PST_NUM_THREADS', 'NUM_THREADS', 'MKL_NUM_THREADS'.
+    :type num_threads: None or int
 
     :rtype: ndarray
 
@@ -299,9 +303,8 @@ def sub_matrix(val, row_index_list, col_index_list, order="A", dtype=np.float64,
     >>> print(matrix[2,0] == submatrix[1,6]) #The row # 2 is now #1, the column #0 is now #6.
     True
 
-    Note: Behind the scenes, for performance, this function selects and then calls one of 4 Rust helper functions.
+    Note: Behind the scenes, for performance, this function calls a Rust helper function.
     """
-    # !!!cmk from bed_reader import wrap_matrix_subset
 
     if order == "A":
         if val.flags["F_CONTIGUOUS"]:
@@ -318,7 +321,7 @@ def sub_matrix(val, row_index_list, col_index_list, order="A", dtype=np.float64,
         val_shape = 1
         val = val.reshape(iid_count, sid_count, 1)
     else:
-        assert original_dimensions == 3, "Expect val dimensions of 2 or 3" # !!!cmk be sure to test this on 3 dimensions
+        assert original_dimensions == 3, "Expect val dimensions of 2 or 3"
         iid_count, sid_count, val_shape = val.shape
 
     def create_sub_val(dtype):
@@ -331,7 +334,9 @@ def sub_matrix(val, row_index_list, col_index_list, order="A", dtype=np.float64,
 
     logging.debug("About to call Rust matrixSubset")
     num_threads = get_num_threads(num_threads)
-    if val.flags["F_CONTIGUOUS"] or  val.flags["C_CONTIGUOUS"]:
+    if val.flags["F_CONTIGUOUS"] or val.flags["C_CONTIGUOUS"]:
+        row_index_list = np.asarray(row_index_list,dtype=np.uintp)
+        col_index_list = np.asarray(col_index_list,dtype=np.uintp)
         if val.dtype == np.float64:
             sub_val = create_sub_val(np.float64)
             subset_f64_f64(
@@ -344,8 +349,8 @@ def sub_matrix(val, row_index_list, col_index_list, order="A", dtype=np.float64,
             if dtype == np.float64:
                 pass
             elif dtype == np.float32:
-                warnings.warn("Converting float64 to float32 can cause loss of information") # !!!cmk test this
-                sub_val = sub_val.astype(dtype,order) #!!!cmk ,casting="same_kind")
+                warnings.warn("Converting float64 to float32 can cause loss of information")
+                sub_val = sub_val.astype(dtype,order)
             else:
                 raise Exception(
                     "dtype '{0}' not known, only float64 and float32".format(dtype)

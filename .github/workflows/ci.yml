@@ -47,6 +47,7 @@ jobs:
       run: |
         pip uninstall pysnptools --yes
         pip install -r requirements.txt --user
+        pip install --index-url https://test.pypi.org/simple/ bed-reader --user
         export PYTHONPATH=${GITHUB_WORKSPACE}
         echo ${PYTHONPATH}
         python tests/test.py

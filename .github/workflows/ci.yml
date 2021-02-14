@@ -33,7 +33,7 @@ jobs:
 
     - name: Test
       run: |
-        python test.py
+        python tests/test.py
 
     - name: Save SDist
       if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9'

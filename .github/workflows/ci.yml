@@ -44,9 +44,10 @@ jobs:
 
     - name: Test
       env:
-        PYTHONPATH: ${GITHUB_WORKFLOW}
+        PYTHONPATH: ${{ env.GITHUB_WORKSPACE }}
       run: |
         pip uninstall pysnptools --yes
+        echo %pythonpath%
         python tests/test.py
 
     - name: Save SDist

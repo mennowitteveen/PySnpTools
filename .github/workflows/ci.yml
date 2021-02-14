@@ -46,7 +46,14 @@ jobs:
       shell: bash
       run: |
         pip uninstall pysnptools --yes
-        pip install -r requirements.txt --user
+        pip install scipy>=1.1.0 --user
+        pip install numpy>=1.11.3 --user
+        pip install psutil>=5.6.7 --user
+        pip install pandas>=1.1.1 --user
+        pip install h5py>=2.10.0 --user
+        pip install dill>=0.2.9 --user
+        pip install bgen-reader==4.0.6 --user
+        pip install wheel>=0.34.2 --user
         pip install --index-url https://test.pypi.org/simple/ bed-reader --user
         export PYTHONPATH=${GITHUB_WORKSPACE}
         echo ${PYTHONPATH}

@@ -24,6 +24,7 @@ jobs:
         pip install -U pip --user
         pip install -U pytest --user
         pip install -r requirements.txt --user
+        pip install --index-url https://test.pypi.org/simple/ bed-reader #cmk
 
     - name: Install Project
       run: |

@@ -46,7 +46,7 @@ jobs:
       shell: bash
       run: |
         pip uninstall pysnptools --yes
-        export PYTHONPATH=${PYTHONPATH}:${GITHUB_WORKSPACE}
+        export PYTHONPATH=${GITHUB_WORKSPACE}
         echo ${PYTHONPATH}
         python tests/test.py
 

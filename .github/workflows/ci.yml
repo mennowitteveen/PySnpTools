@@ -27,7 +27,7 @@ jobs:
       run: conda list
 
     - name: Install Prerequisites
-      shell: bash
+      shell: bash -l {0}
       run: |
         conda install -y pytest
         # cmk pip install -r requirements.txt --user
@@ -42,14 +42,14 @@ jobs:
         pip install --index-url https://test.pypi.org/simple/ bed-reader
 
     - name: Install Project
-      shell: bash
+      shell: bash -l {0}
       run: |
         python --version
         pip install .
         python setup.py sdist
 
     - name: Test
-      shell: bash
+      shell: bash -l {0}
       run: |
         pip uninstall pysnptools --yes
         export PYTHONPATH=${GITHUB_WORKSPACE}

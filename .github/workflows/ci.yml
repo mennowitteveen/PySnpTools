@@ -6,8 +6,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
-        python-version: [3.7, 3.8 ,3.9]
+        os: [ubuntu-latest] #, windows-latest, macOS-latest]
+        python-version: [3.7] #, 3.8 ,3.9]
     runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout
@@ -21,6 +21,7 @@ jobs:
 
     - name: Install Prerequisites
       run: |
+        conda activate test
         pip install -U pip --user
         pip install -U pytest --user
         # cmk pip install -r requirements.txt --user
@@ -38,6 +39,7 @@ jobs:
 
     - name: Install Project
       run: |
+        conda activate test
         python --version
         pip install .
         python setup.py sdist
@@ -45,6 +47,7 @@ jobs:
     - name: Test
       shell: bash
       run: |
+        conda activate test
         pip uninstall pysnptools --yes
         pip install scipy>=1.1.0 --user
         pip install numpy>=1.11.3 --user

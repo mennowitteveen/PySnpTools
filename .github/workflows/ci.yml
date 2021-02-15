@@ -19,10 +19,14 @@ jobs:
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
 
-    - name: Install Prerequisites
+    - name: Init conda
       shell: bash
       run: |
         conda init bash
+
+    - name: Install Prerequisites
+      shell: bash
+      run: |
         conda activate test
         pip install -U pip --user
         pip install -U pytest --user
@@ -42,7 +46,6 @@ jobs:
     - name: Install Project
       shell: bash
       run: |
-        conda init bash
         conda activate test
         python --version
         pip install .
@@ -51,7 +54,6 @@ jobs:
     - name: Test
       shell: bash
       run: |
-        conda init bash
         conda activate test
         pip uninstall pysnptools --yes
         pip install scipy>=1.1.0 --user

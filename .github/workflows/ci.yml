@@ -19,15 +19,16 @@ jobs:
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
 
-    - name: Init conda
-      shell: bash
-      run: |
-        conda init bash
+    - name: Conda info
+      shell: bash -l {0}
+      run: conda info
+    - name: Conda list
+      shell: pwsh
+      run: conda list
 
     - name: Install Prerequisites
       shell: bash
       run: |
-        conda activate test
         pip install -U pip --user
         pip install -U pytest --user
         # cmk pip install -r requirements.txt --user
@@ -41,12 +42,9 @@ jobs:
         pip install wheel>=0.34.2 --user
         pip install --index-url https://test.pypi.org/simple/ bed-reader --user
 
-
-
     - name: Install Project
       shell: bash
       run: |
-        conda activate test
         python --version
         pip install .
         python setup.py sdist
@@ -54,17 +52,7 @@ jobs:
     - name: Test
       shell: bash
       run: |
-        conda activate test
         pip uninstall pysnptools --yes
-        pip install scipy>=1.1.0 --user
-        pip install numpy>=1.11.3 --user
-        pip install psutil>=5.6.7 --user
-        pip install pandas>=1.1.1 --user
-        pip install h5py>=2.10.0 --user
-        pip install dill>=0.2.9 --user
-        pip install bgen-reader==4.0.6 --user
-        pip install wheel>=0.34.2 --user
-        pip install --index-url https://test.pypi.org/simple/ bed-reader --user
         export PYTHONPATH=${GITHUB_WORKSPACE}
         echo ${PYTHONPATH}
         python tests/test.py

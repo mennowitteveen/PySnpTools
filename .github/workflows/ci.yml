@@ -23,9 +23,8 @@ jobs:
     - name: Install Prerequisites
       shell: bash -l {0}
       run: |
+        pip install --index-url https://test.pypi.org/simple/ bed-reader #cmk
         pip install -r requirements.txt
-        pip uninstall bed-reader --yes
-        pip install --index-url https://test.pypi.org/simple/ bed-reader
 
     - name: Install Project
       shell: bash -l {0}

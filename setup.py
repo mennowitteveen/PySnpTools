@@ -6,7 +6,7 @@ from setuptools import setup
 import numpy
 
 # Version number
-version = "0.4.27"
+version = "0.5.0"
 
 
 def readme():
@@ -22,7 +22,7 @@ install_requires = [
     "h5py>=2.10.0",
     "dill>=0.2.9",
     "bgen-reader>=4.0.7",
-    "bed-reader>=0.1.2",
+    "bed-reader>=0.2.0",
 ]
 
 # python setup.py sdist bdist_wininst upload

@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pysnptools Documentation &#8212; pysnptools 0.0.2 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -588,7 +588,7 @@ the method can save memory by reading (and standardizing) the data in blocks. Se
 
 <dl class="py method">
 <dt id="pysnptools.snpreader.SnpReader.kernel">
-<code class="sig-name descname">kernel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">standardizer</span></em>, <em class="sig-param"><span class="n">allowlowrank</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">block_size</span><span class="o">=</span><span class="default_value">10000</span></em>, <em class="sig-param"><span class="n">blocksize</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpReader.kernel" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">kernel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">standardizer</span></em>, <em class="sig-param"><span class="n">allowlowrank</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">block_size</span><span class="o">=</span><span class="default_value">10000</span></em>, <em class="sig-param"><span class="n">blocksize</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">num_threads</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpReader.kernel" title="Permalink to this definition">¶</a></dt>
 <dd><div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Deprecated. Use <a class="reference internal" href="#pysnptools.snpreader.SnpReader.read_kernel" title="pysnptools.snpreader.SnpReader.read_kernel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read_kernel()</span></code></a> instead.</p>
@@ -600,6 +600,9 @@ the method can save memory by reading (and standardizing) the data in blocks. Se
 <li><p><strong>standardizer</strong> (<a class="reference internal" href="#pysnptools.standardizer.Standardizer" title="pysnptools.standardizer.Standardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></a>) – – Specify standardization to be applied before the matrix multiply. Any <a class="reference internal" href="#pysnptools.standardizer.Standardizer" title="pysnptools.standardizer.Standardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></a> may be used. Some choices include <code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer.Identity</span></code> 
 (do nothing), <a class="reference internal" href="#pysnptools.standardizer.Unit" title="pysnptools.standardizer.Unit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code></a> (make values for each SNP have mean zero and standard deviation 1.0), <code class="xref py py-class docutils literal notranslate"><span class="pre">Beta</span></code>.</p></li>
 <li><p><strong>block_size</strong> (<em>int</em><em> or </em><em>None</em>) – optional – Default of 10000. None means to load all. Suggested number of sids to read into memory at a time.</p></li>
+<li><p><strong>num_threads</strong> (<em>None</em><em> or </em><em>int</em>) – optional – The number of threads with which to standardize data. Defaults to all available
+processors. Can also be set with these environment variables (listed in priority order):
+‘PST_NUM_THREADS’, ‘NUM_THREADS’, ‘MKL_NUM_THREADS’.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -653,7 +656,7 @@ the method can save memory by reading (and standardizing) the data in blocks. Se
 
 <dl class="py method">
 <dt id="pysnptools.snpreader.SnpReader.read">
-<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">order='F'</em>, <em class="sig-param">dtype=&lt;class 'numpy.float64'&gt;</em>, <em class="sig-param">force_python_only=False</em>, <em class="sig-param">view_ok=False</em>, <em class="sig-param">_require_float32_64=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpReader.read" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">order='F'</em>, <em class="sig-param">dtype=&lt;class 'numpy.float64'&gt;</em>, <em class="sig-param">force_python_only=False</em>, <em class="sig-param">view_ok=False</em>, <em class="sig-param">num_threads=None</em>, <em class="sig-param">_require_float32_64=True</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpReader.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads the SNP values and returns a <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> (with <a class="reference internal" href="#pysnptools.snpreader.SnpData.val" title="pysnptools.snpreader.SnpData.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpData.val</span></code></a> property containing a new ndarray of the SNP values).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -675,6 +678,9 @@ Typically, you’ll also wish to use “order=’A’” to increase the chance 
 Use these parameters with care because any change to either ndarray (for example, via <a class="reference internal" href="#pysnptools.snpreader.SnpData.standardize" title="pysnptools.snpreader.SnpData.standardize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SnpData.standardize()</span></code></a>) will effect
 the others. Also keep in mind that <a class="reference internal" href="#pysnptools.snpreader.SnpReader.read" title="pysnptools.snpreader.SnpReader.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code></a> relies on ndarray’s mechanisms to decide whether to actually
 share memory and so it may ignore your suggestion and allocate a new ndarray anyway.</p></li>
+<li><p><strong>num_threads</strong> (<em>None</em><em> or </em><em>int</em>) – optional – The number of threads with which to read data. Defaults to all available
+processors. Can also be set with these environment variables (listed in priority order):
+‘PST_NUM_THREADS’, ‘NUM_THREADS’, ‘MKL_NUM_THREADS’.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -706,7 +712,7 @@ share memory and so it may ignore your suggestion and allocate a new ndarray any
 
 <dl class="py method">
 <dt id="pysnptools.snpreader.SnpReader.read_kernel">
-<code class="sig-name descname">read_kernel</code><span class="sig-paren">(</span><em class="sig-param">standardizer=None</em>, <em class="sig-param">block_size=None</em>, <em class="sig-param">order='A'</em>, <em class="sig-param">dtype=&lt;class 'numpy.float64'&gt;</em>, <em class="sig-param">force_python_only=False</em>, <em class="sig-param">view_ok=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpReader.read_kernel" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">read_kernel</code><span class="sig-paren">(</span><em class="sig-param">standardizer=None</em>, <em class="sig-param">block_size=None</em>, <em class="sig-param">order='A'</em>, <em class="sig-param">dtype=&lt;class 'numpy.float64'&gt;</em>, <em class="sig-param">force_python_only=False</em>, <em class="sig-param">view_ok=False</em>, <em class="sig-param">num_threads=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpReader.read_kernel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a <code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code> such that the <code class="xref py py-meth docutils literal notranslate"><span class="pre">KernelData.val()</span></code> property will be a ndarray of the standardized SNP values multiplied with their transposed selves.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -837,7 +843,8 @@ share memory and so it may ignore your suggestion and allocate a new ndarray any
 <li><p><strong>sid</strong> (an array of strings) – The <a class="reference internal" href="#pysnptools.snpreader.SnpReader.sid" title="pysnptools.snpreader.SnpReader.sid"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpReader.sid</span></code></a> information. If not given, reads info from ‘.bim’ file.</p></li>
 <li><p><strong>pos</strong> (optional, an array of strings) – The <a class="reference internal" href="#pysnptools.snpreader.SnpReader.pos" title="pysnptools.snpreader.SnpReader.pos"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SnpReader.pos</span></code></a> information.  If not given, reads info from ‘.bim’ file.</p></li>
 <li><dl class="simple">
-<dt><strong>num_threads</strong> (optinal, int) – The number of threads with which to read data. Defaults to all available processors.</dt><dd><p>Can also be set with the ‘MKL_NUM_THREADS’ environment variable.</p>
+<dt><strong>num_threads</strong> (optinal, int) – The number of threads with which to read data. Defaults to all available processors.</dt><dd><p>Can also be set with these environment variables (listed in priority order):
+‘PST_NUM_THREADS’, ‘NUM_THREADS’, ‘MKL_NUM_THREADS’.</p>
 </dd>
 </dl>
 </li>
@@ -876,7 +883,7 @@ represented by -127.</p>
 </div></blockquote>
 <dl class="py method">
 <dt id="pysnptools.snpreader.Bed.write">
-<em class="property">static </em><code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">snpdata</span></em>, <em class="sig-param"><span class="n">count_A1</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">force_python_only</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">_require_float32_64</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.Bed.write" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">snpdata</span></em>, <em class="sig-param"><span class="n">count_A1</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">force_python_only</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">_require_float32_64</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">num_threads</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.Bed.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes a <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> to Bed format and returns the <a class="reference internal" href="#pysnptools.snpreader.Bed" title="pysnptools.snpreader.Bed"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bed</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1005,7 +1012,7 @@ regular values.</p>
 
 <dl class="py method">
 <dt id="pysnptools.snpreader.SnpData.standardize">
-<code class="sig-name descname">standardize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">standardizer</span><span class="o">=</span><span class="default_value">Unit()</span></em>, <em class="sig-param"><span class="n">block_size</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">return_trained</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">force_python_only</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpData.standardize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">standardize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">standardizer</span><span class="o">=</span><span class="default_value">Unit()</span></em>, <em class="sig-param"><span class="n">block_size</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">return_trained</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">force_python_only</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">num_threads</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpData.standardize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Does in-place standardization of the in-memory
 SNP data. By default, it applies ‘Unit’ standardization, that is: the values for each SNP will have mean zero and standard deviation 1.0.
 NaN values are then filled with zero, the mean (consequently, if there are NaN values, the final standard deviation will not be zero.
@@ -1020,6 +1027,9 @@ standard deviation 1.0) and <a class="reference internal" href="#pysnptools.stan
 <li><p><strong>block_size</strong> (<em>None</em>) – optional – Deprecated.</p></li>
 <li><p><strong>return_trained</strong> (<em>bool</em>) – If true, returns a second value containing a constant <a class="reference internal" href="#pysnptools.standardizer.Standardizer" title="pysnptools.standardizer.Standardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></a> trained on this data.</p></li>
 <li><p><strong>force_python_only</strong> (<em>bool</em>) – optional – If true, will use pure Python instead of faster C++ libraries.</p></li>
+<li><p><strong>num_threads</strong> (<em>None</em><em> or </em><em>int</em>) – optional – The number of threads with which to standardize data. Defaults to all available
+processors. Can also be set with these environment variables (listed in priority order):
+‘PST_NUM_THREADS’, ‘NUM_THREADS’, ‘MKL_NUM_THREADS’.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -1048,7 +1058,7 @@ standard deviation 1.0) and <a class="reference internal" href="#pysnptools.stan
 
 <dl class="py method">
 <dt id="pysnptools.snpreader.SnpData.train_standardizer">
-<code class="sig-name descname">train_standardizer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">apply_in_place</span></em>, <em class="sig-param"><span class="n">standardizer</span><span class="o">=</span><span class="default_value">Unit()</span></em>, <em class="sig-param"><span class="n">force_python_only</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpData.train_standardizer" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">train_standardizer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">apply_in_place</span></em>, <em class="sig-param"><span class="n">standardizer</span><span class="o">=</span><span class="default_value">Unit()</span></em>, <em class="sig-param"><span class="n">force_python_only</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">num_thread</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.snpreader.SnpData.train_standardizer" title="Permalink to this definition">¶</a></dt>
 <dd><div class="deprecated">
 <p><span class="versionmodified deprecated">Deprecated since version 0.2.23: </span>Use <a class="reference internal" href="#pysnptools.snpreader.SnpData.standardize" title="pysnptools.snpreader.SnpData.standardize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">standardize()</span></code></a> with return_trained=True instead.</p>
 </div>
@@ -2063,7 +2073,7 @@ Assumes the kernel is square, so will throw an exception if the row iids are dif
 
 <dl class="py method">
 <dt id="pysnptools.kernelreader.KernelReader.read">
-<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">order='F'</em>, <em class="sig-param">dtype=&lt;class 'numpy.float64'&gt;</em>, <em class="sig-param">force_python_only=False</em>, <em class="sig-param">view_ok=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.kernelreader.KernelReader.read" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">order='F'</em>, <em class="sig-param">dtype=&lt;class 'numpy.float64'&gt;</em>, <em class="sig-param">force_python_only=False</em>, <em class="sig-param">view_ok=False</em>, <em class="sig-param">num_threads=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.kernelreader.KernelReader.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads the kernel values and returns a <a class="reference internal" href="#pysnptools.kernelreader.KernelData" title="pysnptools.kernelreader.KernelData"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code></a> (with <a class="reference internal" href="#pysnptools.kernelreader.KernelData.val" title="pysnptools.kernelreader.KernelData.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">KernelData.val</span></code></a> property containing a new ndarray of the kernel values).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -2083,6 +2093,9 @@ Typically, you’ll also wish to use “order=’A’” to increase the chance 
 Use these parameters with care because any change to either ndarray (for example, via <a class="reference internal" href="#pysnptools.kernelreader.KernelData.standardize" title="pysnptools.kernelreader.KernelData.standardize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">KernelData.standardize()</span></code></a>) will effect
 the others. Also keep in mind that <a class="reference internal" href="#pysnptools.kernelreader.KernelReader.read" title="pysnptools.kernelreader.KernelReader.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code></a> relies on ndarray’s mechanisms to decide whether to actually
 share memory and so it may ignore your suggestion and allocate a new ndarray anyway.</p></li>
+<li><p><strong>num_threads</strong> (<em>None</em><em> or </em><em>int</em>) – optional – The number of threads with which to standardize data. Defaults to all available
+processors. Can also be set with these environment variables (listed in priority order):
+‘PST_NUM_THREADS’, ‘NUM_THREADS’, ‘MKL_NUM_THREADS’.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -2218,7 +2231,7 @@ regular values.</p>
 
 <dl class="py method">
 <dt id="pysnptools.kernelreader.KernelData.standardize">
-<code class="sig-name descname">standardize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">standardizer</span><span class="o">=</span><span class="default_value">DiagKtoN()</span></em>, <em class="sig-param"><span class="n">return_trained</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">force_python_only</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.kernelreader.KernelData.standardize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">standardize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">standardizer</span><span class="o">=</span><span class="default_value">DiagKtoN()</span></em>, <em class="sig-param"><span class="n">return_trained</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">force_python_only</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">num_threads</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.kernelreader.KernelData.standardize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Does in-place standardization of the in-memory
 kernel data. The method multiples the values with a scalar factor such that the diagonal sums to iid_count. Although it works in place, for convenience
 it also returns the KernelData.</p>
@@ -2474,7 +2487,7 @@ at once.</p>
 
 <dl class="py method">
 <dt id="pysnptools.kernelreader.SnpKernel.read_snps">
-<code class="sig-name descname">read_snps</code><span class="sig-paren">(</span><em class="sig-param">order='F'</em>, <em class="sig-param">dtype=&lt;class 'numpy.float64'&gt;</em>, <em class="sig-param">force_python_only=False</em>, <em class="sig-param">view_ok=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.kernelreader.SnpKernel.read_snps" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">read_snps</code><span class="sig-paren">(</span><em class="sig-param">order='F'</em>, <em class="sig-param">dtype=&lt;class 'numpy.float64'&gt;</em>, <em class="sig-param">force_python_only=False</em>, <em class="sig-param">view_ok=False</em>, <em class="sig-param">num_threads=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.kernelreader.SnpKernel.read_snps" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads the SNP values, applies the standardizer, and returns a <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -2494,6 +2507,9 @@ Typically, you’ll also wish to use “order=’A’” to increase the chance 
 Use these parameters with care because any change to either ndarray (for example, via <a class="reference internal" href="#pysnptools.snpreader.SnpData.standardize" title="pysnptools.snpreader.SnpData.standardize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SnpData.standardize()</span></code></a>) will effect
 the others. Also keep in mind that <code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code> relies on ndarray’s mechanisms to decide whether to actually
 share memory and so it may ignore your suggestion and allocate a new ndarray anyway.</p></li>
+<li><p><strong>num_threads</strong> (<em>None</em><em> or </em><em>int</em>) – optional – The number of threads with which to read data. Defaults to all available
+processors. Can also be set with these environment variables (listed in priority order):
+‘PST_NUM_THREADS’, ‘NUM_THREADS’, ‘MKL_NUM_THREADS’.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -2584,7 +2600,7 @@ share memory and so it may ignore your suggestion and allocate a new ndarray any
 
 <dl class="py method">
 <dt id="pysnptools.standardizer.Standardizer.standardize">
-<code class="sig-name descname">standardize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">snps</span></em>, <em class="sig-param"><span class="n">block_size</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">return_trained</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">force_python_only</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.standardizer.Standardizer.standardize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">standardize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">snps</span></em>, <em class="sig-param"><span class="n">block_size</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">return_trained</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">force_python_only</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">num_threads</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.standardizer.Standardizer.standardize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Applies standardization, in place, to <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> (or a NumPy array). For convenience also returns the <a class="reference internal" href="#pysnptools.snpreader.SnpData" title="pysnptools.snpreader.SnpData"><code class="xref py py-class docutils literal notranslate"><span class="pre">SnpData</span></code></a> (or a NumPy array).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -2594,6 +2610,9 @@ share memory and so it may ignore your suggestion and allocate a new ndarray any
 <li><p><strong>return_trained</strong> (<em>bool</em>) – If true, returns a second value containing a constant standardizer trained on this data.</p></li>
 <li><p><strong>force_python_only</strong> (<em>bool</em>) – optional – If False (default), may use outside library code. If True, requests that the read
 be done without outside library code.</p></li>
+<li><p><strong>num_threads</strong> (<em>None</em><em> or </em><em>int</em>) – optional – The number of threads with which to standardize data. Defaults to all available
+processors. Can also be set with these environment variables (listed in priority order):
+‘PST_NUM_THREADS’, ‘NUM_THREADS’, ‘MKL_NUM_THREADS’.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -2830,7 +2849,7 @@ It always works in-place <em>and</em> returns the <a class="reference internal" 
 <p>Details of Methods &amp; Properties:</p>
 <dl class="py method">
 <dt id="pysnptools.kernelstandardizer.KernelStandardizer.standardize">
-<code class="sig-name descname">standardize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kerneldata</span></em>, <em class="sig-param"><span class="n">return_trained</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">force_python_only</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.kernelstandardizer.KernelStandardizer.standardize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">standardize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kerneldata</span></em>, <em class="sig-param"><span class="n">return_trained</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">force_python_only</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">num_threads</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.kernelstandardizer.KernelStandardizer.standardize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Applies standardization, in place, to <a class="reference internal" href="#pysnptools.kernelreader.KernelData" title="pysnptools.kernelreader.KernelData"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code></a>. For convenience also returns the <code class="xref py py-class docutils literal notranslate"><span class="pre">KernelData</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -2839,6 +2858,9 @@ It always works in-place <em>and</em> returns the <a class="reference internal" 
 <li><p><strong>return_trained</strong> (<em>bool</em>) – If true, returns a second value containing a constant <a class="reference internal" href="#pysnptools.kernelstandardizer.KernelStandardizer" title="pysnptools.kernelstandardizer.KernelStandardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">KernelStandardizer</span></code></a> trained on this data.</p></li>
 <li><p><strong>force_python_only</strong> (<em>bool</em>) – optional – If False (default), may use outside library code. If True, requests that the read
 be done without outside library code.</p></li>
+<li><p><strong>num_threads</strong> (<em>None</em><em> or </em><em>int</em>) – optional – The number of threads with which to standardize data. Defaults to all available
+processors. Can also be set with these environment variables (listed in priority order):
+‘PST_NUM_THREADS’, ‘NUM_THREADS’, ‘MKL_NUM_THREADS’.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -3220,7 +3242,7 @@ value will be (0.466804*0+0.38812848*.5+0.14506752*1)*2, 0.67826352 .</p>
 
 <dl class="py method">
 <dt id="pysnptools.distreader.DistReader.read">
-<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">order='F'</em>, <em class="sig-param">dtype=&lt;class 'numpy.float64'&gt;</em>, <em class="sig-param">force_python_only=False</em>, <em class="sig-param">view_ok=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.distreader.DistReader.read" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">order='F'</em>, <em class="sig-param">dtype=&lt;class 'numpy.float64'&gt;</em>, <em class="sig-param">force_python_only=False</em>, <em class="sig-param">view_ok=False</em>, <em class="sig-param">num_threads=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.distreader.DistReader.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads the SNP values and returns a <a class="reference internal" href="#pysnptools.distreader.DistData" title="pysnptools.distreader.DistData"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistData</span></code></a> (with <a class="reference internal" href="#pysnptools.distreader.DistData.val" title="pysnptools.distreader.DistData.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">DistData.val</span></code></a> property containing a new 3D ndarray of the SNP distribution values).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -3240,6 +3262,9 @@ Typically, you’ll also wish to use “order=’A’” to increase the chance 
 Use these parameters with care because any change to either ndarraywill effect
 the others. Also keep in mind that <a class="reference internal" href="#pysnptools.distreader.DistReader.read" title="pysnptools.distreader.DistReader.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code></a> relies on ndarray’s mechanisms to decide whether to actually
 share memory and so it may ignore your suggestion and allocate a new ndarray anyway.</p></li>
+<li><p><strong>num_threads</strong> (<em>None</em><em> or </em><em>int</em>) – optional – The number of threads with which to read data. Defaults to all available
+processors. Can also be set with these environment variables (listed in priority order):
+‘PST_NUM_THREADS’, ‘NUM_THREADS’, ‘MKL_NUM_THREADS’.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -3369,7 +3394,8 @@ share memory and so it may ignore your suggestion and allocate a new ndarray any
 (Default: <a class="reference internal" href="#pysnptools.distreader.bgen.default_sid_function" title="pysnptools.distreader.bgen.default_sid_function"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bgen.default_sid_function()</span></code></a>.) Can also be the string ‘id’ or ‘rsid’, which is faster than using a function.</p></li>
 <li><p><strong>sample</strong> (optional, string) – A GEN sample file. If given, overrides information in *.bgen file.</p></li>
 <li><dl class="simple">
-<dt><strong>num_threads</strong> (optinal, int) – The number of threads with which to read data. Defaults to all available processors.</dt><dd><p>Can also be set with the ‘MKL_NUM_THREADS’ environment variable.</p>
+<dt><strong>num_threads</strong> (optinal, int) – The number of threads with which to read data. Defaults to all available processors.</dt><dd><p>Can also be set with these environment variables (listed in priority order):
+‘PST_NUM_THREADS’, ‘NUM_THREADS’, ‘MKL_NUM_THREADS’.</p>
 </dd>
 </dl>
 </li>
@@ -3907,7 +3933,7 @@ This property is useful when interfacing with, for example, external Fortran and
 
 <dl class="py method">
 <dt id="pysnptools.distreader.DistMemMap.write">
-<em class="property">static </em><code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">distreader</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">'A'</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">block_size</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.distreader.DistMemMap.write" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em>, <em class="sig-param"><span class="n">distreader</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">'A'</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">block_size</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">num_threads</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.distreader.DistMemMap.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes a <a class="reference internal" href="#pysnptools.distreader.DistReader" title="pysnptools.distreader.DistReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistReader</span></code></a> to <a class="reference internal" href="#pysnptools.distreader.DistMemMap" title="pysnptools.distreader.DistMemMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">DistMemMap</span></code></a> format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -3919,6 +3945,9 @@ another <a class="reference internal" href="#pysnptools.distreader.Bgen" title="
 <li><p><strong>dtype</strong> (<em>data-type</em>) – {None (default), numpy.float64, numpy.float32}, optional – The data-type for the <a class="reference internal" href="#pysnptools.distreader.DistMemMap.val" title="pysnptools.distreader.DistMemMap.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">DistMemMap.val</span></code></a> ndarray.
 By default, will match the order of the input if knowable; otherwise np.float64.</p></li>
 <li><p><strong>block_size</strong> (<em>number</em>) – The number of SNPs to read in a batch from <em>distreader</em>. Defaults to a <em>block_size</em> such that <em>block_size</em> * <em>iid_count</em> is about 100,000.</p></li>
+<li><p><strong>num_threads</strong> (<em>None</em><em> or </em><em>int</em>) – optional – The number of threads with which to write data. Defaults to all available
+processors. Can also be set with these environment variables (listed in priority order):
+‘PST_NUM_THREADS’, ‘NUM_THREADS’, ‘MKL_NUM_THREADS’.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -4416,8 +4445,6 @@ Moreover, the row and col data is read from file only once.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Example</dt>
 <dd class="field-odd"><p></p></dd>
-<dt class="field-even">Example</dt>
-<dd class="field-even"><p></p></dd>
 </dl>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.pstreader</span> <span class="kn">import</span> <span class="n">PstNpz</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pysnptools.util</span> <span class="kn">import</span> <span class="n">example_file</span> <span class="c1"># Download and return local file name</span>
@@ -4460,7 +4487,7 @@ Moreover, the row and col data is read from file only once.</p>
 
 <dl class="py method">
 <dt id="pysnptools.pstreader.PstReader.read">
-<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">order='F'</em>, <em class="sig-param">dtype=&lt;class 'numpy.float64'&gt;</em>, <em class="sig-param">force_python_only=False</em>, <em class="sig-param">view_ok=False</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.pstreader.PstReader.read" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">order='F'</em>, <em class="sig-param">dtype=&lt;class 'numpy.float64'&gt;</em>, <em class="sig-param">force_python_only=False</em>, <em class="sig-param">view_ok=False</em>, <em class="sig-param">num_threads=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.pstreader.PstReader.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads the matrix values and returns a <a class="reference internal" href="#pysnptools.pstreader.PstData" title="pysnptools.pstreader.PstData"><code class="xref py py-class docutils literal notranslate"><span class="pre">PstData</span></code></a> (with <a class="reference internal" href="#pysnptools.pstreader.PstData.val" title="pysnptools.pstreader.PstData.val"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PstData.val</span></code></a> property containing a new ndarray of the matrix values).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -4480,6 +4507,9 @@ Typically, you’ll also wish to use “order=’A’” to increase the chance 
 Use these parameters with care because any change to either ndarray will effect
 the others. Also keep in mind that <a class="reference internal" href="#pysnptools.pstreader.PstReader.read" title="pysnptools.pstreader.PstReader.read"><code class="xref py py-meth docutils literal notranslate"><span class="pre">read()</span></code></a> relies on ndarray’s mechanisms to decide whether to actually
 share memory and so it may ignore your suggestion and allocate a new ndarray anyway.</p></li>
+<li><p><strong>num_threads</strong> (<em>None</em><em> or </em><em>int</em>) – optional – The number of threads with which to read data. Defaults to all available
+processors. Can also be set with these environment variables (listed in priority order):
+‘PST_NUM_THREADS’, ‘NUM_THREADS’, ‘MKL_NUM_THREADS’.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -5238,8 +5268,8 @@ something like “counting – time=0:00:09.99, 99”</p>
 
 <dl class="py function">
 <dt id="pysnptools.util.sub_matrix">
-<code class="sig-prename descclassname">pysnptools.util.</code><code class="sig-name descname">sub_matrix</code><span class="sig-paren">(</span><em class="sig-param">val</em>, <em class="sig-param">row_index_list</em>, <em class="sig-param">col_index_list</em>, <em class="sig-param">order='A'</em>, <em class="sig-param">dtype=&lt;class 'numpy.float64'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.sub_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Efficiently creates a sub-matrix from a 2-D ndarray.</p>
+<code class="sig-prename descclassname">pysnptools.util.</code><code class="sig-name descname">sub_matrix</code><span class="sig-paren">(</span><em class="sig-param">val</em>, <em class="sig-param">row_index_list</em>, <em class="sig-param">col_index_list</em>, <em class="sig-param">order='A'</em>, <em class="sig-param">dtype=&lt;class 'numpy.float64'&gt;</em>, <em class="sig-param">num_threads=None</em><span class="sig-paren">)</span><a class="headerlink" href="#pysnptools.util.sub_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Efficiently creates a sub-matrix from a 2-D or 3-D ndarray.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -5251,6 +5281,9 @@ If order is ‘C’, then the returned sub-matrix will be in C-contiguous order 
 If order is ‘F’, then the array will be in F-contiguous order (second index varies the fastest).
 If order is ‘A’, then sub-matrix may be in any order F or C.</p></li>
 <li><p><strong>dtype</strong> (<em>data-type</em>) – {numpy.float64 (default), numpy.float32}, optional – The data-type for sub-matrix created.</p></li>
+<li><p><strong>num_threads</strong> (<em>None</em><em> or </em><em>int</em>) – optional – The number of threads with which to work. Defaults to all available
+processors. Can also be set with these environment variables (listed in priority order):
+‘PST_NUM_THREADS’, ‘NUM_THREADS’, ‘MKL_NUM_THREADS’.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
@@ -5268,7 +5301,7 @@ If order is ‘A’, then sub-matrix may be in any order F or C.</p></li>
 <span class="go">True</span>
 </pre></div>
 </div>
-<p>Note: Behind the scenes, for performance, this function selects and then calls one of 16 C++ helper functions.</p>
+<p>Note: Behind the scenes, for performance, this function calls a Rust helper function.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -7722,7 +7755,7 @@ is logging.WARNING)</p></li>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 20198.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.2.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>

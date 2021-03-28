@@ -22,7 +22,7 @@
     <InterpreterArguments />
     <IsWindowsApplication>False</IsWindowsApplication>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
-    <InterpreterId>CondaEnv|CondaEnv|cupy2</InterpreterId>
+    <InterpreterId>CondaEnv|CondaEnv|gtg</InterpreterId>
     <TestFramework>unittest</TestFramework>
     <UnitTestPattern>test*.py</UnitTestPattern>
     <UnitTestRootDirectory>..</UnitTestRootDirectory>
@@ -55,7 +55,7 @@
     <Content Include="datasets\phenSynthFrom22.23.N300.randcidorder.txt" />
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="CondaEnv|CondaEnv|cupy2" />
+    <InterpreterReference Include="CondaEnv|CondaEnv|gtg" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
 </Project>

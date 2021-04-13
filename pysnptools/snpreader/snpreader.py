@@ -642,11 +642,12 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
             t0 = time.time()
             K = xp.zeros([self.iid_count,self.iid_count],dtype=dtype,order=order)
             trained_standardizer_list = []
-
+            #!cmk add commas to numbers of sid_count
             logging.info(f"reading {self.sid_count} SNPs in blocks of {block_size} and adding up kernels (for {self.iid_count} individuals) with {xp.__name__}.")
 
             ct = 0
             ts = time.time()
+            diff_last = 0
 
             for start in range(0, self.sid_count, block_size):
                 ct += block_size
@@ -655,7 +656,9 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
                 K += train_data._read_kernel(stdizer.Identity(),block_size=None,order=order,dtype=dtype,force_python_only=force_python_only,view_ok=False, num_threads=num_threads)
                 if ct % block_size==0:
                     diff = time.time()-ts
-                    if diff > 1: logging.info("read %s SNPs in %.2f seconds" % (ct, diff))
+                    if diff > 1 and diff-diff_last>5:
+                        logging.info("read %s SNPs in %.2f seconds" % (ct, diff)) #cmk add commas
+                        diff_last = diff
 
             t1 = time.time()
             logging.info("%.2f seconds elapsed" % (t1-t0))

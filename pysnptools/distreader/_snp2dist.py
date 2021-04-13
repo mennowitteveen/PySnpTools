@@ -81,7 +81,9 @@ class _Snp2Dist(DistReader):
                 val[:,start:start+self.block_size] = self._snpval_to_distval(snpdata.val,order,dtype)
                 if ct % self.block_size==0:
                     diff = time.time()-ts
-                    if diff > 1: logging.info("read %s SNPs in %.2f seconds" % (ct, diff))
+                    if diff > 5:
+                       logging.info("read %s SNPs in %.2f seconds" % (ct, diff))
+                       #cmk ts = time.time()
 
             t1 = time.time()
             logging.info("%.2f seconds elapsed" % (t1-t0))

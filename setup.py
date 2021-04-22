@@ -21,6 +21,7 @@ install_requires = [
     "psutil>=5.6.3",
     "h5py>=2.10.0",
     "dill>=0.2.9",
+    "more-itertools>=8.7.0",
     "bgen-reader>=4.0.7",
     "bed-reader>=0.2.5",
 ]

@@ -43,6 +43,12 @@ class PstMemMap(PstData):
     def __repr__(self): 
         return "{0}('{1}')".format(self.__class__.__name__,self._filename)
 
+    def __getstate__(self):
+        return self.filename
+
+    def __setstate__(self,state):
+        filename = state
+        self.__init__(filename)
 
 
     @property

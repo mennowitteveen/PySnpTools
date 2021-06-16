@@ -174,12 +174,7 @@ class DistMemMap(PstMemMap,DistData):
         DistMemMap('tempdir/tiny.dist.memmap')
 
         """
-
-        #We write iid and sid in ascii for compatibility between Python 2 and Python 3 formats.
-        row_ascii = np.array(distreader.row,dtype='S') #!!!avoid this copy when not needed
-        col_ascii = np.array(distreader.col,dtype='S') #!!!avoid this copy when not needed
-
-        block_size = block_size or max((100*1000)//max(1,distreader.row_count),1)
+        block_size = block_size or max((100_000)//max(1,distreader.row_count),1)
 
         if hasattr(distreader,'val'):
             order = PstMemMap._order(distreader) if order=='A' else order
@@ -189,12 +184,12 @@ class DistMemMap(PstMemMap,DistData):
             dtype = dtype or np.float64
         dtype = np.dtype(dtype)
 
-        self = PstMemMap.empty(row_ascii, col_ascii, filename+'.temp', row_property=distreader.row_property, col_property=distreader.col_property,order=order,dtype=dtype, val_shape=3)
+        self = PstMemMap.empty(distreader.row, distreader.col, filename+'.temp', row_property=distreader.row_property, col_property=distreader.col_property,order=order,dtype=dtype, val_shape=3)
         if hasattr(distreader,'val'):
             self.val[:,:,:] = distreader.val
         else:
             start = 0
-            with log_in_place("sid_index ", logging.INFO) as updater:
+            with log_in_place("DistMemMap writing sid_index ", logging.INFO) as updater:
                 while start < distreader.sid_count:
                     updater('{0} of {1}'.format(start,distreader.sid_count))
                     distdata = distreader[:,start:start+block_size].read(order=order,dtype=dtype,num_threads=num_threads)

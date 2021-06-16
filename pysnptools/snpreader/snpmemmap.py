@@ -9,7 +9,8 @@ import pysnptools.util as pstutil
 from pysnptools.pstreader import PstData
 from pysnptools.pstreader import PstMemMap
 from pysnptools.snpreader import SnpReader, SnpData
-
+from pysnptools.standardizer import Identity
+from pysnptools.util import log_in_place
 
 class SnpMemMap(PstMemMap,SnpData):
     '''
@@ -140,13 +141,13 @@ class SnpMemMap(PstMemMap,SnpData):
 
 
     @staticmethod
-    def write(filename, snpdata):
-        """Writes a :class:`SnpData` to :class:`SnpMemMap` format.
+    def write(filename, snpreader, standardizer=Identity(), order='A', dtype=None, block_size=None, num_threads=None):
+        """Writes a :class:`SnpData` to :class:`SnpMemMap` format. #!!!cmk update docs
 
         :param filename: the name of the file to create
         :type filename: string
         :param snpdata: The in-memory data that should be written to disk.
-        :type snpdata: :class:`SnpData`
+        :type snpdata: :class:`SnpData` #!!!cmk SnpReader
         :rtype: :class:`.SnpMemMap`
 
         >>> import pysnptools.util as pstutil
@@ -156,19 +157,34 @@ class SnpMemMap(PstMemMap,SnpData):
         >>> SnpMemMap.write("tempdir/tiny.snp.memmap",data1)      # Write data1 in SnpMemMap format
         SnpMemMap('tempdir/tiny.snp.memmap')
         """
+        block_size = block_size or max((100_000)//max(1,snpreader.row_count),1)
 
-        #We write iid and sid in ascii for compatibility between Python 2 and Python 3 formats.
-        row_ascii = np.array(snpdata.row,dtype='S') #!!!avoid this copy when not needed
-        col_ascii = np.array(snpdata.col,dtype='S') #!!!avoid this copy when not needed
-        self = PstMemMap.empty(row_ascii, col_ascii, filename+'.temp', row_property=snpdata.row_property, col_property=snpdata.col_property,order=PstMemMap._order(snpdata),dtype=snpdata.val.dtype)
-        self.val[:,:] = snpdata.val
-        self.flush()
+        if hasattr(snpreader,'val'):
+            order = PstMemMap._order(snpreader) if order=='A' else order
+            dtype = dtype or snpreader.val.dtype
+        else:
+            order = 'F' if order=='A' else order
+            dtype = dtype or np.float64
+        dtype = np.dtype(dtype)
+
+        snpmemmap = SnpMemMap.empty(iid=snpreader.iid, sid=snpreader.sid, filename=filename+'.temp', pos=snpreader.col_property,order=order,dtype=dtype)
+        if hasattr(snpreader,'val'):
+            snpmemmap.val[:,:] = snpreader.val #!!!cmk test this path (and the other)
+            standardizer.standardize(snpdata,num_threads=num_threads)
+        else:
+            with log_in_place("SnpMemMap write sid_index ", logging.INFO) as updater:
+                for start in range(0,snpreader.sid_count,block_size):
+                    updater('{0} of {1}'.format(start,snpreader.sid_count))
+                    snpdata = snpreader[:,start:start+block_size].read(order=order,dtype=dtype,num_threads=num_threads)
+                    standardizer.standardize(snpdata,num_threads=num_threads)
+                    snpmemmap.val[:,start:start+snpdata.sid_count] = snpdata.val
+
+        snpmemmap.flush()
         if os.path.exists(filename):
            os.remove(filename) 
         shutil.move(filename+'.temp',filename)
         logging.debug("Done writing " + filename)
         return SnpMemMap(filename)
-
 
 
     def _run_once(self):
@@ -182,20 +198,12 @@ class SnpMemMap(PstMemMap,SnpData):
 
 # !!!cmk make the write method support this
 # !!!cmk make fam_fileetc optional
-def _bed_to_memmap2(bed_file_list,  memmap_file, fam_file_list, bim_file_list, dtype, start=0,stop=None,step=1000,count_A1=True):
-    from pysnptools.snpreader import Bed, _MergeSIDs, SnpMemMap
+def _bed_to_memmap2(merge, memmap_file, dtype, step=1000):
+    from pysnptools.snpreader import SnpMemMap
 
     memmap_file = Path(memmap_file)
     assert not memmap_file.exists(), f"'{memmap_file}' already exists"
 
-    #######
-    # Open the Bed files & construct the properties needed later
-    ######
-    merge = _MergeSIDs(
-        [Bed(bed_file,fam_filename=fam_file,bim_filename=bim_file,count_A1=count_A1,skip_format_check=True)
-         for bed_file, fam_file, bim_file in zip(bed_file_list,fam_file_list,bim_file_list)]
-        )[:,start:stop]
-        
     #######
     # Create a temp file for the memory map
     ######
@@ -363,6 +371,8 @@ if __name__ == "__main__":
 
     #!!!!cmk
     if True:
+        from pysnptools.snpreader import Bed, _MergeSIDs, SnpMemMap
+
         # Data will appear in the memory mapped file in the order given.
         # The *.fam and *.bim files must be in the same order as the bed files.
         bed_file_list = []
@@ -386,11 +396,19 @@ if __name__ == "__main__":
         if Path(memmap_file).exists():
             Path(memmap_file).unlink()
 
+    
         #######
-        # For this demo, create a memmap file
+        # Merge the input files
         ######
+        merge = _MergeSIDs(
+            [Bed(bed_file,fam_filename=fam_file,bim_filename=bim_file,count_A1=True,skip_format_check=True)
+             for bed_file, fam_file, bim_file in zip(bed_file_list,fam_file_list,bim_file_list)]
+            )
 
-        memmap = _bed_to_memmap2(bed_file_list,fam_file_list=fam_file_list,bim_file_list=bim_file_list,memmap_file=memmap_file,dtype='float32',step=10)
+
+        # memmap = _bed_to_memmap2(merge,memmap_file=memmap_file,dtype='float32',step=10)
+        from pysnptools.standardizer import Unit
+        memmap = SnpMemMap.write(memmap_file, merge, standardizer=Unit(),dtype='float32')
         memmap
 
     suites = getTestSuite()

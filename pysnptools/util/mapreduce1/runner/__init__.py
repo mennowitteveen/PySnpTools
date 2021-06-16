@@ -8,7 +8,7 @@ from unittest.mock import patch
 def work_sequence_to_result_sequence(work_sequence):
     '''
     Does all the work in a sequence of work items and returns a sequence of results.
-    '''
+    ''' 
     for work in work_sequence:
         if callable(work):
             result = work()

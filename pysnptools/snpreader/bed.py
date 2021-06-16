@@ -64,12 +64,16 @@ class Bed(SnpReader):
         pos=None,
         num_threads=None,
         skip_format_check=False,
+        fam_filename=None, #!!!cmk doc
+        bim_filename=None, #!!!cmk doc
     ):
         super(Bed, self).__init__()
 
         self._ran_once = False
 
         self.filename = SnpReader._name_of_other_file(filename,remove_suffix="bed", add_suffix="bed")
+        self.fam_filename = fam_filename
+        self.bim_filename = bim_filename
         if count_A1 is None:
             warnings.warn(
                 "'count_A1' was not set. For now it will default to 'False', but in the future it will default to 'True'",
@@ -117,6 +121,8 @@ class Bed(SnpReader):
             skip_format_check=self._skip_format_check,
             count_A1=self.count_A1,
             num_threads=self._num_threads,
+            fam_filepath=self.fam_filename,
+            bim_filepath=self.bim_filename,
         )
 
     @property

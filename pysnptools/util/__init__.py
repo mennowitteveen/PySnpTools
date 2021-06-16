@@ -9,7 +9,6 @@ from types import ModuleType
 import inspect
 import warnings
 from pysnptools.util.intrangeset import IntRangeSet
-print(os.getcwd())
 from bed_reader import get_num_threads, subset_f64_f64, subset_f32_f64, subset_f32_f32
 
 def _testtest(data, iididx):

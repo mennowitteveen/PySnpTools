@@ -179,7 +179,7 @@ class PstMemMap(PstData):
         logging.info("About to start allocating memmap '{0}'".format(filename))
         shape = (len(row),len(col)) if val_shape is None else (len(row),len(col),val_shape)
         val = np.memmap(filename, offset=self._offset, dtype=dtype, mode="r+", order=order, shape=shape)
-        logging.info("Finished allocating memmap '{0}'. Size is {1}".format(filename,os.path.getsize(filename)))
+        logging.info("Finished allocating memmap '{0}'. Size is {1:,}".format(filename,os.path.getsize(filename)))
         PstData.__init__(self,row,col,val,row_property,col_property,name="np.memmap('{0}')".format(filename))
 
     def _run_once(self):

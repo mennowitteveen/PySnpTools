@@ -213,6 +213,8 @@ class TestPySnpTools(unittest.TestCase):
         snpdata = snpreader.read()
 
         from pysnptools.snpreader.bed import reverse_plink_chrom_map #!!!cmk put in iniit
+        import pysnptools.util as pstutil
+        pstutil.create_directory_if_necessary("tempdir/test_reverse_chrom_map.bed")
         Bed.write("tempdir/test_reverse_chrom_map.bed",snpdata,count_A1=False,reverse_chrom_map=reverse_plink_chrom_map)
 
 

@@ -9,6 +9,10 @@ import math
 import warnings
 from pysnptools.pstreader import PstData
 
+# !!! cmk export and document this
+plink_chrom_map = {"X": 23, "Y": 24, "XY": 25, "MT": 26}
+reverse_plink_chrom_map = {23:"X", 24:"Y", 25:"XY", 26:"MT"}
+
 class Bed(SnpReader):
     """
     A :class:`.SnpReader` for random-access reads of Bed/Bim/Fam files from disk.
@@ -66,6 +70,7 @@ class Bed(SnpReader):
         skip_format_check=False,
         fam_filename=None, #!!!cmk doc
         bim_filename=None, #!!!cmk doc
+        chrom_map = plink_chrom_map, #!!!cmk doc
     ):
         super(Bed, self).__init__()
 
@@ -87,6 +92,7 @@ class Bed(SnpReader):
         self._original_pos = pos
         self._num_threads = num_threads
         self._open_bed = None
+        self.chrom_map = chrom_map
 
     def __repr__(self):
         return "{0}('{1}',count_A1={2})".format(
@@ -154,9 +160,14 @@ class Bed(SnpReader):
         if not hasattr(self, "_col_property"):
             self._open_bed_if_needed()
 
+            chromosome = self._open_bed.chromosome
+            intersection = self.chrom_map.keys() & chromosome
+            for key in intersection:
+                chromosome[chromosome==key]=self.chrom_map[key]
+
             self._col_property = np.array(
                 [
-                    self._open_bed.chromosome.astype("float"),
+                    self._open_bed.chromosome.astype("float"), #!!!cmk
                     self._open_bed.cm_position,
                     self._open_bed.bp_position,
                 ]
@@ -210,6 +221,7 @@ class Bed(SnpReader):
         force_python_only=False,
         _require_float32_64=True,
         num_threads=None, # doc
+        reverse_chrom_map = {},
     ):
         """Writes a :class:`SnpData` to Bed format and returns the :class:`.Bed`.
 
@@ -257,6 +269,13 @@ class Bed(SnpReader):
 
         filename = SnpReader._name_of_other_file(filename,remove_suffix="bed", add_suffix="bed")
 
+        chromosome = snpdata.pos[:, 0]
+        intersection = reverse_chrom_map.keys() & chromosome
+        if len(intersection) > 0:
+            chromosome = chromosome.astype("object")
+            for key in intersection:
+                chromosome[chromosome==key]=reverse_chrom_map[key]
+
         to_bed(
             filename,
             val=snpdata.val,
@@ -264,7 +283,7 @@ class Bed(SnpReader):
                 "fid": snpdata.iid[:, 0],
                 "iid": snpdata.iid[:, 1],
                 "sid": snpdata.sid,
-                "chromosome": snpdata.pos[:, 0],
+                "chromosome": chromosome,
                 "cm_position": snpdata.pos[:, 1],
                 "bp_position": snpdata.pos[:, 2],
             },

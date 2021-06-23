@@ -206,6 +206,32 @@ class TestPySnpTools(unittest.TestCase):
         snpdata.val = 2 - snpdata.val
         self.c_reader(snpdata)
 
+    def test_bed_2021(self):
+        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=True,
+                        fam_filename=self.currentFolder + "/examples/toydata.5chrom.2.fam",
+                        bim_filename=self.currentFolder + "/examples/toydata.5chrom.XYMT.bim")
+        snpdata = snpreader.read()
+
+        from pysnptools.snpreader.bed import reverse_plink_chrom_map #!!!cmk put in iniit
+        Bed.write("tempdir/test_reverse_chrom_map.bed",snpdata,count_A1=False,reverse_chrom_map=reverse_plink_chrom_map)
+
+
+        see_exception = False
+        try:
+            snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=True,
+                            bim_filename=self.currentFolder + "/examples/toydata.5chrom.bad.bim")
+            snpdata = snpreader.read()
+        except ValueError as e:
+            see_exception = True
+        assert see_exception
+
+        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=True,
+                        bim_filename=self.currentFolder + "/examples/toydata.5chrom.bad.bim",
+                        chrom_map = {"B":1,"A":2,"D":3})
+        snpdata = snpreader.read()
+
+
+
     def test_bed_int8(self):
         snpreader = Bed(self.currentFolder + "/../tests/datasets/distributed_bed_test1_X.bed",count_A1=True)
         ref = snpreader.read()

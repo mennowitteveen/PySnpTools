@@ -169,8 +169,8 @@ class SnpMemMap(PstMemMap,SnpData):
 
         snpmemmap = SnpMemMap.empty(iid=snpreader.iid, sid=snpreader.sid, filename=filename+'.temp', pos=snpreader.col_property,order=order,dtype=dtype)
         if hasattr(snpreader,'val'):
+            standardizer.standardize(snpreader,num_threads=num_threads)
             snpmemmap.val[:,:] = snpreader.val #!!!cmk test this path (and the other)
-            standardizer.standardize(snpdata,num_threads=num_threads)
         else:
             with log_in_place("SnpMemMap write sid_index ", logging.INFO) as updater:
                 for start in range(0,snpreader.sid_count,block_size):

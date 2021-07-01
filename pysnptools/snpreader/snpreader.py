@@ -642,7 +642,6 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
             t0 = time.time()
             K = xp.zeros([self.iid_count,self.iid_count],dtype=dtype,order=order)
             trained_standardizer_list = []
-            #!!!cmk test
             logging.info(f"reading {self.sid_count:,} SNPs in blocks of {block_size:,} and adding up kernels (for {self.iid_count:,} individuals) with {xp.__name__}.")
 
             ct = 0
@@ -657,7 +656,7 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
                 if ct % block_size==0:
                     diff = time.time()-ts
                     if diff > 1 and diff-diff_last>5:
-                        logging.info(f"read {ct:,} SNPs in {diff:.2f} seconds") #!!!cmk test
+                        logging.info(f"read {ct:,} SNPs in {diff:.2f} seconds")
                         diff_last = diff
 
             t1 = time.time()

@@ -1,3 +1,4 @@
+
 import logging
 import os
 import shutil
@@ -151,11 +152,13 @@ class SnpMemMap(PstMemMap,SnpData):
         :rtype: :class:`.SnpMemMap`
 
         >>> import pysnptools.util as pstutil
-        >>> from pysnptools.snpreader import SnpData, SnpMemMap
-        >>> data1 = SnpData(iid=[['fam0','iid0'],['fam0','iid1']], sid=['snp334','snp349','snp921'],val= [[0.,2.,0.],[0.,1.,2.]])
-        >>> pstutil.create_directory_if_necessary("tempdir/tiny.snp.memmap") #LATER should we just promise to create directories?
-        >>> SnpMemMap.write("tempdir/tiny.snp.memmap",data1)      # Write data1 in SnpMemMap format
-        SnpMemMap('tempdir/tiny.snp.memmap')
+        >>> from pysnptools.util import example_file # Download and return local file name
+        >>> from pysnptools.snpreader import Bed, SnpMemMap
+        >>> bed_file = example_file("pysnptools/examples/toydata.5chrom.*","*.bed")
+        >>> bed = Bed(bed_file)
+        >>> pstutil.create_directory_if_necessary("tempdir/toydata.5chrom.snp.memmap") #LATER should we just promise to create directories?
+        >>> SnpMemMap.write("tempdir/toydata.5chrom.snp.memmap",bed)      # Write bed in SnpMemMap format
+        SnpMemMap('tempdir/toydata.5chrom.snp.memmap')
         """
         block_size = block_size or max((100_000)//max(1,snpreader.row_count),1)
 
@@ -170,7 +173,7 @@ class SnpMemMap(PstMemMap,SnpData):
         snpmemmap = SnpMemMap.empty(iid=snpreader.iid, sid=snpreader.sid, filename=filename+'.temp', pos=snpreader.col_property,order=order,dtype=dtype)
         if hasattr(snpreader,'val'):
             standardizer.standardize(snpreader,num_threads=num_threads)
-            snpmemmap.val[:,:] = snpreader.val #!!!cmk test this path (and the other)
+            snpmemmap.val[:,:] = snpreader.val
         else:
             with log_in_place("SnpMemMap write sid_index ", logging.INFO) as updater:
                 for start in range(0,snpreader.sid_count,block_size):
@@ -199,6 +202,9 @@ class SnpMemMap(PstMemMap,SnpData):
 class TestSnpMemMap(unittest.TestCase):     
 
     def test1(self):
+        from pysnptools.snpreader import Bed, SnpMemMap
+        from pysnptools.util import example_file # Download and return local file name
+
         old_dir = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
@@ -218,13 +224,20 @@ class TestSnpMemMap(unittest.TestCase):
         assert isinstance(snpreader3.val,np.memmap)
 
         logging.info("in TestSnpMemMap test1")
-        snpreader = SnpMemMap('../examples/tiny.snp.memmap')
+        snpreader = SnpMemMap('tempdir/tiny.snp.memmap')
         assert snpreader.iid_count == 2
         assert snpreader.sid_count == 3
         assert isinstance(snpreader.val,np.memmap)
 
         snpdata = snpreader.read(view_ok=True)
         assert isinstance(snpdata.val,np.memmap)
+
+        bed_file = example_file("pysnptools/examples/toydata.5chrom.*","*.bed")
+        bed = Bed(bed_file)
+        pstutil.create_directory_if_necessary("tempdir/toydata.5chrom.snp.memmap") #LATER should we just promise to create directories?
+        SnpMemMap.write("tempdir/toydata.5chrom.snp.memmap",bed)      # Write bed in SnpMemMap format
+        SnpMemMap.write("tempdir/toydata.5chromsnpdata.snp.memmap",bed[:,::2].read())  # Write snpdata in SnpMemMap format
+
         os.chdir(old_dir)
 
 
@@ -239,7 +252,7 @@ def getTestSuite():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.WARN)
 
     if False:
         from pysnptools.snpreader import Bed, _MergeSIDs, SnpMemMap

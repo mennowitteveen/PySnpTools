@@ -228,7 +228,7 @@ class Bed(SnpReader):
         force_python_only=False,
         _require_float32_64=True,
         num_threads=None,
-        reverse_chrom_map = {}, #!!!cmk test
+        reverse_chrom_map = {},
     ):
         """Writes a :class:`SnpData` to Bed format and returns the :class:`.Bed`.
 

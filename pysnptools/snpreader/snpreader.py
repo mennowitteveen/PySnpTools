@@ -657,7 +657,7 @@ snp_on_disk = Bed(bedfile,count_A1=False) # Construct a Bed SnpReader. No data i
                 if ct % block_size==0:
                     diff = time.time()-ts
                     if diff > 1 and diff-diff_last>5:
-                        logging.info(f"read {ct:,} SNPs in {diff:.2f} seconds" #!!!cmk test
+                        logging.info(f"read {ct:,} SNPs in {diff:.2f} seconds") #!!!cmk test
                         diff_last = diff
 
             t1 = time.time()

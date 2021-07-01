@@ -5,13 +5,12 @@ import doctest
 import unittest
 import logging
 import numbers
-import six #!!!cmk test Python2
 import pysnptools.util as pstutil
 
 class _Pairs(object):
-    """!!!cmkdescription of class"""
+    """!!!description of class"""
 
-    def __init__(self, list0, list1, include_singles, duplicates_ok=True): #!!!cmk rename list to iterable?
+    def __init__(self, list0, list1, include_singles, duplicates_ok=True): #!!! rename list to iterable?
         self.include_singles = include_singles
         self.duplicates_ok = duplicates_ok
         self.list0 = list(unique_everseen(list0))
@@ -55,8 +54,8 @@ class _Pairs(object):
             stop = start+1
             for pair in self._pair_sequence(start,stop,speed=speed):
                 yield pair
-        elif isinstance(indexer,np.ndarray): #!!!cmk what about other arrays? iterator? negative elements?
-            #!!!cmk need test for this
+        elif isinstance(indexer,np.ndarray): #!!! what about other arrays? iterator? negative elements?
+            #!!! need test for this
             iterator = None
             previous = None
             for i in indexer:
@@ -149,7 +148,7 @@ class _Pairs(object):
         a2 = -1
         b2 = len_only1*2+len_common*2+(1 if include_singles else -1)
         c = -count1
-        row_start = int((b2-(b2*b2-8*a2*c)**.5)/2.0) #!!!cmk will this ever be off by one because of numerical problems?
+        row_start = int((b2-(b2*b2-8*a2*c)**.5)/2.0) #!!! will this ever be off by one because of numerical problems?
         if row_start < 0:
             row_start = int((b2+(b2*b2-8*a2*c)**.5)/2.0)
         return row_start
@@ -208,7 +207,7 @@ class TestPairs(unittest.TestCase):
                                 assert np.array_equal(slow,medium), 'Expect slow and medium to give the same answers'
                                 fast = np.array(list(pairs[start:start+goal_see]))
                                 assert np.array_equal(medium,fast), 'Expect medium and fast to give the same answers'
-    def cmktest_big(self):
+    def test_big(self):
         size = 500*1000
         seed = 0
         np.random.seed(seed)
@@ -223,7 +222,7 @@ class TestPairs(unittest.TestCase):
                 assert np.array_equal(medium,fast), 'Expect medium and fast to give the same answers'
 
 
-    #!!!cmk make doc string example with first and last names
+    #!!! make doc string example with first and last names
     def test_slice(self):
         for len_common in range(3):
             common = ['common{0}'.format(i) for i in range(len_common)]
@@ -233,7 +232,7 @@ class TestPairs(unittest.TestCase):
                     list1 = common + ['only1_{0}'.format(i) for i in range(len_only1)]
                     for include_singles in [True,False]:
                         pairs = _Pairs(list0, list1, include_singles, duplicates_ok=True)
-                        pair_list = np.array(list(pairs._pair_sequence(0,None,speed='slow')),dtype='U') #!!!cmk this will not work with Python2
+                        pair_list = np.array(list(pairs._pair_sequence(0,None,speed='slow')),dtype='U')
                         for slicer, start, stop in [
                             (-1,len(pairs)-1,len(pairs)),#[-1]
                             (slice(None,None),0,len(pairs)),#[:]
@@ -264,7 +263,7 @@ class TestPairs(unittest.TestCase):
                             if slow_fail:
                                 assert fast_fail, 'expect slow and fast to fail on the same inputs'
                             else:
-                                if fast_fail or not np.array_equal(slow.reshape(-1,2),fast.reshape(-1,2)): #!!!cmk:
+                                if fast_fail or not np.array_equal(slow.reshape(-1,2),fast.reshape(-1,2)): #!!!:
                                     fast = np.array(list(pairs[slicer]))
                                 assert not fast_fail, 'expect slow and fast to fail on the same inputs'
                                 assert np.array_equal(slow.reshape(-1,2),fast.reshape(-1,2)), 'Expect slow and fast to give the same answers'
@@ -282,8 +281,8 @@ def getTestSuite():
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
-    #!!!cmk this is work on an example for docstring, but a bit weird because names are ordered and these arent
-    pairs = _Pairs(['Madison','Jill','Kelsey'],['Smith','Madison','Kelsey'],include_singles=True)#!!!cmk is 'include_singles' the best name?
+    #!!! this is work on an example for docstring, but a bit weird because names are ordered and these arent
+    pairs = _Pairs(['Madison','Jill','Kelsey'],['Smith','Madison','Kelsey'],include_singles=True)#!!! is 'include_singles' the best name?
     for first,last in pairs[:]:
         print(first,last)
 

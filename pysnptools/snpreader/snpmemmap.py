@@ -142,12 +142,12 @@ class SnpMemMap(PstMemMap,SnpData):
 
     @staticmethod
     def write(filename, snpreader, standardizer=Identity(), order='A', dtype=None, block_size=None, num_threads=None):
-        """Writes a :class:`SnpData` to :class:`SnpMemMap` format. #!!!cmk update docs
+        """Writes a :class:`SnpReader` to :class:`SnpMemMap` format.
 
         :param filename: the name of the file to create
         :type filename: string
-        :param snpdata: The in-memory data that should be written to disk.
-        :type snpdata: :class:`SnpData` #!!!cmk SnpReader
+        :param snpreader: The in-memory data that should be written to disk.
+        :type snpreader: :class:`SnpReader`
         :rtype: :class:`.SnpMemMap`
 
         >>> import pysnptools.util as pstutil
@@ -196,134 +196,6 @@ class SnpMemMap(PstMemMap,SnpData):
 
             SnpData.__init__(self,iid=row,sid=col,val=val,pos=col_property,name="np.memmap('{0}')".format(self._filename))
 
-# !!!cmk make the write method support this
-# !!!cmk make fam_fileetc optional
-def _bed_to_memmap2(merge, memmap_file, dtype, step=1000):
-    from pysnptools.snpreader import SnpMemMap
-
-    memmap_file = Path(memmap_file)
-    assert not memmap_file.exists(), f"'{memmap_file}' already exists"
-
-    #######
-    # Create a temp file for the memory map
-    ######
-    memmap_temp = Path(str(memmap_file)+".temp")
-    if memmap_temp.exists():
-        memmap_temp.unlink()
-
-    memmap = None
-    # !!!cmk try:
-    memmap = SnpMemMap.empty(iid=merge.iid, sid=merge.sid, filename=str(memmap_temp), pos=merge.pos, dtype=dtype)
-
-    #######
-    # In chunks: read, standardize, write
-    ######
-
-    # with log_in_place("Bed reader", logging.INFO) as updater:
-    for start1 in range(0, merge.sid_count, step):
-        logging.info(f"{start1:,} of {merge.sid_count:,}") #!!!cmk logger.INFO or updater
-        stop1 = start1+step
-        snpdata = merge[:,start1:stop1].read(dtype=dtype)
-        snpdata.standardize() #!!!cmk make optional?
-        memmap.val[:,start1:stop1] = snpdata.val
-
-    #######
-    # If all goes well, flush and rename
-    ######
-    memmap.flush()
-    del memmap
-    memmap_temp.rename(memmap_file)
-    memmap = None
-
-    ## !!!cmk finally:
-    #    if memmap is not None:
-    #        memmap.flush()
-
-    #######
-    # Return the SnpMemMap reader
-    ######
-
-    return SnpMemMap(str(memmap_file))
-
-# !!!cmk make the write method support this
-# !!!cmk make fam_fileetc optional
-def _bed_to_memmap1(bed_file_list,  memmap_file, fam_file_list, bim_file_list, dtype, step=1000):
-    from bed_reader import open_bed
-    from pysnptools.snpreader import SnpData, SnpMemMap
-    from pysnptools.util import log_in_place
-
-    memmap_file = Path(memmap_file)
-    assert not memmap_file.exists(), f"'{memmap_file}' already exists"
-
-    #######
-    # Open the Bed files & construct the properties needed later
-    ######
-    iid = None
-    sid_list = []
-    pos_list = []
-    for bed_file, fam_file, bim_file in zip(bed_file_list,fam_file_list,bim_file_list):
-        #!!!cmk add a properties input to avoid reading fields no used
-        with open_bed(bed_file,fam_filepath=fam_file, bim_filepath=bim_file) as bed:
-            if iid is None:
-                iid = np.array([bed.fid,bed.iid]).T
-            else:
-                assert np.array_equal(iid, np.array([bed.fid,bed.iid]).T), "Expect all fam files to agree"
-            sid_list.append(bed.sid)
-            pos_list.append(np.array([bed.chromosome.astype("float"),
-                                      bed.cm_position,
-                                      bed.bp_position]).T)
-    assert iid is not None, "Expect a least one bed file"
-    sid = np.hstack(sid_list)
-    pos = np.vstack(pos_list)
-        
-    #######
-    # Create a temp file for the memory map
-    ######
-    memmap_temp = Path(str(memmap_file)+".temp")
-    if memmap_temp.exists():
-        memmap_temp.unlink()
-
-    memmap = None
-    try:
-        memmap = SnpMemMap.empty(iid=iid, sid=sid, filename=str(memmap_temp), pos=pos, dtype=dtype)
-
-        #######
-        # In chunks: read, standardize, write
-        ######
-
-        offset = 0
-        with log_in_place("Bed reader", logging.INFO) as updater:
-            for bed_file, fam_file, bim_file in zip(bed_file_list,fam_file_list,bim_file_list):
-                with open_bed(bed_file,fam_filepath=fam_file, bim_filepath=bim_file) as bed:
-                    for start1 in range(0, bed.sid_count, step):
-                        updater(f"{start1:,} of {bed.sid_count:,} in '{bed_file}") #!!!cmk logger.INFO or updater
-                        stop1 = start1+step
-                        val = bed.read(np.s_[start1:stop1],dtype=dtype)
-                        start2 = start1 + offset
-                        stop2 = start2 + val.shape[1] # OK for stop1 go beyond the end of one 1, but shop2 shouldn't to next file
-                        snpdata = SnpData(val=val, iid=iid, sid=sid[start2:stop2], pos=pos[start2:stop2,:])
-                        snpdata.standardize() #!!!cmk make optional?
-                        memmap.val[:,start2:stop2] = snpdata.val
-                    offset += bed.sid_count                    
-
-            #######
-            # If all goes well, flush and rename
-            ######
-            memmap.flush() #!!!cmk use a try/catch?
-            del memmap
-            memmap_temp.rename(memmap_file)
-            memmap = None
-
-    finally:
-        if memmap is not None:
-            memmap.flush()
-
-    #######
-    # Return the SnpMemMap reader
-    ######
-
-    return SnpMemMap(str(memmap_file))
-
 class TestSnpMemMap(unittest.TestCase):     
 
     def test1(self):
@@ -369,8 +241,7 @@ def getTestSuite():
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
-    #!!!!cmk
-    if True:
+    if False:
         from pysnptools.snpreader import Bed, _MergeSIDs, SnpMemMap
 
         # Data will appear in the memory mapped file in the order given.

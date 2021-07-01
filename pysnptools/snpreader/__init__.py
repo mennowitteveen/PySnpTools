@@ -17,7 +17,7 @@ def _snps_fixup(snp_input, iid_if_none=None,count_A1=None):
 
 from pysnptools.snpreader.snpreader import SnpReader
 from pysnptools.snpreader.snpdata import SnpData
-from pysnptools.snpreader.bed import Bed
+from pysnptools.snpreader.bed import Bed, plink_chrom_map, reverse_plink_chrom_map
 from pysnptools.snpreader.ped import Ped
 from pysnptools.snpreader.dat import Dat
 from pysnptools.snpreader.snphdf5 import SnpHdf5

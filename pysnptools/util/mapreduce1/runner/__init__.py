@@ -399,8 +399,6 @@ class SubGen:
         else:
             raise StopIteration()
 
-    next = __next__ # for Python 2
-
 
 from pysnptools.util.mapreduce1.runner.runner import Runner
 from pysnptools.util.mapreduce1.runner.local import Local, _JustCheckExists

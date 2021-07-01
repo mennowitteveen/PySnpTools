@@ -28,6 +28,7 @@ class Dat(_OneShot,SnpReader):
 
     **Constructor:**
         :Parameters: * **filename** (*string*) -- The Dat file to read.
+        * **skiprows** (*int*) -- Number of lines to skip before reading. Defaults to 0.
 
         :Example:
 
@@ -47,7 +48,7 @@ class Dat(_OneShot,SnpReader):
         '''
         super(Dat, self).__init__()
         self.filename = SnpReader._name_of_other_file(filename,remove_suffix="dat", add_suffix="dat")
-        self.skiprows = skiprows #!!!cmk document
+        self.skiprows = skiprows
 
     def _read_pstdata(self):
         row = SnpReader._read_fam(self.filename,remove_suffix="dat")

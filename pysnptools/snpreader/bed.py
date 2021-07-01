@@ -9,9 +9,12 @@ import math
 import warnings
 from pysnptools.pstreader import PstData
 
-# !!! cmk export and document this
+
 plink_chrom_map = {"X": 23, "Y": 24, "XY": 25, "MT": 26}
+"""dictionary: Maps 'X' to 23, 'Y' to 24, 'XY' to 25, and 'MT' to 26.""" #!!!cmk check of in doc
+
 reverse_plink_chrom_map = {23:"X", 24:"Y", 25:"XY", 26:"MT"}
+"""dictionary: Maps 23 to 'X', 24 to 'Y', 25 to 'XY', and 26 to 'MT'"""#!!!cmk check of in doc
 
 class Bed(SnpReader):
     """
@@ -35,6 +38,10 @@ class Bed(SnpReader):
                             'PST_NUM_THREADS', 'NUM_THREADS', 'MKL_NUM_THREADS'.
                      * **skip_format_check** (*bool*) -- By default (False), checks that the '.bed' file starts with the expected bytes
                             the first time any file ('.bed', '.fam', or '.bim') is opened.
+                     * **fam_filename** (optional, *string*) -- The \*.fam file to read. Defaults to the bed filename with the suffix replaced.
+                     * **bim_filename** (optional, *string*) -- The \*.bim file to read. Defaults to the bed filename with the suffix replaced.
+                     * **chrom_map** (optional, *dictionary*) -- A dictionary from non-numeric chromosome names to numbers. Defaults to the PLINK
+                            mapping, namely, :attr:`plink_chrom_map`.  #!!!cmk check that formats right
 
     **Methods beyond** :class:`.SnpReader`
 
@@ -68,9 +75,9 @@ class Bed(SnpReader):
         pos=None,
         num_threads=None,
         skip_format_check=False,
-        fam_filename=None, #!!!cmk doc
-        bim_filename=None, #!!!cmk doc
-        chrom_map = plink_chrom_map, #!!!cmk doc
+        fam_filename=None,
+        bim_filename=None,
+        chrom_map = plink_chrom_map,
     ):
         super(Bed, self).__init__()
 
@@ -167,7 +174,7 @@ class Bed(SnpReader):
 
             self._col_property = np.array(
                 [
-                    self._open_bed.chromosome.astype("float"), #!!!cmk
+                    self._open_bed.chromosome.astype("float"),
                     self._open_bed.cm_position,
                     self._open_bed.bp_position,
                 ]
@@ -220,8 +227,8 @@ class Bed(SnpReader):
         count_A1=False,
         force_python_only=False,
         _require_float32_64=True,
-        num_threads=None, # doc
-        reverse_chrom_map = {},
+        num_threads=None,
+        reverse_chrom_map = {}, #!!!cmk test
     ):
         """Writes a :class:`SnpData` to Bed format and returns the :class:`.Bed`.
 
@@ -231,7 +238,17 @@ class Bed(SnpReader):
         :type snpdata: :class:`SnpData`
         :param count_A1: Tells if it should count the number of A1 alleles (the PLINK standard) or the number of A2 alleles. False is the current default, but in the future the default will change to True.
         :type count_A1: bool
+        :param force_python_only: Defaults to False. Tells to use Python code rather than faster Rust code. (Might be useful for debugging).
+        :type force_python_only: bool
+        :param _require_float32_64: Defaults to True. Requires that snpdata's dtype is float32 or float64. (False is useful for writing int8 data.)
+        :type _require_float32_64: bool
+        :param num_threads: Maximum number of threads to use. Currently ignored and number of threads is 1.
+        :type num_threads: int
+        :param reverse_chrom_map: Dictionary from chromosome number to chromsome string to write in the \*.bim file. Defaults to empty dictionary.
+        :type reverse_chrom_map: dictionary
         :rtype: :class:`.Bed`
+
+        !!!cmk check this doc
 
         Any :attr:`pos` values of NaN will be written as 0, the PLINK standard for missing chromosome and position values. 
 

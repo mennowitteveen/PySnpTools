@@ -165,7 +165,7 @@ def split_on_sids(snpreader,part_count):
 
 class _Pairs2(SnpReader):
     
-    def __init__(self, snpreader0,snpreader1=None, do_standardize=True,sid_materialize_limit=1000*1000,_include_single_times_single=False): #!!!cmk could add option to change snp separator and another to encode chrom, etc in the snp name
+    def __init__(self, snpreader0,snpreader1=None, do_standardize=True,sid_materialize_limit=1000*1000,_include_single_times_single=False): #!!! could add option to change snp separator and another to encode chrom, etc in the snp name
         super(_Pairs2, self).__init__()
         self._ran_once = False
         self.snpreader0 = snpreader0
@@ -195,8 +195,8 @@ class _Pairs2(SnpReader):
         if not hasattr(self,"_col"):
             assert self.col_count < self.sid_materialize_limit, '{:,} is too many sids to materialize'.format(self.col_count)
             snpreader1 = self.snpreader1 if self.snpreader1 is not None else self.snpreader0
-            #!!!cmkself.index0_list = self.snpreader0.sid_to_index((sid0 for sid0,sid1 in self._utilpairs[:])) #!!!cmk can we do without these?
-            #!!!cmkself.index1_list = snpreader1.sid_to_index(sid1 for sid0,sid1 in self._utilpairs[:])#!!!cmk can we do without these?
+            #!!!self.index0_list = self.snpreader0.sid_to_index((sid0 for sid0,sid1 in self._utilpairs[:])) #!!! can we do without these?
+            #!!!self.index1_list = snpreader1.sid_to_index(sid1 for sid0,sid1 in self._utilpairs[:])#!!!can we do without these?
             self._col = np.array(list(','.join(pair) for pair in self._utilpairs[:]))
         return self._col
 
@@ -243,9 +243,9 @@ class _Pairs2(SnpReader):
             sid_index_out = sid_index_or_none
         else:
             sid_count_out = sid_count_in
-            sid_index_out = splice(None)#cmk test this
+            sid_index_out = splice(None)#!!! test this
 
-        pair_array = np.array(list(self._utilpairs[sid_index_out])) #!!!cmk make more efficient with npfromiter?
+        pair_array = np.array(list(self._utilpairs[sid_index_out])) #!!!make more efficient with npfromiter?
         snpreader1 = self.snpreader1 if self.snpreader1 is not None else self.snpreader0
         sid_index_inner_0 = self.snpreader0.sid_to_index(pair_array[:,0])
         sid_index_inner_1 = snpreader1.sid_to_index(pair_array[:,1])
@@ -269,12 +269,12 @@ class _Pairs2(SnpReader):
         val = val_inner_0*val_inner_1 #Element multiplication creates the vals for the pairs
         return val
 
-#!!!cmk keep these?
+#!!! keep these?
 
 def split_on_sids(snpreader,part_count):
     sid_count = snpreader.sid_count
     start = 0
-    for part_index in range(1,part_count+1): #!!!cmk make work better in Python 2
+    for part_index in range(1,part_count+1):
         end = part_index*sid_count//part_count
         yield snpreader[:,start:end]
         start=end
@@ -313,7 +313,7 @@ class TestPairs(unittest.TestCase):
 
     def test_run1(self):
         from pysnptools.snpreader import Bed
-        root = Path(r'D:\OneDrive\programs\epireml') #!!!cmk make this work without this
+        root = Path(r'D:\OneDrive\programs\epireml') #!!! make this work without this
         runner = None
         #runner = LocalMultiProc(multiprocessing.cpu_count(),just_one_process=False)
 
@@ -324,11 +324,11 @@ class TestPairs(unittest.TestCase):
         part_count = 2
 
         epi_reml(bed_original[:,-20:],pheno,covar=covar,output_dir=output_dir,part_count=part_count,runner=runner,override=True)        
-        #!!!cmk check answer?
+        #!!! check answer?
 
     def test_run2(self):
         from pysnptools.snpreader import Bed
-        root = Path(r'D:\OneDrive\programs\epireml') #!!!cmk make this work without this
+        root = Path(r'D:\OneDrive\programs\epireml') #!!! make this work without this
         runner = None
         #runner = LocalMultiProc(multiprocessing.cpu_count(),just_one_process=False)
         bed_original = Bed(str(root / 'syndata.bed'),count_A1=False) #Read only the first 10 SNPs
@@ -339,7 +339,7 @@ class TestPairs(unittest.TestCase):
 
         epi_reml(bed_original[:,:20],pheno,kernel_snps=bed_original,covar=covar,output_dir=output_dir,part_count=part_count,runner=runner,override=True)
 
-        #!!!cmk check answer? against M:\deldir\refresults.run1 and 2
+        #!!! check answer? against M:\deldir\refresults.run1 and 2
 
 def getTestSuite():
     """

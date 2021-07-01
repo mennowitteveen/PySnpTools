@@ -83,7 +83,6 @@ class _Snp2Dist(DistReader):
                     diff = time.time()-ts
                     if diff > 5:
                        logging.info("read %s SNPs in %.2f seconds" % (ct, diff))
-                       #cmk ts = time.time()
 
             t1 = time.time()
             logging.info("%.2f seconds elapsed" % (t1-t0))

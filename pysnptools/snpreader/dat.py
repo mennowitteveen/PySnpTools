@@ -8,12 +8,12 @@ from pysnptools.snpreader import SnpData
 import warnings
 from pysnptools.pstreader import _OneShot
 
+#LATER say that this is also called dosage or bimbam
+#LATER work when the extension is \*.dosage or anything else
+#LATER make so fam can be called bam and map can be called bim
 class Dat(_OneShot,SnpReader):
     '''
-    A :class:`.SnpReader` for reading Dat/Fam/Map-formated files from disk. #LATER say that this is also called dosage or bimbam
-    #LATER work when the extension is \*.dosage or anything else
-    #LATER make so fam can be called bam and map can be called bim
-
+    A :class:`.SnpReader` for reading Dat/Fam/Map-formated files from disk.
 
     See :class:`.SnpReader` for general examples of using SnpReaders.
 
@@ -28,7 +28,7 @@ class Dat(_OneShot,SnpReader):
 
     **Constructor:**
         :Parameters: * **filename** (*string*) -- The Dat file to read.
-        * **skiprows** (*int*) -- Number of lines to skip before reading. Defaults to 0.
+                     * **skiprows** (*int*) -- Number of lines to skip before reading. Defaults to 0.
 
         :Example:
 

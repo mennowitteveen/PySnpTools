@@ -147,7 +147,7 @@ class SnpMemMap(PstMemMap,SnpData):
 
         :param filename: the name of the file to create
         :type filename: string
-        :param snpreader: The in-memory data that should be written to disk.
+        :param snpreader: The data that should be written to disk.
         :type snpreader: :class:`SnpReader`
         :rtype: :class:`.SnpMemMap`
 

@@ -241,8 +241,6 @@
     <Content Include="util\pysnptools.hashdown.json" />
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="CondaEnv|CondaEnv|anaconda3" />
-    <InterpreterReference Include="CondaEnv|CondaEnv|base37" />
     <InterpreterReference Include="CondaEnv|CondaEnv|gtg" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />

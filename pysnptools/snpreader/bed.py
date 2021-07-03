@@ -11,10 +11,8 @@ from pysnptools.pstreader import PstData
 
 
 plink_chrom_map = {"X": 23, "Y": 24, "XY": 25, "MT": 26}
-"""dictionary: Maps 'X' to 23, 'Y' to 24, 'XY' to 25, and 'MT' to 26.""" #!!!cmk check of in doc
 
 reverse_plink_chrom_map = {23:"X", 24:"Y", 25:"XY", 26:"MT"}
-"""dictionary: Maps 23 to 'X', 24 to 'Y', 25 to 'XY', and 26 to 'MT'"""#!!!cmk check of in doc
 
 class Bed(SnpReader):
     """
@@ -28,7 +26,7 @@ class Bed(SnpReader):
         :Parameters: * **filename** (*string*) -- The \*.bed file to read. The '.bed' suffix is optional. The related \*.bim and \*.fam files will also be read.
                      * **count_A1** (*bool*) -- Tells if it should count the number of A1 alleles (the PLINK standard) or the number of A2 alleles. False is the current default, but in the future the default will change to True.
 
-                     *The following options are never needed, but can be used to avoid reading large '.fam' and '.bim' files when their information is already known.*
+                     *The following three options are never needed, but can be used to avoid reading large '.fam' and '.bim' files when their information is already known.*
 
                      * **iid** (an array of strings) -- The :attr:`SnpReader.iid` information. If not given, reads info from '.fam' file.
                      * **sid** (an array of strings) -- The :attr:`SnpReader.sid` information. If not given, reads info from '.bim' file.
@@ -41,7 +39,15 @@ class Bed(SnpReader):
                      * **fam_filename** (optional, *string*) -- The \*.fam file to read. Defaults to the bed filename with the suffix replaced.
                      * **bim_filename** (optional, *string*) -- The \*.bim file to read. Defaults to the bed filename with the suffix replaced.
                      * **chrom_map** (optional, *dictionary*) -- A dictionary from non-numeric chromosome names to numbers. Defaults to the PLINK
-                            mapping, namely, :attr:`plink_chrom_map`.  #!!!cmk check that formats right
+                            mapping, namely, :data:`plink_chrom_map`.
+
+    **Constants**
+
+    * plink_chrom_map
+        A dictionary that 'X' to 23, 'Y' to 24, 'XY' to 25, and 'MT' to 26.
+
+    * reverse_plink_chrom_map
+        A dictionary that maps 23 to 'X', 24 to 'Y', 25 to 'XY', and 26 to 'MT'
 
     **Methods beyond** :class:`.SnpReader`
 
@@ -247,8 +253,6 @@ class Bed(SnpReader):
         :param reverse_chrom_map: Dictionary from chromosome number to chromsome string to write in the \*.bim file. Defaults to empty dictionary.
         :type reverse_chrom_map: dictionary
         :rtype: :class:`.Bed`
-
-        !!!cmk check this doc
 
         Any :attr:`pos` values of NaN will be written as 0, the PLINK standard for missing chromosome and position values. 
 

@@ -22,6 +22,7 @@ install_requires = [
     "h5py>=2.10.0",
     "dill>=0.2.9",
     "more-itertools>=8.7.0",
+    "cbgen==1.0.1",
     "bgen-reader>=4.0.7",
     "bed-reader>=0.2.5",
 ]
@@ -47,6 +48,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python",
     ],
@@ -63,7 +65,11 @@ setup(
         "pysnptools/util/mapreduce1",
         "pysnptools/util/mapreduce1/runner",
     ],
-    package_data={"pysnptools": ["util/pysnptools.hashdown.json", "tests/mintest.py",]},
+    package_data={
+        "pysnptools": [
+            "util/pysnptools.hashdown.json",
+            "tests/mintest.py",
+        ]
+    },
     install_requires=install_requires,
 )
-

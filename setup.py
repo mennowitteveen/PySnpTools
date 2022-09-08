@@ -6,7 +6,7 @@ from setuptools import setup
 import numpy
 
 # Version number
-version = "0.5.3"
+version = "0.5.4"
 
 
 def readme():

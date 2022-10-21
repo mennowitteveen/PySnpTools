@@ -10,5 +10,5 @@ RUN git lfs checkout
 RUN pip install cython
 RUN pip install virtualenv
 ENV PYTHONPATH="/pysnptools"
-RUN pip install -r requirements.txt
+RUN pip install -r requirements.cbgen102.txt
 RUN virtualenv fresh

@@ -14,13 +14,6 @@ def readme():
         return f.read()
 
 
-# check python version
-if platform.system() == "Windows" or sys.version_info < (3, 8):
-    cbgen_version = "==1.0.1"
-else:
-    cbgen_version = ">=1.0.2"
-
-
 install_requires = [
     "scipy>=1.1.0",
     "numpy>=1.17.0",
@@ -29,7 +22,8 @@ install_requires = [
     "h5py>=2.10.0",
     "dill>=0.2.9",
     "more-itertools>=8.7.0",
-    f"cbgen{cbgen_version}",
+    "cbgen == 1.0.1; platform_system=='Windows'",
+    "cbgen >= 1.0.2; platform_system!='Windows'",
     "bgen-reader>=4.0.7",
     "bed-reader>=0.2.5",
 ]

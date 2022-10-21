@@ -6,13 +6,15 @@ from setuptools import setup
 import numpy
 
 # Version number
-version = "0.5.4"
+version = "0.5.5"
 
 
 def readme():
     with open("README.md") as f:
         return f.read()
 
+
+cbgen_version = "==1.0.1" if platform.system() == "Windows" else ">=1.0.2"
 
 install_requires = [
     "scipy>=1.1.0",
@@ -22,7 +24,7 @@ install_requires = [
     "h5py>=2.10.0",
     "dill>=0.2.9",
     "more-itertools>=8.7.0",
-    "cbgen==1.0.1",
+    f"cbgen{cbgen_version}",
     "bgen-reader>=4.0.7",
     "bed-reader>=0.2.5",
 ]

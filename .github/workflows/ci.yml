@@ -30,12 +30,14 @@ jobs:
       shell: bash -l {0}
       run: |
         pip install -r requirements.cbgen101.txt
+        pip install -r requirements.txt
 
     - name: Install not(Prerequisites Windows or 3.7)
       if: false == (matrix.os == 'windows-latest' || matrix.python-version == '3.7')
       shell: bash -l {0}
       run: |
         pip install -r requirements.cbgen102.txt
+        pip install -r requirements.txt
 
     - name: Install Project
       shell: bash -l {0}

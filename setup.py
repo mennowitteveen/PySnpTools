@@ -14,7 +14,12 @@ def readme():
         return f.read()
 
 
-cbgen_version = "==1.0.1" if platform.system() == "Windows" else ">=1.0.2"
+# check python version
+if platform.system() == "Windows" or sys.version_info < (3, 8):
+    cbgen_version = "==1.0.1"
+else:
+    cbgen_version = ">=1.0.2"
+
 
 install_requires = [
     "scipy>=1.1.0",

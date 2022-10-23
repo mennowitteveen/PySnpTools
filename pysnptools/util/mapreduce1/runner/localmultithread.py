@@ -1,19 +1,21 @@
-from __future__ import absolute_import
-from pysnptools.util.mapreduce1.runner import Runner,_JustCheckExists, _run_all_in_memory, _shape_to_desired_workcount, _work_sequence_for_one_index
+from pysnptools.util.mapreduce1.runner import (
+    Runner,
+    _JustCheckExists,
+    _run_all_in_memory,
+    _shape_to_desired_workcount,
+    _work_sequence_for_one_index,
+)
 import os
 import logging
-try:
-    import dill as pickle
-except:
-    logging.warning("Can't import dill, so won't be able to clusterize lambda expressions. If you try, you'll get this error 'Can't pickle <type 'function'>: attribute lookup __builtin__.function failed'")
-    import pickle
+import cloudpickle as pickle
 import subprocess, sys, os.path
 import threading
 import pysnptools.util as util
 from six.moves.queue import PriorityQueue
 
+
 class LocalMultiThread(Runner):
-    '''
+    """
     A :class:`.Runner` that runs a :func:`.map_reduce` as multiple threads on a single machine.
 
     Note that Python has problems running some programs efficiently on multiple threads. (Search 'python global interpreter lock' for details.)
@@ -23,7 +25,7 @@ class LocalMultiThread(Runner):
         :Parameters: * **taskcount** (*number*) -- The number of threads to run on.
         :Parameters: * **mkl_num_threads** (*number*) -- (default None) Limit on the number threads used by the NumPy MKL library.
         :Parameters: * **just_one_process** (*bool*) -- (default False) Divide the work for multiple threads, but sequentially on one thread. Can be useful for debugging.
-        
+
         :Example:
 
         >>> from pysnptools.util.mapreduce1 import map_reduce
@@ -37,17 +39,23 @@ class LocalMultiThread(Runner):
         >>> holder1(100,LocalMultiThread(4))
         328350
 
-    '''
+    """
 
-    def __init__(self, taskcount, mkl_num_threads = None, just_one_process = False,):
-        if not 0 < taskcount: raise Exception("Expect taskcount to be positive")
+    def __init__(
+        self,
+        taskcount,
+        mkl_num_threads=None,
+        just_one_process=False,
+    ):
+        if not 0 < taskcount:
+            raise Exception("Expect taskcount to be positive")
 
         self.taskcount = taskcount
         self.just_one_process = just_one_process
         if mkl_num_threads != None:
-            os.environ['MKL_NUM_THREADS'] = str(mkl_num_threads)
+            os.environ["MKL_NUM_THREADS"] = str(mkl_num_threads)
 
-    def _result_sequence(self,thread_list,priority_queue,shaped_distributable):
+    def _result_sequence(self, thread_list, priority_queue, shaped_distributable):
         for thread in thread_list:
             if not self.just_one_process:
                 thread.join()
@@ -60,29 +68,39 @@ class LocalMultiThread(Runner):
 
         priority_queue = PriorityQueue()
         thread_list = []
-        shaped_distributable = _shape_to_desired_workcount(distributable, self.taskcount)
+        shaped_distributable = _shape_to_desired_workcount(
+            distributable, self.taskcount
+        )
         for taskindex in range(self.taskcount):
+
             def _target(taskindex=taskindex):
                 result_list = []
-                for work in _work_sequence_for_one_index(shaped_distributable, self.taskcount, taskindex):
+                for work in _work_sequence_for_one_index(
+                    shaped_distributable, self.taskcount, taskindex
+                ):
                     result_list.append(_run_all_in_memory(work))
-                priority_queue.put((taskindex,result_list))
+                priority_queue.put((taskindex, result_list))
+
             if not self.just_one_process:
-                thread = threading.Thread(target=_target,name=str(taskindex))
+                thread = threading.Thread(target=_target, name=str(taskindex))
                 thread_list.append(thread)
                 thread.start()
             else:
                 thread_list.append(None)
                 _target()
-        
-        result_sequence = self._result_sequence(thread_list, priority_queue,shaped_distributable)
+
+        result_sequence = self._result_sequence(
+            thread_list, priority_queue, shaped_distributable
+        )
         result = shaped_distributable.reduce(result_sequence)
 
         _JustCheckExists().output(distributable)
         return result
 
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     import doctest
+
     doctest.testmod(optionflags=doctest.ELLIPSIS)

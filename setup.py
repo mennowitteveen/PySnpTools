@@ -6,7 +6,7 @@ from setuptools import setup
 import numpy
 
 # Version number
-version = "0.5.6"
+version = "0.5.7"
 
 
 def readme():
@@ -20,7 +20,7 @@ install_requires = [
     "pandas>=1.1.1",
     "psutil>=5.6.3",
     "h5py>=2.10.0",
-    "dill>=0.2.9",
+    "cloudpickle>=2.2.0",
     "more-itertools>=8.7.0",
     "cbgen == 1.0.1; platform_system=='Windows' or python_version=='3.7'",
     "cbgen >= 1.0.2; platform_system!='Windows' and python_version!='3.7'",

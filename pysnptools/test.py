@@ -4,7 +4,7 @@ import scipy as sp
 import logging
 import doctest
 import shutil
-import dill as pickle
+import cloudpickle as pickle
 
 from pysnptools.snpreader import Bed
 from pysnptools.snpreader import SnpHdf5, SnpNpz
@@ -36,23 +36,22 @@ import os.path
 import time
 
 
-class TestPySnpTools(unittest.TestCase):     
+class TestPySnpTools(unittest.TestCase):
+    def xtest_aaa_hdf5_speed(self):  #!!too slow to use all the time
 
-    def xtest_aaa_hdf5_speed(self): #!!too slow to use all the time
-
-        #currentFolder + "/examples/toydata.5chrom.bed"
-        #currentFolder + "/examples/delme.hdf5"
-        bedFileName = r"c:\Source\carlk\fastlmm\tests\datasets\all_chr.maf0.001.N300" #!! local paths
-        hdf5Pattern = r"c:\Source\carlk\fastlmm\tests\datasets\del.{0}.hdf5"#!!
+        # currentFolder + "/examples/toydata.5chrom.bed"
+        # currentFolder + "/examples/delme.hdf5"
+        bedFileName = r"c:\Source\carlk\fastlmm\tests\datasets\all_chr.maf0.001.N300"  #!! local paths
+        hdf5Pattern = r"c:\Source\carlk\fastlmm\tests\datasets\del.{0}.hdf5"  #!!
         tt0 = time.time()
-        snpreader_bed = Bed(bedFileName,count_A1=False)
+        snpreader_bed = Bed(bedFileName, count_A1=False)
 
         S0 = snpreader_bed.sid_count
-        snp_index_list0 = range(min(S0,15000)) 
+        snp_index_list0 = range(min(S0, 15000))
 
         hdf5FileName = hdf5Pattern.format(len(snp_index_list0))
 
-        snpDataBed = snpreader_bed[:,snp_index_list0].read()
+        snpDataBed = snpreader_bed[:, snp_index_list0].read()
         tt1 = time.time()
         logging.info("Read bed %.2f seconds" % (tt1 - tt0))
         SnpHdf5.write(hdf5FileName, snpDataBed)
@@ -60,71 +59,102 @@ class TestPySnpTools(unittest.TestCase):
         logging.info("write SnpHdf5 bed %.2f seconds" % (tt2 - tt1))
 
         snpreader_hdf5 = SnpHdf5(hdf5FileName)
-        assert(snpreader_hdf5.iid_count == snpreader_bed.iid_count)
+        assert snpreader_hdf5.iid_count == snpreader_bed.iid_count
         S = snpreader_hdf5.sid_count
         N_original = snpreader_hdf5.iid_count
-        iid_index_list = sorted(range(N_original - 1,0,-2))
+        iid_index_list = sorted(range(N_original - 1, 0, -2))
 
-        snp_index_list = sorted(range(S - 1,0,-2))#!!
-        #snp_index_list = range(S//2)
+        snp_index_list = sorted(range(S - 1, 0, -2))  #!!
+        # snp_index_list = range(S//2)
 
-        snpreader_hdf5 = snpreader_hdf5[iid_index_list,:]
-        snpDataHdf5 = snpreader_hdf5[:,snp_index_list].read()
+        snpreader_hdf5 = snpreader_hdf5[iid_index_list, :]
+        snpDataHdf5 = snpreader_hdf5[:, snp_index_list].read()
         tt3 = time.time()
-        logging.info("read SnpHdf5 with reversed indexes bed %.2f seconds" % (tt3 - tt2))
+        logging.info(
+            "read SnpHdf5 with reversed indexes bed %.2f seconds" % (tt3 - tt2)
+        )
 
-        snpDataHdf5C = snpreader_hdf5[:,snp_index_list].read(order = "C")
+        snpDataHdf5C = snpreader_hdf5[:, snp_index_list].read(order="C")
         tt4 = time.time()
-        logging.info("read SnpHdf5 C with reversed indexes bed %.2f seconds" % (tt4 - tt3))
+        logging.info(
+            "read SnpHdf5 C with reversed indexes bed %.2f seconds" % (tt4 - tt3)
+        )
 
         print("the end")
 
     @classmethod
     def setUpClass(self):
         self.currentFolder = os.path.dirname(os.path.realpath(__file__))
-        #TODO: get data set with NANs!
-        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
-        assert snpreader.pos[0,1] != snpreader.pos[0,1] # real assert
+        # TODO: get data set with NANs!
+        snpreader = Bed(
+            self.currentFolder + "/examples/toydata.5chrom.bed", count_A1=False
+        )
+        assert snpreader.pos[0, 1] != snpreader.pos[0, 1]  # real assert
         self.pheno_fn = self.currentFolder + "/examples/toydata.phe"
-        self.snpdata = snpreader.read(order='F',force_python_only=True)
+        self.snpdata = snpreader.read(order="F", force_python_only=True)
         self.snps = self.snpdata.val
 
     def test_write_bad_value_and_good(self):
         from pysnptools.snpreader import Pheno, Bed, SnpData
         import pysnptools.util as pstutil
-        from pysnptools.util import example_file # Download and return local file name
+        from pysnptools.util import example_file  # Download and return local file name
+
         pheno_fn = example_file("pysnptools/examples/toydata.phe")
-        snpdata = Pheno(pheno_fn).read()         # Read data from Pheno format
+        snpdata = Pheno(pheno_fn).read()  # Read data from Pheno format
         pstutil.create_directory_if_necessary("tempdir/toydata.5chrom.bed")
         error_seen = False
         try:
-            Bed.write("tempdir/toydata.5chrom.bed",snpdata,count_A1=False)   # Write data in Bed format
+            Bed.write(
+                "tempdir/toydata.5chrom.bed", snpdata, count_A1=False
+            )  # Write data in Bed format
         except:
             error_seen = True
         assert error_seen
         # Can write from an int8 array, too.
-        snpdata_int = SnpData(val=np.int_(snpdata.val).astype('int8'),iid=snpdata.iid,sid=snpdata.sid,pos=snpdata.pos,_require_float32_64=False)
-        assert snpdata_int.val.dtype == 'int8'
+        snpdata_int = SnpData(
+            val=np.int_(snpdata.val).astype("int8"),
+            iid=snpdata.iid,
+            sid=snpdata.sid,
+            pos=snpdata.pos,
+            _require_float32_64=False,
+        )
+        assert snpdata_int.val.dtype == "int8"
         error_seen = False
         try:
-            Bed.write("tempdir/toydata.5chrom.bed",snpdata_int,count_A1=False,_require_float32_64=False)
+            Bed.write(
+                "tempdir/toydata.5chrom.bed",
+                snpdata_int,
+                count_A1=False,
+                _require_float32_64=False,
+            )
         except:
             error_seen = True
         assert error_seen
 
-        bed_fn = example_file("pysnptools/examples/toydata.5chrom.*","*.bed")
-        snpdata = Bed(bed_fn)[:,::2].read() # Read every-other SNP
+        bed_fn = example_file("pysnptools/examples/toydata.5chrom.*", "*.bed")
+        snpdata = Bed(bed_fn)[:, ::2].read()  # Read every-other SNP
         pstutil.create_directory_if_necessary("tempdir/everyother.bed")
-        Bed.write("tempdir/everyother.bed",snpdata,count_A1=False)   # Write data in Bed format
-        #Bed('tempdir/everyother.bed',count_A1=False)
+        Bed.write(
+            "tempdir/everyother.bed", snpdata, count_A1=False
+        )  # Write data in Bed format
+        # Bed('tempdir/everyother.bed',count_A1=False)
         # Can write from an int8 array, too.
-        snpdata_int = SnpData(val=np.int_(snpdata.val).astype('int8'),iid=snpdata.iid,sid=snpdata.sid,pos=snpdata.pos,_require_float32_64=False)
+        snpdata_int = SnpData(
+            val=np.int_(snpdata.val).astype("int8"),
+            iid=snpdata.iid,
+            sid=snpdata.sid,
+            pos=snpdata.pos,
+            _require_float32_64=False,
+        )
         snpdata_int.val.dtype
-        assert snpdata_int.val.dtype == 'int8'
-        Bed.write("tempdir/everyother.bed",snpdata_int,count_A1=False,_require_float32_64=False)
-        #Bed('tempdir/everyother',count_A1=False)
-
-
+        assert snpdata_int.val.dtype == "int8"
+        Bed.write(
+            "tempdir/everyother.bed",
+            snpdata_int,
+            count_A1=False,
+            _require_float32_64=False,
+        )
+        # Bed('tempdir/everyother',count_A1=False)
 
     def test_val_assign(self):
         from pysnptools.snpreader import SnpData
@@ -133,24 +163,24 @@ class TestPySnpTools(unittest.TestCase):
 
         iid_count = 3
         sid_count = 2
-        iid = [[str(i),str(i)] for i in range(iid_count)]
+        iid = [[str(i), str(i)] for i in range(iid_count)]
         sid = [str(s) for s in range(sid_count)]
         np.random.seed(0)
-        vali = np.random.randint(10,size=[iid_count,sid_count])
-        vali2 = np.random.randint(10,size=[iid_count,sid_count])
-        snpdata = SnpData(iid=iid,sid=sid,val=vali)
+        vali = np.random.randint(10, size=[iid_count, sid_count])
+        vali2 = np.random.randint(10, size=[iid_count, sid_count])
+        snpdata = SnpData(iid=iid, sid=sid, val=vali)
         snpdata.val = vali2
         assert snpdata.val.dtype == np.float64
 
-        valk = np.random.randint(10,size=[iid_count,iid_count])
-        valk2 = np.random.randint(10,size=[iid_count,iid_count])
-        kerneldata = KernelData(iid=iid,val=valk)
+        valk = np.random.randint(10, size=[iid_count, iid_count])
+        valk2 = np.random.randint(10, size=[iid_count, iid_count])
+        kerneldata = KernelData(iid=iid, val=valk)
         assert np.float64 == kerneldata.val.dtype
         kerneldata.val = valk2
         assert np.float64 == kerneldata.val.dtype
 
-        valstr = np.array(vali,dtype=np.str_)
-        valstr[0,0] = 'cannot convert'
+        valstr = np.array(vali, dtype=np.str_)
+        valstr[0, 0] = "cannot convert"
         error_seen = False
         try:
             snpdata.val = valstr
@@ -170,192 +200,271 @@ class TestPySnpTools(unittest.TestCase):
             error_seen = True
         assert error_seen
 
-
     def test_diagKtoN(self):
         """
         make sure standardization on SNPs results in sum(diag(K))=N
         """
-        
+
         np.random.seed(42)
-        m = np.random.random((100,1000))
+        m = np.random.random((100, 1000))
         from pysnptools.standardizer import DiagKtoN
+
         s = DiagKtoN()
         s.standardize(m)
         K = m.dot(m.T)
         sum_diag = np.sum(np.diag(K))
-        
+
         np.testing.assert_almost_equal(100, sum_diag)
-        
+
     def test_c_reader_bed(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
+        snpreader = Bed(
+            self.currentFolder + "/examples/toydata.5chrom.bed", count_A1=False
+        )
         self.c_reader(snpreader)
 
     def test_c_reader_bed_count_A1(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=True)
+        snpreader = Bed(
+            self.currentFolder + "/examples/toydata.5chrom.bed", count_A1=True
+        )
         snpdata = snpreader.read()
         snpdata.val = 2 - snpdata.val
         self.c_reader(snpdata)
 
     def test_p_reader_bed(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False).read(force_python_only=True)
+        snpreader = Bed(
+            self.currentFolder + "/examples/toydata.5chrom.bed", count_A1=False
+        ).read(force_python_only=True)
         self.c_reader(snpreader)
 
     def test_p_reader_bed_count_A1(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=True)
+        snpreader = Bed(
+            self.currentFolder + "/examples/toydata.5chrom.bed", count_A1=True
+        )
         snpdata = snpreader.read(force_python_only=True)
         snpdata.val = 2 - snpdata.val
         self.c_reader(snpdata)
 
     def test_bed_2021(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=True,
-                        fam_filename=self.currentFolder + "/examples/toydata.5chrom.2.fam",
-                        bim_filename=self.currentFolder + "/examples/toydata.5chrom.XYMT.bim")
+        snpreader = Bed(
+            self.currentFolder + "/examples/toydata.5chrom.bed",
+            count_A1=True,
+            fam_filename=self.currentFolder + "/examples/toydata.5chrom.2.fam",
+            bim_filename=self.currentFolder + "/examples/toydata.5chrom.XYMT.bim",
+        )
         snpdata = snpreader.read()
 
         from pysnptools.snpreader import reverse_plink_chrom_map
         import pysnptools.util as pstutil
-        pstutil.create_directory_if_necessary("tempdir/test_reverse_chrom_map.bed")
-        Bed.write("tempdir/test_reverse_chrom_map.bed",snpdata,count_A1=False,reverse_chrom_map=reverse_plink_chrom_map)
 
+        pstutil.create_directory_if_necessary("tempdir/test_reverse_chrom_map.bed")
+        Bed.write(
+            "tempdir/test_reverse_chrom_map.bed",
+            snpdata,
+            count_A1=False,
+            reverse_chrom_map=reverse_plink_chrom_map,
+        )
 
         see_exception = False
         try:
-            snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=True,
-                            bim_filename=self.currentFolder + "/examples/toydata.5chrom.bad.bim")
+            snpreader = Bed(
+                self.currentFolder + "/examples/toydata.5chrom.bed",
+                count_A1=True,
+                bim_filename=self.currentFolder + "/examples/toydata.5chrom.bad.bim",
+            )
             snpdata = snpreader.read()
         except ValueError as e:
             see_exception = True
         assert see_exception
 
-        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=True,
-                        bim_filename=self.currentFolder + "/examples/toydata.5chrom.bad.bim",
-                        chrom_map = {"B":1,"A":2,"D":3})
+        snpreader = Bed(
+            self.currentFolder + "/examples/toydata.5chrom.bed",
+            count_A1=True,
+            bim_filename=self.currentFolder + "/examples/toydata.5chrom.bad.bim",
+            chrom_map={"B": 1, "A": 2, "D": 3},
+        )
         snpdata = snpreader.read()
 
-
-
     def test_bed_int8(self):
-        snpreader = Bed(self.currentFolder + "/../tests/datasets/distributed_bed_test1_X.bed",count_A1=True)
+        snpreader = Bed(
+            self.currentFolder + "/../tests/datasets/distributed_bed_test1_X.bed",
+            count_A1=True,
+        )
         ref = snpreader.read()
-        ref.val[ref.val!=ref.val]=-127
-        ref.val = ref.val.astype('int8')
-        for force_python_only in [False,True]:
-            for order in ['F','C']:
-                snpdata = snpreader.read(dtype='int8',_require_float32_64=False,force_python_only=force_python_only,order=order)
-                assert snpdata.val.dtype == 'int8'
+        ref.val[ref.val != ref.val] = -127
+        ref.val = ref.val.astype("int8")
+        for force_python_only in [False, True]:
+            for order in ["F", "C"]:
+                snpdata = snpreader.read(
+                    dtype="int8",
+                    _require_float32_64=False,
+                    force_python_only=force_python_only,
+                    order=order,
+                )
+                assert snpdata.val.dtype == "int8"
                 assert np.allclose(snpdata.val, ref.val, equal_nan=True)
                 output = "tempdir/snpreader/int8.bed"
                 create_directory_if_necessary(output)
-                for count_A1 in [False,True]:
-                    bed2 = Bed.write(output,snpdata,count_A1=count_A1,_require_float32_64=False,force_python_only=force_python_only)
-                    assert np.allclose(bed2.read(dtype='int8',_require_float32_64=False,force_python_only=force_python_only).val, ref.val, equal_nan=True)
-                    
+                for count_A1 in [False, True]:
+                    bed2 = Bed.write(
+                        output,
+                        snpdata,
+                        count_A1=count_A1,
+                        _require_float32_64=False,
+                        force_python_only=force_python_only,
+                    )
+                    assert np.allclose(
+                        bed2.read(
+                            dtype="int8",
+                            _require_float32_64=False,
+                            force_python_only=force_python_only,
+                        ).val,
+                        ref.val,
+                        equal_nan=True,
+                    )
+
     def test_scalar_index(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
-        arr=np.int64(1)
-        snpreader[arr,arr]
+        snpreader = Bed(
+            self.currentFolder + "/examples/toydata.5chrom.bed", count_A1=False
+        )
+        arr = np.int64(1)
+        snpreader[arr, arr]
 
     def test_c_reader_hdf5(self):
         snpreader = SnpHdf5(self.currentFolder + "/examples/toydata.snpmajor.snp.hdf5")
         self.c_reader(snpreader)
 
     def test_hdf5_case3(self):
-        snpreader1 = SnpHdf5(self.currentFolder + "/examples/toydata.snpmajor.snp.hdf5")[::2,:]
-        snpreader2 = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)[::2,:]
-        self.assertTrue(np.allclose(snpreader1.read().val, snpreader2.read().val, rtol=1e-05, atol=1e-05))
+        snpreader1 = SnpHdf5(
+            self.currentFolder + "/examples/toydata.snpmajor.snp.hdf5"
+        )[::2, :]
+        snpreader2 = Bed(
+            self.currentFolder + "/examples/toydata.5chrom.bed", count_A1=False
+        )[::2, :]
+        self.assertTrue(
+            np.allclose(
+                snpreader1.read().val, snpreader2.read().val, rtol=1e-05, atol=1e-05
+            )
+        )
 
     def test_standardize_hdf5(self):
         snpreader = SnpHdf5(self.currentFolder + "/examples/toydata.iidmajor.snp.hdf5")
         self.standardize(snpreader)
 
-
     def test_c_reader_npz(self):
         snpreader = SnpNpz(self.currentFolder + "/examples/toydata10.snp.npz")
-        snpdata = snpreader.read(order='F',force_python_only=False)
+        snpdata = snpreader.read(order="F", force_python_only=False)
         snp_c = snpdata.val
-        
+
         self.assertEqual(np.float64, snp_c.dtype)
-        self.assertTrue(np.allclose(self.snps[:,:10], snp_c, rtol=1e-05, atol=1e-05))
+        self.assertTrue(np.allclose(self.snps[:, :10], snp_c, rtol=1e-05, atol=1e-05))
 
         snpreader1 = SnpNpz(self.currentFolder + "/examples/toydata10.snp.npz")
-        snpreader2 = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)[:,:10]
-        self.assertTrue(np.allclose(snpreader1.read().val, snpreader2.read().val, rtol=1e-05, atol=1e-05))
+        snpreader2 = Bed(
+            self.currentFolder + "/examples/toydata.5chrom.bed", count_A1=False
+        )[:, :10]
+        self.assertTrue(
+            np.allclose(
+                snpreader1.read().val, snpreader2.read().val, rtol=1e-05, atol=1e-05
+            )
+        )
 
-
-        snpdata.val[1,2] = np.NaN # Inject a missing value to test writing and reading missing values
+        snpdata.val[
+            1, 2
+        ] = np.NaN  # Inject a missing value to test writing and reading missing values
         output = "tempdir/snpreader/toydata10.snp.npz"
         create_directory_if_necessary(output)
-        SnpNpz.write(output,snpdata)
+        SnpNpz.write(output, snpdata)
         snpdata2 = SnpNpz(output).read()
         np.testing.assert_array_almost_equal(snpdata.val, snpdata2.val, decimal=10)
 
-        snpdata3 = snpdata[:,0:0].read() #create snpdata with no sids
+        snpdata3 = snpdata[:, 0:0].read()  # create snpdata with no sids
         output = "tempdir/snpreader/toydata0.snp.npz"
-        SnpNpz.write(output,snpdata3)
+        SnpNpz.write(output, snpdata3)
         snpdata4 = SnpNpz(output).read()
         assert snpdata3 == snpdata4
-
 
     def test_standardize_npz(self):
         snpreader = SnpNpz(self.currentFolder + "/examples/toydata10.snp.npz")
         self.standardize(snpreader)
 
-
     def test_c_reader_dat(self):
-        snpreader = Dat(self.currentFolder + "/examples/toydata.dat")[:,::100]
+        snpreader = Dat(self.currentFolder + "/examples/toydata.dat")[:, ::100]
         _fortesting_JustCheckExists().input(snpreader)
 
         snpdata1 = snpreader.read()
         self.assertEqual(np.float64, snpdata1.val.dtype)
-        self.assertTrue(np.allclose(self.snps[:,::100], snpdata1.val, rtol=1e-05, atol=1e-05))
+        self.assertTrue(
+            np.allclose(self.snps[:, ::100], snpdata1.val, rtol=1e-05, atol=1e-05)
+        )
 
-        snpdata1.val[1,2] = np.NaN # Inject a missing value to test writing and reading missing values
+        snpdata1.val[
+            1, 2
+        ] = np.NaN  # Inject a missing value to test writing and reading missing values
         output = "tempdir/snpreader/toydata.dat"
         create_directory_if_necessary(output)
-        Dat.write(output,snpdata1)
+        Dat.write(output, snpdata1)
         snpdata2 = Dat(output).read()
         np.testing.assert_array_almost_equal(snpdata1.val, snpdata2.val, decimal=10)
 
-        snpdata3 = snpdata1[:,0:0].read() #create snpdata with no sids
+        snpdata3 = snpdata1[:, 0:0].read()  # create snpdata with no sids
         output = "tempdir/snpreader/toydata3.dat"
-        Dat.write(output,snpdata3)
+        Dat.write(output, snpdata3)
         snpdata4 = Dat(output).read()
         assert snpdata3 == snpdata4
 
     @staticmethod
     def assert_match_012_210(snpdata1, snpdata2):
-        for sid_index in range(snpdata1.sid_count): #Check that every row matches (except OK if 0,1,2 can be 2,1,0)
-            goods1 = (snpdata1.val[:,sid_index] == snpdata1.val[:,sid_index]) # find non-missing
-            goods2= (snpdata2.val[:,sid_index] == snpdata2.val[:,sid_index])  # find non-missing
-            assert (goods1==goods2).all() #assert that they agree on non-missing
-            is_ok = (snpdata1.val[goods1,sid_index] == snpdata2.val[goods2,sid_index]).all() or (snpdata1.val[goods1,sid_index] == snpdata2.val[goods2,sid_index]*-1+2).all()
+        for sid_index in range(
+            snpdata1.sid_count
+        ):  # Check that every row matches (except OK if 0,1,2 can be 2,1,0)
+            goods1 = (
+                snpdata1.val[:, sid_index] == snpdata1.val[:, sid_index]
+            )  # find non-missing
+            goods2 = (
+                snpdata2.val[:, sid_index] == snpdata2.val[:, sid_index]
+            )  # find non-missing
+            assert (goods1 == goods2).all()  # assert that they agree on non-missing
+            is_ok = (
+                snpdata1.val[goods1, sid_index] == snpdata2.val[goods2, sid_index]
+            ).all() or (
+                snpdata1.val[goods1, sid_index]
+                == snpdata2.val[goods2, sid_index] * -1 + 2
+            ).all()
             assert is_ok
 
     def test_c_reader_ped(self):
-        if False: #Too slow for routine testing
-            snpdata1 = Ped(self.currentFolder + "/examples/toydata.ped")[::25,::1000].read()
+        if False:  # Too slow for routine testing
+            snpdata1 = Ped(self.currentFolder + "/examples/toydata.ped")[
+                ::25, ::1000
+            ].read()
             self.assertEqual(np.float64, snpdata1.val.dtype)
-            TestPySnpTools.assert_match_012_210(self.snpdata[::25,::1000].read(),snpdata1)
+            TestPySnpTools.assert_match_012_210(
+                self.snpdata[::25, ::1000].read(), snpdata1
+            )
         else:
-            snpdata1 = self.snpdata[::25,::1000].read()
+            snpdata1 = self.snpdata[::25, ::1000].read()
 
         output = "tempdir/snpreader/toydata.ped"
         create_directory_if_necessary(output)
 
-        snpdata1.val[1,2] = np.NaN # Inject a missing value to test writing and reading missing values
+        snpdata1.val[
+            1, 2
+        ] = np.NaN  # Inject a missing value to test writing and reading missing values
         Ped.write(output, snpdata1)
         snpreader = Ped(output)
         _fortesting_JustCheckExists().input(snpreader)
         s = str(snpreader)
         snpdata2 = snpreader.read()
-        TestPySnpTools.assert_match_012_210(snpdata1,snpdata2)
+        TestPySnpTools.assert_match_012_210(snpdata1, snpdata2)
 
     def test_c_reader_pheno(self):
         snpdata1 = Pheno(self.currentFolder + "/examples/toydata.phe").read()
 
         self.assertEqual(np.float64, snpdata1.val.dtype)
 
-        snpdata1.val[1,0] = np.NaN # Inject a missing value to test writing and reading missing values
+        snpdata1.val[
+            1, 0
+        ] = np.NaN  # Inject a missing value to test writing and reading missing values
         output = "tempdir/snpreader/toydata.phe"
         create_directory_if_necessary(output)
         Pheno.write(output, snpdata1)
@@ -367,17 +476,21 @@ class TestPySnpTools(unittest.TestCase):
 
         snpdata1 = Pheno(self.currentFolder + "/examples/toydata.phe").read()
         import pysnptools.util.pheno as pstpheno
-        dict = pstpheno.loadOnePhen(self.currentFolder + "/examples/toydata.phe",missing="")
+
+        dict = pstpheno.loadOnePhen(
+            self.currentFolder + "/examples/toydata.phe", missing=""
+        )
         snpdata3 = Pheno(dict).read()
         np.testing.assert_array_almost_equal(snpdata1.val, snpdata3.val, decimal=10)
 
-
-        dict = pstpheno.loadOnePhen(self.currentFolder + "/examples/toydata.phe",missing="",vectorize=True)
-        assert len(dict['vals'].shape)==1, "test 1-d array of values"
+        dict = pstpheno.loadOnePhen(
+            self.currentFolder + "/examples/toydata.phe", missing="", vectorize=True
+        )
+        assert len(dict["vals"].shape) == 1, "test 1-d array of values"
         snpdata3 = Pheno(dict).read()
         np.testing.assert_array_almost_equal(snpdata1.val, snpdata3.val, decimal=10)
 
-        snpdata4 = Pheno(None,iid_if_none=snpdata1.iid)
+        snpdata4 = Pheno(None, iid_if_none=snpdata1.iid)
         assert (snpdata4.row == snpdata1.row).all() and snpdata4.col_count == 0
 
         snpdata5 = Pheno(self.currentFolder + "/examples/toydata.id.phe").read()
@@ -386,8 +499,10 @@ class TestPySnpTools(unittest.TestCase):
         np.testing.assert_array_almost_equal(snpdata1.val, snpdata6.val, decimal=10)
 
     def test_c_reader_dense(self):
-        snpdata1 = self.snpdata[:,::100].read()
-        snpdata1.val[1,2] = np.NaN # Inject a missing value to test writing and reading missing values
+        snpdata1 = self.snpdata[:, ::100].read()
+        snpdata1.val[
+            1, 2
+        ] = np.NaN  # Inject a missing value to test writing and reading missing values
         output = "tempdir/snpreader/toydata.dense.txt"
         create_directory_if_necessary(output)
         Dense.write(output, snpdata1)
@@ -399,8 +514,10 @@ class TestPySnpTools(unittest.TestCase):
     def test_c_reader_distributedbed(self):
         from pysnptools.util.filecache import LocalCache
 
-        snpdata1 = self.snpdata[:,::100].read()
-        snpdata1.val[1,2] = np.NaN # Inject a missing value to test writing and reading missing values
+        snpdata1 = self.snpdata[:, ::100].read()
+        snpdata1.val[
+            1, 2
+        ] = np.NaN  # Inject a missing value to test writing and reading missing values
         output = "tempdir/snpreader/toydata.distributedbed"
         LocalCache(output).rmtree()
         DistributedBed.write(output, snpdata1, piece_per_chrom_count=5)
@@ -412,47 +529,59 @@ class TestPySnpTools(unittest.TestCase):
     def test_some_std(self):
         k0 = self.snpdata.read_kernel(standardizer=Unit()).val
         from pysnptools.kernelreader import SnpKernel
+
         k1 = self.snpdata.read_kernel(standardizer=Unit())
         np.testing.assert_array_almost_equal(k0, k1.val, decimal=10)
 
         from pysnptools.snpreader import SnpData
-        snpdata2 = SnpData(iid=self.snpdata.iid,sid=self.snpdata.sid,pos=self.snpdata.pos,val=np.array(self.snpdata.val))
+
+        snpdata2 = SnpData(
+            iid=self.snpdata.iid,
+            sid=self.snpdata.sid,
+            pos=self.snpdata.pos,
+            val=np.array(self.snpdata.val),
+        )
         s = str(snpdata2)
         snpdata2.standardize()
         s = str(snpdata2)
 
-        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
-        k2 = snpreader.read_kernel(standardizer=Unit(),block_size=500).val
+        snpreader = Bed(
+            self.currentFolder + "/examples/toydata.5chrom.bed", count_A1=False
+        )
+        k2 = snpreader.read_kernel(standardizer=Unit(), block_size=500).val
         np.testing.assert_array_almost_equal(k0, k2, decimal=10)
 
         from pysnptools.standardizer.identity import Identity
         from pysnptools.standardizer.diag_K_to_N import DiagKtoN
-        for dtype in [np.float64,np.float32]:
-            for std in [Unit(),Beta(1,25),Identity(),DiagKtoN()]:
+
+        for dtype in [np.float64, np.float32]:
+            for std in [Unit(), Beta(1, 25), Identity(), DiagKtoN()]:
                 s = str(std)
                 np.random.seed(0)
-                x = np.array(np.random.randint(3,size=[60,100]),dtype=dtype)
-                x2 = x[:,::2]
+                x = np.array(np.random.randint(3, size=[60, 100]), dtype=dtype)
+                x2 = x[:, ::2]
                 x2b = np.array(x2)
-                #LATER what's this about? It doesn't do non-contiguous?
-                #assert not x2.flags['C_CONTIGUOUS'] and not x2.flags['F_CONTIGUOUS'] #set up to test non contiguous
-                #assert x2b.flags['C_CONTIGUOUS'] or x2b.flags['F_CONTIGUOUS'] #set up to test non contiguous
-                #a,b = std.standardize(x2b),std.standardize(x2)
-                #np.testing.assert_array_almost_equal(a,b)
+                # LATER what's this about? It doesn't do non-contiguous?
+                # assert not x2.flags['C_CONTIGUOUS'] and not x2.flags['F_CONTIGUOUS'] #set up to test non contiguous
+                # assert x2b.flags['C_CONTIGUOUS'] or x2b.flags['F_CONTIGUOUS'] #set up to test non contiguous
+                # a,b = std.standardize(x2b),std.standardize(x2)
+                # np.testing.assert_array_almost_equal(a,b)
 
-    def c_reader(self,snpreader):
+    def c_reader(self, snpreader):
         """
         make sure c-reader yields same result
         """
-        snpdata = snpreader.read(order='F',force_python_only=False)
+        snpdata = snpreader.read(order="F", force_python_only=False)
         snp_c = snpdata.val
-        
+
         self.assertEqual(np.float64, snp_c.dtype)
         self.assertTrue(np.allclose(self.snps, snp_c, rtol=1e-05, atol=1e-05))
         return snpdata
 
     def test_standardize_bed(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
+        snpreader = Bed(
+            self.currentFolder + "/examples/toydata.5chrom.bed", count_A1=False
+        )
         self.standardize(snpreader)
 
     def test_standardize_dat(self):
@@ -463,18 +592,20 @@ class TestPySnpTools(unittest.TestCase):
         snpreader = Ped(self.currentFolder + "/examples/toydata")
         self.standardize(snpreader)
 
-    def standardize(self,snpreader):
+    def standardize(self, snpreader):
         """
         make sure blocked standardize yields same result as regular standardize
         """
 
-        for dtype in [np.float64,np.float32]:
+        for dtype in [np.float64, np.float32]:
 
-            snps = snpreader.read(order='F',force_python_only=True,dtype=dtype).val
+            snps = snpreader.read(order="F", force_python_only=True, dtype=dtype).val
             self.assertEqual(dtype, snps.dtype)
 
             snp_s1 = Unit().standardize(snps.copy(), force_python_only=True)
-            snp_s2 = Unit().standardize(snps.copy(), block_size=100, force_python_only=True)
+            snp_s2 = Unit().standardize(
+                snps.copy(), block_size=100, force_python_only=True
+            )
             snps_F = np.array(snps, dtype=dtype, order="F")
             snp_s3 = Unit().standardize(snps_F)
             snps_C = np.array(snps, dtype=dtype, order="C")
@@ -485,14 +616,13 @@ class TestPySnpTools(unittest.TestCase):
 
             self.assertEqual(snp_s1.shape[0], snp_s3.shape[0])
             self.assertEqual(snp_s1.shape[1], snp_s3.shape[1])
-        
+
             self.assertEqual(snp_s1.shape[0], snp_s4.shape[0])
             self.assertEqual(snp_s1.shape[1], snp_s4.shape[1])
 
-            self.assertTrue(np.allclose(snp_s1, snp_s2, rtol=1e-05, atol=1e-05)) 
+            self.assertTrue(np.allclose(snp_s1, snp_s2, rtol=1e-05, atol=1e-05))
             self.assertTrue(np.allclose(snp_s1, snp_s3, rtol=1e-05, atol=1e-05))
             self.assertTrue(np.allclose(snp_s1, snp_s4, rtol=1e-05, atol=1e-05))
-
 
             snp_beta1 = Beta(1, 25).standardize(snps.copy(), force_python_only=True)
             snps_F = np.array(snps, dtype=dtype, order="F")
@@ -504,155 +634,179 @@ class TestPySnpTools(unittest.TestCase):
             self.assertEqual(snp_beta1.shape[1], snp_beta2.shape[1])
             self.assertEqual(snp_beta1.shape[0], snp_beta3.shape[0])
             self.assertEqual(snp_beta1.shape[1], snp_beta3.shape[1])
-        
+
             self.assertTrue(np.allclose(snp_beta1, snp_beta2, rtol=1e-05, atol=1e-05))
             self.assertTrue(np.allclose(snp_beta1, snp_beta3, rtol=1e-05, atol=1e-05))
 
     def test_load_and_standardize_bed(self):
-        snpreader2 = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
+        snpreader2 = Bed(
+            self.currentFolder + "/examples/toydata.5chrom.bed", count_A1=False
+        )
         self.load_and_standardize(snpreader2, snpreader2)
 
-        snpreader3 = Bed(self.currentFolder + "/examples/toydata.5chrom",count_A1=False) 
+        snpreader3 = Bed(
+            self.currentFolder + "/examples/toydata.5chrom", count_A1=False
+        )
         self.load_and_standardize(snpreader3, snpreader3)
-
 
     def too_slow_test_write_bedbig(self):
         iid_count = 100000
         sid_count = 50000
         from pysnptools.snpreader import SnpData
-        iid = np.array([[str(i),str(i)] for i in range(iid_count)])
+
+        iid = np.array([[str(i), str(i)] for i in range(iid_count)])
         sid = np.array(["sid_{0}".format(i) for i in range(sid_count)])
-        pos = np.array([[i,i,i] for i in range(sid_count)])
+        pos = np.array([[i, i, i] for i in range(sid_count)])
         np.random.seed(0)
-        snpdata = SnpData(iid,sid,np.zeros((iid_count,sid_count)),pos=pos) #random.choice((0.0,1.0,2.0,float("nan")),size=(iid_count,sid_count)))
-        output = "tempdir/bedbig.{0}.{1}".format(iid_count,sid_count)
+        snpdata = SnpData(
+            iid, sid, np.zeros((iid_count, sid_count)), pos=pos
+        )  # random.choice((0.0,1.0,2.0,float("nan")),size=(iid_count,sid_count)))
+        output = "tempdir/bedbig.{0}.{1}".format(iid_count, sid_count)
         create_directory_if_necessary(output)
         Bed.write(output, snpdata, count_A1=False)
-        snpdata2 = Bed(output,count_A1=False).read()
+        snpdata2 = Bed(output, count_A1=False).read()
         np.testing.assert_array_almost_equal(snpdata.val, snpdata2.val, decimal=10)
 
     def test_write_bed_f64cpp_0(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
+        snpreader = Bed(
+            self.currentFolder + "/examples/toydata.5chrom.bed", count_A1=False
+        )
         iid_index = 0
         logging.info("iid={0}".format(iid_index))
-        #if snpreader.iid_count % 4 == 0: # divisible by 4 isn't a good test
+        # if snpreader.iid_count % 4 == 0: # divisible by 4 isn't a good test
         #    snpreader = snpreader[0:-1,:]
-        #assert snpreader.iid_count % 4 != 0
-        snpdata = snpreader[0:iid_index,:].read(order='F',dtype=np.float64)
+        # assert snpreader.iid_count % 4 != 0
+        snpdata = snpreader[0:iid_index, :].read(order="F", dtype=np.float64)
         if snpdata.iid_count > 0:
-            snpdata.val[-1,0] = float("NAN")
+            snpdata.val[-1, 0] = float("NAN")
         output = "tempdir/toydata.F64cpp.{0}.bed".format(iid_index)
         create_directory_if_necessary(output)
-        Bed.write(output, snpdata ,count_A1=False)
-        snpdata2 = Bed(output,count_A1=False).read()
+        Bed.write(output, snpdata, count_A1=False)
+        snpdata2 = Bed(output, count_A1=False).read()
         np.testing.assert_array_almost_equal(snpdata.val, snpdata2.val, decimal=10)
 
     def test_write_bed_f64cpp_1(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
+        snpreader = Bed(
+            self.currentFolder + "/examples/toydata.5chrom.bed", count_A1=False
+        )
         iid_index = 1
         logging.info("iid={0}".format(iid_index))
-        #if snpreader.iid_count % 4 == 0: # divisible by 4 isn't a good test
+        # if snpreader.iid_count % 4 == 0: # divisible by 4 isn't a good test
         #    snpreader = snpreader[0:-1,:]
-        #assert snpreader.iid_count % 4 != 0
-        snpdata = snpreader[0:iid_index,:].read(order='F',dtype=np.float64)
+        # assert snpreader.iid_count % 4 != 0
+        snpdata = snpreader[0:iid_index, :].read(order="F", dtype=np.float64)
         if snpdata.iid_count > 0:
-            snpdata.val[-1,0] = float("NAN")
+            snpdata.val[-1, 0] = float("NAN")
         output = "tempdir/toydata.F64cpp.{0}".format(iid_index)
         create_directory_if_necessary(output)
-        Bed.write(output, snpdata ,count_A1=False)
-        snpdata2 = Bed(output,count_A1=False).read()
+        Bed.write(output, snpdata, count_A1=False)
+        snpdata2 = Bed(output, count_A1=False).read()
         np.testing.assert_array_almost_equal(snpdata.val, snpdata2.val, decimal=10)
 
     def test_write_bed_f64cpp_5(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
+        snpreader = Bed(
+            self.currentFolder + "/examples/toydata.5chrom.bed", count_A1=False
+        )
 
         from pysnptools.kernelreader.test import _fortesting_JustCheckExists
+
         _fortesting_JustCheckExists().input(snpreader)
 
         iid_index = 5
         logging.info("iid={0}".format(iid_index))
-        #if snpreader.iid_count % 4 == 0: # divisible by 4 isn't a good test
+        # if snpreader.iid_count % 4 == 0: # divisible by 4 isn't a good test
         #    snpreader = snpreader[0:-1,:]
-        #assert snpreader.iid_count % 4 != 0
-        snpdata = snpreader[0:iid_index,:].read(order='F',dtype=np.float64)
+        # assert snpreader.iid_count % 4 != 0
+        snpdata = snpreader[0:iid_index, :].read(order="F", dtype=np.float64)
         if snpdata.iid_count > 0:
-            snpdata.val[-1,0] = float("NAN")
+            snpdata.val[-1, 0] = float("NAN")
         output = "tempdir/toydata.F64cpp.{0}".format(iid_index)
         create_directory_if_necessary(output)
-        Bed.write(output, snpdata ,count_A1=False) #,force_python_only=True)
-        snpdata2 = Bed(output,count_A1=False).read()
+        Bed.write(output, snpdata, count_A1=False)  # ,force_python_only=True)
+        snpdata2 = Bed(output, count_A1=False).read()
         np.testing.assert_array_almost_equal(snpdata.val, snpdata2.val, decimal=10)
 
     def test_write_bed_f64cpp_5_python(self):
-        snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
+        snpreader = Bed(
+            self.currentFolder + "/examples/toydata.5chrom.bed", count_A1=False
+        )
         iid_index = 5
         logging.info("iid={0}".format(iid_index))
-        #if snpreader.iid_count % 4 == 0: # divisible by 4 isn't a good test
+        # if snpreader.iid_count % 4 == 0: # divisible by 4 isn't a good test
         #    snpreader = snpreader[0:-1,:]
-        #assert snpreader.iid_count % 4 != 0
-        snpdata = snpreader[0:iid_index,:].read(order='F',dtype=np.float64)
+        # assert snpreader.iid_count % 4 != 0
+        snpdata = snpreader[0:iid_index, :].read(order="F", dtype=np.float64)
         if snpdata.iid_count > 0:
-            snpdata.val[-1,0] = float("NAN")
+            snpdata.val[-1, 0] = float("NAN")
         output = "tempdir/toydata.F64python.{0}".format(iid_index)
         create_directory_if_necessary(output)
-        Bed.write(output,snpdata, force_python_only=True)
-        snpdata2 = Bed(output,count_A1=False).read()
+        Bed.write(output, snpdata, force_python_only=True)
+        snpdata2 = Bed(output, count_A1=False).read()
         np.testing.assert_array_almost_equal(snpdata.val, snpdata2.val, decimal=10)
 
     def test_write_x_x_cpp(self):
         for count_A1 in [False, True]:
-            snpreader = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=count_A1)
-            for order in ['C','F']:
-                for dtype in [np.float32,np.float64]:
-                    snpdata = snpreader.read(order=order,dtype=dtype)
-                    snpdata.val[-1,0] = float("NAN")
-                    output = "tempdir/toydata.{0}{1}.cpp".format(order,"32" if dtype==np.float32 else "64")
+            snpreader = Bed(
+                self.currentFolder + "/examples/toydata.5chrom.bed", count_A1=count_A1
+            )
+            for order in ["C", "F"]:
+                for dtype in [np.float32, np.float64]:
+                    snpdata = snpreader.read(order=order, dtype=dtype)
+                    snpdata.val[-1, 0] = float("NAN")
+                    output = "tempdir/toydata.{0}{1}.cpp".format(
+                        order, "32" if dtype == np.float32 else "64"
+                    )
                     create_directory_if_necessary(output)
                     Bed.write(output, snpdata, count_A1=count_A1)
-                    snpdata2 = Bed(output,count_A1=count_A1).read()
-                    np.testing.assert_array_almost_equal(snpdata.val, snpdata2.val, decimal=10)
+                    snpdata2 = Bed(output, count_A1=count_A1).read()
+                    np.testing.assert_array_almost_equal(
+                        snpdata.val, snpdata2.val, decimal=10
+                    )
 
     def test_subset_view(self):
-        snpreader2 = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)[:,:]
+        snpreader2 = Bed(
+            self.currentFolder + "/examples/toydata.5chrom.bed", count_A1=False
+        )[:, :]
         result = snpreader2.read(view_ok=True)
         self.assertFalse(snpreader2 is result)
-        result2 = result[:,:].read()
-        self.assertFalse(np.may_share_memory(result2.val,result.val))
-        result3 = result[:,:].read(view_ok=True)
-        self.assertTrue(np.may_share_memory(result3.val,result.val))
+        result2 = result[:, :].read()
+        self.assertFalse(np.may_share_memory(result2.val, result.val))
+        result3 = result[:, :].read(view_ok=True)
+        self.assertTrue(np.may_share_memory(result3.val, result.val))
         result4 = result3.read()
-        self.assertFalse(np.may_share_memory(result4.val,result3.val))
+        self.assertFalse(np.may_share_memory(result4.val, result3.val))
         result5 = result4.read(view_ok=True)
-        self.assertTrue(np.may_share_memory(result4.val,result5.val))
+        self.assertTrue(np.may_share_memory(result4.val, result5.val))
 
     def test_load_and_standardize_hdf5(self):
         snpreader2 = SnpHdf5(self.currentFolder + "/examples/toydata.snpmajor.snp.hdf5")
         snpreader3 = SnpHdf5(self.currentFolder + "/examples/toydata.iidmajor.snp.hdf5")
         self.load_and_standardize(snpreader2, snpreader3)
-        snpreaderref = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
+        snpreaderref = Bed(
+            self.currentFolder + "/examples/toydata.5chrom.bed", count_A1=False
+        )
         self.load_and_standardize(snpreader2, snpreaderref)
 
     def test_load_and_standardize_dat(self):
         snpreader2 = Dat(self.currentFolder + "/examples/toydata.dat")
         self.load_and_standardize(snpreader2, snpreader2)
-        #snpreaderref = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
-        #self.load_and_standardize(snpreader2, snpreaderref)
+        # snpreaderref = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
+        # self.load_and_standardize(snpreader2, snpreaderref)
 
     def test_load_and_standardize_ped(self):
 
         #!!Ped columns can be ambiguous
         ###Creating Ped data ...
-        #currentFolder = os.path.dirname(os.path.realpath(__file__))
-        #snpData = Bed(currentFolder + "/examples/toydata.5chrom.bed",count_A1=False).read()
+        # currentFolder = os.path.dirname(os.path.realpath(__file__))
+        # snpData = Bed(currentFolder + "/examples/toydata.5chrom.bed",count_A1=False).read()
         ##Ped.write(snpData, currentFolder + "/examples/toydata.ped")
-        #fromPed = Ped(currentFolder + "/examples/toydata").read()
-        #self.assertTrue(np.allclose(snpData.val, fromPed.val, rtol=1e-05, atol=1e-05))
-
+        # fromPed = Ped(currentFolder + "/examples/toydata").read()
+        # self.assertTrue(np.allclose(snpData.val, fromPed.val, rtol=1e-05, atol=1e-05))
 
         snpreader2 = Ped(self.currentFolder + "/examples/toydata")
         self.load_and_standardize(snpreader2, snpreader2)
-        #snpreaderref = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
-        #self.load_and_standardize(snpreader2, snpreaderref)
+        # snpreaderref = Bed(self.currentFolder + "/examples/toydata.5chrom.bed",count_A1=False)
+        # self.load_and_standardize(snpreader2, snpreaderref)
 
     def load_and_standardize(self, snpreader2, snpreader3):
         """
@@ -662,36 +816,47 @@ class TestPySnpTools(unittest.TestCase):
         S = snpreader2.sid_count
         N_original = snpreader2.iid_count
 
-        iid_index_list = range(N_original - 1,0,-2)
-        snpreader3 = snpreader3[iid_index_list,:]
+        iid_index_list = range(N_original - 1, 0, -2)
+        snpreader3 = snpreader3[iid_index_list, :]
 
-        for dtype in [np.float64,np.float32]:
+        for dtype in [np.float64, np.float32]:
 
-            G2 = snpreader2.read(order='F',force_python_only=True).val
+            G2 = snpreader2.read(order="F", force_python_only=True).val
             G2 = Unit().standardize(G2, block_size=10000, force_python_only=True)
 
-            SNPs_floatF = snpreader2.read(order="F", dtype=dtype, force_python_only=False).val
+            SNPs_floatF = snpreader2.read(
+                order="F", dtype=dtype, force_python_only=False
+            ).val
             GF = Unit().standardize(SNPs_floatF)
 
-            SNPs_floatC = snpreader2.read(order="C", dtype=dtype, force_python_only=False).val
+            SNPs_floatC = snpreader2.read(
+                order="C", dtype=dtype, force_python_only=False
+            ).val
             GC = Unit().standardize(SNPs_floatC)
 
             self.assertTrue(np.allclose(GF, G2, rtol=1e-05, atol=1e-05))
             self.assertTrue(np.allclose(GF, GC, rtol=1e-05, atol=1e-05))
 
-            #testing selecting a subset of snps and iids
-            snp_index_list = range(S - 1,0,-2)
+            # testing selecting a subset of snps and iids
+            snp_index_list = range(S - 1, 0, -2)
 
-            G2x = snpreader2.read(order='F',force_python_only=True).val
-            G2x = G2x[iid_index_list,:][:,snp_index_list]
+            G2x = snpreader2.read(order="F", force_python_only=True).val
+            G2x = G2x[iid_index_list, :][:, snp_index_list]
             G2x = Unit().standardize(G2x, block_size=10000, force_python_only=True)
 
-
-            SNPs_floatFx = snpreader3[:,snp_index_list].read(order="F", dtype=dtype, force_python_only=False).val
+            SNPs_floatFx = (
+                snpreader3[:, snp_index_list]
+                .read(order="F", dtype=dtype, force_python_only=False)
+                .val
+            )
             GFx = Unit().standardize(SNPs_floatFx)
             self.assertTrue(np.allclose(GFx, G2x, rtol=1e-05, atol=1e-05))
 
-            SNPs_floatCx = snpreader3[:,snp_index_list].read(order="C", dtype=dtype, force_python_only=False).val
+            SNPs_floatCx = (
+                snpreader3[:, snp_index_list]
+                .read(order="C", dtype=dtype, force_python_only=False)
+                .val
+            )
             GCx = Unit().standardize(SNPs_floatCx)
             self.assertTrue(np.allclose(GFx, G2x, rtol=1e-05, atol=1e-05))
 
@@ -702,31 +867,34 @@ class TestPySnpTools(unittest.TestCase):
 
         iid_count = 3
         sid_count = 2
-        iid = [[str(i),str(i)] for i in range(iid_count)]
+        iid = [[str(i), str(i)] for i in range(iid_count)]
         sid = [str(s) for s in range(sid_count)]
         np.random.seed(0)
-        vali = np.random.randint(10,size=[iid_count,sid_count])
-        snpdata = SnpData(iid=iid,sid=sid,val=vali)
+        vali = np.random.randint(10, size=[iid_count, sid_count])
+        snpdata = SnpData(iid=iid, sid=sid, val=vali)
         assert snpdata.val.dtype == np.float64
-        snpdata = SnpData(iid=iid,sid=sid,val=np.array(vali,dtype=np.float32))
+        snpdata = SnpData(iid=iid, sid=sid, val=np.array(vali, dtype=np.float32))
         assert snpdata.val.dtype == np.float32
-        snpdata = SnpData(iid=iid,sid=sid,val=np.array(vali,dtype=np.float64))
+        snpdata = SnpData(iid=iid, sid=sid, val=np.array(vali, dtype=np.float64))
         assert snpdata.val.dtype == np.float64
-        snpdata = SnpData(iid=iid,sid=sid,val=np.array(vali,dtype=np.float16))
+        snpdata = SnpData(iid=iid, sid=sid, val=np.array(vali, dtype=np.float16))
         assert snpdata.val.dtype == np.float64
-        assert np.float64 == SnpData(iid=iid,sid=sid,val=np.array(vali,dtype=np.str_)).val.dtype
+        assert (
+            np.float64
+            == SnpData(iid=iid, sid=sid, val=np.array(vali, dtype=np.str_)).val.dtype
+        )
 
-        valstr = np.array(vali,dtype=np.str_)
-        valstr[0,0] = 'cannot convert'
+        valstr = np.array(vali, dtype=np.str_)
+        valstr[0, 0] = "cannot convert"
         error_seen = False
         try:
-            SnpData(iid=iid,sid=sid,val=valstr) #expect error
+            SnpData(iid=iid, sid=sid, val=valstr)  # expect error
         except:
             error_seen = True
         assert error_seen
         error_seen = False
         try:
-            KernelData(iid=iid,val=valk3d) #expect error
+            KernelData(iid=iid, val=valk3d)  # expect error
         except:
             error_seen = True
         assert error_seen
@@ -735,97 +903,154 @@ class TestPySnpTools(unittest.TestCase):
         previous_wd = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
-        bed = Bed('examples/toydata.5chrom.bed',count_A1=True)
-        bed[:3,:2].read(dtype='float32').val
+        bed = Bed("examples/toydata.5chrom.bed", count_A1=True)
+        bed[:3, :2].read(dtype="float32").val
 
         os.chdir(previous_wd)
 
     def test_respect_read_inputs(self):
-        from pysnptools.snpreader import _MergeIIDs,_MergeSIDs, SnpGen, SnpMemMap
+        from pysnptools.snpreader import _MergeIIDs, _MergeSIDs, SnpGen, SnpMemMap
 
         previous_wd = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
         snpreader_list = [
-                           Bed('examples/toydata.5chrom.bed',count_A1=True),
-                           SnpGen(seed=0,iid_count=500,sid_count=50),
-                           SnpHdf5('examples/toydata.snpmajor.snp.hdf5'),
-                           SnpMemMap('examples/tiny.snp.memmap'),
-                           SnpNpz('examples/toydata10.snp.npz'),
-                           Bed('examples/toydata.5chrom.bed',count_A1=True)[::2,::2],
-                           _MergeSIDs([Bed('examples/toydata.5chrom.bed',count_A1=True)[:,:5].read(),Bed('examples/toydata.5chrom.bed',count_A1=True)[:,5:].read()]),
-                           Dat('examples/toydata.dat'),
-                           Dense('examples/toydata100.dense.txt'),
-                           DistributedBed('examples/toydataSkip10.distributedbed'),
-                           Ped('examples/toydata.ped'),
-                           Pheno('examples/toydata.phe'),
-                           Bed('examples/toydata.5chrom.bed',count_A1=True).read(),
-                           _MergeIIDs([Bed('examples/toydata.5chrom.bed',count_A1=True)[:5,:].read(),Bed('examples/toydata.5chrom.bed',count_A1=True)[5:,:].read()]),
-                          ]
+            Bed("examples/toydata.5chrom.bed", count_A1=True),
+            SnpGen(seed=0, iid_count=500, sid_count=50),
+            SnpHdf5("examples/toydata.snpmajor.snp.hdf5"),
+            SnpMemMap("examples/tiny.snp.memmap"),
+            SnpNpz("examples/toydata10.snp.npz"),
+            Bed("examples/toydata.5chrom.bed", count_A1=True)[::2, ::2],
+            _MergeSIDs(
+                [
+                    Bed("examples/toydata.5chrom.bed", count_A1=True)[:, :5].read(),
+                    Bed("examples/toydata.5chrom.bed", count_A1=True)[:, 5:].read(),
+                ]
+            ),
+            Dat("examples/toydata.dat"),
+            Dense("examples/toydata100.dense.txt"),
+            DistributedBed("examples/toydataSkip10.distributedbed"),
+            Ped("examples/toydata.ped"),
+            Pheno("examples/toydata.phe"),
+            Bed("examples/toydata.5chrom.bed", count_A1=True).read(),
+            _MergeIIDs(
+                [
+                    Bed("examples/toydata.5chrom.bed", count_A1=True)[:5, :].read(),
+                    Bed("examples/toydata.5chrom.bed", count_A1=True)[5:, :].read(),
+                ]
+            ),
+        ]
 
         output_p = "tempdir/snpreader/respect.p"
         create_directory_if_necessary(output_p)
 
         for snpreader in snpreader_list:
             logging.info(str(snpreader))
-            for order in ['F','C','A']:
-                for dtype in [np.float32,np.float64]:
-                    for force_python_only in [True,False]:
-                        for view_ok in [True,False]:
-                            val = snpreader.read(order=order,dtype=dtype,force_python_only=force_python_only,view_ok=view_ok).val
-                            has_right_order = order=="A" or (order=="C" and val.flags["C_CONTIGUOUS"]) or (order=="F" and val.flags["F_CONTIGUOUS"])
-                            if hasattr(snpreader,'val') and not view_ok:
+            for order in ["F", "C", "A"]:
+                for dtype in [np.float32, np.float64]:
+                    for force_python_only in [True, False]:
+                        for view_ok in [True, False]:
+                            val = snpreader.read(
+                                order=order,
+                                dtype=dtype,
+                                force_python_only=force_python_only,
+                                view_ok=view_ok,
+                            ).val
+                            has_right_order = (
+                                order == "A"
+                                or (order == "C" and val.flags["C_CONTIGUOUS"])
+                                or (order == "F" and val.flags["F_CONTIGUOUS"])
+                            )
+                            if hasattr(snpreader, "val") and not view_ok:
                                 assert snpreader.val is not val
-                            if (hasattr(snpreader,'val') and view_ok and snpreader.val is not val and
-                                (order == 'A' or (order == 'F' and snpreader.val.flags['F_CONTIGUOUS']) or (order == 'C' and snpreader.val.flags['C_CONTIGUOUS'])) and
-                                (dtype is None or  snpreader.val.dtype == dtype)):
-                                logging.info("{0} could have read a view, but didn't".format(snpreader))
-                            if not force_python_only: #Don't check this when force_python_only -- Bed is know to get the order wrong, but it doesn't matter
+                            if (
+                                hasattr(snpreader, "val")
+                                and view_ok
+                                and snpreader.val is not val
+                                and (
+                                    order == "A"
+                                    or (
+                                        order == "F"
+                                        and snpreader.val.flags["F_CONTIGUOUS"]
+                                    )
+                                    or (
+                                        order == "C"
+                                        and snpreader.val.flags["C_CONTIGUOUS"]
+                                    )
+                                )
+                                and (dtype is None or snpreader.val.dtype == dtype)
+                            ):
+                                logging.info(
+                                    "{0} could have read a view, but didn't".format(
+                                        snpreader
+                                    )
+                                )
+                            if (
+                                not force_python_only
+                            ):  # Don't check this when force_python_only -- Bed is know to get the order wrong, but it doesn't matter
                                 assert val.dtype == dtype and has_right_order
-            with open(output_p, 'wb') as f:
-                pickle.dump(snpreader,f)
-            with open(output_p,'rb') as f:
+            with open(output_p, "wb") as f:
+                pickle.dump(snpreader, f)
+            with open(output_p, "rb") as f:
                 snpreader_p = pickle.load(f)
-            val_p = snpreader_p.read(order=order,dtype=dtype,force_python_only=force_python_only,view_ok=view_ok).val
-            np.allclose(val,val_p,equal_nan=True)
+            val_p = snpreader_p.read(
+                order=order,
+                dtype=dtype,
+                force_python_only=force_python_only,
+                view_ok=view_ok,
+            ).val
+            np.allclose(val, val_p, equal_nan=True)
 
         os.chdir(previous_wd)
 
     def test_writes(self):
         from pysnptools.snpreader import SnpData, SnpHdf5, SnpNpz, SnpMemMap
 
-        the_class_and_suffix_list = [(SnpMemMap,"memmap",None,None)]
-        
-        #===================================
+        the_class_and_suffix_list = [(SnpMemMap, "memmap", None, None)]
+
+        # ===================================
         #    Starting main function
-        #===================================
+        # ===================================
         logging.info("starting 'test_writes'")
         np.random.seed(0)
         output_template = "tempdir/snpreader/writes.{0}.{1}"
-        create_directory_if_necessary(output_template.format(0,"npz"))
+        create_directory_if_necessary(output_template.format(0, "npz"))
         for row_count in [1]:
             for col_count in [4]:
-                val = np.random.randint(0,4,size=(row_count,col_count))*1.0
-                val[val==3]=np.NaN
-                row = [('0','0'),('1','1'),('2','2'),('3','3'),('4','4')][:row_count]
-                col = ['s0','s1','s2','s3','s4'][:col_count]
+                val = np.random.randint(0, 4, size=(row_count, col_count)) * 1.0
+                val[val == 3] = np.NaN
+                row = [("0", "0"), ("1", "1"), ("2", "2"), ("3", "3"), ("4", "4")][
+                    :row_count
+                ]
+                col = ["s0", "s1", "s2", "s3", "s4"][:col_count]
                 for is_none in [True]:
                     row_prop = None
                     col_prop = None
-                    snpdata = SnpData(iid=row,sid=col,val=val,pos=col_prop)
-                    for the_class,suffix,constructor,writer in the_class_and_suffix_list:
-                        constructor = (lambda filename: the_class(filename))
-                        writer = (lambda filename,_data: the_class.write(filename,_data))
+                    snpdata = SnpData(iid=row, sid=col, val=val, pos=col_prop)
+                    for (
+                        the_class,
+                        suffix,
+                        constructor,
+                        writer,
+                    ) in the_class_and_suffix_list:
+                        constructor = lambda filename: the_class(filename)
+                        writer = lambda filename, _data: the_class.write(
+                            filename, _data
+                        )
 
-                        filename = output_template.format("debug",suffix)
+                        filename = output_template.format("debug", suffix)
                         logging.info(filename)
-                        ret = writer(filename,snpdata)
+                        ret = writer(filename, snpdata)
                         assert ret is not None
-                        for subsetter in [np.s_[::2,::3]]:
+                        for subsetter in [np.s_[::2, ::3]]:
                             reader = constructor(filename)
                             _fortesting_JustCheckExists().input(reader)
-                            subreader = reader if subsetter is None else reader[subsetter[0],subsetter[1]]
-                            readdata = subreader.read(order='C')
+                            subreader = (
+                                reader
+                                if subsetter is None
+                                else reader[subsetter[0], subsetter[1]]
+                            )
+                            readdata = subreader.read(order="C")
                         try:
                             os.remove(filename)
                         except:
@@ -835,98 +1060,156 @@ class TestPySnpTools(unittest.TestCase):
     def test_writes(self):
         from pysnptools.snpreader import SnpData, SnpHdf5, SnpNpz, SnpMemMap
 
-        the_class_and_suffix_list = [(DistributedBed, "distributed_bed",None,None),
-                                     (Dense,"dense",None,None),
-                                     (Bed,"bed",lambda filename:Bed(filename,count_A1=False),None),
-                                     (Dat,"dat",None,None),
-                                     (Ped,"ped",None,None),
-                                     (Pheno,"pheno",None,None),
-                                    (SnpHdf5,"hdf5",None,None),
-                                    (SnpNpz,"npz",None,None),
-                                    (SnpMemMap,"memmap",None,None)
-                                    ]
-        cant_do_col_prop_none_set = {"dense","distributed_bed"}
+        the_class_and_suffix_list = [
+            (DistributedBed, "distributed_bed", None, None),
+            (Dense, "dense", None, None),
+            (Bed, "bed", lambda filename: Bed(filename, count_A1=False), None),
+            (Dat, "dat", None, None),
+            (Ped, "ped", None, None),
+            (Pheno, "pheno", None, None),
+            (SnpHdf5, "hdf5", None, None),
+            (SnpNpz, "npz", None, None),
+            (SnpMemMap, "memmap", None, None),
+        ]
+        cant_do_col_prop_none_set = {"dense", "distributed_bed"}
         cant_do_col_len_0_set = {"distributed_bed"}
-        cant_do_row_count_zero_set = {'dense','ped','pheno'}
-        can_swap_0_2_set = {'ped'}
-        can_change_col_names_set = {'pheno'}
-        ignore_fam_id_set = {'dense'}
-        ignore_pos_set = {'dense','pheno'}
-        erase_any_write_dir = {'distributed_bed'}
+        cant_do_row_count_zero_set = {"dense", "ped", "pheno"}
+        can_swap_0_2_set = {"ped"}
+        can_change_col_names_set = {"pheno"}
+        ignore_fam_id_set = {"dense"}
+        ignore_pos_set = {"dense", "pheno"}
+        erase_any_write_dir = {"distributed_bed"}
 
-        
-        #===================================
+        # ===================================
         #    Starting main function
-        #===================================
+        # ===================================
         logging.info("starting 'test_writes'")
         np.random.seed(0)
         output_template = "tempdir/snpreader/writes.{0}.{1}"
-        create_directory_if_necessary(output_template.format(0,"npz"))
+        create_directory_if_necessary(output_template.format(0, "npz"))
         i = 0
-        for row_count in [0,5,2,1]:
-            for col_count in [4,2,1,0]:
-                val = np.random.randint(0,4,size=(row_count,col_count))*1.0
-                val[val==3]=np.NaN
-                row = [('0','0'),('1','1'),('2','2'),('3','3'),('4','4')][:row_count]
-                col = ['s0','s1','s2','s3','s4'][:col_count]
-                for is_none in [True,False]:
+        for row_count in [0, 5, 2, 1]:
+            for col_count in [4, 2, 1, 0]:
+                val = np.random.randint(0, 4, size=(row_count, col_count)) * 1.0
+                val[val == 3] = np.NaN
+                row = [("0", "0"), ("1", "1"), ("2", "2"), ("3", "3"), ("4", "4")][
+                    :row_count
+                ]
+                col = ["s0", "s1", "s2", "s3", "s4"][:col_count]
+                for is_none in [True, False]:
                     row_prop = None
                     if is_none:
                         col_prop = None
                     else:
-                        col_prop = [(x,x,x) for x in range(1,6)][:col_count]
-                    snpdata = SnpData(iid=row,sid=col,val=val,pos=col_prop,name=str(i))
-                    for the_class,suffix,constructor,writer in the_class_and_suffix_list:
-                        constructor = constructor or (lambda filename: the_class(filename))
-                        writer = writer or (lambda filename,_data: the_class.write(filename,_data))
+                        col_prop = [(x, x, x) for x in range(1, 6)][:col_count]
+                    snpdata = SnpData(
+                        iid=row, sid=col, val=val, pos=col_prop, name=str(i)
+                    )
+                    for (
+                        the_class,
+                        suffix,
+                        constructor,
+                        writer,
+                    ) in the_class_and_suffix_list:
+                        constructor = constructor or (
+                            lambda filename: the_class(filename)
+                        )
+                        writer = writer or (
+                            lambda filename, _data: the_class.write(filename, _data)
+                        )
 
                         if col_count == 0 and suffix in cant_do_col_len_0_set:
                             continue
                         if col_prop is None and suffix in cant_do_col_prop_none_set:
                             continue
-                        if row_count==0 and suffix in cant_do_row_count_zero_set:
+                        if row_count == 0 and suffix in cant_do_row_count_zero_set:
                             continue
-                        filename = output_template.format(i,suffix)
+                        filename = output_template.format(i, suffix)
                         logging.info(filename)
                         i += 1
                         if suffix in erase_any_write_dir and os.path.exists(filename):
                             shutil.rmtree(filename)
-                        ret = writer(filename,snpdata)
+                        ret = writer(filename, snpdata)
                         assert ret is not None
-                        for subsetter in [None, np.s_[::2,::3]]:
+                        for subsetter in [None, np.s_[::2, ::3]]:
                             reader = constructor(filename)
                             _fortesting_JustCheckExists().input(reader)
-                            subreader = reader if subsetter is None else reader[subsetter[0],subsetter[1]]
-                            readdata = subreader.read(order='C')
-                            expected = snpdata if subsetter is None else snpdata[subsetter[0],subsetter[1]].read()
+                            subreader = (
+                                reader
+                                if subsetter is None
+                                else reader[subsetter[0], subsetter[1]]
+                            )
+                            readdata = subreader.read(order="C")
+                            expected = (
+                                snpdata
+                                if subsetter is None
+                                else snpdata[subsetter[0], subsetter[1]].read()
+                            )
                             if not suffix in can_swap_0_2_set:
-                                assert np.allclose(readdata.val,expected.val,equal_nan=True)
+                                assert np.allclose(
+                                    readdata.val, expected.val, equal_nan=True
+                                )
                             else:
                                 for col_index in range(readdata.col_count):
-                                    assert (np.allclose(readdata.val[:,col_index],expected.val[:,col_index],equal_nan=True) or
-                                            np.allclose(readdata.val[:,col_index]*-1+2,expected.val[:,col_index],equal_nan=True))
+                                    assert np.allclose(
+                                        readdata.val[:, col_index],
+                                        expected.val[:, col_index],
+                                        equal_nan=True,
+                                    ) or np.allclose(
+                                        readdata.val[:, col_index] * -1 + 2,
+                                        expected.val[:, col_index],
+                                        equal_nan=True,
+                                    )
                             if not suffix in ignore_fam_id_set:
-                                assert np.array_equal(readdata.row,expected.row)
+                                assert np.array_equal(readdata.row, expected.row)
                             else:
-                                assert np.array_equal(readdata.row[:,1],expected.row[:,1])
+                                assert np.array_equal(
+                                    readdata.row[:, 1], expected.row[:, 1]
+                                )
                             if not suffix in can_change_col_names_set:
-                                assert np.array_equal(readdata.col,expected.col)
+                                assert np.array_equal(readdata.col, expected.col)
                             else:
-                                assert readdata.col_count==expected.col_count
-                            assert np.array_equal(readdata.row_property,expected.row_property) or (readdata.row_property.shape[1]==0 and expected.row_property.shape[1]==0)
+                                assert readdata.col_count == expected.col_count
+                            assert np.array_equal(
+                                readdata.row_property, expected.row_property
+                            ) or (
+                                readdata.row_property.shape[1] == 0
+                                and expected.row_property.shape[1] == 0
+                            )
 
                             if not suffix in ignore_pos_set:
-                                assert np.allclose(readdata.col_property,expected.col_property,equal_nan=True) or (readdata.col_property.shape[1]==0 and expected.col_property.shape[1]==0)
+                                assert np.allclose(
+                                    readdata.col_property,
+                                    expected.col_property,
+                                    equal_nan=True,
+                                ) or (
+                                    readdata.col_property.shape[1] == 0
+                                    and expected.col_property.shape[1] == 0
+                                )
                             else:
-                                assert len(readdata.col_property)==len(expected.col_property)
+                                assert len(readdata.col_property) == len(
+                                    expected.col_property
+                                )
                         try:
                             os.remove(filename)
                         except:
                             pass
         logging.info("done with 'test_writes'")
 
+
 class NaNCNCTestCases(unittest.TestCase):
-    def __init__(self, iid_index_list, snp_index_list, standardizer, snpreader, dtype, order, force_python_only, reference_snps, reference_dtype):
+    def __init__(
+        self,
+        iid_index_list,
+        snp_index_list,
+        standardizer,
+        snpreader,
+        dtype,
+        order,
+        force_python_only,
+        reference_snps,
+        reference_dtype,
+    ):
         self.iid_index_list = iid_index_list
         self.snp_index_list = snp_index_list
         self.standardizer = standardizer
@@ -943,10 +1226,16 @@ class NaNCNCTestCases(unittest.TestCase):
     @staticmethod
     def factory_iterator():
 
-        snp_reader_factory_bed = lambda : Bed("examples/toydata.5chrom.bed",count_A1=False)
-        snp_reader_factory_snpmajor_hdf5 = lambda : SnpHdf5("examples/toydata.snpmajor.snp.hdf5")
-        snp_reader_factory_iidmajor_hdf5 = lambda : SnpHdf5("examples/toydata.iidmajor.snp.hdf5")
-        snp_reader_factory_dat = lambda : Dat("examples/toydata.dat")
+        snp_reader_factory_bed = lambda: Bed(
+            "examples/toydata.5chrom.bed", count_A1=False
+        )
+        snp_reader_factory_snpmajor_hdf5 = lambda: SnpHdf5(
+            "examples/toydata.snpmajor.snp.hdf5"
+        )
+        snp_reader_factory_iidmajor_hdf5 = lambda: SnpHdf5(
+            "examples/toydata.iidmajor.snp.hdf5"
+        )
+        snp_reader_factory_dat = lambda: Dat("examples/toydata.dat")
 
         previous_wd = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -957,19 +1246,49 @@ class NaNCNCTestCases(unittest.TestCase):
 
         snps_to_read_count = min(S_original, 100)
 
-        for iid_index_list in [range(N_original), range(N_original//2), range(N_original - 1,0,-2)]:
-            for snp_index_list in [range(snps_to_read_count), range(snps_to_read_count//2), range(snps_to_read_count - 1,0,-2)]:
-                for standardizer in [Unit(),Beta(1,25)]:
-                    reference_snps, reference_dtype = NaNCNCTestCases(iid_index_list, snp_index_list, standardizer, snp_reader_factory_bed(), np.float64, "C", "False", None, None).read_and_standardize()
-                    for snpreader_factory in [snp_reader_factory_bed, 
-                                             snp_reader_factory_snpmajor_hdf5, snp_reader_factory_iidmajor_hdf5,
-                                             snp_reader_factory_dat
-                                              ]:
-                        for dtype in [np.float64,np.float32]:
+        for iid_index_list in [
+            range(N_original),
+            range(N_original // 2),
+            range(N_original - 1, 0, -2),
+        ]:
+            for snp_index_list in [
+                range(snps_to_read_count),
+                range(snps_to_read_count // 2),
+                range(snps_to_read_count - 1, 0, -2),
+            ]:
+                for standardizer in [Unit(), Beta(1, 25)]:
+                    reference_snps, reference_dtype = NaNCNCTestCases(
+                        iid_index_list,
+                        snp_index_list,
+                        standardizer,
+                        snp_reader_factory_bed(),
+                        np.float64,
+                        "C",
+                        "False",
+                        None,
+                        None,
+                    ).read_and_standardize()
+                    for snpreader_factory in [
+                        snp_reader_factory_bed,
+                        snp_reader_factory_snpmajor_hdf5,
+                        snp_reader_factory_iidmajor_hdf5,
+                        snp_reader_factory_dat,
+                    ]:
+                        for dtype in [np.float64, np.float32]:
                             for order in ["C", "F"]:
                                 for force_python_only in [False, True]:
                                     snpreader = snpreader_factory()
-                                    test_case = NaNCNCTestCases(iid_index_list, snp_index_list, standardizer, snpreader, dtype, order, force_python_only, reference_snps, reference_dtype)
+                                    test_case = NaNCNCTestCases(
+                                        iid_index_list,
+                                        snp_index_list,
+                                        standardizer,
+                                        snpreader,
+                                        dtype,
+                                        order,
+                                        force_python_only,
+                                        reference_snps,
+                                        reference_dtype,
+                                    )
                                     yield test_case
         os.chdir(previous_wd)
 
@@ -983,9 +1302,18 @@ class NaNCNCTestCases(unittest.TestCase):
         force_python_only = self.force_python_only
         return "{0}(iid_index_list=[{1}], snp_index_list=[{2}], standardizer={3}, snpreader={4}, dtype={5}, order='{6}', force_python_only=={7})".format(
             self.__class__.__name__,
-            ",".join([str(i) for i in iid_index_list]) if len(iid_index_list) < 10 else ",".join([str(i) for i in iid_index_list[0:10]])+",...",
-            ",".join([str(i) for i in snp_index_list]) if len(snp_index_list) < 10 else ",".join([str(i) for i in snp_index_list[0:10]])+",...",
-            standardizer, snpreader, dtype, order, force_python_only)
+            ",".join([str(i) for i in iid_index_list])
+            if len(iid_index_list) < 10
+            else ",".join([str(i) for i in iid_index_list[0:10]]) + ",...",
+            ",".join([str(i) for i in snp_index_list])
+            if len(snp_index_list) < 10
+            else ",".join([str(i) for i in snp_index_list[0:10]]) + ",...",
+            standardizer,
+            snpreader,
+            dtype,
+            order,
+            force_python_only,
+        )
 
     def read_and_standardize(self):
         previous_wd = os.getcwd()
@@ -997,172 +1325,224 @@ class NaNCNCTestCases(unittest.TestCase):
         dtype = self.dtype
         order = self.order
         force_python_only = self.force_python_only
-        
-        snps = snpreader[iid_index_list,snp_index_list].read(order=order, dtype=dtype, force_python_only=force_python_only).val
-        snps[0,0] = np.nan # add a NaN
-        snps[:,1] = 2 # make a SNC
-        snps = standardizer.standardize(snps,force_python_only=force_python_only)
+
+        snps = (
+            snpreader[iid_index_list, snp_index_list]
+            .read(order=order, dtype=dtype, force_python_only=force_python_only)
+            .val
+        )
+        snps[0, 0] = np.nan  # add a NaN
+        snps[:, 1] = 2  # make a SNC
+        snps = standardizer.standardize(snps, force_python_only=force_python_only)
         os.chdir(previous_wd)
         return snps, dtype
 
     def doCleanups(self):
         pass
-        #return super(NaNCNCTestCases, self).doCleanups()
+        # return super(NaNCNCTestCases, self).doCleanups()
 
-    def runTest(self, result = None):
+    def runTest(self, result=None):
         snps, dtype = self.read_and_standardize()
-        self.assertTrue(snps[0,0] == 0)
-        self.assertTrue(np.all(snps[:,1] == 0))
+        self.assertTrue(snps[0, 0] == 0)
+        self.assertTrue(np.all(snps[:, 1] == 0))
         if self.reference_snps is not None:
-            self.assertTrue(np.allclose(self.reference_snps, snps, rtol=1e-04 if dtype == np.float32 or self.reference_dtype == np.float32 else 1e-12))
-
+            self.assertTrue(
+                np.allclose(
+                    self.reference_snps,
+                    snps,
+                    rtol=1e-04
+                    if dtype == np.float32 or self.reference_dtype == np.float32
+                    else 1e-12,
+                )
+            )
 
 
 # We do it this way instead of using doctest.DocTestSuite because doctest.DocTestSuite requires modules to be pickled, which python doesn't allow.
 # We need tests to be pickleable so that they can be run on a cluster.
 class TestSnpDocStrings(unittest.TestCase):
-
     def test_bed(self):
         import pysnptools.snpreader.bed
+
         old_dir = os.getcwd()
-        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
-        result = doctest.testmod(pysnptools.snpreader.bed,optionflags=doctest.ELLIPSIS)
+        os.chdir(os.path.dirname(os.path.realpath(__file__)) + "/snpreader")
+        result = doctest.testmod(pysnptools.snpreader.bed, optionflags=doctest.ELLIPSIS)
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
     def test_dat(self):
         import pysnptools.snpreader.snpdata
+
         old_dir = os.getcwd()
-        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
-        result = doctest.testmod(pysnptools.snpreader.dat,optionflags=doctest.ELLIPSIS)
+        os.chdir(os.path.dirname(os.path.realpath(__file__)) + "/snpreader")
+        result = doctest.testmod(pysnptools.snpreader.dat, optionflags=doctest.ELLIPSIS)
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
     def test_dense(self):
         import pysnptools.snpreader.snpdata
+
         old_dir = os.getcwd()
-        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
-        result = doctest.testmod(pysnptools.snpreader.dense,optionflags=doctest.ELLIPSIS)
+        os.chdir(os.path.dirname(os.path.realpath(__file__)) + "/snpreader")
+        result = doctest.testmod(
+            pysnptools.snpreader.dense, optionflags=doctest.ELLIPSIS
+        )
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
     def test_pairs(self):
         old_dir = os.getcwd()
-        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
+        os.chdir(os.path.dirname(os.path.realpath(__file__)) + "/snpreader")
         import pysnptools.snpreader.pairs
-        result = doctest.testmod(pysnptools.snpreader.pairs,optionflags=doctest.ELLIPSIS)
+
+        result = doctest.testmod(
+            pysnptools.snpreader.pairs, optionflags=doctest.ELLIPSIS
+        )
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
     def test_ped(self):
         old_dir = os.getcwd()
-        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
+        os.chdir(os.path.dirname(os.path.realpath(__file__)) + "/snpreader")
         import pysnptools.snpreader.ped
-        result = doctest.testmod(pysnptools.snpreader.ped,optionflags=doctest.ELLIPSIS)
+
+        result = doctest.testmod(pysnptools.snpreader.ped, optionflags=doctest.ELLIPSIS)
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
     def test_pheno(self):
         old_dir = os.getcwd()
-        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
+        os.chdir(os.path.dirname(os.path.realpath(__file__)) + "/snpreader")
         import pysnptools.snpreader.pheno
-        result = doctest.testmod(pysnptools.snpreader.pheno,optionflags=doctest.ELLIPSIS)
+
+        result = doctest.testmod(
+            pysnptools.snpreader.pheno, optionflags=doctest.ELLIPSIS
+        )
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
     def test_snpdata(self):
         old_dir = os.getcwd()
-        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
+        os.chdir(os.path.dirname(os.path.realpath(__file__)) + "/snpreader")
         import pysnptools.snpreader.snpdata
-        result = doctest.testmod(pysnptools.snpreader.snpdata,optionflags=doctest.ELLIPSIS)
+
+        result = doctest.testmod(
+            pysnptools.snpreader.snpdata, optionflags=doctest.ELLIPSIS
+        )
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
     def test_snphdf5(self):
         old_dir = os.getcwd()
-        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
+        os.chdir(os.path.dirname(os.path.realpath(__file__)) + "/snpreader")
         import pysnptools.snpreader.snphdf5
-        result = doctest.testmod(pysnptools.snpreader.snphdf5,optionflags=doctest.ELLIPSIS)
+
+        result = doctest.testmod(
+            pysnptools.snpreader.snphdf5, optionflags=doctest.ELLIPSIS
+        )
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
     def test_snpmemmap(self):
         old_dir = os.getcwd()
-        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
+        os.chdir(os.path.dirname(os.path.realpath(__file__)) + "/snpreader")
         import pysnptools.snpreader.snpmemmap
-        result = doctest.testmod(pysnptools.snpreader.snpmemmap,optionflags=doctest.ELLIPSIS)
+
+        result = doctest.testmod(
+            pysnptools.snpreader.snpmemmap, optionflags=doctest.ELLIPSIS
+        )
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
     def test_snpgen(self):
         old_dir = os.getcwd()
-        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/util")
+        os.chdir(os.path.dirname(os.path.realpath(__file__)) + "/util")
         import pysnptools.snpreader.snpgen
-        result = doctest.testmod(pysnptools.snpreader.snpgen,optionflags=doctest.ELLIPSIS)
+
+        result = doctest.testmod(
+            pysnptools.snpreader.snpgen, optionflags=doctest.ELLIPSIS
+        )
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
     def test_snpnpz(self):
         old_dir = os.getcwd()
-        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
+        os.chdir(os.path.dirname(os.path.realpath(__file__)) + "/snpreader")
         import pysnptools.snpreader.snpnpz
-        result = doctest.testmod(pysnptools.snpreader.snpnpz,optionflags=doctest.ELLIPSIS)
+
+        result = doctest.testmod(
+            pysnptools.snpreader.snpnpz, optionflags=doctest.ELLIPSIS
+        )
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
     def test_distributedbed(self):
         import pysnptools.snpreader.distributedbed
+
         old_dir = os.getcwd()
-        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
-        result = doctest.testmod(pysnptools.snpreader.distributedbed,optionflags=doctest.ELLIPSIS)
+        os.chdir(os.path.dirname(os.path.realpath(__file__)) + "/snpreader")
+        result = doctest.testmod(
+            pysnptools.snpreader.distributedbed, optionflags=doctest.ELLIPSIS
+        )
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
     def test_snpreader(self):
         old_dir = os.getcwd()
-        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/snpreader")
+        os.chdir(os.path.dirname(os.path.realpath(__file__)) + "/snpreader")
         import pysnptools.snpreader.snpreader
-        result = doctest.testmod(pysnptools.snpreader.snpreader,optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)
+
+        result = doctest.testmod(
+            pysnptools.snpreader.snpreader,
+            optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE,
+        )
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
     def test_util(self):
         import pysnptools.util
+
         old_dir = os.getcwd()
-        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/util")
+        os.chdir(os.path.dirname(os.path.realpath(__file__)) + "/util")
         import pysnptools.util
-        result = doctest.testmod(pysnptools.util,optionflags=doctest.ELLIPSIS)
+
+        result = doctest.testmod(pysnptools.util, optionflags=doctest.ELLIPSIS)
         os.chdir(old_dir)
         assert result.failed == 0, "failed doc test: " + __file__
 
     def test_standardize_testmod(self):
         import pysnptools.standardizer
+
         old_dir = os.getcwd()
-        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/standardizer")
+        os.chdir(os.path.dirname(os.path.realpath(__file__)) + "/standardizer")
         for mod in [
-                    pysnptools.standardizer.beta,
-                    pysnptools.standardizer.betatrained,
-                    pysnptools.standardizer.bysidcount,
-                    pysnptools.standardizer.bysqrtsidcount,
-                    pysnptools.standardizer.diag_K_to_N,
-                    pysnptools.standardizer.identity,
-                    pysnptools.standardizer.standardizer,
-                    pysnptools.standardizer.unit,
-                    pysnptools.standardizer.unittrained]:
-            result = doctest.testmod(mod,optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)
+            pysnptools.standardizer.beta,
+            pysnptools.standardizer.betatrained,
+            pysnptools.standardizer.bysidcount,
+            pysnptools.standardizer.bysqrtsidcount,
+            pysnptools.standardizer.diag_K_to_N,
+            pysnptools.standardizer.identity,
+            pysnptools.standardizer.standardizer,
+            pysnptools.standardizer.unit,
+            pysnptools.standardizer.unittrained,
+        ]:
+            result = doctest.testmod(
+                mod, optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
+            )
             assert result.failed == 0, "failed doc test: " + __file__
         os.chdir(old_dir)
 
     def test_kernelstandardize_testmod(self):
         import pysnptools.kernelstandardizer
+
         old_dir = os.getcwd()
-        os.chdir(os.path.dirname(os.path.realpath(__file__))+"/kernelstandardizer")
+        os.chdir(os.path.dirname(os.path.realpath(__file__)) + "/kernelstandardizer")
         for mod in [
-                    pysnptools.kernelstandardizer,
-                ]:
+            pysnptools.kernelstandardizer,
+        ]:
             result = doctest.testmod(mod)
             assert result.failed == 0, "failed doc test: " + __file__
         os.chdir(old_dir)
+
 
 def getTestSuite():
     """
@@ -1189,7 +1569,8 @@ def getTestSuite():
 
     return test_suite
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     suites = getTestSuite()

@@ -6,10 +6,12 @@ import logging
 import time
 import pysnptools.util as pstutil
 import numbers
+
 try:
     from builtins import int
 except:
     pass
+
 
 class PstReader(object):
     """A PstReader is one of three things:
@@ -28,7 +30,7 @@ class PstReader(object):
 
         >>> from pysnptools.pstreader import PstNpz
         >>> from pysnptools.util import example_file # Download and return local file name
-        >>> 
+        >>>
         >>> pstnpz_file = example_file('tests/datasets/all_chr.maf0.001.N300.pst.npz')
         >>> on_disk = PstNpz(pstnpz_file)
         >>> print(on_disk) # prints the name of the file reader
@@ -40,7 +42,7 @@ class PstReader(object):
 
         >>> from pysnptools.pstreader import PstNpz
         >>> from pysnptools.util import example_file # Download and return local file name
-        >>> 
+        >>>
         >>> pstnpz_file = example_file('tests/datasets/all_chr.maf0.001.N300.pst.npz')
         >>> on_disk = PstNpz(pstnpz_file)
         >>> subset_on_disk = on_disk[[3,4],::2] # specification for a subset of the data on disk. No values are read yet.
@@ -58,7 +60,7 @@ class PstReader(object):
 
         ================================== ================================== ====================== =====================
         *Class*                            *Format*                           *Random Access*        *Suffixes*
-        :class:`.PstData`                  in-memory floats                   Yes                    *n/a*  
+        :class:`.PstData`                  in-memory floats                   Yes                    *n/a*
         :class:`.PstNpz`                   binary, floats                     No                     .pst.npz,.snp.npz,
                                                                                                      .kernel.npz
         :class:`.PstHdf5`                  binary, floats                     Yes                    .pst.hdf5,.snp.hdf5,
@@ -68,11 +70,11 @@ class PstReader(object):
         various :class:`.KernelReader`     varies                             varies                 varies
         ================================== ================================== ====================== =====================
 
-        
+
             A :class:`.SnpReader` and :class:`.KernelReader` are each a kind of :class:`.PstReader`. They have some restrictions summarized here:
             ================================== =============== ============ ============ ==================== ====================
             *Class*                            *val type*      *row type*   *col type*   *row_property type*  *col_property type*
-            :class:`.PstReader`                float           any          any          any                  any     
+            :class:`.PstReader`                float           any          any          any                  any
             :class:`.SnpReader`                float           str,str      str          none                 float,float,float
             :class:`.KernelReader`             float           str,str      str,str      none                 none
             ================================== =============== ============ ============ ==================== ====================
@@ -87,7 +89,7 @@ class PstReader(object):
             ================================== =============== ============ ============ ==================== ====================
 
             :Note: A :attr:`KernelReader.iid` may be used when :attr:`KernelReader.iid0` is equal to :attr:`KernelReader.iid1`
-  
+
     Methods & Properties:
 
         Every PstReader, such as :class:`.PstNpz` and :class:`.PstData`, has these properties: :attr:`row`, :attr:`row_count`, :attr:`col`, :attr:`col_count`,
@@ -113,11 +115,11 @@ class PstReader(object):
         ['null_0' 'null_1' 'null_2' 'null_3' 'null_4' 'null_5' 'null_6']
         >>> print2(on_disk.row_to_index([[b'per2', b'per2'],[b'per1', b'per1']])) #Find the indexes for two rows.
         [2 1]
-        
+
     When Matrix Data is Read:
 
         Matrix data can be enormous so we generally avoid reading it to the degree practical. Specifically,
-        
+
         * Constructing and printing a PstReader causes no file reading. For example, these commands read no data:
 
             >>> on_disk = PstHdf5(hdf5_file) # Construct a PstHdf5 PstReader. No data is read.
@@ -177,7 +179,7 @@ class PstReader(object):
             2.0
 
         Second, if the value data is too large to fit in memory, use subsetting to read only the values of interest from disk.
-       
+
             >>> on_disk = PstHdf5(hdf5_file) # Construct a PstHdf5 PstReader. No data is read.
             >>> print(on_disk[0,2].read().val[0,0]) #Define the subset of data and read only that subset from disk.
             2.0
@@ -199,8 +201,8 @@ class PstReader(object):
     Avoiding Unwanted ndarray Allocations
 
         You may want a subset of matrix values from an in-memory :class:`PstData` and you may know that this subset and the original :class:`PstData`
-        can safely share the memory of the ndarray of matrix values. For this case, the :meth:`read` has optional parameters called view_ok and order. If you override 
-        the defaults of "view_ok=False,order='F'" with "view_ok=True,order='A', the :meth:`read` will, if practical, return a new 
+        can safely share the memory of the ndarray of matrix values. For this case, the :meth:`read` has optional parameters called view_ok and order. If you override
+        the defaults of "view_ok=False,order='F'" with "view_ok=True,order='A', the :meth:`read` will, if practical, return a new
         :class:`PstData` with a ndarray shares memory with the original ndarray.
         Use these parameters with care because any change to either ndarray will effect
         the others. Also keep in mind that :meth:`read` relies on ndarray's mechanisms to decide whether to actually
@@ -265,7 +267,7 @@ class PstReader(object):
             ['1_12' '1_10' '1_28' '1_36' '1_4' '1_11' '1_32' '1_9' '1_17']
 
 
-        You can apply indexing on top of indexing to specify subsets of subsets of data to read. In this example, 
+        You can apply indexing on top of indexing to specify subsets of subsets of data to read. In this example,
         only the column values for every 16th col is actually read from the disk.
 
             >>> # These are just PstReaders, nothing is read from disk yet
@@ -281,14 +283,16 @@ class PstReader(object):
             2.0
 
     The :meth:`read` Method
-  
+
         By default the :meth:`read` returns a ndarray of numpy.float64 laid out in memory in F-contiguous order (row-index varies the fastest). You may, instead,
         ask for numpy.float32 or for C-contiguous order or any order. See :meth:`read` for details.
 
     Details of Methods & Properties:
     """
 
-    def __init__(self, *args, **kwargs): #Ignore any inputs because our parent is 'object'
+    def __init__(
+        self, *args, **kwargs
+    ):  # Ignore any inputs because our parent is 'object'
         super(PstReader, self).__init__()
 
     @property
@@ -366,7 +370,7 @@ class PstReader(object):
         This property (to the degree practical) reads only row and col data from the disk, not matrix value data. Moreover, the row and col data is read from file only once.
 
         """
-        return (len(self.row),len(self.col))
+        return (len(self.row), len(self.col))
 
     @property
     def row_property(self):
@@ -407,14 +411,27 @@ class PstReader(object):
         """
         raise NotImplementedError
 
-
-    def _read(self, row_index_or_none, col_index_or_none, order, dtype, force_python_only, view_ok, num_threads):
+    def _read(
+        self,
+        row_index_or_none,
+        col_index_or_none,
+        order,
+        dtype,
+        force_python_only,
+        view_ok,
+        num_threads,
+    ):
         raise NotImplementedError
 
-
-
     #!!check that views always return contiguous memory by default
-    def read(self, order='F', dtype=np.float64, force_python_only=False, view_ok=False, num_threads=None):
+    def read(
+        self,
+        order="F",
+        dtype=np.float64,
+        force_python_only=False,
+        view_ok=False,
+        num_threads=None,
+    ):
         """Reads the matrix values and returns a :class:`.PstData` (with :attr:`PstData.val` property containing a new ndarray of the matrix values).
 
         :param order: {'F' (default), 'C', 'A'}, optional -- Specify the order of the ndarray. If order is 'F' (default),
@@ -433,7 +450,7 @@ class PstReader(object):
 
 
         :param view_ok: optional -- If False (default), allocates new memory for the :attr:`PstData.val`'s ndarray. If True,
-            if practical and reading from a :class:`PstData`, will return a new 
+            if practical and reading from a :class:`PstData`, will return a new
             :class:`PstData` with a ndarray shares memory with the original :class:`PstData`.
             Typically, you'll also wish to use "order='A'" to increase the chance that sharing will be possible.
             Use these parameters with care because any change to either ndarray will effect
@@ -467,12 +484,22 @@ class PstReader(object):
         1.0
         >>> subsub_pstdata = subset_pstdata[:10,:].read(order='A',view_ok=True) # Create an in-memory subset of the subset with matrix values for the first ten iids. Share memory if practical.
         >>> import numpy as np
-        >>> # print(np.may_share_memory(subset_snpdata.val, subsub_snpdata.val)) # Do the two ndarray's share memory? They could. Currently they won't.       
+        >>> # print(np.may_share_memory(subset_snpdata.val, subsub_snpdata.val)) # Do the two ndarray's share memory? They could. Currently they won't.
         """
         dtype = np.dtype(dtype)
-        val = self._read(None, None, order, dtype, force_python_only, view_ok, num_threads)
+        val = self._read(
+            None, None, order, dtype, force_python_only, view_ok, num_threads
+        )
         from pysnptools.pstreader import PstData
-        ret = PstData(self.row, self.col, val, row_property=self.row_property, col_property=self.col_property, name=str(self))
+
+        ret = PstData(
+            self.row,
+            self.col,
+            val,
+            row_property=self.row_property,
+            col_property=self.col_property,
+            name=str(self),
+        )
         return ret
 
     def row_to_index(self, list):
@@ -482,7 +509,7 @@ class PstReader(object):
         :type order: list
 
         :rtype: ndarray of int
-        
+
         This method (to the degree practical) reads only row and col data from the disk, not matrix value data. Moreover, the row and col data is read from file only once.
 
         :Example:
@@ -499,9 +526,13 @@ class PstReader(object):
             for index, item in enumerate(self.row):
                 key = self._makekey(item)
                 if key in self._row_to_index:
-                   raise Exception("Expect row to appear in data only once. ({0})".format(key))
+                    raise Exception(
+                        "Expect row to appear in data only once. ({0})".format(key)
+                    )
                 self._row_to_index[key] = index
-        index = np.fromiter((self._row_to_index[PstReader._makekey(item1)] for item1 in list),np.int_)
+        index = np.fromiter(
+            (self._row_to_index[PstReader._makekey(item1)] for item1 in list), np.int_
+        )
         return index
 
     def col_to_index(self, list):
@@ -511,7 +542,7 @@ class PstReader(object):
         :type list: list
 
         :rtype: ndarray of int
-        
+
         This method (to the degree practical) reads only row and col data from the disk, not matrix value data. Moreover, the row and col data is read from file only once.
 
         :Example:
@@ -532,21 +563,33 @@ class PstReader(object):
                 pass
 
             if col_set is not None:
-                assert len(col_set) == self.col_count, "Expect col to appear in data only once."
-                self._col_to_index = {item : index for index, item in enumerate(self.col)}
+                assert (
+                    len(col_set) == self.col_count
+                ), "Expect col to appear in data only once."
+                self._col_to_index = {
+                    item: index for index, item in enumerate(self.col)
+                }
             else:
                 col_list = [PstReader._makekey(item) for item in self.col]
-                assert len(set(col_list)) == self.col_count, "Expect col to appear in data only once."
-                self._col_to_index = {item : index for index, item in enumerate(col_list)}
+                assert (
+                    len(set(col_list)) == self.col_count
+                ), "Expect col to appear in data only once."
+                self._col_to_index = {
+                    item: index for index, item in enumerate(col_list)
+                }
             logging.debug("Finished creating _col_to_index")
-        index = np.fromiter((self._col_to_index[PstReader._makekey(item1)] for item1 in list),np.int_)
+        index = np.fromiter(
+            (self._col_to_index[PstReader._makekey(item1)] for item1 in list), np.int_
+        )
         return index
 
     @staticmethod
     def _makekey(item):
-        if isinstance(item,str):
+        if isinstance(item, str):
             return item
-        if isinstance(item,(numbers.Integral,float)): #return quickly from known items
+        if isinstance(
+            item, (numbers.Integral, float)
+        ):  # return quickly from known items
             return item
         try:
             hash(item)
@@ -558,9 +601,9 @@ class PstReader(object):
 
     def __getitem__(self, row_indexer_and_col_indexer):
         from pysnptools.pstreader._subset import _PstSubset
+
         row_indexer, col_indexer = row_indexer_and_col_indexer
         return _PstSubset(self, row_indexer, col_indexer)
-
 
     def copyinputs(self, copier):
         raise NotImplementedError
@@ -569,40 +612,45 @@ class PstReader(object):
     def _is_all_slice(index_or_none):
         if index_or_none is None:
             return True
-        return  isinstance(index_or_none,slice) and index_or_none == slice(None)
+        return isinstance(index_or_none, slice) and index_or_none == slice(None)
 
     @staticmethod
     def _make_sparray_or_slice(indexer):
         if indexer is None:
             return slice(None)
 
-        if isinstance(indexer,np.ndarray):
+        if isinstance(indexer, np.ndarray):
             return PstReader._process_ndarray(indexer)
 
         if isinstance(indexer, slice):
             return indexer
 
         if np.isscalar(indexer):
-            assert isinstance(indexer, numbers.Integral), "Expect scalar indexes to be integers"
+            assert isinstance(
+                indexer, numbers.Integral
+            ), "Expect scalar indexes to be integers"
             return np.array([indexer])
 
         return PstReader._process_ndarray(np.array(indexer))
 
     @staticmethod
     def _process_ndarray(indexer):
-        if len(indexer)==0: # If it's zero length, the type is unreliable and unneeded.
-            return np.zeros((0),dtype=np.integer)
+        if (
+            len(indexer) == 0
+        ):  # If it's zero length, the type is unreliable and unneeded.
+            return np.zeros((0), dtype=np.integer)
         if indexer.dtype == bool:
-            return np.arange(len(indexer),dtype=np.integer)[indexer]
+            return np.arange(len(indexer), dtype=np.integer)[indexer]
         assert np.issubdtype(indexer.dtype, np.integer), "Indexer of unknown type"
         return indexer
 
-
     @staticmethod
     def _make_sparray_from_sparray_or_slice(count, indexer):
-        if isinstance(indexer,slice):
-            return np.arange(*indexer.indices(count),dtype="uintp")
-        result = np.ascontiguousarray((np.arange(count,dtype="uintp")[indexer]).reshape(-1),dtype="uintp")
+        if isinstance(indexer, slice):
+            return np.arange(*indexer.indices(count), dtype="uintp")
+        result = np.ascontiguousarray(
+            (np.arange(count, dtype="uintp")[indexer]).reshape(-1), dtype="uintp"
+        )
         return result
 
     @staticmethod
@@ -611,38 +659,72 @@ class PstReader(object):
 
         if val.dtype != dtype:
             return False
-        if order=='F':
-            return val.flags['F_CONTIGUOUS']
-        elif order=='C':
-            return val.flags['C_CONTIGUOUS']
+        if order == "F":
+            return val.flags["F_CONTIGUOUS"]
+        elif order == "C":
+            return val.flags["C_CONTIGUOUS"]
 
         return True
 
-    def _apply_sparray_or_slice_to_val(self, val, row_indexer_or_none, col_indexer_or_none, order, dtype, force_python_only, num_threads):
+    def _apply_sparray_or_slice_to_val(
+        self,
+        val,
+        row_indexer_or_none,
+        col_indexer_or_none,
+        order,
+        dtype,
+        force_python_only,
+        num_threads,
+    ):
         dtype = np.dtype(dtype)
 
-        if (PstReader._is_all_slice(row_indexer_or_none) and PstReader._is_all_slice(col_indexer_or_none) and 
-                (order == 'A' or (order == 'F' and val.flags['F_CONTIGUOUS']) or (order == 'C' and val.flags['C_CONTIGUOUS'])) and
-                (dtype is None or  val.dtype == dtype)):
+        if (
+            PstReader._is_all_slice(row_indexer_or_none)
+            and PstReader._is_all_slice(col_indexer_or_none)
+            and (
+                order == "A"
+                or (order == "F" and val.flags["F_CONTIGUOUS"])
+                or (order == "C" and val.flags["C_CONTIGUOUS"])
+            )
+            and (dtype is None or val.dtype == dtype)
+        ):
             return val, True
 
         row_indexer = PstReader._make_sparray_or_slice(row_indexer_or_none)
         col_indexer = PstReader._make_sparray_or_slice(col_indexer_or_none)
         if not force_python_only:
-            row_index = PstReader._make_sparray_from_sparray_or_slice(self.row_count, row_indexer)
-            col_index = PstReader._make_sparray_from_sparray_or_slice(self.col_count, col_indexer)
-            sub_val = pstutil.sub_matrix(val, row_index, col_index, order=order, dtype=dtype, num_threads=num_threads)
+            row_index = PstReader._make_sparray_from_sparray_or_slice(
+                self.row_count, row_indexer
+            )
+            col_index = PstReader._make_sparray_from_sparray_or_slice(
+                self.col_count, col_indexer
+            )
+            sub_val = pstutil.sub_matrix(
+                val,
+                row_index,
+                col_index,
+                order=order,
+                dtype=dtype,
+                num_threads=num_threads,
+            )
             return sub_val, False
 
         if PstReader._is_all_slice(row_indexer) or PstReader._is_all_slice(col_indexer):
-            sub_val = val[row_indexer, col_indexer] #!!is this faster than the C++?
-        else: 
-            row_index = PstReader._make_sparray_from_sparray_or_slice(self.row_count, row_indexer)
-            col_index = PstReader._make_sparray_from_sparray_or_slice(self.col_count, col_indexer)
-            #See http://stackoverflow.com/questions/21349133/numpy-array-integer-indexing-in-more-than-one-dimension
-            sub_val = val[row_index.reshape(-1,1), col_index]
+            sub_val = val[row_indexer, col_indexer]  #!!is this faster than the C++?
+        else:
+            row_index = PstReader._make_sparray_from_sparray_or_slice(
+                self.row_count, row_indexer
+            )
+            col_index = PstReader._make_sparray_from_sparray_or_slice(
+                self.col_count, col_indexer
+            )
+            # See http://stackoverflow.com/questions/21349133/numpy-array-integer-indexing-in-more-than-one-dimension
+            sub_val = val[row_index.reshape(-1, 1), col_index]
 
-        assert len(sub_val.shape) in {2,3}, "Expect result of subsetting to be 2 or 3 dimensional"
+        assert len(sub_val.shape) in {
+            2,
+            3,
+        }, "Expect result of subsetting to be 2 or 3 dimensional"
 
         if not PstReader._array_properties_are_ok(sub_val, order, dtype):
             if order is None:
@@ -651,14 +733,16 @@ class PstReader(object):
                 dtype = sub_val.dtype
             sub_val = sub_val.astype(dtype, order, copy=True)
 
-        shares_memory =  np.may_share_memory(val, sub_val)
-        assert(PstReader._array_properties_are_ok(sub_val, order, dtype))
+        shares_memory = np.may_share_memory(val, sub_val)
+        assert PstReader._array_properties_are_ok(sub_val, order, dtype)
         return sub_val, shares_memory
+
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     import doctest
-    doctest.testmod(optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)
+
+    doctest.testmod(optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
     # There is also a unit test case in 'pysnptools\test.py' that calls this doc test
     print("done")

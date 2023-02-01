@@ -501,7 +501,7 @@ class PstReader(object):
                 if key in self._row_to_index:
                    raise Exception("Expect row to appear in data only once. ({0})".format(key))
                 self._row_to_index[key] = index
-        index = np.fromiter((self._row_to_index[PstReader._makekey(item1)] for item1 in list),np.int)
+        index = np.fromiter((self._row_to_index[PstReader._makekey(item1)] for item1 in list),np.int_)
         return index
 
     def col_to_index(self, list):
@@ -539,7 +539,7 @@ class PstReader(object):
                 assert len(set(col_list)) == self.col_count, "Expect col to appear in data only once."
                 self._col_to_index = {item : index for index, item in enumerate(col_list)}
             logging.debug("Finished creating _col_to_index")
-        index = np.fromiter((self._col_to_index[PstReader._makekey(item1)] for item1 in list),np.int)
+        index = np.fromiter((self._col_to_index[PstReader._makekey(item1)] for item1 in list),np.int_)
         return index
 
     @staticmethod

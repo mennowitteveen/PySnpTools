@@ -28,6 +28,8 @@ Install
 
     pip install pysnptools
 
+    Note: Windows users must use Python 3.7 to 3.9. Python 3.10 is not supported on Windows.
+
 Documentation
 -------------
 

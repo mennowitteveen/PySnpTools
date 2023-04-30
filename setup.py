@@ -22,7 +22,7 @@ install_requires = [
     "h5py>=2.10.0",
     "cloudpickle>=2.2.0",
     "more-itertools>=8.7.0",
-    "cbgen == 1.0.1; platform_system=='Windows' or python_version=='3.7'",
+    "cbgen == 1.0.1; python_version=='3.7'",
     "cbgen >= 1.0.2; platform_system!='Windows' and python_version!='3.7'",
     "bgen-reader>=4.0.7; platform_system!='Windows' or python_version=='3.7'",
     "bed-reader>=0.2.5",

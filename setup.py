@@ -24,7 +24,7 @@ install_requires = [
     "more-itertools>=8.7.0",
     "cbgen == 1.0.1; platform_system=='Windows' or python_version=='3.7'",
     "cbgen >= 1.0.2; platform_system!='Windows' and python_version!='3.7'",
-    "bgen-reader>=4.0.7",
+    "bgen-reader>=4.0.7; platform_system!='Windows' or python_version=='3.7'",
     "bed-reader>=0.2.5",
 ]
 

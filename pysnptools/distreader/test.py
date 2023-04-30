@@ -187,9 +187,10 @@ class TestDistReaders(unittest.TestCase):
                                      # Bgen used to be here
                                      (DistHdf5,"hdf5",None,None),
                                      (DistMemMap,"memmap",None,None)]
-        if _TEST_BGEN_AVAILABLE:
-            from pysnptools.distreader import Bgen
-            the_class_and_suffix_list.append((Bgen,"bgen",None,lambda filename,distdata: Bgen.write(filename,distdata,bits=32)))
+        # Skip because write requires qctool, which is not installed by default
+        # if _TEST_BGEN_AVAILABLE:
+        #     from pysnptools.distreader import Bgen
+        #     the_class_and_suffix_list.append((Bgen,"bgen",None,lambda filename,distdata: Bgen.write(filename,distdata,bits=32)))
 
         cant_do_col_prop_none_set = {'bgen'}
         cant_do_col_len_0_set = {'bgen'}

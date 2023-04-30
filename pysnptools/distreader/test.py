@@ -8,7 +8,13 @@ import os.path
 import time
 
 from pysnptools.distreader.distmemmap import TestDistMemMap
-from pysnptools.distreader.bgen import TestBgen
+try:
+    from bgen_reader import open_bgen
+    from pysnptools.distreader.bgen import TestBgen
+    _TEST_BGEN_AVAILABLE = True
+except:
+    logging.warning("skipping TestBgen")
+    _TEST_BGEN_AVAILABLE = False
 from pysnptools.distreader.distgen import TestDistGen
 from pysnptools.distreader import DistNpz, DistHdf5, DistMemMap, DistData, _DistMergeSIDs
 from pysnptools.util import create_directory_if_necessary
@@ -174,13 +180,17 @@ class TestDistReaders(unittest.TestCase):
 
 
     def test_writes(self):
-        from pysnptools.distreader import DistData, DistHdf5, DistNpz, DistMemMap, Bgen
+        from pysnptools.distreader import DistData, DistHdf5, DistNpz, DistMemMap
         from pysnptools.kernelreader.test import _fortesting_JustCheckExists
 
         the_class_and_suffix_list = [(DistNpz,"npz",None,None),
-                                     (Bgen,"bgen",None,lambda filename,distdata: Bgen.write(filename,distdata,bits=32)),
+                                     # Bgen used to be here
                                      (DistHdf5,"hdf5",None,None),
                                      (DistMemMap,"memmap",None,None)]
+        if _TEST_BGEN_AVAILABLE:
+            from pysnptools.distreader import Bgen
+            the_class_and_suffix_list.append((Bgen,"bgen",None,lambda filename,distdata: Bgen.write(filename,distdata,bits=32)))
+
         cant_do_col_prop_none_set = {'bgen'}
         cant_do_col_len_0_set = {'bgen'}
         cant_do_row_count_zero_set = {'bgen'}
@@ -374,24 +384,28 @@ class TestDistReaders(unittest.TestCase):
         logging.info("done with test")
 
     def test_respect_read_inputs(self):
-        from pysnptools.distreader import Bgen,DistGen,DistHdf5,DistMemMap,DistNpz
+        from pysnptools.distreader import DistGen,DistHdf5,DistMemMap,DistNpz
+        if _TEST_BGEN_AVAILABLE:
+            from pysnptools.distreader import Bgen
         from pysnptools.snpreader import Bed
 
         previous_wd = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
-        for distreader in [
-                           _DistMergeSIDs([Bgen('../examples/example.bgen')[:,:5].read(),Bgen('../examples/example.bgen')[:,5:].read()]),
-                           Bed('../examples/toydata.5chrom.bed',count_A1=True).as_dist(block_size=2000),
+        distreader_list = [Bed('../examples/toydata.5chrom.bed',count_A1=True).as_dist(block_size=2000),
                            Bed('../examples/toydata.5chrom.bed',count_A1=True).as_dist(),
-                           Bgen('../examples/example.bgen').read(),
-                           Bgen('../examples/bits1.bgen'),                          
                            DistGen(seed=0,iid_count=500,sid_count=50),
                            DistGen(seed=0,iid_count=500,sid_count=50)[::2,::2],
                            DistHdf5('../examples/toydata.snpmajor.dist.hdf5'),
                            DistMemMap('../examples/tiny.dist.memmap'),
                            DistNpz('../examples/toydata10.dist.npz')
-                          ]:
+                          ]
+        if _TEST_BGEN_AVAILABLE:
+            distreader_list += [_DistMergeSIDs([Bgen('../examples/example.bgen')[:,:5].read(),Bgen('../examples/example.bgen')[:,5:].read()]),
+                                Bgen('../examples/example.bgen').read(),
+                                Bgen('../examples/bits1.bgen')]
+
+        for distreader in distreader_list:
             logging.info(str(distreader))
             for order in ['F','C','A']:
                 for dtype in [np.float32,np.float64]:
@@ -573,7 +587,8 @@ def getTestSuite():
 
     test_suite = unittest.TestSuite([])
 
-    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestBgen))
+    if _TEST_BGEN_AVAILABLE:
+        test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestBgen))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaderDocStrings))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistGen))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistMemMap))

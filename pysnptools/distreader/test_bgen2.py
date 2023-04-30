@@ -7,11 +7,17 @@ import pytest
 from numpy import array, array_equal, isnan
 from numpy.testing import assert_allclose, assert_equal
 
-from bgen_reader import open_bgen
-from bgen_reader import example_filepath
-from bgen_reader._environment import BGEN_READER_CACHE_HOME
-from bgen_reader.test.write_random import _write_random
-from bgen_reader.test.test_bgen_reader import nowrite_permission, noread_permission
+try:
+    from bgen_reader import open_bgen
+    from bgen_reader import example_filepath
+    from bgen_reader._environment import BGEN_READER_CACHE_HOME
+    from bgen_reader.test.write_random import _write_random
+    from bgen_reader.test.test_bgen_reader import nowrite_permission, noread_permission
+    _BGEN_AVAILABLE = True
+except ImportError:
+    import logging
+    logging.warning("bgen_reader not installed. Some tests will be skipped.")
+    _BGEN_AVAILABLE = False
 
 
 def example_filepath2(filename):

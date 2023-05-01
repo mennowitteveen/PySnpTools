@@ -26,7 +26,7 @@ install_requires = [
     "cbgen == 1.0.1; platform_system=='Windows' and python_version<'3.10'",
     "cbgen >= 1.0.2; platform_system!='Windows' and python_version!='3.7'",
     "bgen-reader>=4.0.7; platform_system!='Windows' or python_version<'3.10'",
-    "bed-reader>=0.2.5",
+    "bed-reader>=0.2.33",
 ]
 
 # python setup.py sdist bdist_wininst upload

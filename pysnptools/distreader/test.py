@@ -6,6 +6,8 @@ import shutil
 import unittest
 import os.path
 import time
+import sys
+
 
 from pysnptools.distreader.distmemmap import TestDistMemMap
 try:
@@ -13,7 +15,7 @@ try:
     from pysnptools.distreader.bgen import TestBgen
     _TEST_BGEN_AVAILABLE = True
 except:
-    logging.warning("skipping TestBgen")
+    logging.warning("BgenReader will not be available")
     _TEST_BGEN_AVAILABLE = False
 from pysnptools.distreader.distgen import TestDistGen
 from pysnptools.distreader import DistNpz, DistHdf5, DistMemMap, DistData, _DistMergeSIDs

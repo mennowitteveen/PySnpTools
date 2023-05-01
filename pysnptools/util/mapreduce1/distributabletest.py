@@ -2,6 +2,7 @@ from pysnptools.util.mapreduce1.runner import *
 import logging
 import unittest
 import io
+import sys
 
 class DistributableTest(object) : #implements IDistributable
     '''

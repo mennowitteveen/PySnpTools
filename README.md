@@ -28,7 +28,8 @@ Install
 
     pip install pysnptools
 
-    Note: Windows users must use Python 3.7 to 3.9. Python 3.10 is not supported on Windows.
+| Note: On Windows and Python 3.10, BgenReader isn't supported. See
+[bgen-reader-py issue #45](https://github.com/limix/bgen-reader-py/issues/45)
 
 Documentation
 -------------

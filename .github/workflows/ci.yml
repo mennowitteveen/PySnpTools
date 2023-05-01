@@ -38,6 +38,7 @@ jobs:
       shell: bash -l {0}
       run: |
         pip uninstall pysnptools --yes
+        pip install -r requirements-dev.txt
         export PYTHONPATH=${GITHUB_WORKSPACE}
         python tests/test.py
 

@@ -790,3 +790,4 @@ if __name__ == "__main__":
     doctest.testmod(optionflags=doctest.ELLIPSIS|doctest.NORMALIZE_WHITESPACE)
     # There is also a unit test case in 'pysnptools\test.py' that calls this doc t
     print("done")
+# cmk todo: change example_file("pysnptools/examples/toydata.5chrom.bed") to .*, "*.bed")

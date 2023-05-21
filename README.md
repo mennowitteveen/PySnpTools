@@ -28,9 +28,6 @@ Install
 
     pip install pysnptools
 
-| Note: On Windows and Python 3.10, BgenReader isn't supported. See
-[bgen-reader-py issue #45](https://github.com/limix/bgen-reader-py/issues/45)
-
 Documentation
 -------------
 

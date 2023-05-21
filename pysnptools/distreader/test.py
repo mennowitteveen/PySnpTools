@@ -10,13 +10,8 @@ import sys
 
 
 from pysnptools.distreader.distmemmap import TestDistMemMap
-try:
-    from bgen_reader import open_bgen
-    from pysnptools.distreader.bgen import TestBgen
-    _TEST_BGEN_AVAILABLE = True
-except:
-    logging.warning("BgenReader will not be available")
-    _TEST_BGEN_AVAILABLE = False
+from bgen_reader import open_bgen
+from pysnptools.distreader.bgen import TestBgen
 from pysnptools.distreader.distgen import TestDistGen
 from pysnptools.distreader import DistNpz, DistHdf5, DistMemMap, DistData, _DistMergeSIDs
 from pysnptools.util import create_directory_if_necessary
@@ -190,7 +185,6 @@ class TestDistReaders(unittest.TestCase):
                                      (DistHdf5,"hdf5",None,None),
                                      (DistMemMap,"memmap",None,None)]
         # Skip because write requires qctool, which is not installed by default
-        # if _TEST_BGEN_AVAILABLE:
         #     from pysnptools.distreader import Bgen
         #     the_class_and_suffix_list.append((Bgen,"bgen",None,lambda filename,distdata: Bgen.write(filename,distdata,bits=32)))
 
@@ -388,8 +382,7 @@ class TestDistReaders(unittest.TestCase):
 
     def test_respect_read_inputs(self):
         from pysnptools.distreader import DistGen,DistHdf5,DistMemMap,DistNpz
-        if _TEST_BGEN_AVAILABLE:
-            from pysnptools.distreader import Bgen
+        from pysnptools.distreader import Bgen
         from pysnptools.snpreader import Bed
 
         previous_wd = os.getcwd()
@@ -403,10 +396,9 @@ class TestDistReaders(unittest.TestCase):
                            DistMemMap('../examples/tiny.dist.memmap'),
                            DistNpz('../examples/toydata10.dist.npz')
                           ]
-        if _TEST_BGEN_AVAILABLE:
-            distreader_list += [_DistMergeSIDs([Bgen('../examples/example.bgen')[:,:5].read(),Bgen('../examples/example.bgen')[:,5:].read()]),
-                                Bgen('../examples/example.bgen').read(),
-                                Bgen('../examples/bits1.bgen')]
+        distreader_list += [_DistMergeSIDs([Bgen('../examples/example.bgen')[:,:5].read(),Bgen('../examples/example.bgen')[:,5:].read()]),
+                            Bgen('../examples/example.bgen').read(),
+                            Bgen('../examples/bits1.bgen')]
 
         for distreader in distreader_list:
             logging.info(str(distreader))
@@ -590,8 +582,7 @@ def getTestSuite():
 
     test_suite = unittest.TestSuite([])
 
-    if _TEST_BGEN_AVAILABLE:
-        test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestBgen))
+    test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestBgen))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistReaderDocStrings))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistGen))
     test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(TestDistMemMap))

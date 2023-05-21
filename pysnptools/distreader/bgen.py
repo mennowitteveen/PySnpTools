@@ -4,14 +4,9 @@ import numpy as np
 import unittest
 from pathlib import Path
 
-try:
-    from bgen_reader import example_filepath
-    from bgen_reader import open_bgen
-    from bgen_reader._multimemmap import MultiMemMap
-    _BGEN_AVAILABLE = True
-except ImportError:
-    logging.warning("bgen_reader not installed. Some tests will be skipped.")
-    _BGEN_AVAILABLE = False
+from bgen_reader import example_filepath
+from bgen_reader import open_bgen
+from bgen_reader._multimemmap import MultiMemMap
 from pysnptools.util import log_in_place
 import shutil
 import math

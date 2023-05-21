@@ -6,7 +6,7 @@ from setuptools import setup
 import numpy
 
 # Version number
-version = "0.5.9"
+version = "0.5.10"
 
 
 def readme():
@@ -22,11 +22,9 @@ install_requires = [
     "h5py>=2.10.0",
     "cloudpickle>=2.2.0",
     "more-itertools>=8.7.0",
-    "cbgen == 1.0.1; platform_system!='Windows' and python_version=='3.7'",
-    "cbgen == 1.0.1; platform_system=='Windows' and python_version<'3.10'",
-    "cbgen >= 1.0.2; platform_system!='Windows' and python_version!='3.7'",
-    "bgen-reader>=4.0.7; platform_system!='Windows' or python_version<'3.10'",
-    "bed-reader>=0.2.33",
+    "cbgen>= 1.0.4",
+    "bgen-reader>=4.0.8",
+    "bed-reader>=0.2.36",
 ]
 
 # python setup.py sdist bdist_wininst upload
@@ -47,10 +45,10 @@ setup(
     },
     license="Apache 2.0",
     classifiers=[
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python",
     ],
